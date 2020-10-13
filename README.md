@@ -1,4 +1,4 @@
-Greeting Card Site
+Greetingcard
 
 clickup:
-https://app.clickup.com/2484149/v/l/s/4706478
+https://app.clickup.com/2649061/v/b/s/4719509
