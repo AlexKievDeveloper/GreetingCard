@@ -18,7 +18,7 @@ public class DataSorceFactory {
         dataSource.setUsername(propertyReader.getProperty("jdbc.user"));
         dataSource.setPassword(propertyReader.getProperty("jdbc.password"));
         dataSource.setDriverClassName(propertyReader.getProperty("driver.name"));
-        dataSource.setInitialSize(propertyReader.getProperty("number.connections"));
+        dataSource.setInitialSize(propertyReader.getProperty("connections.amount"));
         return dataSource;
     }
 }
