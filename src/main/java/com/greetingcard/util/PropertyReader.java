@@ -1,15 +1,15 @@
 package com.greetingcard.util;
 
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 @Slf4j
 public class PropertyReader {
     private String defaultProdPropertiesPath = "/application.properties";
-    private String defaultDevPropertiesPath = "/dev.properties";
+    private String devPropertiesPath = "/dev.properties";
     private String[] propertiesPath;
     private Properties properties;
 
@@ -28,7 +28,7 @@ public class PropertyReader {
         readProperties(properties);
 
         if (!("PROD").equals(System.getenv("env"))) {
-            propertiesPath = new String[]{defaultDevPropertiesPath};
+            propertiesPath = new String[]{devPropertiesPath};
             readProperties(properties);
         }
         return properties;
@@ -40,7 +40,7 @@ public class PropertyReader {
 
     void readProperties(Properties properties) {
         for (String pathToPropertiesFile : propertiesPath) {
-            try (val inputStream = getClass().getResourceAsStream(pathToPropertiesFile)) {
+            try (InputStream inputStream = getClass().getResourceAsStream(pathToPropertiesFile)) {
                 properties.load(inputStream);
             } catch (IOException e) {
                 log.error("Error while reading properties", e);
@@ -49,8 +49,8 @@ public class PropertyReader {
         }
     }
 
-    void setDefaultDevPropertiesPath(String defaultDevPropertiesPath) {
-        this.defaultDevPropertiesPath = defaultDevPropertiesPath;
+    void setDevPropertiesPath(String devPropertiesPath) {
+        this.devPropertiesPath = devPropertiesPath;
     }
 }
 

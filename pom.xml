@@ -16,7 +16,7 @@
         <logback.version>1.2.3</logback.version>
         <lombok.version>1.18.12</lombok.version>
         <mockito.version>3.5.10</mockito.version>
-        <stefanbirkner.version>1.1.0</stefanbirkner.version>
+        <systemlambda.version>1.1.0</systemlambda.version>
     </properties>
 
     <build>
@@ -64,7 +64,7 @@
         <dependency>
             <groupId>com.github.stefanbirkner</groupId>
             <artifactId>system-lambda</artifactId>
-            <version>${stefanbirkner.version}</version>
+            <version>${systemlambda.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
