@@ -16,7 +16,7 @@ public class DataSourceFactory {
         dataSource.setUrl(propertyReader.getProperty("jdbc.url"));
         dataSource.setUsername(propertyReader.getProperty("jdbc.user"));
         dataSource.setPassword(propertyReader.getProperty("jdbc.password"));
-        dataSource.setDriverClassName(propertyReader.getProperty("driver.name"));
+        dataSource.setDriverClassName(propertyReader.getProperty("jdbc.driver"));
         dataSource.setInitialSize(Integer.parseInt(propertyReader.getProperty("connections.amount")));
         return dataSource;
     }
