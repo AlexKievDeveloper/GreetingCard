@@ -4,21 +4,20 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import com.greetingcard.util.PropertyReader;
 import javax.sql.DataSource;
 
-public class DataSorceFactory {
+public class DataSourceFactory {
     private PropertyReader propertyReader;
-    private DataSource dataSource;
 
-    public DataSorceFactory(PropertyReader propertyReader) {
+    public DataSourceFactory(PropertyReader propertyReader) {
         this.propertyReader = propertyReader;
     }
 
     public DataSource getDataSource() {
-        dataSource = new BasicDataSource();
+        BasicDataSource dataSource = new BasicDataSource();
         dataSource.setUrl(propertyReader.getProperty("jdbc.url"));
         dataSource.setUsername(propertyReader.getProperty("jdbc.user"));
         dataSource.setPassword(propertyReader.getProperty("jdbc.password"));
-        dataSource.setDriverClassName(propertyReader.getProperty("driver.name"));
-        dataSource.setInitialSize(propertyReader.getProperty("connections.amount"));
+        dataSource.setDriverClassName(propertyReader.getProperty("jdbc.driver"));
+        dataSource.setInitialSize(Integer.parseInt(propertyReader.getProperty("connections.amount")));
         return dataSource;
     }
 }

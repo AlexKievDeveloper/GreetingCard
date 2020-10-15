@@ -1,6 +1,6 @@
 package com.greetingcard;
 
-import com.greetingcard.dao.jdbc.config.DataSorceFactory;
+import com.greetingcard.dao.jdbc.config.DataSourceFactory;
 import com.greetingcard.util.PropertyReader;
 
 import javax.sql.DataSource;
@@ -15,7 +15,7 @@ public class ServiceLocator {
         PropertyReader propertyReader = new PropertyReader();
         register("PropertyReader", propertyReader);
 
-        DataSource dataSource = new DataSorceFactory(propertyReader).getDataSource();
+        DataSource dataSource = new DataSourceFactory(propertyReader).getDataSource();
         register("DataSource", dataSource);
     }
 
