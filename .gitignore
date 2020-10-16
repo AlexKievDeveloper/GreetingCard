@@ -2,5 +2,6 @@ out
 .idea
 *.iml
 target
+src/main/resources/dev.properties
 
 
