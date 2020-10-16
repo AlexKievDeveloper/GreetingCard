@@ -19,6 +19,7 @@ import static com.greetingcard.web.WebConstants.CONTENT_TYPE;
 public class LoginServlet extends HttpServlet {
     private SecurityService securityService = ServiceLocator.getBean("DefaultSecurityService");
     private PropertyReader propertyReader = ServiceLocator.getBean("PropertyReader");
+    private int sessionMaxAge = Integer.parseInt(propertyReader.getProperty("session.max-age"));
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -35,7 +36,6 @@ public class LoginServlet extends HttpServlet {
 
         Session session = securityService.login(login, password);
         if (session != null) {
-            int sessionMaxAge = Integer.parseInt(propertyReader.getProperties().getProperty("session.max-age"));
             Cookie cookie = new Cookie("user-token", session.getToken());
             cookie.setMaxAge(sessionMaxAge);
             response.addCookie(cookie);

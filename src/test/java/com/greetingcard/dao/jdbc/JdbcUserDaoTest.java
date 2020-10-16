@@ -1,6 +1,7 @@
 package com.greetingcard.dao.jdbc;
 
 import com.greetingcard.ServiceLocator;
+import com.greetingcard.entity.Language;
 import com.greetingcard.entity.Role;
 import com.greetingcard.entity.User;
 import com.greetingcard.util.PropertyReader;
@@ -60,6 +61,6 @@ class JdbcUserDaoTest {
         assertEquals(Role.USER, actualUser.getRole());
         assertEquals("8031377c4c15e1611986089444c8ff58c95358ffdc95d692a6d10c7b633e99df", actualUser.getPassword());
         assertEquals("salt", actualUser.getSalt());
-        assertEquals(2, actualUser.getLanguage());
+        assertEquals(Language.ENGLISH, actualUser.getLanguage());
     }
 }

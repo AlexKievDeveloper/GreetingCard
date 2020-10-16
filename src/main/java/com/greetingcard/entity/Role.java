@@ -32,5 +32,13 @@ public enum Role {
     public String getUserRole() {
         return role;
     }
+
+    @Override
+    public String toString() {
+        return "Role{" +
+                "role='" + role + '\'' +
+                ", number=" + number +
+                '}';
+    }
 }
 

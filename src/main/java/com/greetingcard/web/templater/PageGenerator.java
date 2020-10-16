@@ -21,7 +21,7 @@ public class PageGenerator {
     private final TemplateEngine TEMPLATE_ENGINE = new TemplateEngine();
     private boolean isConfigured;
 
-    public static PageGenerator instance() {
+    public static synchronized PageGenerator instance() {
         if (pageGenerator == null) {
             pageGenerator = new PageGenerator();
         }
@@ -59,7 +59,7 @@ public class PageGenerator {
     }
 
     public void process(String template, Writer writer, HttpServletRequest request, HttpServletResponse response) {
-        WebContext context = new WebContext(request,response,request.getServletContext(),request.getLocale());
+        WebContext context = new WebContext(request, response, request.getServletContext(), request.getLocale());
         TEMPLATE_ENGINE.process(template, context, writer);
     }
 }

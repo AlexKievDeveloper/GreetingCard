@@ -1,5 +1,6 @@
 package com.greetingcard.dao.jdbc.mapper;
 
+import com.greetingcard.entity.Language;
 import com.greetingcard.entity.Role;
 import com.greetingcard.entity.User;
 
@@ -17,7 +18,7 @@ public class UserRowMapper {
                 .role(Role.getByNumber(resultSet.getInt("role")))
                 .password(resultSet.getString("password"))
                 .salt(resultSet.getString("salt"))
-                .language(resultSet.getInt("language_id"))
+                .language(Language.getByNumber(resultSet.getInt("language_id")))
                 .build();
     }
 }

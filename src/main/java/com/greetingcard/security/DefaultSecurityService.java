@@ -10,8 +10,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-public class DefaultSecurityService implements SecurityService, Runnable {
+public class DefaultSecurityService implements SecurityService {
 
     private List<Session> sessionList = new CopyOnWriteArrayList<>();
     private PropertyReader propertyReader = ServiceLocator.getBean("PropertyReader");
@@ -19,6 +22,9 @@ public class DefaultSecurityService implements SecurityService, Runnable {
 
     public DefaultSecurityService(JdbcUserDao jdbcUserDao) {
         this.jdbcUserDao = jdbcUserDao;
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+        Runnable removeExpiredSessions = () -> sessionList.removeIf(session -> session.getExpireDate().isBefore(LocalDateTime.now()));
+        executor.scheduleAtFixedRate(removeExpiredSessions, 0, 10, TimeUnit.MINUTES);
     }
 
     @Override
@@ -63,11 +69,6 @@ public class DefaultSecurityService implements SecurityService, Runnable {
 
     String getHashPassword(String salt, String password) {
         return DigestUtils.sha256Hex(salt.concat(password));
-    }
-
-    @Override
-    public void run() {
-        sessionList.removeIf(session -> session.getExpireDate().isBefore(LocalDateTime.now()));
     }
 
     void setSessionList(List<Session> sessionList) {

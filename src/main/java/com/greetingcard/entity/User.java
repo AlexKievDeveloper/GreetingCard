@@ -14,5 +14,5 @@ public class User {
     private Role role;
     private String password;
     private String salt;
-    private int language;
+    private Language language;
 }

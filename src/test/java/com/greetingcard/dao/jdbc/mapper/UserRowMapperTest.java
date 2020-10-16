@@ -1,5 +1,6 @@
 package com.greetingcard.dao.jdbc.mapper;
 
+import com.greetingcard.entity.Language;
 import com.greetingcard.entity.Role;
 import com.greetingcard.entity.User;
 import org.junit.jupiter.api.DisplayName;
@@ -46,6 +47,6 @@ class UserRowMapperTest {
         assertEquals(Role.USER, actualUser.getRole());
         assertEquals("8031377c4c15e1611986089444c8ff58c95358ffdc95d692a6d10c7b633e99df", actualUser.getPassword());
         assertEquals("salt", mockResultSet.getString("salt"));
-        assertEquals(2, actualUser.getLanguage());
+        assertEquals(Language.ENGLISH, actualUser.getLanguage());
     }
 }
