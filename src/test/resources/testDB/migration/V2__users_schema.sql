@@ -7,7 +7,7 @@ CREATE TABLE users
     email       VARCHAR(50) UNIQUE NOT NULL,
     role        INTEGER            NOT NULL,
     password    VARCHAR(200)       NOT NULL,
-    sole        VARCHAR(200)       NOT NULL,
+    salt        VARCHAR(200)       NOT NULL,
     language_id INTEGER            NOT NULL,
     FOREIGN KEY (language_id) REFERENCES languages (language_id)
 );

@@ -3,3 +3,8 @@ out
 *.iml
 target
 logs
+src/main/resources/dev.properties
+
+
+
+
