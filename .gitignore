@@ -4,6 +4,7 @@ out
 target
 logs
 src/main/resources/dev.properties
+application-test.properties
 
 
 
