@@ -1,5 +1,5 @@
 CREATE TABLE roles
 (
     role_id SERIAL PRIMARY KEY,
-    role    INTEGER
+    role    VARCHAR(20)
 );

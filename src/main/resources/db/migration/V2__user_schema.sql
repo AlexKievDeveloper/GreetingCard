@@ -8,5 +8,5 @@ CREATE TABLE users
     password    VARCHAR(200)       NOT NULL,
     salt        VARCHAR(200)       NOT NULL,
     language_id INTEGER            NOT NULL,
-    FOREIGN KEY (language_id) REFERENCES language (language_id)
+    FOREIGN KEY (language_id) REFERENCES languages (language_id)
 );

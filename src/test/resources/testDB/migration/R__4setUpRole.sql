@@ -1,9 +1,9 @@
-INSERT INTO roles(role_id, role) VALUES (1,1);
-INSERT INTO roles(role_id, role) VALUES (2,2);
+INSERT INTO roles(role_id, role) VALUES (1,'ADMIN');
+INSERT INTO roles(role_id, role) VALUES (2,'MEMBER');
 
 
 -- CREATE TABLE roles
 -- (
 --     role_id SERIAL PRIMARY KEY,
---     role    INTEGER
+--     role    VARCHAR(50)
 -- );

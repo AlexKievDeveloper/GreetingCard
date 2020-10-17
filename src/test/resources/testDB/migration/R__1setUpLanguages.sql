@@ -1,10 +1,10 @@
-INSERT INTO languages(language_id, name) VALUES (1,1);
-INSERT INTO languages(language_id, name) VALUES (2,2);
+INSERT INTO languages(language_id, name) VALUES (1,'EN');
+INSERT INTO languages(language_id, name) VALUES (2,'UA');
 
 
 
 -- CREATE TABLE language
 -- (
 --     language_id SERIAL PRIMARY KEY,
---     name    INTEGER
+--     name    VARCHAR(50)
 -- );

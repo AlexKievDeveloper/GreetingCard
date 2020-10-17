@@ -1,5 +1,5 @@
-CREATE TABLE language
+CREATE TABLE languages
 (
     language_id SERIAL PRIMARY KEY,
-    name    INTEGER
+    name    VARCHAR(50)
 );
