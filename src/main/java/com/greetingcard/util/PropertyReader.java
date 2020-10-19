@@ -8,49 +8,38 @@ import java.util.Properties;
 
 @Slf4j
 public class PropertyReader {
-    private String defaultProdPropertiesPath = "/application.properties";
-    private String devPropertiesPath = "/dev.properties";
-    private String[] propertiesPath;
-    private Properties properties;
+    private static final Properties properties= new Properties();
 
     public PropertyReader() {
-        this.propertiesPath = new String[]{defaultProdPropertiesPath};
-        properties = getProperties();
-    }
-
-    public PropertyReader(String... propertiesPath) {
-        this.propertiesPath = propertiesPath;
-        properties = getProperties();
-    }
-
-    public Properties getProperties() {
-        Properties properties = new Properties();
-        readProperties(properties);
-
+        readProperties("/application.properties");
         if (!("PROD").equals(System.getenv("env"))) {
-            propertiesPath = new String[]{devPropertiesPath};
-            readProperties(properties);
+            readProperties("/dev.properties");
         }
-        return properties;
+    }
+
+    public void readProperties(String pathToFile) {
+        try (InputStream inputStream = getClass().getResourceAsStream(pathToFile)) {
+            if (inputStream == null) {
+                log.error("Resource does not exist - {}", pathToFile);
+                return;
+            }
+            properties.load(inputStream);
+        } catch (IOException e) {
+            log.error("Error while reading properties", e);
+            throw new RuntimeException("Error while reading properties", e);
+        }
     }
 
     public String getProperty(String propertyName) {
-        return properties.getProperty(propertyName);
-    }
-
-    void readProperties(Properties properties) {
-        for (String pathToPropertiesFile : propertiesPath) {
-            try (InputStream inputStream = getClass().getResourceAsStream(pathToPropertiesFile)) {
-                properties.load(inputStream);
-            } catch (IOException e) {
-                log.error("Error while reading properties", e);
-                throw new RuntimeException("Error while reading properties", e);
-            }
+        String value;
+        if ((value = properties.getProperty(propertyName)) != null) {
+            return value;
         }
-    }
-
-    void setDevPropertiesPath(String devPropertiesPath) {
-        this.devPropertiesPath = devPropertiesPath;
+        if ((value = System.getenv(propertyName)) != null) {
+            properties.put(propertyName, value);
+            return value;
+        }
+        return null;
     }
 }
 

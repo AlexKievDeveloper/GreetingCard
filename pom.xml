@@ -43,6 +43,28 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven.surefire.plugin}</version>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <path>/</path>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>${flyway.version}</version>
+                <configuration>
+                    <url>jdbc:postgresql://ec2-54-247-107-109.eu-west-1.compute.amazonaws.com:5432/d624gn6olsvi02?sslmode=require&amp;sslfactory=org.postgresql.ssl.NonValidatingFactory&amp;</url>
+                    <user>hokhoqkyhbtcqw</user>
+                    <password>6c946710e568e5050d20c61742109f69a16247bf6290ccebe6ebe41130eb1aad</password>
+                    <schemas>public</schemas>
+                    <baselineOnMigrate>true</baselineOnMigrate>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

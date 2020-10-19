@@ -44,9 +44,9 @@ class DefaultSecurityServiceTest {
         //prepare
         String salt = "salt";
         String testPassword = "user";
-        String expectedPassword = "8031377c4c15e1611986089444c8ff58c95358ffdc95d692a6d10c7b633e99df";
+        String expectedPassword = "gDE3fEwV4WEZhgiURMj/WMlTWP/cldaSptEMe2M+md8=";
         //when
-        String actualPassword = securityService.getHashPassword(salt, testPassword);
+        String actualPassword = securityService.getHashPassword(salt.concat(testPassword));
         //then
         assertEquals(expectedPassword, actualPassword);
     }

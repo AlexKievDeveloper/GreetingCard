@@ -10,6 +10,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
@@ -29,18 +30,19 @@ public class PageGenerator {
         if (isConfigured) {
             return;
         }
-        ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
         PropertyReader propertyReader = ServiceLocator.getBean("PropertyReader");
-
-        Properties properties = propertyReader.getProperties();
-
-        templateResolver.setPrefix(properties.getProperty("thymeleaf.prefix"));
-        templateResolver.setSuffix(properties.getProperty("thymeleaf.suffix"));
+        ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
+        templateResolver.setPrefix(propertyReader.getProperty("thymeleaf.prefix"));
+        templateResolver.setSuffix(propertyReader.getProperty("thymeleaf.suffix"));
         templateResolver.setTemplateMode("HTML");
         templateResolver.setCharacterEncoding("UTF-8");
-        templateResolver.setCacheable(Boolean.parseBoolean(properties.getProperty("thymeleaf.cache")));
+        templateResolver.setCacheable(Boolean.parseBoolean(propertyReader.getProperty("thymeleaf.cache")));
         TEMPLATE_ENGINE.setTemplateResolver(templateResolver);
         isConfigured = true;
+    }
+
+    public void process(String template, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        process(template,Collections.emptyMap(), request, response);
     }
 
     public void process(String template, Map<String, Object> productMap, HttpServletRequest request,

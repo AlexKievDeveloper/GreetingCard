@@ -1,5 +1,5 @@
 CREATE TABLE roles
 (
-    role_id SERIAL PRIMARY KEY,
-    role    VARCHAR(20)
+    role_id BIGINT PRIMARY KEY,
+    role    VARCHAR(20) NOT NULL
 );
