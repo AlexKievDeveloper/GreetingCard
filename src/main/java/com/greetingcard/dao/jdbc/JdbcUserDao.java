@@ -13,7 +13,7 @@ import java.sql.SQLException;
 
 @Slf4j
 public class JdbcUserDao implements UserDao {
-private static final String FIND_USER_BY_LOGIN = "SELECT user_id, firstName, lastName, login, email, role," +
+private static final String FIND_USER_BY_LOGIN = "SELECT user_id, firstName, lastName, login, email," +
             " password, salt, language_id FROM users WHERE login = ?";
 
     private static final UserRowMapper USER_ROW_MAPPER = new UserRowMapper();
