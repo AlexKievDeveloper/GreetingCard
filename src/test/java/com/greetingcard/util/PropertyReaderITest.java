@@ -52,9 +52,9 @@ class PropertyReaderITest {
     void getPropertiesProdEnvironmentTest() {
         //prepare
         PropertyReader propertyReader = new PropertyReader("/application-test.properties");
-        expectedProperties.put("db.url", "jdbc:postgresql://localhost:5432/greeting-card");
-        expectedProperties.put("db.user", "postgres");
-        expectedProperties.put("db.password", "postgres");
+        expectedProperties.put("db.url", "jdbc:postgresql://localhost:5432/greeting");
+        expectedProperties.put("db.user", "admin");
+        expectedProperties.put("db.password", "admin");
         expectedProperties.put("port", "8080");
         expectedProperties.put("thymeleaf.cache", "true");
 
@@ -80,9 +80,9 @@ class PropertyReaderITest {
         //prepare
         PropertyReader propertyReader = new PropertyReader("/application-test.properties");
         Properties actualProperties = new Properties();
-        expectedProperties.put("db.url", "jdbc:postgresql://localhost:5432/greeting-card");
-        expectedProperties.put("db.user", "postgres");
-        expectedProperties.put("db.password", "postgres");
+        expectedProperties.put("db.url", "jdbc:postgresql://localhost:5432/greeting");
+        expectedProperties.put("db.user", "admin");
+        expectedProperties.put("db.password", "admin");
         expectedProperties.put("port", "8080");
         expectedProperties.put("thymeleaf.cache", "true");
 
@@ -107,9 +107,9 @@ class PropertyReaderITest {
     void getPropertyTest() {
         //prepare
         PropertyReader propertyReader = new PropertyReader("/application-test.properties");
-        String expectedUrl = "jdbc:postgresql://localhost:5432/greeting-card";
-        String expectedUser = "postgres";
-        String expectedPassword = "postgres";
+        String expectedUrl = "jdbc:postgresql://localhost:5432/greeting";
+        String expectedUser = "admin";
+        String expectedPassword = "admin";
         String expectedPort = "8080";
         String expectedThymeleafCache = "true";
 
