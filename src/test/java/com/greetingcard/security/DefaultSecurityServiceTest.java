@@ -9,33 +9,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DefaultSecurityServiceTest {
-    private Session session;
-    private ArrayList<Session> sessionList;
+
     @Mock
     private JdbcUserDao jdbcUserDao;
     @InjectMocks
     private DefaultSecurityService securityService;
     @Mock
     private User user;
-
-    DefaultSecurityServiceTest() {
-
-        session = Session.builder()
-                .token("sessionToken")
-                .expireDate(LocalDateTime.now().plusSeconds(60))
-                .build();
-        sessionList = new ArrayList<>();
-        sessionList.add(session);
-    }
 
     @Test
     @DisplayName("Login user and return session")
@@ -50,29 +36,6 @@ class DefaultSecurityServiceTest {
         verify(jdbcUserDao).findUserByLogin("user");
         verify(user).getSalt();
         verify(user).getPassword();
-    }
-
-    @Test
-    @DisplayName("Removing session from session list")
-    void logoutTest() {
-        //prepare
-        securityService.setSessionList(sessionList);
-        assertEquals(session, securityService.getSession("sessionToken"));
-        //when
-        securityService.logout("sessionToken");
-        //then
-        assertNull(securityService.getSession("sessionToken"));
-    }
-
-    @Test
-    @DisplayName("Returns session from sessions list")
-    void getSessionTest() {
-        //prepare
-        securityService.setSessionList(sessionList);
-        //when
-        Session actual = securityService.getSession("sessionToken");
-        //then
-        assertEquals(session, actual);
     }
 
     @Test

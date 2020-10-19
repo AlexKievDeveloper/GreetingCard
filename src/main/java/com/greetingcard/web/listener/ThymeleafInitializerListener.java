@@ -10,6 +10,6 @@ public class ThymeleafInitializerListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent event) {
         ServletContext servletContext = event.getServletContext();
-        PageGenerator.instance().configTemplate(servletContext);
+        PageGenerator.getInstance().configTemplate(servletContext);
     }
 }
