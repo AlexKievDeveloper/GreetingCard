@@ -8,7 +8,7 @@ import java.util.Properties;
 
 @Slf4j
 public class PropertyReader {
-    private static final Properties properties= new Properties();
+    private static final Properties properties = new Properties();
 
     public PropertyReader() {
         readProperties("/application.properties");

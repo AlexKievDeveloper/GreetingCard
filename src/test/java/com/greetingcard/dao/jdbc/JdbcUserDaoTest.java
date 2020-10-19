@@ -1,6 +1,5 @@
 package com.greetingcard.dao.jdbc;
 
-import com.greetingcard.ServiceLocator;
 import com.greetingcard.entity.Language;
 import com.greetingcard.entity.User;
 import org.flywaydb.core.Flyway;
@@ -11,20 +10,18 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.sql.DataSource;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
 class JdbcUserDaoTest {
-    private DBConfigure dbConfigure = new DBConfigure();
+    private DataBaseConfigurator dataBaseConfigurator = new DataBaseConfigurator();
     private JdbcUserDao jdbcUserDao;
     private Flyway flyway;
 
     public JdbcUserDaoTest() {
-        jdbcUserDao = new JdbcUserDao(dbConfigure.getDataSource());
-        flyway = dbConfigure.getFlyway();
+        jdbcUserDao = new JdbcUserDao(dataBaseConfigurator.getDataSource());
+        flyway = dataBaseConfigurator.getFlyway();
     }
 
     @BeforeEach
@@ -59,7 +56,7 @@ class JdbcUserDaoTest {
 
     @Test
     @DisplayName("Save user")
-    void save(){
+    void save() {
         //prepare
         User expected = User.builder().firstName("firstName_test").lastName("lastName_test")
                 .login("login_test").email("email_test").password("password").salt("salt")

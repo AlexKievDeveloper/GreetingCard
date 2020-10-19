@@ -51,11 +51,11 @@ class RegistrationServletTest {
         //when
         servlet.doPost(request, response);
         //then
-        verify(request,times(1)).getParameter("firstName");
-        verify(request,times(1)).getParameter("lastName");
-        verify(request,times(1)).getParameter("email");
-        verify(request,times(1)).getParameter("login");
-        verify(request,times(1)).getParameter("password");
-        verify(service,times(1)).save(any());
+        verify(request, times(1)).getParameter("firstName");
+        verify(request, times(1)).getParameter("lastName");
+        verify(request, times(1)).getParameter("email");
+        verify(request, times(1)).getParameter("login");
+        verify(request, times(1)).getParameter("password");
+        verify(service, times(1)).save(any());
     }
 }

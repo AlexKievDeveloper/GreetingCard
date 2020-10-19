@@ -6,10 +6,10 @@ import org.flywaydb.core.Flyway;
 
 import javax.sql.DataSource;
 
-public class DBConfigure {
-    private PropertyReader propertyReader = new PropertyReader();;
+public class DataBaseConfigurator {
+    private PropertyReader propertyReader = new PropertyReader();
 
-    public DBConfigure() {
+    public DataBaseConfigurator() {
         propertyReader.readProperties("/application-test.properties");
     }
 
@@ -23,7 +23,7 @@ public class DBConfigure {
         return dataSource;
     }
 
-    public Flyway getFlyway(){
+    public Flyway getFlyway() {
         return Flyway.configure().dataSource(getDataSource()).locations("testDB/migration").load();
     }
 }

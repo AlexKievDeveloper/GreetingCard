@@ -6,7 +6,6 @@ import com.greetingcard.entity.Language;
 import com.greetingcard.entity.User;
 import com.greetingcard.util.PropertyReader;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.digest.DigestUtils;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -44,13 +43,12 @@ public class DefaultSecurityService implements SecurityService {
 
         user.setPassword(password);
         user.setSalt(salt);
-        if (user.getLanguage()==null){
+        if (user.getLanguage() == null) {
             user.setLanguage(Language.ENGLISH);
         }
 
         jdbcUserDao.save(user);
     }
-
 
     String getHashPassword(String saltPassword) {
         String algorithm = propertyReader.getProperty("algorithm");
@@ -69,5 +67,5 @@ public class DefaultSecurityService implements SecurityService {
             throw new RuntimeException(e);
         }
     }
-    
+
 }

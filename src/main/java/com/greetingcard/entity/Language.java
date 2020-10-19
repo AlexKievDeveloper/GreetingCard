@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public enum Language {
-    UKRAINE("UA", 1), ENGLISH("EN", 2);
+    UKRAINIAN("UA", 1), ENGLISH("EN", 2);
 
     private final String name;
     private final int number;
@@ -21,8 +21,8 @@ public enum Language {
                 return language;
             }
         }
-        log.error("No role for number: {}", number);
-        throw new IllegalArgumentException("No role for number " + number);
+        log.error("No language for number: {}", number);
+        throw new IllegalArgumentException("No language for number " + number);
     }
 
     public static Language getByName(String name) {
@@ -33,15 +33,17 @@ public enum Language {
             }
         }
         log.error("No role for name: {}", name);
-        throw new IllegalArgumentException("No role for name " + name);
+        throw new IllegalArgumentException("No language for name " + name);
     }
 
     public int getLanguageNumber() {
         return number;
     }
+
     public String getName() {
         return name;
     }
+
     @Override
     public String toString() {
         return "Language{" +

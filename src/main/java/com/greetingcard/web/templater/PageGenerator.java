@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Properties;
 
 public class PageGenerator {
     private static final PageGenerator INSTANCE = new PageGenerator();
@@ -42,7 +41,7 @@ public class PageGenerator {
     }
 
     public void process(String template, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        process(template,Collections.emptyMap(), request, response);
+        process(template, Collections.emptyMap(), request, response);
     }
 
     public void process(String template, Map<String, Object> productMap, HttpServletRequest request,

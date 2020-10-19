@@ -54,7 +54,7 @@ public class JdbcUserDao implements UserDao {
         String save = "INSERT INTO users (firstName, lastName, login, email, password, salt, language_id) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(save)){
+             PreparedStatement statement = connection.prepareStatement(save)) {
             statement.setString(1, user.getFirstName());
             statement.setString(2, user.getLastName());
             statement.setString(3, user.getLogin());
@@ -67,7 +67,7 @@ public class JdbcUserDao implements UserDao {
 
         } catch (SQLException e) {
             log.error("Exception while save user to DB", e);
-            throw new RuntimeException("Exception while save user to DB: ",e);
+            throw new RuntimeException("Exception while save user to DB: ", e);
         }
     }
 }
