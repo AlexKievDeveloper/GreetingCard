@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public enum Role {
-    ADMIN("ADMIN", 1), USER("USER", 2);
+    ADMIN("ADMIN", 1), MEMBER("MEMBER", 2);
 
     private final String role;
     private final int number;

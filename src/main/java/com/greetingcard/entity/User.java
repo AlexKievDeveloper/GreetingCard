@@ -11,7 +11,6 @@ public class User {
     private String lastName;
     private String login;
     private String email;
-    private Role role;
     private String password;
     private String salt;
     private Language language;

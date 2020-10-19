@@ -19,7 +19,8 @@ class PropertyReaderITest {
     }
 
     @Test
-    @DisplayName("Returns complex properties from application-test.properties file and dev.properties file (environment is DEV)")
+    @DisplayName("Returns complex properties from application-test.properties file and dev.properties file " +
+            "(environment is DEV)")
     void getPropertiesDevEnvironmentTest() {
         //prepare
         PropertyReader propertyReader = new PropertyReader("/application-test.properties");

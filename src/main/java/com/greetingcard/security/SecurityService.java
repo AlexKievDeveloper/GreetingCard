@@ -1,10 +1,8 @@
 package com.greetingcard.security;
 
+import com.greetingcard.entity.User;
+
 public interface SecurityService {
 
-    Session login(String login, String password);
-
-    void logout(String token);
-
-    Session getSession(String token);
+    User login(String login, String password);
 }

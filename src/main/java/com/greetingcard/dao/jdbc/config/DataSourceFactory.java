@@ -1,7 +1,7 @@
 package com.greetingcard.dao.jdbc.config;
 
-import org.apache.commons.dbcp2.BasicDataSource;
 import com.greetingcard.util.PropertyReader;
+import org.apache.commons.dbcp2.BasicDataSource;
 
 import javax.sql.DataSource;
 

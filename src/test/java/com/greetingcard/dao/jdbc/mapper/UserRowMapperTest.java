@@ -1,7 +1,6 @@
 package com.greetingcard.dao.jdbc.mapper;
 
 import com.greetingcard.entity.Language;
-import com.greetingcard.entity.Role;
 import com.greetingcard.entity.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,8 +30,8 @@ class UserRowMapperTest {
         when(mockResultSet.getString("lastName")).thenReturn("user");
         when(mockResultSet.getString("login")).thenReturn("user");
         when(mockResultSet.getString("email")).thenReturn("@user");
-        when(mockResultSet.getInt("role")).thenReturn(2);
-        when(mockResultSet.getString("password")).thenReturn("8031377c4c15e1611986089444c8ff58c95358ffdc95d692a6d10c7b633e99df");
+        when(mockResultSet.getString("password")).
+                thenReturn("8031377c4c15e1611986089444c8ff58c95358ffdc95d692a6d10c7b633e99df");
         when(mockResultSet.getString("salt")).thenReturn("salt");
         when(mockResultSet.getInt("language_id")).thenReturn(2);
         //when
@@ -44,8 +43,8 @@ class UserRowMapperTest {
         assertEquals("user", actualUser.getLastName());
         assertEquals("user", actualUser.getLogin());
         assertEquals("@user", actualUser.getEmail());
-        assertEquals(Role.USER, actualUser.getRole());
-        assertEquals("8031377c4c15e1611986089444c8ff58c95358ffdc95d692a6d10c7b633e99df", actualUser.getPassword());
+        assertEquals("8031377c4c15e1611986089444c8ff58c95358ffdc95d692a6d10c7b633e99df",
+                actualUser.getPassword());
         assertEquals("salt", mockResultSet.getString("salt"));
         assertEquals(Language.ENGLISH, actualUser.getLanguage());
     }
