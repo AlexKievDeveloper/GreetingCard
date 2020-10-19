@@ -18,8 +18,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class SecurityFilterTest {
-    private final SecurityFilter securityFilter;
+class AuthorizationFilterTest {
+    private final AuthorizationFilter authorizationFilter;
     @Mock
     private HttpServletRequest servletRequest;
     @Mock
@@ -32,8 +32,8 @@ class SecurityFilterTest {
     private User user;
 
 
-    SecurityFilterTest() {
-        securityFilter = new SecurityFilter();
+    AuthorizationFilterTest() {
+        authorizationFilter = new AuthorizationFilter();
     }
 
     @Test
@@ -43,7 +43,7 @@ class SecurityFilterTest {
         when(servletRequest.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
         //when
-        securityFilter.doFilter(servletRequest, servletResponse, filterChain);
+        authorizationFilter.doFilter(servletRequest, servletResponse, filterChain);
         //then
         verify(servletRequest).getSession();
         verify(session).getAttribute("user");
@@ -57,7 +57,7 @@ class SecurityFilterTest {
         when(servletRequest.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(null);
         //when
-        securityFilter.doFilter(servletRequest, servletResponse, filterChain);
+        authorizationFilter.doFilter(servletRequest, servletResponse, filterChain);
         //then
         verify(servletRequest).getSession();
         verify(session).getAttribute("user");
