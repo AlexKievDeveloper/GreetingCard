@@ -39,9 +39,9 @@ public class DefaultSecurityService implements SecurityService {
     @Override
     public void save(User user) {
         String salt = UUID.randomUUID().toString();
-        String password = getHashPassword(salt.concat(user.getPassword()));
+        String saltAndPassword = getHashPassword(salt.concat(user.getPassword()));
 
-        user.setPassword(password);
+        user.setPassword(saltAndPassword);
         user.setSalt(salt);
         if (user.getLanguage() == null) {
             user.setLanguage(Language.ENGLISH);
@@ -50,13 +50,13 @@ public class DefaultSecurityService implements SecurityService {
         jdbcUserDao.save(user);
     }
 
-    String getHashPassword(String saltPassword) {
+    String getHashPassword(String saltAndPassword) {
         String algorithm = propertyReader.getProperty("algorithm");
         int iteration = Integer.parseInt(propertyReader.getProperty("iteration"));
 
         try {
             MessageDigest digest = MessageDigest.getInstance(algorithm);
-            byte[] bytes = saltPassword.getBytes();
+            byte[] bytes = saltAndPassword.getBytes();
             for (int i = 0; i < iteration; i++) {
                 digest.update(bytes);
                 bytes = digest.digest();
