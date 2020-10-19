@@ -1,130 +1,48 @@
 package com.greetingcard.util;
 
-import lombok.val;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
 import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class PropertyReaderITest {
-    private Map<String, String> expectedProperties;
-
-    private PropertyReaderITest() {
-        expectedProperties = new HashMap<>();
-    }
+    PropertyReader actualProperties = new PropertyReader();
 
     @Test
-    @DisplayName("Returns complex properties from application-test.properties file and dev.properties file " +
-            "(environment is DEV)")
+    @DisplayName("Returns complex properties from application-test.properties file")
     void getPropertiesDevEnvironmentTest() {
         //prepare
-        PropertyReader propertyReader = new PropertyReader("/application-test.properties");
-        propertyReader.setDevPropertiesPath("/dev-test.properties");
-        expectedProperties.put("db.url", "jdbc:postgresql://localhost:5432/greeting-card1");
-        expectedProperties.put("db.user", "postgres1");
-        expectedProperties.put("db.password", "postgres1");
-        expectedProperties.put("port", "8080");
-        expectedProperties.put("thymeleaf.cache", "false");
-
-        //when
-        val actualProperties = propertyReader.getProperties();
+        actualProperties.readProperties("/application-test.properties");
 
         //then
-        assertEquals(expectedProperties.get("db.url"), actualProperties.getProperty("db.url"));
-        assertEquals(expectedProperties.get("db.user"), actualProperties.getProperty("db.user"));
-        assertEquals(expectedProperties.get("db.password"), actualProperties.getProperty("db.password"));
-        assertEquals(expectedProperties.get("port"), actualProperties.getProperty("port"));
-        assertEquals(expectedProperties.get("thymeleaf.cache"), actualProperties.getProperty("thymeleaf.cache"));
+        assertEquals("jdbc:postgresql://ec2-18-203-62-227.eu-west-1.compute.amazonaws.com:5432/d1juchadlrojvc?sslmode=require&sslfactory=org.postgresql.ssl.NonValidatingFactory&", actualProperties.getProperty("jdbc.url"));
+        assertEquals("avvtjpmzlrnonj", actualProperties.getProperty("jdbc.user"));
+        assertEquals("342c0504c190f09e55eb9041b4edf7658b30ff56bc9ec8c0cb0fdb69aa081236", actualProperties.getProperty("jdbc.password"));
+        assertEquals("8080", actualProperties.getProperty("port"));
+        assertEquals("true", actualProperties.getProperty("thymeleaf.cache"));
     }
 
     @Test
-    @DisplayName("Returns properties from application-test.properties (environment is PROD)")
+    @DisplayName("Returns properties from application-test.properties file when properties do not exist")
+    void getPropertiesNull() {
+        //prepare
+        actualProperties.readProperties("/application-test.properties");
+
+        //then
+        assertEquals("", actualProperties.getProperty("nothing"));
+        assertNull(actualProperties.getProperty("abracadabra"));
+    }
+
+    @Test
+    @DisplayName("Returns system environment")
     void getPropertiesProdEnvironment() throws Exception {
         //prepare
         withEnvironmentVariable("env", "PROD").execute(this::getPropertiesProdEnvironmentTest);
     }
 
     void getPropertiesProdEnvironmentTest() {
-        //prepare
-        PropertyReader propertyReader = new PropertyReader("/application-test.properties");
-        expectedProperties.put("db.url", "jdbc:postgresql://localhost:5432/greeting");
-        expectedProperties.put("db.user", "admin");
-        expectedProperties.put("db.password", "admin");
-        expectedProperties.put("port", "8080");
-        expectedProperties.put("thymeleaf.cache", "true");
-
-        //when
-        Properties actualProperties = propertyReader.getProperties();
-
-        //then
-        assertEquals(expectedProperties.get("db.url"), actualProperties.getProperty("db.url"));
-        assertEquals(expectedProperties.get("db.user"), actualProperties.getProperty("db.user"));
-        assertEquals(expectedProperties.get("db.password"), actualProperties.getProperty("db.password"));
-        assertEquals(expectedProperties.get("port"), actualProperties.getProperty("port"));
-        assertEquals(expectedProperties.get("thymeleaf.cache"), actualProperties.getProperty("thymeleaf.cache"));
-    }
-
-    @Test
-    @DisplayName("Read properties from application-test.properties")
-    void readPropertiesProdEnvironment() throws Exception {
-        //prepare
-        withEnvironmentVariable("env", "PROD").execute(this::readPropertiesTest);
-    }
-
-    void readPropertiesTest() {
-        //prepare
-        PropertyReader propertyReader = new PropertyReader("/application-test.properties");
-        Properties actualProperties = new Properties();
-        expectedProperties.put("db.url", "jdbc:postgresql://localhost:5432/greeting");
-        expectedProperties.put("db.user", "admin");
-        expectedProperties.put("db.password", "admin");
-        expectedProperties.put("port", "8080");
-        expectedProperties.put("thymeleaf.cache", "true");
-
-        //when
-        propertyReader.readProperties(actualProperties);
-
-        //then
-        assertEquals(expectedProperties.get("db.url"), actualProperties.getProperty("db.url"));
-        assertEquals(expectedProperties.get("db.user"), actualProperties.getProperty("db.user"));
-        assertEquals(expectedProperties.get("db.password"), actualProperties.getProperty("db.password"));
-        assertEquals(expectedProperties.get("port"), actualProperties.getProperty("port"));
-        assertEquals(expectedProperties.get("thymeleaf.cache"), actualProperties.getProperty("thymeleaf.cache"));
-    }
-
-    @Test
-    @DisplayName("Returns property")
-    void getPropertyProdEnvironment() throws Exception {
-        //prepare
-        withEnvironmentVariable("env", "PROD").execute(this::getPropertyTest);
-    }
-
-    void getPropertyTest() {
-        //prepare
-        PropertyReader propertyReader = new PropertyReader("/application-test.properties");
-        String expectedUrl = "jdbc:postgresql://localhost:5432/greeting";
-        String expectedUser = "admin";
-        String expectedPassword = "admin";
-        String expectedPort = "8080";
-        String expectedThymeleafCache = "true";
-
-        //when
-        String actualUrl = propertyReader.getProperty("db.url");
-        String actualUser = propertyReader.getProperty("db.user");
-        String actualPassword = propertyReader.getProperty("db.password");
-        String actualPort = propertyReader.getProperty("port");
-        String actualThymeleafCache = propertyReader.getProperty("thymeleaf.cache");
-
-        //then
-        assertEquals(expectedUrl, actualUrl);
-        assertEquals(expectedUser, actualUser);
-        assertEquals(expectedPassword, actualPassword);
-        assertEquals(expectedPort, actualPort);
-        assertEquals(expectedThymeleafCache, actualThymeleafCache);
+        assertEquals("PROD", actualProperties.getProperty("env"));
     }
 }
