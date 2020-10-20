@@ -92,4 +92,5 @@ class JdbcUserDaoITest {
         assertEquals("update",actualUser.getLastName());
         assertEquals("update",actualUser.getLogin());
     }
+
 }
