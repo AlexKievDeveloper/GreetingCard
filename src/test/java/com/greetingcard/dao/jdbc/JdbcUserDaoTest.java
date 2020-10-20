@@ -14,12 +14,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
-class JdbcUserDaoITest {
+class JdbcUserDaoTest {
     private DataBaseConfigurator dataBaseConfigurator = new DataBaseConfigurator();
     private JdbcUserDao jdbcUserDao;
     private Flyway flyway;
 
-    public JdbcUserDaoITest() {
+    public JdbcUserDaoTest() {
         jdbcUserDao = new JdbcUserDao(dataBaseConfigurator.getDataSource());
         flyway = dataBaseConfigurator.getFlyway();
     }
