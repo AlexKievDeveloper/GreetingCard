@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>AfterLogin</title>
+</head>
+<body>
+<div>
+    <div>
+        <form action="/create_card" method="POST" class="profile-text">
+            <input type="text" id="create_card" class="styled-as-input" name="create_card"
+                   placeholder="and here, to check">
+            <input type="submit" class="button-link" value="Create_card">
+        </form>
+    </div>
+
+    <div th:if="${parameters.get(cards) != null}">
+
+        <div th:each="key : ${cards.keySet()}">
+            <div th:with="role=${cards.get(key)}"></div>
+            <div th:replace="~{/fragments/card.html :: card(${key.id}, ${key.name},
+                    ${key.backgroundImage}, ${key.cardLink}, ${key.status}, ${role})}">
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
