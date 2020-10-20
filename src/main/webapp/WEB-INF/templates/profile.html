@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>Profile</h1>
+
+<div class="body__column" th:with="user=${#session.getAttribute('user')}">
+    <h1 th:text="${user.firstName}"></h1>
+    <form action="/profile" method="POST" class="profile-text">
+        <input type="text" id="firstName" class="styled-as-input" name="firstName"
+               placeholder="put your firstName here" th:value="${user.firstName}">
+        <input type="text" id="lastName" class="styled-as-input" name="lastName"
+               placeholder="put your lastName here" th:value="${user.lastName}">
+        <input type="login" id="login" class="styled-as-input" name="login"
+               placeholder="put your login here" th:value="${user.login}">
+
+        <input type="submit" class="button-link" value="Update">
+    </form>
+</div>
+</body>
+</html>
