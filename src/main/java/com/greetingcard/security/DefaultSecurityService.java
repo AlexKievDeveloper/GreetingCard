@@ -50,6 +50,11 @@ public class DefaultSecurityService implements SecurityService {
         jdbcUserDao.save(user);
     }
 
+    @Override
+    public void update(User user) {
+        jdbcUserDao.update(user);
+    }
+
     String getHashPassword(String saltAndPassword) {
         String algorithm = propertyReader.getProperty("algorithm");
         int iteration = Integer.parseInt(propertyReader.getProperty("iteration"));
