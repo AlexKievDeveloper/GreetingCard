@@ -26,7 +26,7 @@ public enum Status {
     }
 
     public static Status getByName(String name) {
-        Status[] statuses= Status.values();
+        Status[] statuses = Status.values();
         for (Status status : statuses) {
             if (name.equals(status.getName())) {
                 return status;
@@ -51,4 +51,6 @@ public enum Status {
                 ", number=" + number +
                 '}';
     }
+
 }
+

@@ -12,3 +12,5 @@ public class Card {
     private String cardLink;
     private Status status;
 }
+
+
