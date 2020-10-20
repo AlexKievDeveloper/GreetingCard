@@ -19,7 +19,7 @@ class JdbcUserDaoITest {
     private JdbcUserDao jdbcUserDao;
     private Flyway flyway;
 
-    public JdbcUserDaoTest() {
+    public JdbcUserDaoITest() {
         jdbcUserDao = new JdbcUserDao(dataBaseConfigurator.getDataSource());
         flyway = dataBaseConfigurator.getFlyway();
     }
