@@ -24,4 +24,13 @@
         <url-pattern>/registration</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>AllCardsServlet</servlet-name>
+        <servlet-class>com.greetingcard.web.servlet.card.AllCardsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AllCardsServlet</servlet-name>
+        <url-pattern>/all-cards</url-pattern>
+    </servlet-mapping>
+
 </web-app>
