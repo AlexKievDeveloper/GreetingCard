@@ -14,6 +14,9 @@ import java.sql.SQLException;
 @Slf4j
 public class JdbcUserDao implements UserDao {
     private static final UserRowMapper USER_ROW_MAPPER = new UserRowMapper();
+    private static final String FIND_USER_BY_LOGIN = "SELECT user_id, firstName, lastName, login, email, password, salt, language_id FROM users WHERE login = ?";
+    private static final String SAVE_USER = "INSERT INTO users (firstName, lastName, login, email, password, salt, language_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
     private final DataSource dataSource;
 
     public JdbcUserDao(DataSource dataSource) {
@@ -22,9 +25,8 @@ public class JdbcUserDao implements UserDao {
 
     @Override
     public User findUserByLogin(String login) {
-        String findUserByLogin = "SELECT user_id, firstName, lastName, login, email, password, salt, language_id FROM users WHERE login = ?";
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(findUserByLogin)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_USER_BY_LOGIN)) {
 
             preparedStatement.setString(1, login);
 
@@ -51,10 +53,8 @@ public class JdbcUserDao implements UserDao {
 
     @Override
     public void save(User user) {
-        String save = "INSERT INTO users (firstName, lastName, login, email, password, salt, language_id) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(save)) {
+             PreparedStatement statement = connection.prepareStatement(SAVE_USER)) {
             statement.setString(1, user.getFirstName());
             statement.setString(2, user.getLastName());
             statement.setString(3, user.getLogin());
