@@ -7,4 +7,6 @@ public interface SecurityService {
     User login(String login, String password);
 
     void save(User user);
+
+    void update(User user);
 }

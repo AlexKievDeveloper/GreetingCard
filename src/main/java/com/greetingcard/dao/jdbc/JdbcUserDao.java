@@ -16,6 +16,7 @@ public class JdbcUserDao implements UserDao {
     private static final UserRowMapper USER_ROW_MAPPER = new UserRowMapper();
     private static final String FIND_USER_BY_LOGIN = "SELECT user_id, firstName, lastName, login, email, password, salt, language_id FROM users WHERE login = ?";
     private static final String SAVE_USER = "INSERT INTO users (firstName, lastName, login, email, password, salt, language_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    private static final String UPDATE_USER = "UPDATE users SET firstName=?, lastName=?, login=? WHERE user_id=?;";
 
     private final DataSource dataSource;
 
@@ -68,6 +69,23 @@ public class JdbcUserDao implements UserDao {
         } catch (SQLException e) {
             log.error("Exception while save user to DB", e);
             throw new RuntimeException("Exception while save user to DB: ", e);
+        }
+    }
+
+    @Override
+    public void update(User user) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(UPDATE_USER)) {
+            statement.setString(1, user.getFirstName());
+            statement.setString(2, user.getLastName());
+            statement.setString(3, user.getLogin());
+            statement.setInt(4, user.getId());
+
+            statement.execute();
+
+        } catch (SQLException e) {
+            log.error("Exception while update user", e);
+            throw new RuntimeException("Exception while update user : ", e);
         }
     }
 }

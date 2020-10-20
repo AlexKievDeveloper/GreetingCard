@@ -75,4 +75,21 @@ class JdbcUserDaoTest {
         assertEquals("salt", actualUser.getSalt());
         assertEquals(Language.ENGLISH, actualUser.getLanguage());
     }
+
+    @Test
+    @DisplayName("Update user")
+    void update() {
+        //prepare
+        User user = jdbcUserDao.findUserByLogin("user");
+        user.setFirstName("update");
+        user.setLastName("update");
+        user.setLogin("update");
+        //when
+        jdbcUserDao.update(user);
+        User actualUser = jdbcUserDao.findUserByLogin("update");
+        //then
+        assertEquals("update",actualUser.getFirstName());
+        assertEquals("update",actualUser.getLastName());
+        assertEquals("update",actualUser.getLogin());
+    }
 }
