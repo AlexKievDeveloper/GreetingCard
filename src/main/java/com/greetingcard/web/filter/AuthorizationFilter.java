@@ -23,5 +23,10 @@ public class AuthorizationFilter implements Filter {
             httpServletResponse.sendRedirect("/login");
         }
     }
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+
+    }
 }
 
