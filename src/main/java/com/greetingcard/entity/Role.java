@@ -25,7 +25,7 @@ public enum Role {
         throw new IllegalArgumentException("No role for number " + number);
     }
 
-    private int getRoleNumber() {
+    public int getRoleNumber() {
         return number;
     }
 
