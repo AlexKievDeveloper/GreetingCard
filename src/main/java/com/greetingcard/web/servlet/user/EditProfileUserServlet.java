@@ -1,4 +1,4 @@
-package com.greetingcard.web.servlet;
+package com.greetingcard.web.servlet.user;
 
 import com.greetingcard.ServiceLocator;
 import com.greetingcard.entity.User;

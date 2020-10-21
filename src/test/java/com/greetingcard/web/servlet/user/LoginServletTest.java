@@ -1,7 +1,8 @@
-package com.greetingcard.web.servlet;
+package com.greetingcard.web.servlet.user;
 
 import com.greetingcard.entity.User;
 import com.greetingcard.security.SecurityService;
+import com.greetingcard.web.servlet.user.LoginServlet;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

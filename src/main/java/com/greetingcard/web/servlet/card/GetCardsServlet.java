@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AllCardsServlet extends HttpServlet {
+public class GetCardsServlet extends HttpServlet {
     private CardService cardService = ServiceLocator.getBean("DefaultCardService");
 
     @Override
