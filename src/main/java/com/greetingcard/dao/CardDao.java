@@ -9,6 +9,8 @@ import java.util.Map;
 public interface CardDao {
     Map<Card, Role> getAllCardsByUserId(int id);
 
+    Map<Card, Role> getCardsByUserIdAndRoleId(int userId, int roleId);
+
     void createCard(Card card, User user);
 
 }

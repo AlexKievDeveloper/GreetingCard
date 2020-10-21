@@ -8,22 +8,39 @@
 <div>
     <div>
         <form action="/create_card" method="POST" class="profile-text">
-            <input type="text" id="create_card" class="styled-as-input" name="create_card"
+            <input type="text" id="create-card" class="styled-as-input" name="create-card"
                    placeholder="and here, to check">
             <input type="submit" class="button-link" value="Create_card">
         </form>
     </div>
+    <!--Parameters must be passed in the GET request,case 1-->
+    <form action="/all-cards" method="GET">
+        <input type="hidden" name="cards-type" value="All-cards">
+        <input type="submit" value="All">
+    </form>
+    <form action="/my-cards" method="GET">
+        <input type="hidden" name="cards-type" value="My-cards">
+        <input type="submit" value="My">
+    </form>
+    <form action="/another`s-cards" method="GET">
+        <input type="hidden" name="cards-type" value="Another`s-cards">
+        <input type="submit" value="Another`s">
+    </form>
+    <!--Parameters must be passed in the GET request,case 2-->
+    <a href="/all-cards?cards-type=All-cards">All</a>
+    <a href="/my-cards?cards-type=My-cards">My</a>
+    <a href="/another`s-cards?cards-type=Another`s-cards">Another`s</a>
 
-    <div th:if="${parameters.get(cards) != null}">
-
+    <div th:if="${cards != null}">
         <div th:each="key : ${cards.keySet()}">
-            <div th:with="role=${cards.get(key)}"></div>
+            <div th:with="role=${cards.get(key)}">
+
             <div th:replace="~{/fragments/card.html :: card(${key.id}, ${key.name},
                     ${key.backgroundImage}, ${key.cardLink}, ${key.status}, ${role})}">
             </div>
+            </div>
         </div>
     </div>
-
 </div>
 </body>
 </html>

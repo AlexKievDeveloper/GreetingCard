@@ -37,13 +37,13 @@ class CreateCardServletTest {
     void doPost() throws IOException {
         Card card = Card.builder().name("test").status(Status.STARTUP).build();
         User user = User.builder().build();
-        when(request.getParameter("create_card")).thenReturn("test");
+        when(request.getParameter("create-card")).thenReturn("test");
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
 
         servlet.doPost(request,response);
 
-        verify(request).getParameter("create_card");
+        verify(request).getParameter("create-card");
         verify(cardService).createCard(card,user);
         verify(response).sendRedirect("/editCard");
     }

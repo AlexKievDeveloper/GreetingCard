@@ -39,7 +39,7 @@ public class LoginServlet extends HttpServlet {
             HttpSession httpSession = request.getSession();
             httpSession.setAttribute("user", user);
             httpSession.setMaxInactiveInterval(maxInactiveInterval);
-            response.sendRedirect("/");
+            response.sendRedirect("/all-cards?cards-type=All-cards");
         } else {
             response.sendRedirect("/login?message=Access denied. Please login and try again.");
         }

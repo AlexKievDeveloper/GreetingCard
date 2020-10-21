@@ -40,6 +40,8 @@
     <servlet-mapping>
         <servlet-name>AllCardsServlet</servlet-name>
         <url-pattern>/all-cards</url-pattern>
+        <url-pattern>/my-cards</url-pattern>
+        <url-pattern>/another`s-cards</url-pattern>
     </servlet-mapping>
   
     <servlet>
@@ -57,7 +59,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>CreateCard</servlet-name>
-        <url-pattern>/create_card</url-pattern>
+        <url-pattern>/create-card</url-pattern>
     </servlet-mapping>
 
     <filter>
@@ -68,8 +70,10 @@
         <filter-name>AuthorizationFilter</filter-name>
         <url-pattern>/</url-pattern>
         <url-pattern>/profile</url-pattern>
-        <url-pattern>/create_card</url-pattern>
+        <url-pattern>/create-card</url-pattern>
         <url-pattern>/all-cards</url-pattern>
+        <url-pattern>/my-cards</url-pattern>
+        <url-pattern>/another`s-cards</url-pattern>
     </filter-mapping>
 
 </web-app>

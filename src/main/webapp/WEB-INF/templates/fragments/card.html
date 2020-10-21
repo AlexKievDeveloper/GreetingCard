@@ -6,6 +6,13 @@
         <h2 th:text="${backgroundImage}">BACKGROUND</h2>
         <h2 th:text="${cardLink}">CARDLINK</h2>
         <h2 th:text="${status}">STATUS</h2>
+        <h2 th:text="${role.getUserRole()}">ROLE</h2>
+        <button>
+            <p>Edit</p>
+        </button>
+        <button>
+            <p>Delete</p>
+        </button>
     </div>
 
     <div th:if="${role.getRoleNumber() == 2}">
@@ -14,6 +21,13 @@
         <h2 th:text="${backgroundImage}">BACKGROUND</h2>
         <h2 th:text="${cardLink}">CARDLINK</h2>
         <h2 th:text="${status}">STATUS</h2>
+        <h2 th:text="${role.getUserRole()}">ROLE</h2>
+        <button>
+            <p>Edit</p>
+        </button>
+        <button>
+            <p>Leave</p>
+        </button>
     </div>
 
 </th:block>

@@ -48,6 +48,11 @@
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>9.4.32.v20200930</version>
+                <configuration>
+                    <httpConnector>
+                        <port>9999</port>
+                    </httpConnector>
+                </configuration>
             </plugin>
 
             <plugin>
@@ -77,7 +82,7 @@
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>${javax.servlet.version}</version>
-
+            <scope>provided</scope>
         </dependency>
         <!--Connection Pool-->
         <dependency>

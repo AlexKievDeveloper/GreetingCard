@@ -20,10 +20,15 @@ public class AllCardsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         User user = (User) request.getSession().getAttribute("user");
-        int id = user.getId();
-        Map<Card, Role> cards = cardService.getAllCardsByUserId(id);
+        int userId = user.getId();
+
+        Map<Card, Role> cards = cardService.getCards(userId, request.getParameter("cards-type"));
+
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("cards", cards);
         PageGenerator.getInstance().process("/after-login", parameters, request, response);
     }
 }
+
+
+

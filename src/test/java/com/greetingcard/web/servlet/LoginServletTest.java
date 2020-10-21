@@ -69,7 +69,7 @@ class LoginServletTest {
         verify(request).getSession();
         verify(session).setAttribute("user", user);
         verify(session).setMaxInactiveInterval(3600);
-        verify(response).sendRedirect("/");
+        verify(response).sendRedirect("/all-cards?cards-type=All-cards");
     }
 
     @Test
