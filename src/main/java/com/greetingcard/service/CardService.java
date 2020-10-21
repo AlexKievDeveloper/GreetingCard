@@ -7,7 +7,8 @@ import com.greetingcard.entity.User;
 import java.util.Map;
 
 public interface CardService {
-    Map<Card, Role> getAllCardsByUserId(int id);
+
+    Map<Card, Role> getCards(int userId, String cardsType);
 
     void createCard(Card card, User user);
 }

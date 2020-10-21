@@ -67,16 +67,54 @@ public class JdbcCardDaoITest {
     }
 
     @Test
+    @DisplayName("Returns Map<Cards, Role> from DB with cards where user role is Admin")
+    void getAllMyCardsByUserIdTestRoleAdmin() {
+        //prepare
+        Card expectedCard1 = Card.builder()
+                .id(1)
+                .name("greeting Nomar")
+                .backgroundImage(null)
+                .cardLink(null)
+                .status(Status.STARTUP)
+                .build();
+        //when
+        Map<Card, Role> actualMap = jdbcCardDao.getCardsByUserIdAndRoleId(1, 1);
+        //then
+        assertEquals(1, actualMap.size());
+        assertTrue(actualMap.containsKey(expectedCard1));
+        assertEquals(actualMap.get(expectedCard1), Role.ADMIN);
+    }
+
+    @Test
+    @DisplayName("Returns Map<Cards, Role> from DB with cards where user role is Member")
+    void getAllMyCardsByUserIdTestRoleMember() {
+        //prepare
+        Card expectedCard2 = Card.builder()
+                .id(2)
+                .name("greeting Oleksandr")
+                .backgroundImage("path_to_image")
+                .cardLink("link_to_greeting")
+                .status(Status.ISOVER)
+                .build();
+        //when
+        Map<Card, Role> actualMap = jdbcCardDao.getCardsByUserIdAndRoleId(1, 2);
+        //then
+        assertEquals(1, actualMap.size());
+        assertTrue(actualMap.containsKey(expectedCard2));
+        assertEquals(actualMap.get(expectedCard2), Role.MEMBER);
+    }
+
+    @Test
     @DisplayName("Save new card")
-    public void createCard(){
+    public void createCard() {
         //prepare
         Card card = Card.builder().name("greeting").status(Status.STARTUP).build();
         User user = User.builder().id(1).build();
         //when
-        jdbcCardDao.createCard(card,user);
+        jdbcCardDao.createCard(card, user);
         Map<Card, Role> actualMap = jdbcCardDao.getAllCardsByUserId(1);
         //then
-        assertEquals(3,actualMap.size());
+        assertEquals(3, actualMap.size());
         assertTrue(actualMap.containsKey(card));
         assertEquals(actualMap.get(card), Role.ADMIN);
     }

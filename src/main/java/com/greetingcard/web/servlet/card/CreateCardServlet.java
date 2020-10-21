@@ -6,7 +6,6 @@ import com.greetingcard.entity.Status;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,7 +16,7 @@ public class CreateCardServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String cardName = request.getParameter("create_card");
+        String cardName = request.getParameter("create-card");
         User user = (User) request.getSession().getAttribute("user");
         Card card = Card.builder()
                 .name(cardName)

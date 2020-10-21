@@ -23,11 +23,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class AllCardsServletTest {
+class GetCardsServletTest {
     @Mock
     private CardService cardService;
     @InjectMocks
-    private AllCardsServlet allCardsServlet;
+    private GetCardsServlet getCardsServlet;
     @Mock
     private HttpServletRequest request;
     @Mock
@@ -50,16 +50,18 @@ class AllCardsServletTest {
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
         when(user.getId()).thenReturn(1);
-        when(cardService.getAllCardsByUserId(1)).thenReturn(cards);
+        when(request.getParameter("cards-type")).thenReturn("All-cards");
+        when(cardService.getCards(1, "All-cards")).thenReturn(cards);
         when(request.getServletContext()).thenReturn(context);
         when(response.getWriter()).thenReturn(writer);
         //when
-        allCardsServlet.doGet(request, response);
+        getCardsServlet.doGet(request, response);
         //then
         verify(request).getSession();
         verify(session).getAttribute("user");
         verify(user).getId();
-        verify(cardService).getAllCardsByUserId(1);
+        verify(request).getParameter("cards-type");
+        verify(cardService).getCards(1, "All-cards");
         verify(request).getServletContext();
         verify(response).getWriter();
     }

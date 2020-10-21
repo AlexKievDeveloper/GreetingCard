@@ -1,4 +1,4 @@
-package com.greetingcard.web.servlet;
+package com.greetingcard.web.servlet.user;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
