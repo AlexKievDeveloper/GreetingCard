@@ -1,4 +1,4 @@
-package com.greetingcard.web.servlet;
+package com.greetingcard.web.servlet.user;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;

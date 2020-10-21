@@ -1,7 +1,8 @@
-package com.greetingcard.web.servlet;
+package com.greetingcard.web.servlet.user;
 
 import com.greetingcard.entity.User;
 import com.greetingcard.security.SecurityService;
+import com.greetingcard.web.servlet.user.EditProfileUserServlet;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -1,4 +1,4 @@
-package com.greetingcard.web.servlet;
+package com.greetingcard.web.servlet.user;
 
 import com.greetingcard.security.SecurityService;
 import org.junit.jupiter.api.Test;

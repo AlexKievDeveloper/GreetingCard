@@ -14,14 +14,16 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AllCardsServlet extends HttpServlet {
+public class GetCardsServlet extends HttpServlet {
     private CardService cardService = ServiceLocator.getBean("DefaultCardService");
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         User user = (User) request.getSession().getAttribute("user");
-        int id = user.getId();
-        Map<Card, Role> cards = cardService.getAllCardsByUserId(id);
+        int userId = user.getId();
+
+        Map<Card, Role> cards = cardService.getCards(userId, request.getParameter("cards-type"));
+        
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("cards", cards);
         PageGenerator.getInstance().process("/after-login", parameters, request, response);

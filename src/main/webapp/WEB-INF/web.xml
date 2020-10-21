@@ -8,7 +8,7 @@
 
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
-        <servlet-class>com.greetingcard.web.servlet.LoginServlet</servlet-class>
+        <servlet-class>com.greetingcard.web.servlet.user.LoginServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
@@ -17,7 +17,7 @@
   
     <servlet>
         <servlet-name>LogoutServlet</servlet-name>
-        <servlet-class>com.greetingcard.web.servlet.LogoutServlet</servlet-class>
+        <servlet-class>com.greetingcard.web.servlet.user.LogoutServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>LogoutServlet</servlet-name>
@@ -26,7 +26,7 @@
 
     <servlet>
         <servlet-name>Registration</servlet-name>
-        <servlet-class>com.greetingcard.web.servlet.RegistrationServlet</servlet-class>
+        <servlet-class>com.greetingcard.web.servlet.user.RegistrationServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Registration</servlet-name>
@@ -34,17 +34,19 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>AllCardsServlet</servlet-name>
-        <servlet-class>com.greetingcard.web.servlet.card.AllCardsServlet</servlet-class>
+        <servlet-name>GetCardsServlet</servlet-name>
+        <servlet-class>com.greetingcard.web.servlet.card.GetCardsServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>AllCardsServlet</servlet-name>
+        <servlet-name>GetCardsServlet</servlet-name>
         <url-pattern>/all-cards</url-pattern>
+        <url-pattern>/my-cards</url-pattern>
+        <url-pattern>/another`s-cards</url-pattern>
     </servlet-mapping>
   
     <servlet>
         <servlet-name>EditProfileServlet</servlet-name>
-        <servlet-class>com.greetingcard.web.servlet.EditProfileUserServlet</servlet-class>
+        <servlet-class>com.greetingcard.web.servlet.user.EditProfileUserServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>EditProfileServlet</servlet-name>
@@ -57,7 +59,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>CreateCard</servlet-name>
-        <url-pattern>/create_card</url-pattern>
+        <url-pattern>/create-card</url-pattern>
     </servlet-mapping>
 
     <filter>
@@ -68,8 +70,10 @@
         <filter-name>AuthorizationFilter</filter-name>
         <url-pattern>/</url-pattern>
         <url-pattern>/profile</url-pattern>
-        <url-pattern>/create_card</url-pattern>
+        <url-pattern>/create-card</url-pattern>
         <url-pattern>/all-cards</url-pattern>
+        <url-pattern>/my-cards</url-pattern>
+        <url-pattern>/another`s-cards</url-pattern>
     </filter-mapping>
 
 </web-app>

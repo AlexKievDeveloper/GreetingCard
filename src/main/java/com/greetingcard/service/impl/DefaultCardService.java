@@ -8,7 +8,6 @@ import com.greetingcard.service.CardService;
 
 import java.util.Map;
 
-
 public class DefaultCardService implements CardService {
     private final JdbcCardDao jdbcCardDao;
 
@@ -17,8 +16,18 @@ public class DefaultCardService implements CardService {
     }
 
     @Override
-    public Map<Card, Role> getAllCardsByUserId(int id) {
-        return jdbcCardDao.getAllCardsByUserId(id);
+    public Map<Card, Role> getCards(int userId, String cardsType) {
+
+        switch (cardsType) {
+            case "All-cards":
+                return jdbcCardDao.getAllCardsByUserId(userId);
+            case "My-cards":
+                return jdbcCardDao.getCardsByUserIdAndRoleId(userId, 1);
+            case "Another`s-cards":
+                return jdbcCardDao.getCardsByUserIdAndRoleId(userId, 2);
+            default:
+                return null;
+        }
     }
 
     @Override
@@ -26,4 +35,3 @@ public class DefaultCardService implements CardService {
         jdbcCardDao.createCard(card, user);
     }
 }
-

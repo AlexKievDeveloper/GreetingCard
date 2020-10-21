@@ -20,6 +20,8 @@ import java.util.Map;
 public class JdbcCardDao implements CardDao {
     private static final String GET_ALL_CARDS_BY_USER_ID = "SELECT cards.card_id, name, background_image, card_link, status_id, role_id" +
             " FROM cards LEFT JOIN users_cards ON cards.card_id=users_cards.card_id WHERE user_id = ? ORDER BY cards.card_id";
+    private static final String GET_CARDS_BY_USER_ID_AND_ROLE_ID = "SELECT cards.card_id, name, background_image, card_link, status_id, role_id" +
+            " FROM cards LEFT JOIN users_cards ON cards.card_id=users_cards.card_id WHERE (user_id = ? AND role_id = ?) ORDER BY cards.card_id";
     private static final String SAVE_NEW_CARD = "INSERT INTO cards (name, status_id) VALUES (?,?)";
     private static final String ADD_TO_USERS_CARDS = "INSERT INTO users_cards (card_id, user_id, role_id) VALUES (?,?,?)";
 
@@ -55,10 +57,35 @@ public class JdbcCardDao implements CardDao {
     }
 
     @Override
+    public Map<Card, Role> getCardsByUserIdAndRoleId(int userId, int roleId) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(GET_CARDS_BY_USER_ID_AND_ROLE_ID)) {
+
+            preparedStatement.setInt(1, userId);
+            preparedStatement.setInt(2, roleId);
+
+            Map<Card, Role> cards = new LinkedHashMap<>();
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+
+                while (resultSet.next()) {
+                    Card card = CARD_ROW_MAPPER.mapRow(resultSet);
+                    Role role = Role.getByNumber(resultSet.getInt("role_id"));
+                    cards.put(card, role);
+                }
+            }
+            return cards;
+        } catch (SQLException e) {
+            log.error("Exception while getting my cards from DB by user id: {} and role id: {}", userId, roleId, e);
+            throw new RuntimeException("Exception while getting my cards from DB by user id: " + userId +
+                    " and role id: " + roleId, e);
+        }
+    }
+
+    @Override
     public void createCard(Card card, User user) {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statementInCards = connection.prepareStatement(SAVE_NEW_CARD, PreparedStatement.RETURN_GENERATED_KEYS)
-        ) {
+             PreparedStatement statementInCards = connection.prepareStatement(SAVE_NEW_CARD, PreparedStatement.RETURN_GENERATED_KEYS)) {
             connection.setAutoCommit(false);
 
             statementInCards.setString(1, card.getName());
@@ -87,5 +114,4 @@ public class JdbcCardDao implements CardDao {
             statementInUsers_Cards.execute();
         }
     }
-
 }

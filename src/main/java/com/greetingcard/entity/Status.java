@@ -51,6 +51,5 @@ public enum Status {
                 ", number=" + number +
                 '}';
     }
-
 }
 
