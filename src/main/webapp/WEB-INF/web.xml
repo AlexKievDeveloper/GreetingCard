@@ -51,6 +51,15 @@
         <url-pattern>/profile</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>CreateCard</servlet-name>
+        <servlet-class>com.greetingcard.web.servlet.card.CreateCardServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CreateCard</servlet-name>
+        <url-pattern>/create_card</url-pattern>
+    </servlet-mapping>
+
     <filter>
         <filter-name>AuthorizationFilter</filter-name>
         <filter-class>com.greetingcard.web.filter.AuthorizationFilter</filter-class>
@@ -59,6 +68,8 @@
         <filter-name>AuthorizationFilter</filter-name>
         <url-pattern>/</url-pattern>
         <url-pattern>/profile</url-pattern>
+        <url-pattern>/create_card</url-pattern>
+        <url-pattern>/all-cards</url-pattern>
     </filter-mapping>
 
 </web-app>

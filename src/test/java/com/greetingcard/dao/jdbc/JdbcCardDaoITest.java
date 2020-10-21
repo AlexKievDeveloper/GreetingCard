@@ -3,6 +3,7 @@ package com.greetingcard.dao.jdbc;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Role;
 import com.greetingcard.entity.Status;
+import com.greetingcard.entity.User;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,6 +64,21 @@ public class JdbcCardDaoITest {
         assertTrue(actualMap.containsKey(expectedCard2));
         assertEquals(actualMap.get(expectedCard1), Role.ADMIN);
         assertEquals(actualMap.get(expectedCard2), Role.MEMBER);
+    }
+
+    @Test
+    @DisplayName("Save new card")
+    public void createCard(){
+        //prepare
+        Card card = Card.builder().name("greeting").status(Status.STARTUP).build();
+        User user = User.builder().id(1).build();
+        //when
+        jdbcCardDao.createCard(card,user);
+        Map<Card, Role> actualMap = jdbcCardDao.getAllCardsByUserId(1);
+        //then
+        assertEquals(3,actualMap.size());
+        assertTrue(actualMap.containsKey(card));
+        assertEquals(actualMap.get(card), Role.ADMIN);
     }
 }
 
