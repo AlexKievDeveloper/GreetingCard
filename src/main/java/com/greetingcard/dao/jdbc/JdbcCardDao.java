@@ -89,7 +89,7 @@ public class JdbcCardDao implements CardDao {
             connection.setAutoCommit(false);
 
             statementInCards.setString(1, card.getName());
-            statementInCards.setInt(2, Status.STARTUP.getLanguageNumber());
+            statementInCards.setInt(2, Status.STARTUP.getStatusNumber());/**/
             statementInCards.execute();
             try (ResultSet resultSet = statementInCards.getGeneratedKeys()) {
                 while (resultSet.next()) {
