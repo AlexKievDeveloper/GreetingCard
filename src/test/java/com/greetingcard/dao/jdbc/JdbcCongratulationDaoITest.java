@@ -10,6 +10,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -125,6 +127,32 @@ class JdbcCongratulationDaoITest {
         assertEquals("you_tube_1", actualCongratulation.getLinkList().get(0).getLink());
         assertEquals(7, actualCongratulation.getLinkList().get(0).getCongratulationId());
         assertEquals(LinkType.VIDEO, actualCongratulation.getLinkList().get(0).getType());
+    }
+
+    @Test
+    @DisplayName("Saving an object of class Congratulation to the DB")
+    void saveLinksTest() throws SQLException {
+        //prepare
+        Connection connection = dataBaseConfigurator.getDataSource().getConnection();
+
+        Link link = Link.builder()
+                .link("you_tube_3")
+                .congratulationId(6)
+                .type(LinkType.VIDEO)
+                .build();
+
+        List<Link> linkList = new ArrayList<>();
+        linkList.add(link);
+
+        //when
+        jdbcCongratulationDao.saveLinks(linkList, connection);
+
+        //then
+        Congratulation congratulation = jdbcCongratulationDao.getCongratulationById(6);
+        Link actualLink = congratulation.getLinkList().get(0);
+        assertEquals("you_tube_3", actualLink.getLink());
+        assertEquals(6, actualLink.getCongratulationId());
+        assertEquals(LinkType.VIDEO, actualLink.getType());
     }
 }
 
