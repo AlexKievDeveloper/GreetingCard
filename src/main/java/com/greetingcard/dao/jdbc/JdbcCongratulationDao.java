@@ -77,7 +77,7 @@ public class JdbcCongratulationDao implements CongratulationDao {
         }
     }
 
-    private void saveLinks(List<Link> linkList, Connection connection) throws SQLException {
+    void saveLinks(List<Link> linkList, Connection connection) throws SQLException {
         try (PreparedStatement statementInLinks = connection.prepareStatement(SAVE_LINK)) {
             for (Link link : linkList) {
                 statementInLinks.setString(1, link.getLink());
