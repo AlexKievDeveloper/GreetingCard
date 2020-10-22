@@ -23,9 +23,9 @@ public class GetCardsServlet extends HttpServlet {
         int userId = user.getId();
 
         Map<Card, Role> cards = cardService.getCards(userId, request.getParameter("cards-type"));
-        
+
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("cards", cards);
-        PageGenerator.getInstance().process("/after-login", parameters, request, response);
+        PageGenerator.getInstance().process("after-login", parameters, request, response);
     }
 }

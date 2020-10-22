@@ -1,10 +1,12 @@
 package com.greetingcard;
 
 import com.greetingcard.dao.jdbc.JdbcCardDao;
+import com.greetingcard.dao.jdbc.JdbcCongratulationDao;
 import com.greetingcard.dao.jdbc.JdbcUserDao;
 import com.greetingcard.dao.jdbc.config.DataSourceFactory;
 import com.greetingcard.security.DefaultSecurityService;
 import com.greetingcard.service.impl.DefaultCardService;
+import com.greetingcard.service.impl.DefaultCongratulationService;
 import com.greetingcard.util.PropertyReader;
 
 import javax.sql.DataSource;
@@ -24,12 +26,16 @@ public class ServiceLocator {
 
         JdbcUserDao jdbcUserDao = new JdbcUserDao(dataSource);
         JdbcCardDao jdbcCardDao = new JdbcCardDao(dataSource);
+        JdbcCongratulationDao jdbcCongratulationDao = new JdbcCongratulationDao(dataSource);
 
         DefaultSecurityService defaultSecurityService = new DefaultSecurityService(jdbcUserDao);
         register("DefaultSecurityService", defaultSecurityService);
 
         DefaultCardService defaultCardService = new DefaultCardService(jdbcCardDao);
         register("DefaultCardService", defaultCardService);
+
+        DefaultCongratulationService defaultCongratulationService = new DefaultCongratulationService(jdbcCongratulationDao);
+        register("DefaultCongratulationService", defaultCongratulationService);
     }
 
     public static <T> void register(String nameBean, T bean) {

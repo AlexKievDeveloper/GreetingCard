@@ -17,7 +17,7 @@ public enum Status {
     public static Status getByNumber(int number) {
         Status[] statuses = Status.values();
         for (Status status : statuses) {
-            if (status.getLanguageNumber() == number) {
+            if (status.getStatusNumber() == number) {
                 return status;
             }
         }
@@ -36,7 +36,7 @@ public enum Status {
         throw new IllegalArgumentException("No status for name " + name);
     }
 
-    public int getLanguageNumber() {
+    public int getStatusNumber() {
         return number;
     }
 
