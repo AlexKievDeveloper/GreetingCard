@@ -27,6 +27,6 @@ public class PreviewServlet extends HttpServlet {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("card", card);
         parameters.put("role",role);
-        PageGenerator.getInstance().process("after-login", parameters, request, response);
+        PageGenerator.getInstance().process("preview", parameters, request, response);
     }
 }
