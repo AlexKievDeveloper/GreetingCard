@@ -72,11 +72,11 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>GetCardAndCongratulationServlet</servlet-name>
-        <servlet-class>com.greetingcard.web.servlet.card.GetCardAndCongratulationServlet</servlet-class>
+        <servlet-name>PreviewServlet</servlet-name>
+        <servlet-class>com.greetingcard.web.servlet.card.PreviewServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>GetCardAndCongratulationServlet</servlet-name>
+        <servlet-name>PreviewServlet</servlet-name>
         <url-pattern>/preview/*</url-pattern>
     </servlet-mapping>
 
