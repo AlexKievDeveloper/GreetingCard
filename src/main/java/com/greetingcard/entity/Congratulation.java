@@ -2,6 +2,7 @@ package com.greetingcard.entity;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
@@ -10,8 +11,9 @@ import java.util.List;
 public class Congratulation {
     private int id;
     private String message;
-    private int cardId;
-    private int userId;
+    private Card card;
+    private User user;
     private Status status;
+    @EqualsAndHashCode.Exclude
     private List<Link> linkList;
 }

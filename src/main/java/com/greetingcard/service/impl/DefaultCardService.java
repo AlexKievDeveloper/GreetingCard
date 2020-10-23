@@ -34,4 +34,9 @@ public class DefaultCardService implements CardService {
     public void createCard(Card card, User user) {
         jdbcCardDao.createCard(card, user);
     }
+
+    @Override
+    public Card getCardAndCongratulationByCardId(int cardId) {
+        return jdbcCardDao.getCardAndCongratulationByCardId(cardId);
+    }
 }

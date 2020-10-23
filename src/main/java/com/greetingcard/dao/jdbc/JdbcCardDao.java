@@ -2,10 +2,7 @@ package com.greetingcard.dao.jdbc;
 
 import com.greetingcard.dao.CardDao;
 import com.greetingcard.dao.jdbc.mapper.CardRowMapper;
-import com.greetingcard.entity.Card;
-import com.greetingcard.entity.Role;
-import com.greetingcard.entity.Status;
-import com.greetingcard.entity.User;
+import com.greetingcard.entity.*;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
@@ -13,8 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 public class JdbcCardDao implements CardDao {
@@ -24,6 +20,7 @@ public class JdbcCardDao implements CardDao {
             " FROM cards LEFT JOIN users_cards ON cards.card_id=users_cards.card_id WHERE (user_id = ? AND role_id = ?) ORDER BY cards.card_id";
     private static final String SAVE_NEW_CARD = "INSERT INTO cards (name, status_id) VALUES (?,?)";
     private static final String ADD_TO_USERS_CARDS = "INSERT INTO users_cards (card_id, user_id, role_id) VALUES (?,?,?)";
+    private static final String CARD_AND_CONGRATULATION = "SELECT cards.card_id, name, background_image, card_link, cards.status_id, congratulations.congratulation_id, congratulations.status_id as con_status, message, congratulations.user_id, firstName, lastName, login, link_id, link, type_id FROM cards LEFT JOIN congratulations ON cards.card_id=congratulations.card_id LEFT JOIN users ON congratulations.user_id=users.user_id LEFT JOIN links ON congratulations.congratulation_id=links.congratulation_id where cards.card_id = ?;";
 
     private static final CardRowMapper CARD_ROW_MAPPER = new CardRowMapper();
     private final DataSource dataSource;
@@ -103,6 +100,65 @@ public class JdbcCardDao implements CardDao {
         } catch (SQLException e) {
             log.error("Exception while creating new card", e);
             throw new RuntimeException("Exception while creating new card", e);
+        }
+    }
+
+    @Override
+    public Card getCardAndCongratulationByCardId(int cardId) {
+        Card card = null;
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(CARD_AND_CONGRATULATION)) {
+            statement.setInt(1, cardId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                List<Congratulation> congratulationList = new ArrayList<>();
+                Map<Integer, Congratulation> congratulationMap = new HashMap<>();
+                while (resultSet.next()) {
+                    if (card == null) {
+                        card = Card.builder()
+                                .id((resultSet.getInt("card_id")))
+                                .name(resultSet.getString("name"))
+                                .backgroundImage(resultSet.getString("background_image"))
+                                .cardLink(resultSet.getString("card_link"))
+                                .status(Status.getByNumber(resultSet.getInt("status_id")))
+                                .congratulationList(congratulationList)
+                                .build();
+                    }
+                    int congratulation_id = resultSet.getInt("congratulation_id");
+                    if (congratulation_id != 0 && !congratulationMap.containsKey(congratulation_id)) {
+                        User user = User.builder()
+                                .id(resultSet.getInt("user_id"))
+                                .firstName(resultSet.getString("firstName"))
+                                .lastName(resultSet.getString("lastName"))
+                                .login(resultSet.getString("login"))
+                                .build();
+                        Congratulation congratulation = Congratulation.builder()
+                                .id(congratulation_id)
+                                .user(user)
+                                .card(card)
+                                .message(resultSet.getString("message"))
+                                .status(Status.getByNumber(resultSet.getInt("con_status")))
+                                .linkList(new LinkedList<>())
+                                .build();
+
+                        congratulationMap.put(congratulation_id, congratulation);
+                    }
+                    int link_id = resultSet.getInt("link_id");
+                    if (link_id != 0) {
+                        Link link = Link.builder()
+                                .id(link_id)
+                                .link(resultSet.getString("message"))
+                                .type(LinkType.getByNumber(resultSet.getInt("type_id")))
+                                .build();
+                        congratulationMap.get(congratulation_id).getLinkList().add(link);
+                    }
+                }
+                card.setCongratulationList(new LinkedList<>(congratulationMap.values()));
+            }
+            return card;
+        } catch (SQLException e) {
+            log.error("Exception while get card and congratulation by card id", e);
+            throw new RuntimeException("Exception while get card and congratulation by card id", e);
         }
     }
 

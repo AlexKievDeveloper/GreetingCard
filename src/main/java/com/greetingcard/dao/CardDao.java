@@ -13,4 +13,5 @@ public interface CardDao {
 
     void createCard(Card card, User user);
 
+    Card getCardAndCongratulationByCardId(int cardId);
 }

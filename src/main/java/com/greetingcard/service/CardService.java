@@ -11,4 +11,6 @@ public interface CardService {
     Map<Card, Role> getCards(int userId, String cardsType);
 
     void createCard(Card card, User user);
+
+    Card getCardAndCongratulationByCardId(int cardId);
 }

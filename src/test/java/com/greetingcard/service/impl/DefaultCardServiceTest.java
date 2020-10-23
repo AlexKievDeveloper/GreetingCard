@@ -1,6 +1,7 @@
 package com.greetingcard.service.impl;
 
 import com.greetingcard.dao.jdbc.JdbcCardDao;
+import com.greetingcard.entity.Card;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,5 +43,14 @@ class DefaultCardServiceTest {
         defaultCardService.getCards(1, "Another`s-cards");
         //then
         verify(jdbcCardDao).getCardsByUserIdAndRoleId(1, 2);
+    }
+
+    @Test
+    @DisplayName("Return card with all congatulations")
+    void getCardAndCongratulationByCardId(int cardId) {
+        //when
+        defaultCardService.getCardAndCongratulationByCardId(1);
+        //then
+        verify(jdbcCardDao).getCardAndCongratulationByCardId(1);
     }
 }

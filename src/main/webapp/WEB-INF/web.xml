@@ -71,6 +71,16 @@
         <url-pattern>/add-congratulation</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>GetCardAndCongratulationServlet</servlet-name>
+        <servlet-class>com.greetingcard.web.servlet.card.GetCardAndCongratulationServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetCardAndCongratulationServlet</servlet-name>
+        <url-pattern>/preview/*</url-pattern>
+    </servlet-mapping>
+
+
     <filter>
         <filter-name>AuthorizationFilter</filter-name>
         <filter-class>com.greetingcard.web.filter.AuthorizationFilter</filter-class>
