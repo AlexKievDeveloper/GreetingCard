@@ -40,8 +40,8 @@ class CongratulationRowMapperTest {
         //then
         assertEquals(1, actualCongratulation.getId());
         assertEquals("from Roma", actualCongratulation.getMessage());
-        assertEquals(1, actualCongratulation.getCardId());
-        assertEquals(1, actualCongratulation.getUserId());
+        assertEquals(1, actualCongratulation.getCard().getId());
+        assertEquals(1, actualCongratulation.getUser().getId());
         assertEquals(Status.STARTUP, actualCongratulation.getStatus());
         assertEquals(1, actualCongratulation.getLinkList().get(0).getId());
         assertEquals("you_tube_1", actualCongratulation.getLinkList().get(0).getLink());

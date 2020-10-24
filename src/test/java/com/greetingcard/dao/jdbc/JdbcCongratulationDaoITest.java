@@ -1,9 +1,6 @@
 package com.greetingcard.dao.jdbc;
 
-import com.greetingcard.entity.Congratulation;
-import com.greetingcard.entity.Link;
-import com.greetingcard.entity.LinkType;
-import com.greetingcard.entity.Status;
+import com.greetingcard.entity.*;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,8 +43,8 @@ class JdbcCongratulationDaoITest {
         //then
         assertEquals(1, actualCongratulation.getId());
         assertEquals("from Roma", actualCongratulation.getMessage());
-        assertEquals(1, actualCongratulation.getCardId());
-        assertEquals(1, actualCongratulation.getUserId());
+        assertEquals(1, actualCongratulation.getCard().getId());
+        assertEquals(1, actualCongratulation.getUser().getId());
         assertEquals(Status.STARTUP, actualCongratulation.getStatus());
 
         assertEquals(1, actualCongratulation.getLinkList().get(0).getId());
@@ -106,8 +103,8 @@ class JdbcCongratulationDaoITest {
 
         Congratulation congratulation = Congratulation.builder()
                 .message("from JdbcTest")
-                .cardId(2)
-                .userId(2)
+                .card(Card.builder().id(2).build())
+                .user(User.builder().id(2).build())
                 .status(Status.STARTUP)
                 .build();
 
@@ -120,8 +117,8 @@ class JdbcCongratulationDaoITest {
         Congratulation actualCongratulation = jdbcCongratulationDao.getCongratulationById(7);
         assertEquals(7, actualCongratulation.getId());
         assertEquals("from JdbcTest", actualCongratulation.getMessage());
-        assertEquals(2, actualCongratulation.getCardId());
-        assertEquals(2, actualCongratulation.getUserId());
+        assertEquals(2, actualCongratulation.getCard().getId());
+        assertEquals(2, actualCongratulation.getUser().getId());
         assertEquals(Status.STARTUP, actualCongratulation.getStatus());
         assertEquals(13, actualCongratulation.getLinkList().get(0).getId());
         assertEquals("you_tube_1", actualCongratulation.getLinkList().get(0).getLink());

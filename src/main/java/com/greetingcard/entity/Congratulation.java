@@ -10,8 +10,8 @@ import java.util.List;
 public class Congratulation {
     private int id;
     private String message;
-    private int cardId;
-    private int userId;
+    private Card card;
+    private User user;
     private Status status;
     private List<Link> linkList;
 }
