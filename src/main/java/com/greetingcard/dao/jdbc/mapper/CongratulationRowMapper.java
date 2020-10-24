@@ -1,9 +1,6 @@
 package com.greetingcard.dao.jdbc.mapper;
 
-import com.greetingcard.entity.Congratulation;
-import com.greetingcard.entity.Link;
-import com.greetingcard.entity.LinkType;
-import com.greetingcard.entity.Status;
+import com.greetingcard.entity.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,8 +13,8 @@ public class CongratulationRowMapper {
         Congratulation congratulation = Congratulation.builder()
                 .id(resultSet.getInt("congratulation_id"))
                 .message(resultSet.getString("message"))
-                .cardId(resultSet.getInt("card_id"))
-                .userId(resultSet.getInt("user_id"))
+                .card(Card.builder().id(resultSet.getInt("card_id")).build())
+                .user(User.builder().id(resultSet.getInt("user_id")).build())
                 .status(Status.getByNumber(resultSet.getInt("status_id")))
                 .build();
 

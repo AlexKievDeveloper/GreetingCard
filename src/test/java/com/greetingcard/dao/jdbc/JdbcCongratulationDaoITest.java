@@ -1,15 +1,14 @@
 package com.greetingcard.dao.jdbc;
 
-import com.greetingcard.entity.Congratulation;
-import com.greetingcard.entity.Link;
-import com.greetingcard.entity.LinkType;
-import com.greetingcard.entity.Status;
+import com.greetingcard.entity.*;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,8 +43,8 @@ class JdbcCongratulationDaoITest {
         //then
         assertEquals(1, actualCongratulation.getId());
         assertEquals("from Roma", actualCongratulation.getMessage());
-        assertEquals(1, actualCongratulation.getCardId());
-        assertEquals(1, actualCongratulation.getUserId());
+        assertEquals(1, actualCongratulation.getCard().getId());
+        assertEquals(1, actualCongratulation.getUser().getId());
         assertEquals(Status.STARTUP, actualCongratulation.getStatus());
 
         assertEquals(1, actualCongratulation.getLinkList().get(0).getId());
@@ -104,8 +103,8 @@ class JdbcCongratulationDaoITest {
 
         Congratulation congratulation = Congratulation.builder()
                 .message("from JdbcTest")
-                .cardId(2)
-                .userId(2)
+                .card(Card.builder().id(2).build())
+                .user(User.builder().id(2).build())
                 .status(Status.STARTUP)
                 .build();
 
@@ -118,13 +117,39 @@ class JdbcCongratulationDaoITest {
         Congratulation actualCongratulation = jdbcCongratulationDao.getCongratulationById(7);
         assertEquals(7, actualCongratulation.getId());
         assertEquals("from JdbcTest", actualCongratulation.getMessage());
-        assertEquals(2, actualCongratulation.getCardId());
-        assertEquals(2, actualCongratulation.getUserId());
+        assertEquals(2, actualCongratulation.getCard().getId());
+        assertEquals(2, actualCongratulation.getUser().getId());
         assertEquals(Status.STARTUP, actualCongratulation.getStatus());
         assertEquals(13, actualCongratulation.getLinkList().get(0).getId());
         assertEquals("you_tube_1", actualCongratulation.getLinkList().get(0).getLink());
         assertEquals(7, actualCongratulation.getLinkList().get(0).getCongratulationId());
         assertEquals(LinkType.VIDEO, actualCongratulation.getLinkList().get(0).getType());
+    }
+
+    @Test
+    @DisplayName("Saving an object of class Congratulation to the DB")
+    void saveLinksTest() throws SQLException {
+        //prepare
+        Connection connection = dataBaseConfigurator.getDataSource().getConnection();
+
+        Link link = Link.builder()
+                .link("you_tube_3")
+                .congratulationId(6)
+                .type(LinkType.VIDEO)
+                .build();
+
+        List<Link> linkList = new ArrayList<>();
+        linkList.add(link);
+
+        //when
+        jdbcCongratulationDao.saveLinks(linkList, connection);
+
+        //then
+        Congratulation congratulation = jdbcCongratulationDao.getCongratulationById(6);
+        Link actualLink = congratulation.getLinkList().get(0);
+        assertEquals("you_tube_3", actualLink.getLink());
+        assertEquals(6, actualLink.getCongratulationId());
+        assertEquals(LinkType.VIDEO, actualLink.getType());
     }
 }
 
