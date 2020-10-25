@@ -53,8 +53,8 @@ public class JdbcCongratulationDao implements CongratulationDao {
             connection.setAutoCommit(false);
 
             statementInCongratulations.setString(1, congratulation.getMessage());
-            statementInCongratulations.setInt(2, congratulation.getCardId());
-            statementInCongratulations.setInt(3, congratulation.getUserId());
+            statementInCongratulations.setInt(2, congratulation.getCard().getId());
+            statementInCongratulations.setInt(3, congratulation.getUser().getId());
             statementInCongratulations.setInt(4, congratulation.getStatus().getStatusNumber());
             statementInCongratulations.execute();
 
