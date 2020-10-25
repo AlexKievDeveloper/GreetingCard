@@ -4,7 +4,10 @@ import com.greetingcard.entity.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class CardAndCongratulationRowMapper {
     public Card mapRow(ResultSet resultSet) throws SQLException {

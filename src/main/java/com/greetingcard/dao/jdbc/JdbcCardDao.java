@@ -3,7 +3,10 @@ package com.greetingcard.dao.jdbc;
 import com.greetingcard.dao.CardDao;
 import com.greetingcard.dao.jdbc.mapper.CardAndCongratulationRowMapper;
 import com.greetingcard.dao.jdbc.mapper.CardRowMapper;
-import com.greetingcard.entity.*;
+import com.greetingcard.entity.Card;
+import com.greetingcard.entity.Role;
+import com.greetingcard.entity.Status;
+import com.greetingcard.entity.User;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
@@ -11,7 +14,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Slf4j
 public class JdbcCardDao implements CardDao {
