@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class JdbcCongratulationDaoITest {
     private DataBaseConfigurator dataBaseConfigurator = new DataBaseConfigurator();
@@ -150,6 +151,22 @@ class JdbcCongratulationDaoITest {
         assertEquals("you_tube_3", actualLink.getLink());
         assertEquals(6, actualLink.getCongratulationId());
         assertEquals(LinkType.VIDEO, actualLink.getType());
+    }
+
+    @Test
+    @DisplayName("Delete card with all parameters")
+    void deleteByCardId() {
+        //when
+        jdbcCongratulationDao.deleteByCardId(1);
+        //then
+        Congratulation actualCongratulation1 = jdbcCongratulationDao.getCongratulationById(1);
+        Congratulation actualCongratulation2 = jdbcCongratulationDao.getCongratulationById(2);
+        Congratulation actualCongratulation3 = jdbcCongratulationDao.getCongratulationById(3);
+
+        assertNull(actualCongratulation1);
+        assertNull(actualCongratulation2);
+        assertNull(actualCongratulation3);
+
     }
 }
 

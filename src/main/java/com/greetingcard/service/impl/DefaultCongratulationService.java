@@ -20,4 +20,9 @@ public class DefaultCongratulationService implements CongratulationService {
     public void save(Congratulation congratulation) {
         jdbcCongratulationDao.save(congratulation);
     }
+
+    @Override
+    public void deleteByCardId(int cardId) {
+        jdbcCongratulationDao.deleteByCardId(cardId);
+    }
 }
