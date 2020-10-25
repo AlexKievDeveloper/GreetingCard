@@ -26,6 +26,7 @@ public class JdbcCardDao implements CardDao {
     private static final String SAVE_NEW_CARD = "INSERT INTO cards (name, status_id) VALUES (?,?)";
     private static final String ADD_TO_USERS_CARDS = "INSERT INTO users_cards (card_id, user_id, role_id) VALUES (?,?,?)";
     private static final String CARD_AND_CONGRATULATION = "SELECT cards.card_id, name, background_image, card_link, cards.status_id, congratulations.congratulation_id, congratulations.status_id as con_status, message, congratulations.user_id, firstName, lastName, login, link_id, link, type_id FROM cards LEFT JOIN congratulations ON cards.card_id=congratulations.card_id LEFT JOIN users ON congratulations.user_id=users.user_id LEFT JOIN links ON congratulations.congratulation_id=links.congratulation_id where cards.card_id = ?;";
+    private static final String DELETE_BY_CARD_ID = "DELETE FROM cards WHERE card_id=?";
 
     private static final CardRowMapper CARD_ROW_MAPPER = new CardRowMapper();
     private static final CardAndCongratulationRowMapper CARD_AND_CONGRATULATION_ROW_MAPPER = new CardAndCongratulationRowMapper();
@@ -122,6 +123,18 @@ public class JdbcCardDao implements CardDao {
         } catch (SQLException e) {
             log.error("Exception while get card and congratulation by card id", e);
             throw new RuntimeException("Exception while get card and congratulation by card id", e);
+        }
+    }
+
+    @Override
+    public void deleteCardById(int cardId) {
+        try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(DELETE_BY_CARD_ID)){
+            statement.setInt(1,cardId);
+            statement.execute();
+        } catch (SQLException e) {
+            log.error("Exception while deleting card by - {}",cardId, e);
+            throw new RuntimeException("Exception while deleting card ", e);
         }
     }
 
