@@ -3,7 +3,7 @@ VALUES ('admin','admin','admin', '@admin','2bb7998496899acdd8137fad3a44faf96a84a
 INSERT INTO users(firstName, lastName, login, email, password, salt, language_id)
 VALUES ('user','user','user', '@user','8031377c4c15e1611986089444c8ff58c95358ffdc95d692a6d10c7b633e99df','salt',2);
 INSERT INTO users(firstName, lastName, login, email, password, salt, language_id)
-VALUES ('null','null','null', '@null','null','null',2);
+VALUES ('new','new','new', '@new','new','new',2);
 
 
 

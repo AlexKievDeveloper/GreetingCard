@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PreviewServlet extends HttpServlet {
-    CardService cardService = ServiceLocator.getBean("DefaultCardService");
+    private CardService cardService = ServiceLocator.getBean("DefaultCardService");
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
