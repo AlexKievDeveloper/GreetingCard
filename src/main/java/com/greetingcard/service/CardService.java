@@ -13,4 +13,6 @@ public interface CardService {
     void createCard(Card card, User user);
 
     Card getCardAndCongratulationByCardId(int cardId);
+
+    void deleteCardById(int cardId);
 }

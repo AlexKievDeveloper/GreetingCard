@@ -34,8 +34,10 @@ public class JdbcCongratulationDao implements CongratulationDao {
             preparedStatement.setInt(1, congratulationId);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                resultSet.next();
-                return CONGRATULATION_ROW_MAPPER.mapRow(resultSet);
+                if (resultSet.next()){
+                    return CONGRATULATION_ROW_MAPPER.mapRow(resultSet);
+                }
+               return null;
             }
         } catch (SQLException e) {
             log.error("Exception while getting congratulation by id: {}", congratulationId, e);

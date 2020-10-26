@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.sql.DataSource;
 import java.util.List;
 import java.util.Map;
 
@@ -17,11 +18,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 public class JdbcCardDaoITest {
     private DataBaseConfigurator dataBaseConfigurator = new DataBaseConfigurator();
+    private DataSource dataSource = dataBaseConfigurator.getDataSource();
     private JdbcCardDao jdbcCardDao;
     private Flyway flyway;
 
     public JdbcCardDaoITest() {
-        jdbcCardDao = new JdbcCardDao(dataBaseConfigurator.getDataSource());
+        jdbcCardDao = new JdbcCardDao(dataSource);
         flyway = dataBaseConfigurator.getFlyway();
     }
 
@@ -145,6 +147,26 @@ public class JdbcCardDaoITest {
         assertEquals(8, fromRoma.size());
         assertEquals(4, fromSasha.size());
         assertEquals(0, fromNastya.size());
+    }
+
+    @Test
+    @DisplayName("Delete card with all parameters")
+    void deleteCardById() {
+        //prepare
+        JdbcCongratulationDao congratulationDao = new JdbcCongratulationDao(dataSource);
+        //when
+        jdbcCardDao.deleteCardById(1);
+        //then
+        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1);
+        Congratulation actualCongratulation1 = congratulationDao.getCongratulationById(1);
+        Congratulation actualCongratulation2 = congratulationDao.getCongratulationById(2);
+        Congratulation actualCongratulation3 = congratulationDao.getCongratulationById(3);
+
+        assertNull(actualCard);
+        assertNull(actualCongratulation1);
+        assertNull(actualCongratulation2);
+        assertNull(actualCongratulation3);
+
     }
 }
 
