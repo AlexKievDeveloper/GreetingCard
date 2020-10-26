@@ -18,6 +18,8 @@ public class JdbcCongratulationDao implements CongratulationDao {
     private static final String GET_CONGRATULATION = "SELECT congratulations.congratulation_id, user_id, card_id, status_id, message, link_id, link, type_id FROM congratulations LEFT JOIN links on congratulations.congratulation_id = links.congratulation_id WHERE congratulations.congratulation_id=?;";
     private static final String SAVE_CONGRATULATION = "INSERT INTO congratulations (message, card_id, user_id, status_id) VALUES (?,?,?,?)";
     private static final String SAVE_LINK = "INSERT INTO links (link, type_id, congratulation_id) VALUES(?,?,?)";
+    private static final String DELETE_BY_CARD_ID = "DELETE FROM congratulations WHERE card_id=?";
+
     private static final CongratulationRowMapper CONGRATULATION_ROW_MAPPER = new CongratulationRowMapper();
     private final DataSource dataSource;
 
@@ -76,6 +78,18 @@ public class JdbcCongratulationDao implements CongratulationDao {
         } catch (SQLException e) {
             log.error("Exception while saving congratulation", e);
             throw new RuntimeException("Exception while saving congratulation", e);
+        }
+    }
+
+    @Override
+    public void deleteByCardId(int cardId) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(DELETE_BY_CARD_ID)){
+            statement.setInt(1,cardId);
+            statement.execute();
+        } catch (SQLException e) {
+            log.error("Exception while deleting congratulations by - {}",cardId, e);
+            throw new RuntimeException("Exception while deleting congratulations ", e);
         }
     }
 

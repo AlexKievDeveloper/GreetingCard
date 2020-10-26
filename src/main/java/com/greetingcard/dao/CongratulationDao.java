@@ -7,4 +7,6 @@ public interface CongratulationDao {
     Congratulation getCongratulationById(int congratulationId);
 
     void save(Congratulation congratulation);
+
+    void deleteByCardId(int cardId);
 }
