@@ -1,9 +1,6 @@
 package com.greetingcard.dao.jdbc;
 
-import com.greetingcard.entity.Card;
-import com.greetingcard.entity.Role;
-import com.greetingcard.entity.Status;
-import com.greetingcard.entity.User;
+import com.greetingcard.entity.*;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,10 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 public class JdbcCardDaoITest {
@@ -99,7 +96,7 @@ public class JdbcCardDaoITest {
         //when
         Map<Card, Role> actualMap = jdbcCardDao.getCardsByUserIdAndRoleId(1, 2);
         //then
-        assertEquals(1, actualMap.size());
+        assertEquals(2, actualMap.size());
         assertTrue(actualMap.containsKey(expectedCard2));
         assertEquals(actualMap.get(expectedCard2), Role.MEMBER);
     }
@@ -114,9 +111,40 @@ public class JdbcCardDaoITest {
         jdbcCardDao.createCard(card, user);
         Map<Card, Role> actualMap = jdbcCardDao.getAllCardsByUserId(1);
         //then
-        assertEquals(3, actualMap.size());
+        assertEquals(4, actualMap.size());
         assertTrue(actualMap.containsKey(card));
         assertEquals(actualMap.get(card), Role.ADMIN);
+    }
+
+    @Test
+    @DisplayName("Return card with all congratulations")
+    public void getCardAndCongratulation() {
+        //when
+        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1);
+        List<Congratulation> actualCongratulationList = actualCard.getCongratulationList();
+
+        //then
+        List<Link> fromRoma = actualCongratulationList.get(0).getLinkList();
+        List<Link> fromSasha = actualCongratulationList.get(1).getLinkList();
+        List<Link> fromNastya = actualCongratulationList.get(2).getLinkList();
+
+        assertEquals(3, actualCongratulationList.size());
+        assertEquals(1, actualCard.getId());
+        assertEquals("greeting Nomar", actualCard.getName());
+        assertNull(actualCard.getBackgroundImage());
+        assertNull(actualCard.getCardLink());
+        assertEquals(Status.STARTUP, actualCard.getStatus());
+
+        assertEquals("from Roma", actualCongratulationList.get(0).getMessage());
+        assertEquals("from Sasha", actualCongratulationList.get(1).getMessage());
+        assertEquals("from Nastya", actualCongratulationList.get(2).getMessage());
+        assertEquals(1, actualCongratulationList.get(0).getUser().getId());
+        assertEquals(1, actualCongratulationList.get(1).getUser().getId());
+        assertEquals(2, actualCongratulationList.get(2).getUser().getId());
+
+        assertEquals(8, fromRoma.size());
+        assertEquals(4, fromSasha.size());
+        assertEquals(0, fromNastya.size());
     }
 }
 

@@ -1,6 +1,7 @@
 package com.greetingcard.dao.jdbc;
 
 import com.greetingcard.dao.CardDao;
+import com.greetingcard.dao.jdbc.mapper.CardAndCongratulationRowMapper;
 import com.greetingcard.dao.jdbc.mapper.CardRowMapper;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Role;
@@ -24,8 +25,10 @@ public class JdbcCardDao implements CardDao {
             " FROM cards LEFT JOIN users_cards ON cards.card_id=users_cards.card_id WHERE (user_id = ? AND role_id = ?) ORDER BY cards.card_id";
     private static final String SAVE_NEW_CARD = "INSERT INTO cards (name, status_id) VALUES (?,?)";
     private static final String ADD_TO_USERS_CARDS = "INSERT INTO users_cards (card_id, user_id, role_id) VALUES (?,?,?)";
+    private static final String CARD_AND_CONGRATULATION = "SELECT cards.card_id, name, background_image, card_link, cards.status_id, congratulations.congratulation_id, congratulations.status_id as con_status, message, congratulations.user_id, firstName, lastName, login, link_id, link, type_id FROM cards LEFT JOIN congratulations ON cards.card_id=congratulations.card_id LEFT JOIN users ON congratulations.user_id=users.user_id LEFT JOIN links ON congratulations.congratulation_id=links.congratulation_id where cards.card_id = ?;";
 
     private static final CardRowMapper CARD_ROW_MAPPER = new CardRowMapper();
+    private static final CardAndCongratulationRowMapper CARD_AND_CONGRATULATION_ROW_MAPPER = new CardAndCongratulationRowMapper();
     private final DataSource dataSource;
 
     public JdbcCardDao(DataSource dataSource) {
@@ -103,6 +106,22 @@ public class JdbcCardDao implements CardDao {
         } catch (SQLException e) {
             log.error("Exception while creating new card", e);
             throw new RuntimeException("Exception while creating new card", e);
+        }
+    }
+
+    @Override
+    public Card getCardAndCongratulationByCardId(int cardId) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(CARD_AND_CONGRATULATION)) {
+            statement.setInt(1, cardId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return CARD_AND_CONGRATULATION_ROW_MAPPER.mapRow(resultSet);
+            }
+
+        } catch (SQLException e) {
+            log.error("Exception while get card and congratulation by card id", e);
+            throw new RuntimeException("Exception while get card and congratulation by card id", e);
         }
     }
 

@@ -4,6 +4,8 @@ INSERT INTO users_cards(user_id,card_id, role_id) VALUES (2, 1, 2);
 INSERT INTO users_cards(user_id,card_id, role_id) VALUES (2, 2, 1);
 INSERT INTO users_cards(user_id,card_id, role_id) VALUES (1, 2, 2);
 
+INSERT INTO users_cards(user_id,card_id, role_id) VALUES (1, 3, 2);
+
 
 
 
