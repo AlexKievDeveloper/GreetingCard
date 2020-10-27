@@ -8,5 +8,5 @@ public interface CongratulationService {
 
     void save(Congratulation congratulation);
 
-    void deleteByCardId(int cardId);
+    void leaveByCardId(long cardId, long userId);
 }

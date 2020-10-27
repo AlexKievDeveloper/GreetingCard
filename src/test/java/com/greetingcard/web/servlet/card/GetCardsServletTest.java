@@ -49,7 +49,7 @@ class GetCardsServletTest {
         //prepare
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
-        when(user.getId()).thenReturn(1);
+        when(user.getId()).thenReturn(1L);
         when(request.getParameter("cards-type")).thenReturn("All-cards");
         when(cardService.getCards(1, "All-cards")).thenReturn(cards);
         when(request.getServletContext()).thenReturn(context);

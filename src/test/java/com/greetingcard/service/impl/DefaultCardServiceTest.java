@@ -38,7 +38,7 @@ class DefaultCardServiceTest {
 
     @Test
     @DisplayName("Returns map with cards")
-    void getCardsWhenParameterIsAnothersCards() {
+    void getCardsWhenParameterIsAnotherCards() {
         //when
         defaultCardService.getCards(1, "Another`s-cards");
         //then
@@ -47,10 +47,10 @@ class DefaultCardServiceTest {
 
     @Test
     @DisplayName("Return card with all congatulations")
-    void getCardAndCongratulationByCardId(int cardId) {
+    void getCardAndCongratulationByCardId() {
         //when
-        defaultCardService.getCardAndCongratulationByCardId(1);
+        defaultCardService.getCardAndCongratulationByCardId(1,1);
         //then
-        verify(jdbcCardDao).getCardAndCongratulationByCardId(1);
+        verify(jdbcCardDao).getCardAndCongratulationByCardId(1,1);
     }
 }

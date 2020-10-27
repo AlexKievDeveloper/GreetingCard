@@ -13,11 +13,13 @@ public class CardAndCongratulationRowMapper {
     public Card mapRow(ResultSet resultSet) throws SQLException {
         Card card = null;
         List<Congratulation> congratulationList = new ArrayList<>();
-        Map<Integer, Congratulation> congratulationMap = new HashMap<>();
+        Map<Long, Congratulation> congratulationMap = new HashMap<>();
         while (resultSet.next()) {
             if (card == null) {
+                User user = User.builder().id(resultSet.getLong("card_user")).build();
                 card = Card.builder()
-                        .id((resultSet.getInt("card_id")))
+                        .id((resultSet.getLong("card_id")))
+                        .user(user)
                         .name(resultSet.getString("name"))
                         .backgroundImage(resultSet.getString("background_image"))
                         .cardLink(resultSet.getString("card_link"))
@@ -25,10 +27,10 @@ public class CardAndCongratulationRowMapper {
                         .congratulationList(congratulationList)
                         .build();
             }
-            int congratulation_id = resultSet.getInt("congratulation_id");
+            long congratulation_id = resultSet.getLong("congratulation_id");
             if (congratulation_id != 0 && !congratulationMap.containsKey(congratulation_id)) {
                 User user = User.builder()
-                        .id(resultSet.getInt("user_id"))
+                        .id(resultSet.getLong("user_id"))
                         .firstName(resultSet.getString("firstName"))
                         .lastName(resultSet.getString("lastName"))
                         .login(resultSet.getString("login"))
@@ -53,7 +55,7 @@ public class CardAndCongratulationRowMapper {
                         .build();
                 congratulationMap.get(congratulation_id).getLinkList().add(link);
             }
-            if (card!=null){
+            if (card != null) {
                 card.setCongratulationList(new ArrayList<>(congratulationMap.values()));
             }
         }

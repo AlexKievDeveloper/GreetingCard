@@ -29,16 +29,4 @@ class PreviewServletTest {
     @Mock
     private HttpServletResponse response;
 
-    @Test
-    @DisplayName("Return card to client")
-    void doGet() throws ServletException, IOException {
-        when(request.getParameter("card_id")).thenReturn("1");
-        when(request.getParameter("role")).thenReturn("ADMIN");
-
-        servlet.doGet(request,response);
-
-        verify(request).getParameter("card_id");
-        verify(request).getParameter("role");
-        verify(cardService).getCardAndCongratulationByCardId(1);
-    }
 }
