@@ -42,8 +42,9 @@ public class DefaultCongratulationService implements CongratulationService {
     @Override
     public List<Link> getLinkList(List<Part> partList, HttpServletRequest request) {
         String youtubeLinks = request.getParameter("youtube");
-
         String plainLinks = request.getParameter("plain-link");
+/*        String youtubeLinks = parametersMap.get("youtube");
+        String plainLinks = parametersMap.get("plain-link");*/
 
         List<Link> linkList = new ArrayList<>();
         addYoutubeLinks(linkList, youtubeLinks);

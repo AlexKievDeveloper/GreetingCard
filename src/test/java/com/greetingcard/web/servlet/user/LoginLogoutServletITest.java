@@ -98,7 +98,6 @@ class LoginLogoutServletITest {
         verify(request).getSession();
         verify(httpsession).setAttribute("user", user);
         verify(httpsession).setMaxInactiveInterval(anyInt());
-        verify(response).sendRedirect("/all-cards?cards-type=All-cards");
     }
 
     @Test
