@@ -32,19 +32,4 @@ class CreateCardServletTest {
     @Mock
     private HttpSession session;
 
-//    @Test
-//    @DisplayName("Create new card")
-//    void doPost() throws IOException {
-//        User user = User.builder().build();
-//        Card card = Card.builder().user(user).name("test").status(Status.STARTUP).build();
-//        when(request.getParameter("create-card")).thenReturn("test");
-//        when(request.getSession()).thenReturn(session);
-//        when(session.getAttribute("user")).thenReturn(user);
-//
-//        servlet.doPost(request,response);
-//
-//        verify(request).getParameter("create-card");
-//        verify(cardService).createCard(card);
-//        verify(response).sendRedirect("/editCard");
-//    }
 }

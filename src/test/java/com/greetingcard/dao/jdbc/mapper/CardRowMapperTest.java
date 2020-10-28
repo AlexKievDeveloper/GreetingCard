@@ -31,7 +31,6 @@ class CardRowMapperTest {
         when(mockResultSet.getString("lastName")).thenReturn("lastName");
         when(mockResultSet.getString("login")).thenReturn("login");
         when(mockResultSet.getString("email")).thenReturn("email");
-
         when(mockResultSet.getLong("card_id")).thenReturn(1L);
         when(mockResultSet.getString("name")).thenReturn("Card");
         when(mockResultSet.getString("background_image")).thenReturn("/link");
@@ -39,26 +38,24 @@ class CardRowMapperTest {
         when(mockResultSet.getInt("status_id")).thenReturn(1);
         //when
         Card actualCard = cardRowMapper.mapRow(mockResultSet);
+        User actualUser = actualCard.getUser();
         //then
         verify(mockResultSet).getLong("user_id");
         verify(mockResultSet).getString("firstName");
         verify(mockResultSet).getString("lastName");
         verify(mockResultSet).getString("login");
         verify(mockResultSet).getString("email");
-
         verify(mockResultSet).getLong("card_id");
         verify(mockResultSet).getString("name");
         verify(mockResultSet).getString("background_image");
         verify(mockResultSet).getString("card_link");
         verify(mockResultSet).getInt("status_id");
 
-        User actualUser = actualCard.getUser();
         assertEquals(1, actualUser.getId());
         assertEquals("firstName" , actualUser.getFirstName());
         assertEquals("lastName" , actualUser.getLastName());
         assertEquals("login" , actualUser.getLogin());
         assertEquals("email" , actualUser.getEmail());
-
         assertEquals(1, actualCard.getId());
         assertEquals("Card" , actualCard.getName());
         assertEquals("/link" , actualCard.getBackgroundImage());
