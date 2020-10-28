@@ -6,7 +6,6 @@ import com.greetingcard.ServiceLocator;
 import com.greetingcard.entity.User;
 import com.greetingcard.security.SecurityService;
 import com.greetingcard.util.PropertyReader;
-import com.greetingcard.web.templater.PageGenerator;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -14,11 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import static com.greetingcard.web.WebConstants.CONTENT_TYPE;
 
 public class LoginLogoutServlet extends HttpServlet {
     private SecurityService securityService = ServiceLocator.getBean("DefaultSecurityService");
@@ -26,9 +22,9 @@ public class LoginLogoutServlet extends HttpServlet {
     private int maxInactiveInterval = Integer.parseInt(propertyReader.getProperty("max.inactive.interval"));
 
     @Override
-    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) {
         request.getSession().invalidate();
-       // response.sendRedirect("/login-logout");
+        // response.sendRedirect("/login-logout");
     }
 
     @Override
