@@ -9,7 +9,9 @@ import java.util.List;
 @Data
 @Builder
 public class Card {
-    private int id;
+    private long id;
+    @EqualsAndHashCode.Exclude
+    private User user;
     private String name;
     private String backgroundImage;
     private String cardLink;

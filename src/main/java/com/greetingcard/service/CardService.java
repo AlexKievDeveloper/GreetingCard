@@ -2,17 +2,16 @@ package com.greetingcard.service;
 
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Role;
-import com.greetingcard.entity.User;
 
 import java.util.Map;
 
 public interface CardService {
 
-    Map<Card, Role> getCards(int userId, String cardsType);
+    Map<Card, Role> getCards(long userId, String cardsType);
 
-    void createCard(Card card, User user);
+    void createCard(Card card);
 
-    Card getCardAndCongratulationByCardId(int cardId);
+    Card getCardAndCongratulationByCardId(long cardId, long userId);
 
-    void deleteCardById(int cardId);
+    void deleteCardById(long cardId, long userId);
 }

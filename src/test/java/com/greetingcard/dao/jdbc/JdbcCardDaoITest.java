@@ -10,6 +10,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.sql.DataSource;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -63,6 +65,10 @@ public class JdbcCardDaoITest {
         assertTrue(actualMap.containsKey(expectedCard2));
         assertEquals(actualMap.get(expectedCard1), Role.ADMIN);
         assertEquals(actualMap.get(expectedCard2), Role.MEMBER);
+        for (Card card : actualMap.keySet()) {
+            assertNotNull(card.getUser());
+        }
+
     }
 
     @Test
@@ -107,11 +113,12 @@ public class JdbcCardDaoITest {
     @DisplayName("Save new card")
     public void createCard() {
         //prepare
-        Card card = Card.builder().name("greeting").status(Status.STARTUP).build();
         User user = User.builder().id(1).build();
+        Card card = Card.builder().user(user).name("greeting").status(Status.STARTUP).build();
         //when
-        jdbcCardDao.createCard(card, user);
+        jdbcCardDao.createCard(card);
         Map<Card, Role> actualMap = jdbcCardDao.getAllCardsByUserId(1);
+        List<Card> cardList = new ArrayList<>(actualMap.keySet());
         //then
         assertEquals(4, actualMap.size());
         assertTrue(actualMap.containsKey(card));
@@ -122,7 +129,7 @@ public class JdbcCardDaoITest {
     @DisplayName("Return card with all congratulations")
     public void getCardAndCongratulation() {
         //when
-        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1);
+        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
         List<Congratulation> actualCongratulationList = actualCard.getCongratulationList();
 
         //then
@@ -132,14 +139,14 @@ public class JdbcCardDaoITest {
 
         assertEquals(3, actualCongratulationList.size());
         assertEquals(1, actualCard.getId());
-        assertEquals("greeting Nomar", actualCard.getName());
+        assertEquals("greeting Nomar" , actualCard.getName());
         assertNull(actualCard.getBackgroundImage());
         assertNull(actualCard.getCardLink());
         assertEquals(Status.STARTUP, actualCard.getStatus());
 
-        assertEquals("from Roma", actualCongratulationList.get(0).getMessage());
-        assertEquals("from Sasha", actualCongratulationList.get(1).getMessage());
-        assertEquals("from Nastya", actualCongratulationList.get(2).getMessage());
+        assertEquals("from Roma" , actualCongratulationList.get(0).getMessage());
+        assertEquals("from Sasha" , actualCongratulationList.get(1).getMessage());
+        assertEquals("from Nastya" , actualCongratulationList.get(2).getMessage());
         assertEquals(1, actualCongratulationList.get(0).getUser().getId());
         assertEquals(1, actualCongratulationList.get(1).getUser().getId());
         assertEquals(2, actualCongratulationList.get(2).getUser().getId());
@@ -151,13 +158,13 @@ public class JdbcCardDaoITest {
 
     @Test
     @DisplayName("Delete card with all parameters")
-    void deleteCardById() {
+    void deleteCardById() throws IOException {
         //prepare
         JdbcCongratulationDao congratulationDao = new JdbcCongratulationDao(dataSource);
         //when
-        jdbcCardDao.deleteCardById(1);
+        jdbcCardDao.deleteCardById(1, 1);
         //then
-        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1);
+        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
         Congratulation actualCongratulation1 = congratulationDao.getCongratulationById(1);
         Congratulation actualCongratulation2 = congratulationDao.getCongratulationById(2);
         Congratulation actualCongratulation3 = congratulationDao.getCongratulationById(3);
@@ -166,7 +173,7 @@ public class JdbcCardDaoITest {
         assertNull(actualCongratulation1);
         assertNull(actualCongratulation2);
         assertNull(actualCongratulation3);
-
     }
+
 }
 

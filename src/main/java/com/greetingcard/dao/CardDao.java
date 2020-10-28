@@ -2,18 +2,17 @@ package com.greetingcard.dao;
 
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Role;
-import com.greetingcard.entity.User;
 
 import java.util.Map;
 
 public interface CardDao {
-    Map<Card, Role> getAllCardsByUserId(int id);
+    Map<Card, Role> getAllCardsByUserId(long id);
 
-    Map<Card, Role> getCardsByUserIdAndRoleId(int userId, int roleId);
+    Map<Card, Role> getCardsByUserIdAndRoleId(long userId, long roleId);
 
-    void createCard(Card card, User user);
+    void createCard(Card card);
 
-    Card getCardAndCongratulationByCardId(int cardId);
+    Card getCardAndCongratulationByCardId(long cardId, long userId);
 
-    void deleteCardById(int cardId);
+    void deleteCardById(long cardId, long userId);
 }

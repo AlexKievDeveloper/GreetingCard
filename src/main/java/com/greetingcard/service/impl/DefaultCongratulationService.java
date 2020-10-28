@@ -22,7 +22,7 @@ public class DefaultCongratulationService implements CongratulationService {
     }
 
     @Override
-    public void deleteByCardId(int cardId) {
-        jdbcCongratulationDao.deleteByCardId(cardId);
+    public void leaveByCardId(long cardId, long userId) {
+        jdbcCongratulationDao.leaveByCardId(cardId, userId);
     }
 }

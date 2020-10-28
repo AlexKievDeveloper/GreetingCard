@@ -28,18 +28,18 @@ class CardAndCongratulationRowMapperTest {
         CardAndCongratulationRowMapper rowMapper = new CardAndCongratulationRowMapper();
 
         when(mockResultSet.next()).thenReturn(true).thenReturn(false);
-        when(mockResultSet.getInt("card_id")).thenReturn(1);
+        when(mockResultSet.getLong("card_id")).thenReturn(1L);
         when(mockResultSet.getString("name")).thenReturn("Card");
         when(mockResultSet.getString("background_image")).thenReturn("/link");
         when(mockResultSet.getString("card_link")).thenReturn("/link");
         when(mockResultSet.getInt("status_id")).thenReturn(1);
 
-        when(mockResultSet.getInt("user_id")).thenReturn(1);
+        when(mockResultSet.getLong("user_id")).thenReturn(1L);
         when(mockResultSet.getString("firstName")).thenReturn("user");
         when(mockResultSet.getString("lastName")).thenReturn("user");
         when(mockResultSet.getString("login")).thenReturn("user");
 
-        when(mockResultSet.getInt("congratulation_id")).thenReturn(1);
+        when(mockResultSet.getLong("congratulation_id")).thenReturn(1L);
         when(mockResultSet.getString("message")).thenReturn("from Roma");
         when(mockResultSet.getInt("card_id")).thenReturn(1);
         when(mockResultSet.getInt("user_id")).thenReturn(1);
@@ -53,21 +53,21 @@ class CardAndCongratulationRowMapperTest {
         Card actualCard = rowMapper.mapRow(mockResultSet);
 
         //then
-        verify(mockResultSet).getInt("card_id");
+        verify(mockResultSet).getLong("card_id");
         verify(mockResultSet).getString("name");
         verify(mockResultSet).getString("background_image");
         verify(mockResultSet).getString("card_link");
         verify(mockResultSet).getInt("status_id");
 
-        verify(mockResultSet).getInt("user_id");
+        verify(mockResultSet).getLong("user_id");
         verify(mockResultSet).getString("firstName");
         verify(mockResultSet).getString("lastName");
         verify(mockResultSet).getString("login");
 
-        verify(mockResultSet).getInt("congratulation_id");
+        verify(mockResultSet).getLong("congratulation_id");
         verify(mockResultSet).getString("message");
-        verify(mockResultSet).getInt("card_id");
-        verify(mockResultSet).getInt("user_id");
+        verify(mockResultSet).getLong("card_id");
+        verify(mockResultSet).getLong("user_id");
         verify(mockResultSet).getInt("con_status");
 
         verify(mockResultSet).getInt("link_id");

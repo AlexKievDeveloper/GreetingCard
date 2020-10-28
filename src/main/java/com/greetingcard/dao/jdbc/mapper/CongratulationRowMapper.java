@@ -18,12 +18,15 @@ public class CongratulationRowMapper {
                 .status(Status.getByNumber(resultSet.getInt("status_id")))
                 .build();
 
-        Link firstLink = Link.builder()
-                .id(resultSet.getInt("link_id"))
-                .link(resultSet.getString("link"))
-                .congratulationId(resultSet.getInt("congratulation_id"))
-                .type(LinkType.getByNumber(resultSet.getInt("type_id")))
-                .build();
+        Link firstLink = null;
+        if (resultSet.getInt("link_id") != 0) {
+            firstLink = Link.builder()
+                    .id(resultSet.getInt("link_id"))
+                    .link(resultSet.getString("link"))
+                    .congratulationId(resultSet.getInt("congratulation_id"))
+                    .type(LinkType.getByNumber(resultSet.getInt("type_id")))
+                    .build();
+        }
 
         List<Link> linkList = new ArrayList<>();
         linkList.add(firstLink);

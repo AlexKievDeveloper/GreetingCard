@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 @Builder
 public class Congratulation {
-    private int id;
+    private long id;
     private String message;
     private Card card;
     private User user;
