@@ -1,12 +1,17 @@
 package com.greetingcard.service;
 
 import com.greetingcard.entity.Congratulation;
+import com.greetingcard.entity.Link;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
+import java.util.List;
 
 public interface CongratulationService {
 
     Congratulation getCongratulationById(int congratulationId);
 
-    void save(Congratulation congratulation);
+    List<Link> getLinkList(List<Part> partList, HttpServletRequest request);
 
-    void leaveByCardId(long cardId, long userId);
+    void save(Congratulation congratulation);
 }
