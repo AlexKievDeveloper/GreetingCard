@@ -79,7 +79,7 @@ public class JdbcUserDao implements UserDao {
             statement.setString(1, user.getFirstName());
             statement.setString(2, user.getLastName());
             statement.setString(3, user.getLogin());
-            statement.setInt(4, user.getId());
+            statement.setLong(4, user.getId());
 
             statement.execute();
 

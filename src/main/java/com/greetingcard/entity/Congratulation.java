@@ -8,16 +8,12 @@ import java.util.List;
 
 @Data
 @Builder
-public class Card {
+public class Congratulation {
     private long id;
-    @EqualsAndHashCode.Exclude
+    private String message;
+    private Card card;
     private User user;
-    private String name;
-    private String backgroundImage;
-    private String cardLink;
     private Status status;
     @EqualsAndHashCode.Exclude
-    private List<Congratulation> congratulationList;
+    private List<Link> linkList;
 }
-
-

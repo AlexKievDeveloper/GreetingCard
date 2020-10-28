@@ -1,8 +1,5 @@
 package com.greetingcard.web.servlet.card;
 
-import com.greetingcard.entity.Card;
-import com.greetingcard.entity.Status;
-import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,25 +8,25 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class CreateCardServletTest {
+class PreviewServletTest {
     @Mock
     private CardService cardService;
     @InjectMocks
-    private CreateCardServlet servlet;
+    private PreviewServlet servlet;
     @Mock
     private HttpServletRequest request;
     @Mock
     private HttpServletResponse response;
-    @Mock
-    private HttpSession session;
 
 }

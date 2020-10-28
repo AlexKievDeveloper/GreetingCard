@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>Preview</h1>
+
+<div th:if="${card != null}">
+
+    <div th:with="card_status=${card.status}">
+        <div th:if="${card_status.getStatusNumber() == 1}">
+            <div th:replace="~{/fragments/editDelete.html :: user_role(${role})}"></div>
+        </div>
+
+        <div>
+            <h2 th:text="${card.id}">ID</h2>
+            <h2 th:text="${card.name}">NAME</h2>
+            <h2 th:text="${card.backgroundImage}">BACKGROUND</h2>
+            <h2 th:text="${card.cardLink}">Card_Link</h2>
+            <h2 th:text="${card.status.name}">Status</h2>
+
+            <div>
+                <div th:with="congratulations=${card.getCongratulationList()}">
+                    <div th:each="congratulation : ${congratulations}">
+                        <h2 th:text="${congratulation.id}">ID</h2>
+                        <h2 th:text="${congratulation.message}">Message</h2>
+                        <h2 th:text="${congratulation.status}">Status</h2>
+                        <div th:with="user=${congratulation.user}">
+                            <h2 th:text="${user.id}">ID</h2>
+                            <h2 th:text="${user.firstName}">First name</h2>
+                            <h2 th:text="${user.lastName}">Last name</h2>
+                            <h2 th:text="${user.login}">Login</h2>
+                        </div>
+
+                        <div th:with="links=${congratulation.getLinkList()}">
+                            <div th:each="link : ${links}">
+                                <h2 th:text="${link.id}">ID</h2>
+                                <h2 th:text="${link.link}">Link</h2>
+                                <h2 th:text="${link.type.getTypeNumber()}">Link</h2>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

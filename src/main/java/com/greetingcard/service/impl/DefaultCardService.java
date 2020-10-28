@@ -3,7 +3,6 @@ package com.greetingcard.service.impl;
 import com.greetingcard.dao.jdbc.JdbcCardDao;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Role;
-import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
 
 import java.util.Map;
@@ -16,7 +15,7 @@ public class DefaultCardService implements CardService {
     }
 
     @Override
-    public Map<Card, Role> getCards(int userId, String cardsType) {
+    public Map<Card, Role> getCards(long userId, String cardsType) {
 
         switch (cardsType) {
             case "All-cards":
@@ -31,7 +30,17 @@ public class DefaultCardService implements CardService {
     }
 
     @Override
-    public void createCard(Card card, User user) {
-        jdbcCardDao.createCard(card, user);
+    public void createCard(Card card) {
+        jdbcCardDao.createCard(card);
+    }
+
+    @Override
+    public Card getCardAndCongratulationByCardId(long cardId, long userId) {
+        return jdbcCardDao.getCardAndCongratulationByCardId(cardId, userId);
+    }
+
+    @Override
+    public void deleteCardById(long cardId, long userId) {
+        jdbcCardDao.deleteCardById(cardId, userId);
     }
 }

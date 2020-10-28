@@ -5,5 +5,5 @@ CREATE TABLE links
     type_id           INTEGER,
     congratulation_id INTEGER,
     FOREIGN KEY (type_id) REFERENCES types (type_id),
-    FOREIGN KEY (congratulation_id) REFERENCES congratulations (congratulation_id)
+    FOREIGN KEY (congratulation_id) REFERENCES congratulations (congratulation_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
