@@ -42,48 +42,48 @@ class JdbcCongratulationDaoITest {
 
         //then
         assertEquals(1, actualCongratulation.getId());
-        assertEquals("from Roma" , actualCongratulation.getMessage());
+        assertEquals("from Roma", actualCongratulation.getMessage());
         assertEquals(1, actualCongratulation.getCard().getId());
         assertEquals(1, actualCongratulation.getUser().getId());
         assertEquals(Status.STARTUP, actualCongratulation.getStatus());
 
         assertEquals(1, actualCongratulation.getLinkList().get(0).getId());
-        assertEquals("you_tube_1" , actualCongratulation.getLinkList().get(0).getLink());
+        assertEquals("you_tube_1", actualCongratulation.getLinkList().get(0).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(0).getCongratulationId());
         assertEquals(LinkType.VIDEO, actualCongratulation.getLinkList().get(0).getType());
 
         assertEquals(2, actualCongratulation.getLinkList().get(1).getId());
-        assertEquals("you_tube_2" , actualCongratulation.getLinkList().get(1).getLink());
+        assertEquals("you_tube_2", actualCongratulation.getLinkList().get(1).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(1).getCongratulationId());
         assertEquals(LinkType.VIDEO, actualCongratulation.getLinkList().get(1).getType());
 
         assertEquals(4, actualCongratulation.getLinkList().get(2).getId());
-        assertEquals("audio_1" , actualCongratulation.getLinkList().get(2).getLink());
+        assertEquals("audio_1", actualCongratulation.getLinkList().get(2).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(2).getCongratulationId());
         assertEquals(LinkType.PICTURE, actualCongratulation.getLinkList().get(2).getType());
 
         assertEquals(5, actualCongratulation.getLinkList().get(3).getId());
-        assertEquals("audio_2" , actualCongratulation.getLinkList().get(3).getLink());
+        assertEquals("audio_2", actualCongratulation.getLinkList().get(3).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(3).getCongratulationId());
         assertEquals(LinkType.PICTURE, actualCongratulation.getLinkList().get(3).getType());
 
         assertEquals(7, actualCongratulation.getLinkList().get(4).getId());
-        assertEquals("image_1" , actualCongratulation.getLinkList().get(4).getLink());
+        assertEquals("image_1", actualCongratulation.getLinkList().get(4).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(4).getCongratulationId());
         assertEquals(LinkType.AUDIO, actualCongratulation.getLinkList().get(4).getType());
 
         assertEquals(8, actualCongratulation.getLinkList().get(5).getId());
-        assertEquals("image_2" , actualCongratulation.getLinkList().get(5).getLink());
+        assertEquals("image_2", actualCongratulation.getLinkList().get(5).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(5).getCongratulationId());
         assertEquals(LinkType.AUDIO, actualCongratulation.getLinkList().get(5).getType());
 
         assertEquals(10, actualCongratulation.getLinkList().get(6).getId());
-        assertEquals("link_1" , actualCongratulation.getLinkList().get(6).getLink());
+        assertEquals("link_1", actualCongratulation.getLinkList().get(6).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(6).getCongratulationId());
         assertEquals(LinkType.PLAIN_LINK, actualCongratulation.getLinkList().get(6).getType());
 
         assertEquals(11, actualCongratulation.getLinkList().get(7).getId());
-        assertEquals("link_1" , actualCongratulation.getLinkList().get(7).getLink());
+        assertEquals("link_1", actualCongratulation.getLinkList().get(7).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(7).getCongratulationId());
         assertEquals(LinkType.PLAIN_LINK, actualCongratulation.getLinkList().get(7).getType());
     }
@@ -116,12 +116,12 @@ class JdbcCongratulationDaoITest {
         //then
         Congratulation actualCongratulation = jdbcCongratulationDao.getCongratulationById(7);
         assertEquals(7, actualCongratulation.getId());
-        assertEquals("from JdbcTest" , actualCongratulation.getMessage());
+        assertEquals("from JdbcTest", actualCongratulation.getMessage());
         assertEquals(2, actualCongratulation.getCard().getId());
         assertEquals(2, actualCongratulation.getUser().getId());
         assertEquals(Status.STARTUP, actualCongratulation.getStatus());
         assertEquals(13, actualCongratulation.getLinkList().get(0).getId());
-        assertEquals("you_tube_1" , actualCongratulation.getLinkList().get(0).getLink());
+        assertEquals("you_tube_1", actualCongratulation.getLinkList().get(0).getLink());
         assertEquals(7, actualCongratulation.getLinkList().get(0).getCongratulationId());
         assertEquals(LinkType.VIDEO, actualCongratulation.getLinkList().get(0).getType());
     }
@@ -147,7 +147,7 @@ class JdbcCongratulationDaoITest {
         //then
         Congratulation congratulation = jdbcCongratulationDao.getCongratulationById(6);
         Link actualLink = congratulation.getLinkList().get(0);
-        assertEquals("you_tube_3" , actualLink.getLink());
+        assertEquals("you_tube_3", actualLink.getLink());
         assertEquals(6, actualLink.getCongratulationId());
         assertEquals(LinkType.VIDEO, actualLink.getType());
     }
@@ -157,8 +157,8 @@ class JdbcCongratulationDaoITest {
     void leaveByCardId() {
         //when
         jdbcCongratulationDao.leaveByCardId(1, 1);
-        //then
 
+        //then
         Congratulation actualCongratulation1 = jdbcCongratulationDao.getCongratulationById(1);
         Congratulation actualCongratulation2 = jdbcCongratulationDao.getCongratulationById(2);
         Congratulation actualCongratulation3 = jdbcCongratulationDao.getCongratulationById(3);
