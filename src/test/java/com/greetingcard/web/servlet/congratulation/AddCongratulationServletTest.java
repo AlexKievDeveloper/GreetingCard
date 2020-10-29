@@ -76,7 +76,6 @@ class AddCongratulationServletTest {
         when(user.getId()).thenReturn(1L);
         when(request.getParameter("message")).thenReturn("message");
         when(request.getParameter("card-id")).thenReturn("1");
-        when(request.getParameter("status-id")).thenReturn("1");
         //when
         addCongratulationServlet.doPost(request, response);
         //then
@@ -86,6 +85,5 @@ class AddCongratulationServletTest {
         verify(user).getId();
         verify(request).getParameter("message");
         verify(request).getParameter("card-id");
-        verify(request).getParameter("status-id");
     }
 }

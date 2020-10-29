@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,11 +41,9 @@ public class DefaultCongratulationService implements CongratulationService {
     }
 
     @Override
-    public List<Link> getLinkList(List<Part> partList, HttpServletRequest request) {
+    public List<Link> getLinkList(Collection<Part> partList, HttpServletRequest request) {
         String youtubeLinks = request.getParameter("youtube");
         String plainLinks = request.getParameter("plain-link");
-/*        String youtubeLinks = parametersMap.get("youtube");
-        String plainLinks = parametersMap.get("plain-link");*/
 
         List<Link> linkList = new ArrayList<>();
         addYoutubeLinks(linkList, youtubeLinks);
@@ -80,7 +79,7 @@ public class DefaultCongratulationService implements CongratulationService {
         } else throw new IllegalArgumentException("Wrong youtube link url!");
     }
 
-    void addLinksToImagesAndAudioFiles(List<Part> partList, List<Link> linkList) {
+    void addLinksToImagesAndAudioFiles(Collection<Part> partList, List<Link> linkList) {
 
         for (Part part : partList) {
 

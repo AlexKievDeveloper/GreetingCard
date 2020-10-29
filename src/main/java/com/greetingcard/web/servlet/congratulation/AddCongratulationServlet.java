@@ -32,13 +32,12 @@ public class AddCongratulationServlet extends HttpServlet {
         long userId = user.getId();
         String message = request.getParameter("message");
         int cardId = Integer.parseInt(request.getParameter("card-id"));
-        Status status = Status.getByNumber(Integer.parseInt(request.getParameter("status-id")));
 
         Congratulation congratulation = Congratulation.builder()
                 .message(message)
                 .card(Card.builder().id(cardId).build())
                 .user(User.builder().id(userId).build())
-                .status(status)
+                .status(Status.STARTUP)
                 .linkList(linkList)
                 .build();
 
