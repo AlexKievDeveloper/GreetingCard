@@ -70,7 +70,7 @@ class AddCongratulationServletTest {
         Collection<Part> parts = new ArrayList<>();
         parts.add(part);
         when(request.getParts()).thenReturn(parts);
-        when(congratulationService.getLinkList(any(), any())).thenReturn(linkList);
+        when(congratulationService.getLinkList(any(), any(), any())).thenReturn(linkList);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
         when(user.getId()).thenReturn(1L);

@@ -9,12 +9,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -22,8 +21,6 @@ import static org.mockito.Mockito.*;
 class DefaultCongratulationServiceTest {
     @Mock
     private Part part;
-    @Mock
-    private HttpServletRequest request;
     @Mock
     private List<Link> linkList;
     @Mock
@@ -37,15 +34,13 @@ class DefaultCongratulationServiceTest {
         //prepare
         List<Part> parts = new ArrayList<>();
         parts.add(part);
+        String youtubeLink = "https://www.youtube.com/watch?v=JcDy3ny-H0k";
+        String plainLink = "https://www.duolingo.com";
         when(part.getContentType()).thenReturn("image/jpeg");
         when(part.getSubmittedFileName()).thenReturn("name");
-        when(request.getParameter("youtube")).thenReturn("https://www.youtube.com/watch?v=JcDy3ny-H0k");
-        when(request.getParameter("plain-link")).thenReturn("https://www.duolingo.com");
         //when
-        defaultCongratulationService.getLinkList(parts, request);
+        defaultCongratulationService.getLinkList(parts, youtubeLink, plainLink);
         //then
-        verify(request).getParameter("youtube");
-        verify(request).getParameter("plain-link");
         verify(part).getContentType();
         verify(part).getSubmittedFileName();
         verify(localDiskFileDao).saveFileInStorage(any(), any());

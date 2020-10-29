@@ -27,7 +27,9 @@ public class AddCongratulationServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         Collection<Part> partList = new ArrayList<>(request.getParts());
-        List<Link> linkList = congratulationService.getLinkList(partList, request);
+        String youtubeLinks = request.getParameter("youtube");
+        String plainLinks = request.getParameter("plain-link");
+        List<Link> linkList = congratulationService.getLinkList(partList, youtubeLinks, plainLinks);
 
         User user = (User) request.getSession().getAttribute("user");
         long userId = user.getId();

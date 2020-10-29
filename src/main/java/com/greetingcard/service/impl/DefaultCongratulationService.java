@@ -9,9 +9,10 @@ import com.greetingcard.entity.LinkType;
 import com.greetingcard.service.CongratulationService;
 import com.greetingcard.util.PropertyReader;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -36,10 +37,7 @@ public class DefaultCongratulationService implements CongratulationService {
     }
 
     @Override
-    public List<Link> getLinkList(Collection<Part> partList, HttpServletRequest request) {
-        String youtubeLinks = request.getParameter("youtube");
-        String plainLinks = request.getParameter("plain-link");
-
+    public List<Link> getLinkList(Collection<Part> partList, String youtubeLinks, String plainLinks) {
         List<Link> linkList = new ArrayList<>();
         addYoutubeLinks(linkList, youtubeLinks);
         addLinksToImagesAndAudioFiles(partList, linkList);
@@ -97,8 +95,10 @@ public class DefaultCongratulationService implements CongratulationService {
                         .build();
                 linkList.add(picture);
 
-                File pictureFile = new File(pathToImageStorage.concat(fileName));
-                localDiskFileDao.saveFileInStorage(part, pictureFile);
+                File pictureFile = new File(pathToImageStorage, fileName);
+                if (Files.notExists(Path.of(pictureFile.getPath()))) {
+                    localDiskFileDao.saveFileInStorage(part, pictureFile);
+                }
             } else if ("audio/mpeg".equals(part.getContentType())) {
                 Link audio = Link.builder()
                         .link(pathToAudioStorage.concat(fileName))
@@ -106,8 +106,10 @@ public class DefaultCongratulationService implements CongratulationService {
                         .build();
                 linkList.add(audio);
 
-                File audioFile = new File(pathToAudioStorage.concat(fileName));
-                localDiskFileDao.saveFileInStorage(part, audioFile);
+                File audioFile = new File(pathToAudioStorage, fileName);
+                if (Files.notExists(Path.of(audioFile.getPath()))) {
+                    localDiskFileDao.saveFileInStorage(part, audioFile);
+                }
             }
         }
     }

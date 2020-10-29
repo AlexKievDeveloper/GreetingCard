@@ -1,5 +1,5 @@
 package com.greetingcard.dao.file;
-import org.junit.jupiter.api.AfterEach;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,11 +25,6 @@ class LocalDiskFileDaoITest {
     @InjectMocks
     private LocalDiskFileDao localDiskFileDao;
 
-    @AfterEach
-    public void removeTestFile(){
-        File file = new File("test-file");
-        assertTrue(file.delete());
-    }
     @Test
     @DisplayName("Saving files to storages")
     void saveFileInStorage() throws IOException {
@@ -44,5 +39,6 @@ class LocalDiskFileDaoITest {
         //then
         verify(part).getInputStream();
         verify(inputStream, times(2)).read(any());
+        assertTrue(file.delete());
     }
 }
