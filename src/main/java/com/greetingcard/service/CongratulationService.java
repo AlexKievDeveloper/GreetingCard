@@ -15,4 +15,6 @@ public interface CongratulationService {
     List<Link> getLinkList(Collection<Part> partList, HttpServletRequest request);
 
     void save(Congratulation congratulation);
+
+    void leaveByCardId(long cardId, long userId);
 }

@@ -36,11 +36,6 @@ public class DefaultCongratulationService implements CongratulationService {
     }
 
     @Override
-    public void save(Congratulation congratulation) {
-        jdbcCongratulationDao.save(congratulation);
-    }
-
-    @Override
     public List<Link> getLinkList(Collection<Part> partList, HttpServletRequest request) {
         String youtubeLinks = request.getParameter("youtube");
         String plainLinks = request.getParameter("plain-link");
@@ -50,6 +45,16 @@ public class DefaultCongratulationService implements CongratulationService {
         addLinksToImagesAndAudioFiles(partList, linkList);
         addPlainLinks(linkList, plainLinks);
         return linkList;
+    }
+
+    @Override
+    public void save(Congratulation congratulation) {
+        jdbcCongratulationDao.save(congratulation);
+    }
+
+    @Override
+    public void leaveByCardId(long cardId, long userId) {
+        jdbcCongratulationDao.leaveByCardId(cardId, userId);
     }
 
     void addYoutubeLinks(List<Link> linkList, String youtubeLinks) {
