@@ -17,9 +17,9 @@ class PropertyReaderITest {
         actualProperties.readProperties("/application-test.properties");
 
         //then
-        assertEquals("jdbc:postgresql://ec2-18-203-62-227.eu-west-1.compute.amazonaws.com:5432/d1juchadlrojvc?sslmode=require&sslfactory=org.postgresql.ssl.NonValidatingFactory&", actualProperties.getProperty("jdbc.url"));
-        assertEquals("avvtjpmzlrnonj", actualProperties.getProperty("jdbc.user"));
-        assertEquals("342c0504c190f09e55eb9041b4edf7658b30ff56bc9ec8c0cb0fdb69aa081236", actualProperties.getProperty("jdbc.password"));
+        assertEquals("jdbc:postgresql://ec2-54-75-231-215.eu-west-1.compute.amazonaws.com:5432/dftoi6ipqclcmp?sslmode=require&sslfactory=org.postgresql.ssl.NonValidatingFactory&", actualProperties.getProperty("jdbc.url"));
+        assertEquals("sdpgpmzaoudjdz", actualProperties.getProperty("jdbc.user"));
+        assertEquals("f66000b74bbc3005a1113405b2c6219dfb24603cee3f5a53e213fc40ac60ef35", actualProperties.getProperty("jdbc.password"));
         assertEquals("8080", actualProperties.getProperty("port"));
         assertEquals("true", actualProperties.getProperty("thymeleaf.cache"));
     }
