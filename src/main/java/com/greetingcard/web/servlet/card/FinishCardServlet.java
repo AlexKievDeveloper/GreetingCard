@@ -10,10 +10,5 @@ import javax.servlet.http.HttpServletResponse;
 
 public class FinishCardServlet extends HttpServlet {
     private CardService cardService = ServiceLocator.getBean("DefaultCardService");
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        long cardId = Long.parseLong("1");
-        cardService.changeCardStatus(Status.ISOVER,cardId);
-    }
-
+    
 }

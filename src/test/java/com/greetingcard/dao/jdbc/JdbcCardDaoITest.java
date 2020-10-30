@@ -182,7 +182,7 @@ public class JdbcCardDaoITest {
     @DisplayName("Change status of card to ISOVER")
     void changeStatusCardById() {
         //when
-        jdbcCardDao.changeStatusCardById(Status.ISOVER, 1);
+        jdbcCardDao.changeCardStatusById(Status.ISOVER, 1);
         //then
         Card card = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
         assertEquals(Status.ISOVER, card.getStatus());

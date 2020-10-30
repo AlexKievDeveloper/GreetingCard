@@ -17,5 +17,5 @@ public interface CardDao {
 
     void deleteCardById(long cardId, long userId);
 
-    void changeStatusCardById(Status status, long cardId);
+    void changeCardStatusById(Status status, long cardId);
 }

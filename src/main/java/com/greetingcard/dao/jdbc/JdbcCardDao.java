@@ -159,7 +159,7 @@ public class JdbcCardDao implements CardDao {
     }
 
     @Override
-    public void changeStatusCardById(Status status, long cardId) {
+    public void changeCardStatusById(Status status, long cardId) {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(CHANGE_STATUS_OF_CARD_BY_ID)) {
             connection.setAutoCommit(false);
