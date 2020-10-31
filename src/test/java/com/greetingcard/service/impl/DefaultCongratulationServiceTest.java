@@ -36,11 +36,13 @@ class DefaultCongratulationServiceTest {
         parts.add(part);
         String youtubeLink = "https://www.youtube.com/watch?v=JcDy3ny-H0k";
         String plainLink = "https://www.duolingo.com";
+        when(part.getSize()).thenReturn(1001L);
         when(part.getContentType()).thenReturn("image/jpeg");
         when(part.getSubmittedFileName()).thenReturn("name");
         //when
         defaultCongratulationService.getLinkList(parts, youtubeLink, plainLink);
         //then
+        verify(part).getSize();
         verify(part).getContentType();
         verify(part).getSubmittedFileName();
         verify(localDiskFileDao).saveFileInStorage(any(), any());
@@ -74,11 +76,13 @@ class DefaultCongratulationServiceTest {
         //prepare
         List<Part> parts = new ArrayList<>();
         parts.add(part);
+        when(part.getSize()).thenReturn(1001L);
         when(part.getContentType()).thenReturn("image/jpeg");
         when(part.getSubmittedFileName()).thenReturn("name");
         //when
         defaultCongratulationService.addLinksToImagesAndAudioFiles(parts, linkList);
         //then
+        verify(part).getSize();
         verify(part).getContentType();
         verify(part).getSubmittedFileName();
         verify(localDiskFileDao).saveFileInStorage(any(), any());
