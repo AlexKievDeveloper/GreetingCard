@@ -159,11 +159,18 @@ class JdbcCongratulationDaoITest {
     void leaveByCardId() {
         //when
         jdbcCongratulationDao.leaveByCardId(1, 1);
+      
         //then
         List<Congratulation> congratulationList = jdbcCongratulationDao.findCongratulationsByCardId(1);
 
         assertEquals(1, congratulationList.size());
         assertEquals(3, congratulationList.get(0).getId());
+
+        //then
+        Congratulation actualCongratulation1 = jdbcCongratulationDao.getCongratulationById(1);
+        Congratulation actualCongratulation2 = jdbcCongratulationDao.getCongratulationById(2);
+        Congratulation actualCongratulation3 = jdbcCongratulationDao.getCongratulationById(3);
+
 
     }
 
