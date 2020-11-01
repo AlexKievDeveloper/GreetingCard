@@ -7,20 +7,22 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class JdbcCongratulationDaoITest {
     private DataBaseConfigurator dataBaseConfigurator = new DataBaseConfigurator();
+    private DataSource dataSource = dataBaseConfigurator.getDataSource();
     private JdbcCongratulationDao jdbcCongratulationDao;
     private Flyway flyway;
 
     public JdbcCongratulationDaoITest() {
-        jdbcCongratulationDao = new JdbcCongratulationDao(dataBaseConfigurator.getDataSource());
+        jdbcCongratulationDao = new JdbcCongratulationDao(dataSource);
         flyway = dataBaseConfigurator.getFlyway();
     }
 
@@ -157,15 +159,76 @@ class JdbcCongratulationDaoITest {
     void leaveByCardId() {
         //when
         jdbcCongratulationDao.leaveByCardId(1, 1);
+      
+        //then
+        List<Congratulation> congratulationList = jdbcCongratulationDao.findCongratulationsByCardId(1);
+
+        assertEquals(1, congratulationList.size());
+        assertEquals(3, congratulationList.get(0).getId());
 
         //then
         Congratulation actualCongratulation1 = jdbcCongratulationDao.getCongratulationById(1);
         Congratulation actualCongratulation2 = jdbcCongratulationDao.getCongratulationById(2);
         Congratulation actualCongratulation3 = jdbcCongratulationDao.getCongratulationById(3);
 
-        assertNull(actualCongratulation1);
-        assertNull(actualCongratulation2);
-        assertNotNull(actualCongratulation3);
+
+    }
+
+    @Test
+    @DisplayName("Find all congratulations by id of card")
+    void findCongratulationsByCardId() {
+        //when
+        List<Congratulation> congratulationList = jdbcCongratulationDao.findCongratulationsByCardId(1);
+        Congratulation actualCongratulation1 = congratulationList.get(0);
+        Congratulation actualCongratulation2 = congratulationList.get(1);
+        Congratulation actualCongratulation3 = congratulationList.get(2);
+
+        //then
+        assertEquals(3, congratulationList.size());
+        assertEquals(1, actualCongratulation1.getId());
+        assertEquals(2, actualCongratulation2.getId());
+        assertEquals(3, actualCongratulation3.getId());
+
+        assertEquals(8, actualCongratulation1.getLinkList().size());
+        assertEquals(4, actualCongratulation2.getLinkList().size());
+        assertEquals(0, actualCongratulation3.getLinkList().size());
+
+        assertEquals(1, actualCongratulation1.getUser().getId());
+        assertEquals(1, actualCongratulation2.getUser().getId());
+        assertEquals(2, actualCongratulation3.getUser().getId());
+    }
+
+    @Test
+    @DisplayName("Change status to ISOVER congratulations by id of card")
+    void changeStatusCongratulationsByCardIdToIsOver() {
+        //when
+        jdbcCongratulationDao.changeStatusCongratulationsByCardId(Status.ISOVER, 1);
+        List<Congratulation> congratulationList = jdbcCongratulationDao.findCongratulationsByCardId(1);
+        Congratulation actualCongratulation1 = congratulationList.get(0);
+        Congratulation actualCongratulation2 = congratulationList.get(1);
+        Congratulation actualCongratulation3 = congratulationList.get(2);
+
+        //then
+        assertEquals(Status.ISOVER, actualCongratulation1.getStatus());
+        assertEquals(Status.ISOVER, actualCongratulation2.getStatus());
+        assertEquals(Status.ISOVER, actualCongratulation3.getStatus());
+    }
+
+    @Test
+    @DisplayName("Change status to STARTUP congratulations by id of card")
+    void changeStatusCongratulationsByCardIdToStartUp() {
+        //when
+        jdbcCongratulationDao.changeStatusCongratulationsByCardId(Status.STARTUP, 1);
+
+        List<Congratulation> congratulationList = jdbcCongratulationDao.findCongratulationsByCardId(1);
+        Congratulation actualCongratulation1 = congratulationList.get(0);
+        Congratulation actualCongratulation2 = congratulationList.get(1);
+        Congratulation actualCongratulation3 = congratulationList.get(2);
+
+        //then
+        assertEquals(Status.STARTUP, actualCongratulation1.getStatus());
+        assertEquals(Status.STARTUP, actualCongratulation2.getStatus());
+        assertEquals(Status.STARTUP, actualCongratulation3.getStatus());
     }
 }
 

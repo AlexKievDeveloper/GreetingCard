@@ -25,9 +25,12 @@ public class ServiceLocator {
         DataSource dataSource = new DataSourceFactory(propertyReader).getDataSource();
         register("DataSource", dataSource);
 
+        JdbcCongratulationDao jdbcCongratulationDao = new JdbcCongratulationDao(dataSource);
+        register("JdbcCongratulationDao", jdbcCongratulationDao);
+
         JdbcUserDao jdbcUserDao = new JdbcUserDao(dataSource);
         JdbcCardDao jdbcCardDao = new JdbcCardDao(dataSource);
-        JdbcCongratulationDao jdbcCongratulationDao = new JdbcCongratulationDao(dataSource);
+
         LocalDiskFileDao localDiskFileDao = new LocalDiskFileDao();
 
         DefaultSecurityService defaultSecurityService = new DefaultSecurityService(jdbcUserDao);

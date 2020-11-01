@@ -3,6 +3,7 @@ package com.greetingcard.service.impl;
 import com.greetingcard.dao.jdbc.JdbcCardDao;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Role;
+import com.greetingcard.entity.Status;
 import com.greetingcard.service.CardService;
 
 import java.util.Map;
@@ -42,5 +43,10 @@ public class DefaultCardService implements CardService {
     @Override
     public void deleteCardById(long cardId, long userId) {
         jdbcCardDao.deleteCardById(cardId, userId);
+    }
+
+    @Override
+    public void changeCardStatus(Status status, long cardId) {
+        jdbcCardDao.changeCardStatusById(status, cardId);
     }
 }

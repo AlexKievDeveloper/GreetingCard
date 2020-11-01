@@ -2,6 +2,7 @@ package com.greetingcard.service;
 
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Role;
+import com.greetingcard.entity.Status;
 
 import java.util.Map;
 
@@ -14,4 +15,6 @@ public interface CardService {
     Card getCardAndCongratulationByCardId(long cardId, long userId);
 
     void deleteCardById(long cardId, long userId);
+
+    void changeCardStatus(Status status, long cardId);
 }
