@@ -5,7 +5,6 @@ import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Role;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
-import com.greetingcard.web.templater.PageGenerator;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +24,6 @@ public class GetCardsServlet extends HttpServlet {
         Map<Card, Role> cards = cardService.getCards(userId, request.getParameter("cards-type"));
 
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("cards" , cards);
-        PageGenerator.getInstance().process("after-login" , parameters, request, response);
+        parameters.put("cards", cards);
     }
 }

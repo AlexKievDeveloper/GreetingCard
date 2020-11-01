@@ -23,17 +23,4 @@ class LogoutServletTest {
     @Mock
     private HttpSession session;
 
-    @Test
-    @DisplayName("Removes session with attribute user")
-    void doGet() throws IOException {
-        //prepare
-        LogoutServlet logoutServlet = new LogoutServlet();
-        when(request.getSession()).thenReturn(session);
-        //when
-        logoutServlet.doGet(request, response);
-        //then
-        verify(request).getSession();
-        verify(session).invalidate();
-        verify(response).sendRedirect("/login");
-    }
 }

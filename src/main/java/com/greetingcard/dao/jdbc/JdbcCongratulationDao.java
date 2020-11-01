@@ -6,6 +6,7 @@ import com.greetingcard.dao.jdbc.mapper.CongratulationRowMapper;
 import com.greetingcard.dao.jdbc.mapper.CongratulationsRowMapper;
 import com.greetingcard.entity.Congratulation;
 import com.greetingcard.entity.Link;
+import com.greetingcard.entity.LinkType;
 import com.greetingcard.entity.Status;
 import com.greetingcard.util.PropertyReader;
 import lombok.extern.slf4j.Slf4j;
@@ -26,15 +27,18 @@ public class JdbcCongratulationDao implements CongratulationDao {
     private static final String SAVE_CONGRATULATION = "INSERT INTO congratulations (message, card_id, user_id, status_id) VALUES (?,?,?,?)";
     private static final String SAVE_LINK = "INSERT INTO links (link, type_id, congratulation_id) VALUES(?,?,?)";
     private static final String LEAVE_BY_CARD_ID = "DELETE FROM congratulations WHERE card_id=? and user_id=?";
-    private static final String FIND_LINKS_BY_CARD_ID = "SELECT link FROM links l LEFT JOIN congratulations cg ON cg.congratulation_id = l.congratulation_id where card_id=? and (type_id = 2 OR type_id = 3) and user_id =?";
+    private static final String FIND_IMAGE_AND_AUDIO_LINKS_BY_CARD_ID = "SELECT link, type_id FROM links l LEFT JOIN congratulations cg ON cg.congratulation_id = l.congratulation_id where card_id=? and (type_id = 2 OR type_id = 3) and user_id =?";
     private static final String FIND_CONGRATULATIONS_BY_CARD_ID = "SELECT cg.congratulation_id, user_id, card_id, status_id, message, link_id, link, type_id FROM congratulations cg LEFT JOIN links on cg.congratulation_id = links.congratulation_id WHERE card_id=?";
     private static final String CHANGE_STATUS_CONGRATULATION_BY_CARD_ID = "UPDATE congratulations SET status_id = ? where card_id = ?";
+    private static final String DELETE_BY_ID = "DELETE FROM congratulations WHERE congratulation_id=? and user_id=?";
+    private static final String FIND_IMAGE_AND_AUDIO_LINKS_BY_CONGRATULATION_ID = "SELECT link, type_id FROM links l LEFT JOIN congratulations cg ON cg.congratulation_id = l.congratulation_id where cg.congratulation_id=? and (type_id = 2 OR type_id = 3) and user_id =?";
 
     private static final CongratulationRowMapper CONGRATULATION_ROW_MAPPER = new CongratulationRowMapper();
     private static final CongratulationsRowMapper CONGRATULATIONS_ROW_MAPPER = new CongratulationsRowMapper();
     private final PropertyReader propertyReader = ServiceLocator.getBean("PropertyReader");
     private final DataSource dataSource;
-    private final String pathToFiles = propertyReader.getProperty("pathToFiles");
+    private final String pathToPictureFiles = propertyReader.getProperty("img.storage.path");
+    private final String pathToAudioFiles = propertyReader.getProperty("audio.storage.path");
 
     public JdbcCongratulationDao(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -42,7 +46,6 @@ public class JdbcCongratulationDao implements CongratulationDao {
 
     @Override
     public Congratulation getCongratulationById(int congratulationId) {
-
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(GET_CONGRATULATION)) {
             preparedStatement.setInt(1, congratulationId);
@@ -87,33 +90,13 @@ public class JdbcCongratulationDao implements CongratulationDao {
     }
 
     @Override
-    public void leaveByCardId(long cardId, long userId) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(LEAVE_BY_CARD_ID)) {
-            connection.setAutoCommit(false);
-            statement.setLong(1, cardId);
-            statement.setLong(2, userId);
-            try (PreparedStatement statementGetLinks = connection.prepareStatement(FIND_LINKS_BY_CARD_ID)) {
-                statementGetLinks.setLong(1, cardId);
-                statementGetLinks.setLong(2, userId);
-                try (ResultSet resultSet = statementGetLinks.executeQuery()) {
-                    while (resultSet.next()) {
-                        String file = resultSet.getString("link");
-                        try {
-                            Files.deleteIfExists(Paths.get(pathToFiles, file));
-                        } catch (IOException e) {
-                            log.error("Exception while deleting file - {}{}", pathToFiles, file, e);
-                            throw new RuntimeException("Exception while deleting file", e);
-                        }
-                    }
-                }
-            }
-            statement.execute();
-            connection.commit();
-        } catch (SQLException e) {
-            log.error("Exception while deleting congratulations by - {}", cardId, e);
-            throw new RuntimeException("Exception while deleting congratulations ", e);
-        }
+    public void deleteByCardId(long cardId, long userId) {
+        delete(cardId, userId, LEAVE_BY_CARD_ID, FIND_IMAGE_AND_AUDIO_LINKS_BY_CARD_ID);
+    }
+
+    @Override
+    public void deleteById(long congratulationId, long userId) {
+        delete(congratulationId, userId, DELETE_BY_ID, FIND_IMAGE_AND_AUDIO_LINKS_BY_CONGRATULATION_ID);
     }
 
     @Override
@@ -152,6 +135,42 @@ public class JdbcCongratulationDao implements CongratulationDao {
                 statementInLinks.addBatch();
             }
             statementInLinks.executeBatch();
+        }
+    }
+
+    void delete(long id, long userId, String deleteQuery, String findQuery) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(deleteQuery)) {
+            connection.setAutoCommit(false);
+            statement.setLong(1, id);
+            statement.setLong(2, userId);
+            try (PreparedStatement statementGetLinks = connection.prepareStatement(findQuery)) {
+                statementGetLinks.setLong(1, id);
+                statementGetLinks.setLong(2, userId);
+                try (ResultSet resultSet = statementGetLinks.executeQuery()) {
+                    while (resultSet.next()) {
+                        String pathToFiles;
+                        String file = resultSet.getString("link");
+                        LinkType linkType = LinkType.getByNumber(resultSet.getInt("type_id"));
+                        if (linkType == LinkType.PICTURE) {
+                            pathToFiles = pathToPictureFiles;
+                        } else {
+                            pathToFiles = pathToAudioFiles;
+                        }
+                        try {
+                            Files.deleteIfExists(Paths.get(pathToFiles, file));
+                        } catch (IOException e) {
+                            log.error("Exception while deleting file - {}{}", pathToFiles, file, e);
+                            throw new RuntimeException("Exception while deleting file", e);
+                        }
+                    }
+                }
+            }
+            statement.execute();
+            connection.commit();
+        } catch (SQLException e) {
+            log.error("Exception while deleting congratulations by - {}", id, e);
+            throw new RuntimeException("Exception while deleting congratulations ", e);
         }
     }
 }

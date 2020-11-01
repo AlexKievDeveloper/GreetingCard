@@ -53,7 +53,7 @@ public class DefaultCongratulationService implements CongratulationService {
 
     @Override
     public void leaveByCardId(long cardId, long userId) {
-        jdbcCongratulationDao.leaveByCardId(cardId, userId);
+        jdbcCongratulationDao.deleteByCardId(cardId, userId);
     }
 
     void addYoutubeLinks(List<Link> linkList, String youtubeLinks) {
