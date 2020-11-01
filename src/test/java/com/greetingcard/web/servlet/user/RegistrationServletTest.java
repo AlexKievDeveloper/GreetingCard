@@ -7,16 +7,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.servlet.ServletContext;
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RegistrationServletTest {
+    @Mock
+    private ServletInputStream inputStream;
     @Mock
     private SecurityService service;
     @InjectMocks
@@ -25,37 +26,26 @@ class RegistrationServletTest {
     private HttpServletRequest request;
     @Mock
     private HttpServletResponse response;
-    @Mock
-    private PrintWriter printWriter;
-    @Mock
-    private ServletContext servletContext;
-
-    @Test
-    void doGet() throws IOException {
-        when(response.getWriter()).thenReturn(printWriter);
-        when(request.getServletContext()).thenReturn(servletContext);
-
-        servlet.doGet(request, response);
-
-        verify(response, times(1)).setContentType("text/html;charset=utf-8");
-    }
 
     @Test
     void doPost() throws IOException {
-        when(request.getParameter("firstName")).thenReturn("test");
-        when(request.getParameter("lastName")).thenReturn("test");
-        when(request.getParameter("email")).thenReturn("test");
-        when(request.getParameter("login")).thenReturn("test");
-        when(request.getParameter("password")).thenReturn("test");
+        //prepare
+        String userJson = "{\n" +
+                "  \"firstName\" : \"user\",\n" +
+                "  \"lastName\" : \"user\",\n" +
+                "  \"email\" : \"user@\",\n" +
+                "  \"login\" : \"user\",\n" +
+                "  \"password\" : \"user\" \n" +
+                "}";
 
+        when(request.getInputStream()).thenReturn(inputStream);
+        when(inputStream.readAllBytes()).thenReturn(userJson.getBytes());
         //when
         servlet.doPost(request, response);
         //then
-        verify(request, times(1)).getParameter("firstName");
-        verify(request, times(1)).getParameter("lastName");
-        verify(request, times(1)).getParameter("email");
-        verify(request, times(1)).getParameter("login");
-        verify(request, times(1)).getParameter("password");
-        verify(service, times(1)).save(any());
+        verify(request).getInputStream();
+        verify(inputStream).readAllBytes();
+        verify(service).save(any());
+        verify(response).sendRedirect("/login");
     }
 }

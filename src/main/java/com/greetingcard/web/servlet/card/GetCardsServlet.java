@@ -1,18 +1,16 @@
 package com.greetingcard.web.servlet.card;
 
+import com.alibaba.fastjson.JSON;
 import com.greetingcard.ServiceLocator;
 import com.greetingcard.entity.Card;
-import com.greetingcard.entity.Role;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
-import com.greetingcard.web.templater.PageGenerator;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 public class GetCardsServlet extends HttpServlet {
     private CardService cardService = ServiceLocator.getBean("DefaultCardService");
@@ -22,10 +20,8 @@ public class GetCardsServlet extends HttpServlet {
         User user = (User) request.getSession().getAttribute("user");
         long userId = user.getId();
 
-        Map<Card, Role> cards = cardService.getCards(userId, request.getParameter("cards-type"));
-
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("cards" , cards);
-        PageGenerator.getInstance().process("after-login" , parameters, request, response);
+        List<Card> cardsList = cardService.getCards(userId, request.getParameter("cards-type"));
+        String json = JSON.toJSONString(cardsList);
+        response.getWriter().print(json);
     }
 }

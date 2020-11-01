@@ -2,10 +2,9 @@ package com.greetingcard.service.impl;
 
 import com.greetingcard.dao.jdbc.JdbcCardDao;
 import com.greetingcard.entity.Card;
-import com.greetingcard.entity.Role;
 import com.greetingcard.service.CardService;
 
-import java.util.Map;
+import java.util.List;
 
 public class DefaultCardService implements CardService {
     private final JdbcCardDao jdbcCardDao;
@@ -15,7 +14,7 @@ public class DefaultCardService implements CardService {
     }
 
     @Override
-    public Map<Card, Role> getCards(long userId, String cardsType) {
+    public List<Card> getCards(long userId, String cardsType) {
 
         switch (cardsType) {
             case "All-cards":

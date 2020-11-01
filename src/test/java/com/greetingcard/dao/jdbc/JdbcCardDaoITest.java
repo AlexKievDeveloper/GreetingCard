@@ -10,10 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.sql.DataSource;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -40,7 +37,7 @@ public class JdbcCardDaoITest {
     }
 
     @Test
-    @DisplayName("Returns Map<Cards, Role> from DB")
+    @DisplayName("Returns List<Cards> from DB")
     void getAllCardsByUserId() {
         //prepare
         Card expectedCard1 = Card.builder()
@@ -59,20 +56,20 @@ public class JdbcCardDaoITest {
                 .status(Status.ISOVER)
                 .build();
         //when
-        Map<Card, Role> actualMap = jdbcCardDao.getAllCardsByUserId(1);
+        List<Card> actualList = jdbcCardDao.getAllCardsByUserId(1);
         //then
-        assertTrue(actualMap.containsKey(expectedCard1));
-        assertTrue(actualMap.containsKey(expectedCard2));
-        assertEquals(actualMap.get(expectedCard1), Role.ADMIN);
-        assertEquals(actualMap.get(expectedCard2), Role.MEMBER);
-        for (Card card : actualMap.keySet()) {
+        assertTrue(actualList.contains(expectedCard1));
+        assertTrue(actualList.contains(expectedCard2));
+        assertEquals(actualList.get(0), expectedCard1);
+        assertEquals(actualList.get(1), expectedCard2);
+        for (Card card : actualList) {
             assertNotNull(card.getUser());
         }
 
     }
 
     @Test
-    @DisplayName("Returns Map<Cards, Role> from DB with cards where user role is Admin")
+    @DisplayName("Returns List<Cards> from DB with cards where user role is Admin")
     void getAllMyCardsByUserIdTestRoleAdmin() {
         //prepare
         Card expectedCard1 = Card.builder()
@@ -83,15 +80,15 @@ public class JdbcCardDaoITest {
                 .status(Status.STARTUP)
                 .build();
         //when
-        Map<Card, Role> actualMap = jdbcCardDao.getCardsByUserIdAndRoleId(1, 1);
+        List<Card> actualList = jdbcCardDao.getCardsByUserIdAndRoleId(1, 1);
         //then
-        assertEquals(1, actualMap.size());
-        assertTrue(actualMap.containsKey(expectedCard1));
-        assertEquals(actualMap.get(expectedCard1), Role.ADMIN);
+        assertEquals(1, actualList.size());
+        assertTrue(actualList.contains(expectedCard1));
+        assertEquals(actualList.get(0), expectedCard1);
     }
 
     @Test
-    @DisplayName("Returns Map<Cards, Role> from DB with cards where user role is Member")
+    @DisplayName("Returns List<Cards> from DB with cards where user role is Member")
     void getAllMyCardsByUserIdTestRoleMember() {
         //prepare
         Card expectedCard2 = Card.builder()
@@ -102,11 +99,11 @@ public class JdbcCardDaoITest {
                 .status(Status.ISOVER)
                 .build();
         //when
-        Map<Card, Role> actualMap = jdbcCardDao.getCardsByUserIdAndRoleId(1, 2);
+        List<Card> actualList = jdbcCardDao.getCardsByUserIdAndRoleId(1, 2);
         //then
-        assertEquals(2, actualMap.size());
-        assertTrue(actualMap.containsKey(expectedCard2));
-        assertEquals(actualMap.get(expectedCard2), Role.MEMBER);
+        assertEquals(2, actualList.size());
+        assertTrue(actualList.contains(expectedCard2));
+        assertEquals(actualList.get(0), expectedCard2);
     }
 
     @Test
@@ -117,12 +114,11 @@ public class JdbcCardDaoITest {
         Card card = Card.builder().user(user).name("greeting").status(Status.STARTUP).build();
         //when
         jdbcCardDao.createCard(card);
-        Map<Card, Role> actualMap = jdbcCardDao.getAllCardsByUserId(1);
-        List<Card> cardList = new ArrayList<>(actualMap.keySet());
+        List<Card> actualList = jdbcCardDao.getAllCardsByUserId(1);
         //then
-        assertEquals(4, actualMap.size());
-        assertTrue(actualMap.containsKey(card));
-        assertEquals(actualMap.get(card), Role.ADMIN);
+        assertEquals(4, actualList.size());
+        assertTrue(actualList.contains(card));
+        assertEquals(actualList.get(3), card);
     }
 
     @Test
@@ -139,14 +135,14 @@ public class JdbcCardDaoITest {
 
         assertEquals(3, actualCongratulationList.size());
         assertEquals(1, actualCard.getId());
-        assertEquals("greeting Nomar" , actualCard.getName());
+        assertEquals("greeting Nomar", actualCard.getName());
         assertNull(actualCard.getBackgroundImage());
         assertNull(actualCard.getCardLink());
         assertEquals(Status.STARTUP, actualCard.getStatus());
 
-        assertEquals("from Roma" , actualCongratulationList.get(0).getMessage());
-        assertEquals("from Sasha" , actualCongratulationList.get(1).getMessage());
-        assertEquals("from Nastya" , actualCongratulationList.get(2).getMessage());
+        assertEquals("from Roma", actualCongratulationList.get(0).getMessage());
+        assertEquals("from Sasha", actualCongratulationList.get(1).getMessage());
+        assertEquals("from Nastya", actualCongratulationList.get(2).getMessage());
         assertEquals(1, actualCongratulationList.get(0).getUser().getId());
         assertEquals(1, actualCongratulationList.get(1).getUser().getId());
         assertEquals(2, actualCongratulationList.get(2).getUser().getId());
@@ -158,7 +154,7 @@ public class JdbcCardDaoITest {
 
     @Test
     @DisplayName("Delete card with all parameters")
-    void deleteCardById() throws IOException {
+    void deleteCardById() {
         //prepare
         JdbcCongratulationDao congratulationDao = new JdbcCongratulationDao(dataSource);
         //when
@@ -174,6 +170,5 @@ public class JdbcCardDaoITest {
         assertNull(actualCongratulation2);
         assertNull(actualCongratulation3);
     }
-
 }
 
