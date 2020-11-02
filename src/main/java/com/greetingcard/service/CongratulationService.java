@@ -14,5 +14,8 @@ public interface CongratulationService {
 
     List<Link> getLinkList(Collection<Part> partList, HttpServletRequest request);
 
+    List<Link> getLinkList(Collection<Part> partList, String youtubeLinks, String plainLinks);
+
     void save(Congratulation congratulation);
+
 }

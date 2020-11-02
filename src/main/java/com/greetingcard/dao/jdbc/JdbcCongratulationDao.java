@@ -3,8 +3,10 @@ package com.greetingcard.dao.jdbc;
 import com.greetingcard.ServiceLocator;
 import com.greetingcard.dao.CongratulationDao;
 import com.greetingcard.dao.jdbc.mapper.CongratulationRowMapper;
+import com.greetingcard.dao.jdbc.mapper.CongratulationsRowMapper;
 import com.greetingcard.entity.Congratulation;
 import com.greetingcard.entity.Link;
+import com.greetingcard.entity.Status;
 import com.greetingcard.util.PropertyReader;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,13 +22,16 @@ import java.util.List;
 
 @Slf4j
 public class JdbcCongratulationDao implements CongratulationDao {
-    private static final String GET_CONGRATULATION = "SELECT congratulations.congratulation_id, user_id, card_id, status_id, message, link_id, link, type_id FROM congratulations LEFT JOIN links on congratulations.congratulation_id = links.congratulation_id WHERE congratulations.congratulation_id=?;";
+    private static final String GET_CONGRATULATION = "SELECT congratulations.congratulation_id, user_id, card_id, status_id, message, link_id, link, type_id FROM congratulations LEFT JOIN links on congratulations.congratulation_id = links.congratulation_id WHERE congratulations.congratulation_id=?";
     private static final String SAVE_CONGRATULATION = "INSERT INTO congratulations (message, card_id, user_id, status_id) VALUES (?,?,?,?)";
     private static final String SAVE_LINK = "INSERT INTO links (link, type_id, congratulation_id) VALUES(?,?,?)";
     private static final String LEAVE_BY_CARD_ID = "DELETE FROM congratulations WHERE card_id=? and user_id=?";
     private static final String FIND_LINKS_BY_CARD_ID = "SELECT link FROM links l LEFT JOIN congratulations cg ON cg.congratulation_id = l.congratulation_id where card_id=? and (type_id = 2 OR type_id = 3) and user_id =?";
+    private static final String FIND_CONGRATULATIONS_BY_CARD_ID = "SELECT cg.congratulation_id, user_id, card_id, status_id, message, link_id, link, type_id FROM congratulations cg LEFT JOIN links on cg.congratulation_id = links.congratulation_id WHERE card_id=?";
+    private static final String CHANGE_STATUS_CONGRATULATION_BY_CARD_ID = "UPDATE congratulations SET status_id = ? where card_id = ?";
 
     private static final CongratulationRowMapper CONGRATULATION_ROW_MAPPER = new CongratulationRowMapper();
+    private static final CongratulationsRowMapper CONGRATULATIONS_ROW_MAPPER = new CongratulationsRowMapper();
     private final PropertyReader propertyReader = ServiceLocator.getBean("PropertyReader");
     private final DataSource dataSource;
     private final String pathToFiles = propertyReader.getProperty("pathToFiles");
@@ -49,7 +54,7 @@ public class JdbcCongratulationDao implements CongratulationDao {
                 return null;
             }
         } catch (SQLException e) {
-            log.error("Exception while getting congratulation by id: {}" , congratulationId, e);
+            log.error("Exception while getting congratulation by id: {}", congratulationId, e);
             throw new RuntimeException("Exception while getting congratulation by id: " + congratulationId, e);
         }
     }
@@ -76,8 +81,8 @@ public class JdbcCongratulationDao implements CongratulationDao {
             }
             connection.commit();
         } catch (SQLException e) {
-            log.error("Exception while saving congratulation" , e);
-            throw new RuntimeException("Exception while saving congratulation" , e);
+            log.error("Exception while saving congratulation", e);
+            throw new RuntimeException("Exception while saving congratulation", e);
         }
     }
 
@@ -97,8 +102,8 @@ public class JdbcCongratulationDao implements CongratulationDao {
                         try {
                             Files.deleteIfExists(Paths.get(pathToFiles, file));
                         } catch (IOException e) {
-                            log.error("Exception while deleting file - {}{}" , pathToFiles, file, e);
-                            throw new RuntimeException("Exception while deleting file" , e);
+                            log.error("Exception while deleting file - {}{}", pathToFiles, file, e);
+                            throw new RuntimeException("Exception while deleting file", e);
                         }
                     }
                 }
@@ -106,8 +111,35 @@ public class JdbcCongratulationDao implements CongratulationDao {
             statement.execute();
             connection.commit();
         } catch (SQLException e) {
-            log.error("Exception while deleting congratulations by - {}" , cardId, e);
-            throw new RuntimeException("Exception while deleting congratulations " , e);
+            log.error("Exception while deleting congratulations by - {}", cardId, e);
+            throw new RuntimeException("Exception while deleting congratulations ", e);
+        }
+    }
+
+    @Override
+    public List<Congratulation> findCongratulationsByCardId(long cardId) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(FIND_CONGRATULATIONS_BY_CARD_ID)) {
+            statement.setLong(1, cardId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return CONGRATULATIONS_ROW_MAPPER.mapRow(resultSet);
+            }
+        } catch (SQLException e) {
+            log.error("Exception while select congratulations by card_id - {}", cardId, e);
+            throw new RuntimeException("Exception while select congratulations by card_id ", e);
+        }
+    }
+
+    @Override
+    public void changeStatusCongratulationsByCardId(Status status, long cardId) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(CHANGE_STATUS_CONGRATULATION_BY_CARD_ID)) {
+            statement.setInt(1, status.getStatusNumber());
+            statement.setLong(2, cardId);
+            statement.execute();
+        } catch (SQLException e) {
+            log.error("Exception while change status congratulation - {}", cardId, e);
+            throw new RuntimeException("Exception while change status congratulation ", e);
         }
     }
 

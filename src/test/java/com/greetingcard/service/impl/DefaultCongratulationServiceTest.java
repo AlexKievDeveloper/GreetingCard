@@ -9,12 +9,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+<<<<<<< HEAD
 import javax.servlet.http.HttpServletRequest;
+=======
+>>>>>>> develop
 import javax.servlet.http.Part;
 import java.util.ArrayList;
 import java.util.List;
 
+<<<<<<< HEAD
 import static org.junit.jupiter.api.Assertions.*;
+=======
+import static org.junit.jupiter.api.Assertions.assertEquals;
+>>>>>>> develop
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -23,8 +30,11 @@ class DefaultCongratulationServiceTest {
     @Mock
     private Part part;
     @Mock
+<<<<<<< HEAD
     private HttpServletRequest request;
     @Mock
+=======
+>>>>>>> develop
     private List<Link> linkList;
     @Mock
     private LocalDiskFileDao localDiskFileDao;
@@ -37,6 +47,7 @@ class DefaultCongratulationServiceTest {
         //prepare
         List<Part> parts = new ArrayList<>();
         parts.add(part);
+<<<<<<< HEAD
         when(part.getContentType()).thenReturn("image/jpeg");
         when(part.getSubmittedFileName()).thenReturn("name");
         when(request.getParameter("youtube")).thenReturn("https://www.youtube.com/watch?v=JcDy3ny-H0k");
@@ -46,6 +57,17 @@ class DefaultCongratulationServiceTest {
         //then
         verify(request).getParameter("youtube");
         verify(request).getParameter("plain-link");
+=======
+        String youtubeLink = "https://www.youtube.com/watch?v=JcDy3ny-H0k";
+        String plainLink = "https://www.duolingo.com";
+        when(part.getSize()).thenReturn(1001L);
+        when(part.getContentType()).thenReturn("image/jpeg");
+        when(part.getSubmittedFileName()).thenReturn("name");
+        //when
+        defaultCongratulationService.getLinkList(parts, youtubeLink, plainLink);
+        //then
+        verify(part).getSize();
+>>>>>>> develop
         verify(part).getContentType();
         verify(part).getSubmittedFileName();
         verify(localDiskFileDao).saveFileInStorage(any(), any());
@@ -79,11 +101,19 @@ class DefaultCongratulationServiceTest {
         //prepare
         List<Part> parts = new ArrayList<>();
         parts.add(part);
+<<<<<<< HEAD
+=======
+        when(part.getSize()).thenReturn(1001L);
+>>>>>>> develop
         when(part.getContentType()).thenReturn("image/jpeg");
         when(part.getSubmittedFileName()).thenReturn("name");
         //when
         defaultCongratulationService.addLinksToImagesAndAudioFiles(parts, linkList);
         //then
+<<<<<<< HEAD
+=======
+        verify(part).getSize();
+>>>>>>> develop
         verify(part).getContentType();
         verify(part).getSubmittedFileName();
         verify(localDiskFileDao).saveFileInStorage(any(), any());

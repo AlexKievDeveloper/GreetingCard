@@ -2,6 +2,7 @@ package com.greetingcard.dao.jdbc;
 
 import com.greetingcard.ServiceLocator;
 import com.greetingcard.dao.CardDao;
+import com.greetingcard.dao.CongratulationDao;
 import com.greetingcard.dao.jdbc.mapper.CardAndCongratulationRowMapper;
 import com.greetingcard.dao.jdbc.mapper.CardRowMapper;
 import com.greetingcard.entity.Card;
@@ -31,10 +32,14 @@ public class JdbcCardDao implements CardDao {
             "FROM users_cards uc JOIN cards c ON uc.card_id = c.card_id LEFT JOIN congratulations cg ON c.card_id=cg.card_id LEFT JOIN users u ON cg.user_id=u.user_id LEFT JOIN links l ON cg.congratulation_id=l.congratulation_id WHERE uc.card_id = ? AND uc.user_id = ?";
     private static final String DELETE_BY_CARD_ID = "DELETE FROM cards WHERE card_id=? and user_id=?";
     private static final String FIND_LINKS_BY_CARD_ID = "SELECT link FROM links l LEFT JOIN congratulations cg ON cg.congratulation_id = l.congratulation_id where card_id=? and (type_id = 2 OR type_id = 3) and user_id =?";
+    private static final String CHANGE_STATUS_OF_CARD_BY_ID = "UPDATE cards SET status_id = ? where card_id = ?";
+
 
     private static final CardRowMapper CARD_ROW_MAPPER = new CardRowMapper();
     private static final CardAndCongratulationRowMapper CARD_AND_CONGRATULATION_ROW_MAPPER = new CardAndCongratulationRowMapper();
     private final PropertyReader propertyReader = ServiceLocator.getBean("PropertyReader");
+    private final CongratulationDao congratulationDao = ServiceLocator.getBean("JdbcCongratulationDao");
+
     private final DataSource dataSource;
     private final String pathToFiles = propertyReader.getProperty("pathToFiles");
 
@@ -57,7 +62,7 @@ public class JdbcCardDao implements CardDao {
             }
             return cards;
         } catch (SQLException e) {
-            log.error("Exception while getting cards from DB by user id: {}" , id, e);
+            log.error("Exception while getting cards from DB by user id: {}", id, e);
             throw new RuntimeException("Exception while getting cards from DB by user id: " + id, e);
         }
     }
@@ -78,7 +83,7 @@ public class JdbcCardDao implements CardDao {
             }
             return cards;
         } catch (SQLException e) {
-            log.error("Exception while getting my cards from DB by user id: {} and role id: {}" , userId, roleId, e);
+            log.error("Exception while getting my cards from DB by user id: {} and role id: {}", userId, roleId, e);
             throw new RuntimeException("Exception while getting my cards from DB by user id: " + userId +
                     " and role id: " + roleId, e);
         }
@@ -102,8 +107,8 @@ public class JdbcCardDao implements CardDao {
             addNewCards(card, connection);
             connection.commit();
         } catch (SQLException e) {
-            log.error("Exception while creating new card" , e);
-            throw new RuntimeException("Exception while creating new card" , e);
+            log.error("Exception while creating new card", e);
+            throw new RuntimeException("Exception while creating new card", e);
         }
     }
 
@@ -118,8 +123,8 @@ public class JdbcCardDao implements CardDao {
             }
 
         } catch (SQLException e) {
-            log.error("Exception while get card and congratulation by card id" , e);
-            throw new RuntimeException("Exception while get card and congratulation by card id" , e);
+            log.error("Exception while get card and congratulation by card id", e);
+            throw new RuntimeException("Exception while get card and congratulation by card id", e);
         }
     }
 
@@ -139,8 +144,8 @@ public class JdbcCardDao implements CardDao {
                         try {
                             Files.deleteIfExists(Paths.get(pathToFiles, file));
                         } catch (IOException e) {
-                            log.error("Exception while deleting file - {}{}" , pathToFiles, file, e);
-                            throw new RuntimeException("Exception while deleting file" , e);
+                            log.error("Exception while deleting file - {}{}", pathToFiles, file, e);
+                            throw new RuntimeException("Exception while deleting file", e);
                         }
                     }
                 }
@@ -148,9 +153,32 @@ public class JdbcCardDao implements CardDao {
             statement.execute();
             connection.commit();
         } catch (SQLException e) {
-            log.error("Exception while deleting card by - {}" , cardId, e);
-            throw new RuntimeException("Exception while deleting card " , e);
+            log.error("Exception while deleting card by - {}", cardId, e);
+            throw new RuntimeException("Exception while deleting card ", e);
         }
+    }
+
+    @Override
+    public void changeCardStatusById(Status status, long cardId) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(CHANGE_STATUS_OF_CARD_BY_ID)) {
+            connection.setAutoCommit(false);
+            statement.setInt(1, status.getStatusNumber());
+            statement.setLong(2, cardId);
+            statement.execute();
+            try {
+                congratulationDao.changeStatusCongratulationsByCardId(status, cardId);
+            } catch (RuntimeException e) {
+                connection.rollback();
+                log.error("Exception while change status congratulation and card - {}", cardId, e);
+                throw new RuntimeException("Exception while change status congratulation and card", e);
+            }
+            connection.commit();
+        } catch (SQLException e) {
+            log.error("Exception while change status card - {}", cardId, e);
+            throw new RuntimeException("Exception while change status card ", e);
+        }
+
     }
 
     void addNewCards(Card card, Connection connection) throws SQLException {

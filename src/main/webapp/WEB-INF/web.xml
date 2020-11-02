@@ -13,6 +13,8 @@
     <servlet-mapping>
         <servlet-name>LoginLogoutServlet</servlet-name>
         <url-pattern>/api/v1/session</url-pattern>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/login</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -34,7 +36,7 @@
         <url-pattern>/my-cards</url-pattern>
         <url-pattern>/another`s-cards</url-pattern>
     </servlet-mapping>
-  
+
     <servlet>
         <servlet-name>EditProfileServlet</servlet-name>
         <servlet-class>com.greetingcard.web.servlet.user.EditProfileUserServlet</servlet-class>
@@ -51,6 +53,20 @@
     <servlet-mapping>
         <servlet-name>CreateCard</servlet-name>
         <url-pattern>/create-card</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AddCongratulationServlet</servlet-name>
+        <servlet-class>com.greetingcard.web.servlet.congratulation.AddCongratulationServlet</servlet-class>
+        <multipart-config>
+            <max-file-size>10485760</max-file-size>
+            <max-request-size>30971520</max-request-size>
+            <file-size-threshold>5242880</file-size-threshold>
+        </multipart-config>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AddCongratulationServlet</servlet-name>
+        <url-pattern>/add-congratulation</url-pattern>
     </servlet-mapping>
 
     <servlet>

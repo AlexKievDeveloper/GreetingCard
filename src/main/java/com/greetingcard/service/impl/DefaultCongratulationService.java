@@ -12,9 +12,12 @@ import com.greetingcard.util.PropertyReader;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,6 +39,15 @@ public class DefaultCongratulationService implements CongratulationService {
     }
 
     @Override
+    public List<Link> getLinkList(Collection<Part> partList, String youtubeLinks, String plainLinks) {
+        List<Link> linkList = new ArrayList<>();
+        addYoutubeLinks(linkList, youtubeLinks);
+        addLinksToImagesAndAudioFiles(partList, linkList);
+        addPlainLinks(linkList, plainLinks);
+        return linkList;
+    }
+
+    @Override
     public void save(Congratulation congratulation) {
         jdbcCongratulationDao.save(congratulation);
     }
@@ -54,9 +66,18 @@ public class DefaultCongratulationService implements CongratulationService {
 
     void addYoutubeLinks(List<Link> linkList, String youtubeLinks) {
 
-        String[] youtubeLinksArray = youtubeLinks.split("\\r?\\n");
+        String pattern = "(https?:\\/\\/)?([\\w-]{1,32}\\.[\\w-]{1,32})[^\\s@]*";
 
-        for (String youtubeLink : youtubeLinksArray) {
+        Pattern compiledPattern = Pattern.compile(pattern);
+        Matcher matcher = compiledPattern.matcher(youtubeLinks);
+
+        List<String> youtubeLinksCollection = new ArrayList<>();
+
+        while (matcher.find()) {
+            youtubeLinksCollection.add(matcher.group());
+        }
+
+        for (String youtubeLink : youtubeLinksCollection) {
 
             if (youtubeLink.contains("youtu")) {
                 Link video = Link.builder()
@@ -82,35 +103,54 @@ public class DefaultCongratulationService implements CongratulationService {
     void addLinksToImagesAndAudioFiles(Collection<Part> partList, List<Link> linkList) {
 
         for (Part part : partList) {
+            if (part.getSize() > 1000) {
+                String salt = UUID.randomUUID().toString();
+                String fileName = part.getSubmittedFileName();
 
-            String fileName = part.getSubmittedFileName();
+                String uniqueFileName = salt.concat(fileName);
 
-            if ("image/jpeg".equals(part.getContentType()) || "image/png".equals(part.getContentType())) {
-                Link picture = Link.builder()
-                        .link(pathToImageStorage.concat(fileName))
-                        .type(LinkType.PICTURE)
-                        .build();
-                linkList.add(picture);
+                if ("image/jpeg".equals(part.getContentType()) || "image/png".equals(part.getContentType())) {
+                    Link picture = Link.builder()
+                            .link(pathToImageStorage.concat(salt).concat(uniqueFileName))
+                            .type(LinkType.PICTURE)
+                            .build();
+                    linkList.add(picture);
 
-                File pictureFile = new File(pathToImageStorage.concat(fileName));
-                localDiskFileDao.saveFileInStorage(part, pictureFile);
-            } else if ("audio/mpeg".equals(part.getContentType())) {
-                Link audio = Link.builder()
-                        .link(pathToAudioStorage.concat(fileName))
-                        .type(LinkType.AUDIO)
-                        .build();
-                linkList.add(audio);
+                    File pictureFile = new File(pathToImageStorage, uniqueFileName);
+                    if (Files.notExists(Path.of(pictureFile.getPath()))) {
+                        localDiskFileDao.saveFileInStorage(part, pictureFile);
+                    }
+                } else if ("audio/mpeg".equals(part.getContentType())) {
+                    Link audio = Link.builder()
+                            .link(pathToAudioStorage.concat(uniqueFileName))
+                            .type(LinkType.AUDIO)
+                            .build();
+                    linkList.add(audio);
 
-                File audioFile = new File(pathToAudioStorage.concat(fileName));
-                localDiskFileDao.saveFileInStorage(part, audioFile);
+                    File audioFile = new File(pathToAudioStorage, uniqueFileName);
+                    if (Files.notExists(Path.of(audioFile.getPath()))) {
+                        localDiskFileDao.saveFileInStorage(part, audioFile);
+                    }
+                }
             }
         }
     }
 
     void addPlainLinks(List<Link> linkList, String plainLinks) {
         if (!plainLinks.equals("")) {
-            String[] plainLinksArray = plainLinks.split("\\r?\\n");
-            for (String plainLink : plainLinksArray) {
+
+            String pattern = "(https?:\\/\\/)?([\\w-]{1,32}\\.[\\w-]{1,32})[^\\s@]*";
+
+            Pattern compiledPattern = Pattern.compile(pattern);
+            Matcher matcher = compiledPattern.matcher(plainLinks);
+
+            List<String> plainLinksCollection = new ArrayList<>();
+
+            while (matcher.find()) {
+                plainLinksCollection.add(matcher.group());
+            }
+
+            for (String plainLink : plainLinksCollection) {
                 Link link = Link.builder()
                         .link(plainLink)
                         .type(LinkType.PLAIN_LINK)

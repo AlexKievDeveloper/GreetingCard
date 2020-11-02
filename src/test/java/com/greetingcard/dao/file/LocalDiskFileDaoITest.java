@@ -31,6 +31,7 @@ class LocalDiskFileDaoITest {
         File file = new File("test-file");
         assertTrue(file.delete());
     }
+
     @Test
     @DisplayName("Saving files to storages")
     void saveFileInStorage() throws IOException {
@@ -45,5 +46,6 @@ class LocalDiskFileDaoITest {
         //then
         verify(part).getInputStream();
         verify(inputStream, times(2)).read(any());
+        assertTrue(file.delete());
     }
 }

@@ -19,6 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public class AddCongratulationServlet extends HttpServlet {
     private CongratulationService congratulationService = ServiceLocator.getBean("DefaultCongratulationService");
 
@@ -29,14 +30,14 @@ public class AddCongratulationServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
         User user = (User) request.getSession().getAttribute("user");
         long userId = user.getId();
         byte[] bytes = request.getInputStream().readAllBytes();
         String json = new String(bytes, StandardCharsets.UTF_8);
 
         Map<String, String> parametersMap =
-                JSON.parseObject(json, new TypeReference<LinkedHashMap<String, String>>() {});
+                JSON.parseObject(json, new TypeReference<LinkedHashMap<String, String>>() {
+                });
 
         String message = parametersMap.get("message");
         int cardId = Integer.parseInt(parametersMap.get("card-id"));

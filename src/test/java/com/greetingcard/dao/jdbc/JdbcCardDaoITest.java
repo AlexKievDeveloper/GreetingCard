@@ -24,10 +24,12 @@ public class JdbcCardDaoITest {
     private JdbcCardDao jdbcCardDao;
     private Flyway flyway;
 
+
     public JdbcCardDaoITest() {
         jdbcCardDao = new JdbcCardDao(dataSource);
         flyway = dataBaseConfigurator.getFlyway();
     }
+
 
     @BeforeEach
     void init() {
@@ -139,14 +141,14 @@ public class JdbcCardDaoITest {
 
         assertEquals(3, actualCongratulationList.size());
         assertEquals(1, actualCard.getId());
-        assertEquals("greeting Nomar" , actualCard.getName());
+        assertEquals("greeting Nomar", actualCard.getName());
         assertNull(actualCard.getBackgroundImage());
         assertNull(actualCard.getCardLink());
         assertEquals(Status.STARTUP, actualCard.getStatus());
 
-        assertEquals("from Roma" , actualCongratulationList.get(0).getMessage());
-        assertEquals("from Sasha" , actualCongratulationList.get(1).getMessage());
-        assertEquals("from Nastya" , actualCongratulationList.get(2).getMessage());
+        assertEquals("from Roma", actualCongratulationList.get(0).getMessage());
+        assertEquals("from Sasha", actualCongratulationList.get(1).getMessage());
+        assertEquals("from Nastya", actualCongratulationList.get(2).getMessage());
         assertEquals(1, actualCongratulationList.get(0).getUser().getId());
         assertEquals(1, actualCongratulationList.get(1).getUser().getId());
         assertEquals(2, actualCongratulationList.get(2).getUser().getId());
@@ -165,6 +167,7 @@ public class JdbcCardDaoITest {
         jdbcCardDao.deleteCardById(1, 1);
         //then
         Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
+
         Congratulation actualCongratulation1 = congratulationDao.getCongratulationById(1);
         Congratulation actualCongratulation2 = congratulationDao.getCongratulationById(2);
         Congratulation actualCongratulation3 = congratulationDao.getCongratulationById(3);
@@ -173,6 +176,16 @@ public class JdbcCardDaoITest {
         assertNull(actualCongratulation1);
         assertNull(actualCongratulation2);
         assertNull(actualCongratulation3);
+    }
+
+    @Test
+    @DisplayName("Change status of card to ISOVER")
+    void changeStatusCardById() {
+        //when
+        jdbcCardDao.changeCardStatusById(Status.ISOVER, 1);
+        //then
+        Card card = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
+        assertEquals(Status.ISOVER, card.getStatus());
     }
 
 }

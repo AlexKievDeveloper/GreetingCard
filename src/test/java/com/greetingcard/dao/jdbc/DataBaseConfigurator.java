@@ -9,11 +9,8 @@ import javax.sql.DataSource;
 public class DataBaseConfigurator {
     private PropertyReader propertyReader = new PropertyReader();
 
-    public DataBaseConfigurator() {
-        propertyReader.readProperties("/application-test.properties");
-    }
-
     public DataSource getDataSource() {
+        propertyReader.readProperties("/application-test.properties");
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setUrl(propertyReader.getProperty("jdbc.url"));
         dataSource.setUsername(propertyReader.getProperty("jdbc.user"));
@@ -24,6 +21,6 @@ public class DataBaseConfigurator {
     }
 
     public Flyway getFlyway() {
-        return Flyway.configure().dataSource(getDataSource()).locations("testDB/migration").load();
+        return Flyway.configure().dataSource(getDataSource()).locations("testDB/migration").baselineOnMigrate(true).load();
     }
 }
