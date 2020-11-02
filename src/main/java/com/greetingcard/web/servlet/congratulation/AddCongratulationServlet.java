@@ -18,7 +18,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public class AddCongratulationServlet extends HttpServlet {
     private CongratulationService congratulationService = ServiceLocator.getBean("DefaultCongratulationService");
 
@@ -49,6 +48,7 @@ public class AddCongratulationServlet extends HttpServlet {
         } catch (RuntimeException e) {
             response.getWriter().println(e.getMessage());
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
         }
         response.setStatus(HttpServletResponse.SC_CREATED);
     }

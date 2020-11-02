@@ -80,5 +80,4 @@ class RegistrationServletTest {
         verify(response).getWriter();
         verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
-
 }

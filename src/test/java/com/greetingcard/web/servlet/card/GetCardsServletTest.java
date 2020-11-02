@@ -32,6 +32,8 @@ class GetCardsServletTest {
     private HttpSession session;
     @Mock
     private PrintWriter writer;
+    @Mock
+    private RuntimeException e;
 
     @Test
     @DisplayName("Return all list of user cards")
@@ -39,12 +41,15 @@ class GetCardsServletTest {
         User user = User.builder().id(1).build();
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
-        when(request.getParameter("cards-type")).thenReturn("All-cards");
+        when(request.getParameter("type")).thenReturn("all");
         when(response.getWriter()).thenReturn(writer);
 
         getCardsServlet.doGet(request, response);
-
-        verify(cardService).getCards(1, "All-cards");
+        verify(request).getSession();
+        verify(session).getAttribute("user");
+        verify(request).getParameter("type");
+        verify(response).getWriter();
+        verify(cardService).getCards(1, "all");
         verify(writer).print(anyString());
         verify(response).setStatus(HttpServletResponse.SC_OK);
     }
@@ -55,12 +60,15 @@ class GetCardsServletTest {
         User user = User.builder().id(1).build();
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
-        when(request.getParameter("cards-type")).thenReturn("My-cards");
+        when(request.getParameter("type")).thenReturn("my");
         when(response.getWriter()).thenReturn(writer);
 
         getCardsServlet.doGet(request, response);
-
-        verify(cardService).getCards(1, "My-cards");
+        verify(request).getSession();
+        verify(session).getAttribute("user");
+        verify(request).getParameter("type");
+        verify(response).getWriter();
+        verify(cardService).getCards(1, "my");
         verify(writer).print(anyString());
         verify(response).setStatus(HttpServletResponse.SC_OK);
     }
@@ -71,12 +79,16 @@ class GetCardsServletTest {
         User user = User.builder().id(1).build();
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
-        when(request.getParameter("cards-type")).thenReturn("Another`s-cards");
+        when(request.getParameter("type")).thenReturn("other");
         when(response.getWriter()).thenReturn(writer);
 
         getCardsServlet.doGet(request, response);
 
-        verify(cardService).getCards(1, "Another`s-cards");
+        verify(request).getSession();
+        verify(session).getAttribute("user");
+        verify(request).getParameter("type");
+        verify(response).getWriter();
+        verify(cardService).getCards(1, "other");
         verify(writer).print(anyString());
         verify(response).setStatus(HttpServletResponse.SC_OK);
     }
@@ -87,14 +99,17 @@ class GetCardsServletTest {
         User user = User.builder().id(1).build();
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
-        when(request.getParameter("cards-type")).thenReturn("Another`s-cards");
+        when(request.getParameter("type")).thenReturn("other");
         when(response.getWriter()).thenReturn(writer);
-        doThrow(RuntimeException.class).when(cardService).getCards(1, "Another`s-cards");
+        doThrow(RuntimeException.class).when(cardService).getCards(1, "other");
 
         getCardsServlet.doGet(request, response);
 
-        verify(cardService).getCards(1, "Another`s-cards");
-        verify(writer).print(anyString());
+        verify(request).getSession();
+        verify(session).getAttribute("user");
+        verify(request).getParameter("type");
+        verify(response).getWriter();
+        verify(cardService).getCards(1, "other");
         verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
 }

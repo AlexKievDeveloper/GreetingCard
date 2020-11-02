@@ -38,7 +38,7 @@ public class RegistrationServlet extends HttpServlet {
                 .build();
         try {
             securityService.save(user);
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             response.getWriter().print(e.getMessage());
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
