@@ -166,10 +166,10 @@ class JdbcCongratulationDaoITest {
         //prepare
         Files.createDirectories(Path.of("src/main/webapp/static"));
         Files.createFile(Path.of("src/main/webapp/static/audio"));
-        Files.createFile(Path.of("src/main/webapp/static/picture"));
+        Files.createFile(Path.of("src/main/webapp/static/img"));
         List<Link> links = new ArrayList<>();
         links.add(Link.builder().link("src/main/webapp/static/audio").type(LinkType.AUDIO).build());
-        links.add(Link.builder().link("src/main/webapp/static/picture").type(LinkType.PICTURE).build());
+        links.add(Link.builder().link("src/main/webapp/static/img").type(LinkType.PICTURE).build());
 
         Congratulation congratulation = Congratulation.builder()
                 .card(Card.builder().id(1).build())
@@ -188,7 +188,7 @@ class JdbcCongratulationDaoITest {
         assertEquals(1, congratulationList.size());
         assertEquals(3, congratulationList.get(0).getId());
         assertFalse(Files.exists(Path.of("src/main/webapp/static/audio")));
-        assertFalse(Files.exists(Path.of("src/main/webapp/static/picture")));
+        assertFalse(Files.exists(Path.of("src/main/webapp/static/img")));
     }
 
     @Test
@@ -197,10 +197,10 @@ class JdbcCongratulationDaoITest {
         //prepare
         Files.createDirectories(Path.of("src/main/webapp/static"));
         Files.createFile(Path.of("src/main/webapp/static/audio"));
-        Files.createFile(Path.of("src/main/webapp/static/picture"));
+        Files.createFile(Path.of("src/main/webapp/static/img"));
         List<Link> links = new ArrayList<>();
         links.add(Link.builder().link("src/main/webapp/static/audio").congratulationId(7).type(LinkType.AUDIO).build());
-        links.add(Link.builder().link("src/main/webapp/static/picture").congratulationId(7).type(LinkType.PICTURE).build());
+        links.add(Link.builder().link("src/main/webapp/static/img").congratulationId(7).type(LinkType.PICTURE).build());
 
         Congratulation congratulation = Congratulation.builder()
                 .card(Card.builder().id(1).build())
@@ -218,7 +218,7 @@ class JdbcCongratulationDaoITest {
         Congratulation actual = jdbcCongratulationDao.getCongratulationById(7);
         assertNull(actual);
         assertFalse(Files.exists(Path.of("src/main/webapp/static/audio")));
-        assertFalse(Files.exists(Path.of("src/main/webapp/static/picture")));
+        assertFalse(Files.exists(Path.of("src/main/webapp/static/img")));
     }
 
     @Test

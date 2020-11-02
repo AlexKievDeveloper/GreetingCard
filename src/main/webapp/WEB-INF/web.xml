@@ -36,12 +36,13 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>CreateCard</servlet-name>
-        <servlet-class>com.greetingcard.web.servlet.card.CreateCardServlet</servlet-class>
+        <servlet-name>CardServlet</servlet-name>
+        <servlet-class>com.greetingcard.web.servlet.card.CardServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>CreateCard</servlet-name>
+        <servlet-name>CardServlet</servlet-name>
         <url-pattern>/card</url-pattern>
+        <url-pattern>/card/*</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -81,6 +82,7 @@
         <url-pattern>/</url-pattern>
         <url-pattern>/profile</url-pattern>
         <url-pattern>/card</url-pattern>
+        <url-pattern>/card/*</url-pattern>
         <url-pattern>/all-cards</url-pattern>
         <url-pattern>/my-cards</url-pattern>
         <url-pattern>/another`s-cards</url-pattern>
