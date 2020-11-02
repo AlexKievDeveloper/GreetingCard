@@ -32,7 +32,6 @@ public class JdbcCardDao implements CardDao {
 
     private static final CardRowMapper CARD_ROW_MAPPER = new CardRowMapper();
     private static final CardAndCongratulationRowMapper CARD_AND_CONGRATULATION_ROW_MAPPER = new CardAndCongratulationRowMapper();
-    private final PropertyReader propertyReader = ServiceLocator.getBean("PropertyReader");
     private final CongratulationDao congratulationDao = ServiceLocator.getBean("JdbcCongratulationDao");
     private final DataSource dataSource;
 

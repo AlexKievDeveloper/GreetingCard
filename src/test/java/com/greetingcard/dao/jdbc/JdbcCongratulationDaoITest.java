@@ -199,8 +199,8 @@ class JdbcCongratulationDaoITest {
         Files.createFile(Path.of("src/main/webapp/static/audio"));
         Files.createFile(Path.of("src/main/webapp/static/picture"));
         List<Link> links = new ArrayList<>();
-        links.add(Link.builder().link("audio").congratulationId(7).type(LinkType.AUDIO).build());
-        links.add(Link.builder().link("picture").congratulationId(7).type(LinkType.PICTURE).build());
+        links.add(Link.builder().link("src/main/webapp/static/audio").congratulationId(7).type(LinkType.AUDIO).build());
+        links.add(Link.builder().link("src/main/webapp/static/picture").congratulationId(7).type(LinkType.PICTURE).build());
 
         Congratulation congratulation = Congratulation.builder()
                 .card(Card.builder().id(1).build())

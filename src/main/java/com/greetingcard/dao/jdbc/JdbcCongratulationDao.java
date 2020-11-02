@@ -35,10 +35,7 @@ public class JdbcCongratulationDao implements CongratulationDao {
 
     private static final CongratulationRowMapper CONGRATULATION_ROW_MAPPER = new CongratulationRowMapper();
     private static final CongratulationsRowMapper CONGRATULATIONS_ROW_MAPPER = new CongratulationsRowMapper();
-    private final PropertyReader propertyReader = ServiceLocator.getBean("PropertyReader");
     private final DataSource dataSource;
-    private final String pathToPictureFiles = propertyReader.getProperty("img.storage.path");
-    private final String pathToAudioFiles = propertyReader.getProperty("audio.storage.path");
 
     public JdbcCongratulationDao(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -149,18 +146,11 @@ public class JdbcCongratulationDao implements CongratulationDao {
                 statementGetLinks.setLong(2, userId);
                 try (ResultSet resultSet = statementGetLinks.executeQuery()) {
                     while (resultSet.next()) {
-                        String pathToFiles;
                         String file = resultSet.getString("link");
-                        LinkType linkType = LinkType.getByNumber(resultSet.getInt("type_id"));
-                        if (linkType == LinkType.PICTURE) {
-                            pathToFiles = pathToPictureFiles;
-                        } else {
-                            pathToFiles = pathToAudioFiles;
-                        }
                         try {
-                            Files.deleteIfExists(Paths.get(pathToFiles, file));
+                            Files.deleteIfExists(Paths.get(file));
                         } catch (IOException e) {
-                            log.error("Exception while deleting file - {}{}", pathToFiles, file, e);
+                            log.error("Exception while deleting file - {}", file, e);
                             throw new RuntimeException("Exception while deleting file", e);
                         }
                     }
