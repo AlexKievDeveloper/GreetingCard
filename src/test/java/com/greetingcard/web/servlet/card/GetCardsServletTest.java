@@ -43,26 +43,4 @@ class GetCardsServletTest {
     @Mock
     private ServletContext context;
 
-    @Test
-    @DisplayName("Returns page with all cards  to client")
-    void doGet() throws IOException {
-        //prepare
-        when(request.getSession()).thenReturn(session);
-        when(session.getAttribute("user")).thenReturn(user);
-        when(user.getId()).thenReturn(1L);
-        when(request.getParameter("cards-type")).thenReturn("All-cards");
-        when(cardService.getCards(1, "All-cards")).thenReturn(cards);
-        when(request.getServletContext()).thenReturn(context);
-        when(response.getWriter()).thenReturn(writer);
-        //when
-        getCardsServlet.doGet(request, response);
-        //then
-        verify(request).getSession();
-        verify(session).getAttribute("user");
-        verify(user).getId();
-        verify(request).getParameter("cards-type");
-        verify(cardService).getCards(1, "All-cards");
-        verify(request).getServletContext();
-        verify(response).getWriter();
-    }
 }

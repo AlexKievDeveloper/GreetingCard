@@ -3,7 +3,6 @@ package com.greetingcard.web.servlet.user;
 import com.greetingcard.ServiceLocator;
 import com.greetingcard.entity.User;
 import com.greetingcard.security.SecurityService;
-import com.greetingcard.web.templater.PageGenerator;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +18,7 @@ public class EditProfileUserServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType(CONTENT_TYPE);
-        PageGenerator.getInstance().process("profile", request, response);
+
     }
 
     @Override

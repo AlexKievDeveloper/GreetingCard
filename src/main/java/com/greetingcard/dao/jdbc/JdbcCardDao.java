@@ -12,9 +12,6 @@ import com.greetingcard.util.PropertyReader;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,17 +28,12 @@ public class JdbcCardDao implements CardDao {
     private static final String CARD_AND_CONGRATULATION = "SELECT c.card_id ,c.user_id as card_user, name, background_image, card_link, c.status_id, cg.congratulation_id, cg.status_id as con_status, message, cg.user_id, firstName, lastName, login, link_id, link,type_id " +
             "FROM users_cards uc JOIN cards c ON uc.card_id = c.card_id LEFT JOIN congratulations cg ON c.card_id=cg.card_id LEFT JOIN users u ON cg.user_id=u.user_id LEFT JOIN links l ON cg.congratulation_id=l.congratulation_id WHERE uc.card_id = ? AND uc.user_id = ?";
     private static final String DELETE_BY_CARD_ID = "DELETE FROM cards WHERE card_id=? and user_id=?";
-    private static final String FIND_LINKS_BY_CARD_ID = "SELECT link FROM links l LEFT JOIN congratulations cg ON cg.congratulation_id = l.congratulation_id where card_id=? and (type_id = 2 OR type_id = 3) and user_id =?";
     private static final String CHANGE_STATUS_OF_CARD_BY_ID = "UPDATE cards SET status_id = ? where card_id = ?";
-
 
     private static final CardRowMapper CARD_ROW_MAPPER = new CardRowMapper();
     private static final CardAndCongratulationRowMapper CARD_AND_CONGRATULATION_ROW_MAPPER = new CardAndCongratulationRowMapper();
-    private final PropertyReader propertyReader = ServiceLocator.getBean("PropertyReader");
     private final CongratulationDao congratulationDao = ServiceLocator.getBean("JdbcCongratulationDao");
-
     private final DataSource dataSource;
-    private final String pathToFiles = propertyReader.getProperty("pathToFiles");
 
     public JdbcCardDao(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -103,7 +95,6 @@ public class JdbcCardDao implements CardDao {
                     card.setId(resultSet.getInt(1));
                 }
             }
-
             addNewCards(card, connection);
             connection.commit();
         } catch (SQLException e) {
@@ -135,21 +126,7 @@ public class JdbcCardDao implements CardDao {
             connection.setAutoCommit(false);
             statement.setLong(1, cardId);
             statement.setLong(2, userId);
-            try (PreparedStatement statementGetLinks = connection.prepareStatement(FIND_LINKS_BY_CARD_ID)) {
-                statementGetLinks.setLong(1, cardId);
-                statementGetLinks.setLong(2, userId);
-                try (ResultSet resultSet = statementGetLinks.executeQuery()) {
-                    while (resultSet.next()) {
-                        String file = resultSet.getString("link");
-                        try {
-                            Files.deleteIfExists(Paths.get(pathToFiles, file));
-                        } catch (IOException e) {
-                            log.error("Exception while deleting file - {}{}", pathToFiles, file, e);
-                            throw new RuntimeException("Exception while deleting file", e);
-                        }
-                    }
-                }
-            }
+            congratulationDao.deleteByCardId(cardId, userId);
             statement.execute();
             connection.commit();
         } catch (SQLException e) {

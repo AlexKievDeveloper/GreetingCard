@@ -11,9 +11,11 @@ public interface CongratulationDao {
 
     void save(Congratulation congratulation);
 
-    void leaveByCardId(long cardId, long userId);
+    void deleteByCardId(long cardId, long userId);
 
     List<Congratulation> findCongratulationsByCardId(long cardId);
 
     void changeStatusCongratulationsByCardId(Status status, long cardId);
+
+    void deleteById(long congratulationId, long userId);
 }

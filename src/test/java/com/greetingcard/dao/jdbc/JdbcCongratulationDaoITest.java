@@ -8,12 +8,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class JdbcCongratulationDaoITest {
     private DataBaseConfigurator dataBaseConfigurator = new DataBaseConfigurator();
@@ -32,8 +35,11 @@ class JdbcCongratulationDaoITest {
     }
 
     @AfterEach
-    void afterAll() {
+    void afterAll() throws IOException {
         flyway.clean();
+        Files.deleteIfExists(Path.of("src/main/webapp/static/audio"));
+        Files.deleteIfExists(Path.of("src/main/webapp/static/picture"));
+        Files.deleteIfExists(Path.of("src/main/webapp/static"));
     }
 
     @Test
@@ -155,23 +161,64 @@ class JdbcCongratulationDaoITest {
     }
 
     @Test
-    @DisplayName("Delete card with all parameters")
-    void leaveByCardId() {
+    @DisplayName("Delete congratulations by id of card with all parameters")
+    void deleteByCardId() throws IOException {
+        //prepare
+        Files.createDirectories(Path.of("src/main/webapp/static"));
+        Files.createFile(Path.of("src/main/webapp/static/audio"));
+        Files.createFile(Path.of("src/main/webapp/static/picture"));
+        List<Link> links = new ArrayList<>();
+        links.add(Link.builder().link("audio").type(LinkType.AUDIO).build());
+        links.add(Link.builder().link("picture").type(LinkType.PICTURE).build());
+
+        Congratulation congratulation = Congratulation.builder()
+                .card(Card.builder().id(1).build())
+                .user(User.builder().id(1).build())
+                .message("test delete link")
+                .status(Status.STARTUP)
+                .linkList(links)
+                .build();
+        jdbcCongratulationDao.save(congratulation);
+
         //when
-        jdbcCongratulationDao.leaveByCardId(1, 1);
-      
+        jdbcCongratulationDao.deleteByCardId(1, 1);
+
         //then
         List<Congratulation> congratulationList = jdbcCongratulationDao.findCongratulationsByCardId(1);
-
         assertEquals(1, congratulationList.size());
         assertEquals(3, congratulationList.get(0).getId());
+        assertFalse(Files.exists(Path.of("src/main/webapp/static/audio")));
+        assertFalse(Files.exists(Path.of("src/main/webapp/static/picture")));
+    }
+
+    @Test
+    @DisplayName("Delete congratulations by id with all parameters")
+    void deleteById() throws IOException {
+        //prepare
+        Files.createDirectories(Path.of("src/main/webapp/static"));
+        Files.createFile(Path.of("src/main/webapp/static/audio"));
+        Files.createFile(Path.of("src/main/webapp/static/picture"));
+        List<Link> links = new ArrayList<>();
+        links.add(Link.builder().link("src/main/webapp/static/audio").congratulationId(7).type(LinkType.AUDIO).build());
+        links.add(Link.builder().link("src/main/webapp/static/picture").congratulationId(7).type(LinkType.PICTURE).build());
+
+        Congratulation congratulation = Congratulation.builder()
+                .card(Card.builder().id(1).build())
+                .user(User.builder().id(1).build())
+                .message("test delete link")
+                .status(Status.STARTUP)
+                .linkList(links)
+                .build();
+        jdbcCongratulationDao.save(congratulation);
+
+        //when
+        jdbcCongratulationDao.deleteById(7, 1);
 
         //then
-        Congratulation actualCongratulation1 = jdbcCongratulationDao.getCongratulationById(1);
-        Congratulation actualCongratulation2 = jdbcCongratulationDao.getCongratulationById(2);
-        Congratulation actualCongratulation3 = jdbcCongratulationDao.getCongratulationById(3);
-
-
+        Congratulation actual = jdbcCongratulationDao.getCongratulationById(7);
+        assertNull(actual);
+        assertFalse(Files.exists(Path.of("src/main/webapp/static/audio")));
+        assertFalse(Files.exists(Path.of("src/main/webapp/static/picture")));
     }
 
     @Test

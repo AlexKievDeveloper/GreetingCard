@@ -24,12 +24,10 @@ public class JdbcCardDaoITest {
     private JdbcCardDao jdbcCardDao;
     private Flyway flyway;
 
-
     public JdbcCardDaoITest() {
         jdbcCardDao = new JdbcCardDao(dataSource);
         flyway = dataBaseConfigurator.getFlyway();
     }
-
 
     @BeforeEach
     void init() {
@@ -167,15 +165,7 @@ public class JdbcCardDaoITest {
         jdbcCardDao.deleteCardById(1, 1);
         //then
         Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
-
-        Congratulation actualCongratulation1 = congratulationDao.getCongratulationById(1);
-        Congratulation actualCongratulation2 = congratulationDao.getCongratulationById(2);
-        Congratulation actualCongratulation3 = congratulationDao.getCongratulationById(3);
-
         assertNull(actualCard);
-        assertNull(actualCongratulation1);
-        assertNull(actualCongratulation2);
-        assertNull(actualCongratulation3);
     }
 
     @Test

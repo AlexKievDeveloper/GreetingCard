@@ -4,7 +4,6 @@ import com.greetingcard.ServiceLocator;
 import com.greetingcard.entity.User;
 import com.greetingcard.security.SecurityService;
 import com.greetingcard.util.PropertyReader;
-import com.greetingcard.web.templater.PageGenerator;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +25,7 @@ public class LoginServlet extends HttpServlet {
         Map<String, Object> parameters = new HashMap<>();
         response.setContentType(CONTENT_TYPE);
         parameters.put("message", request.getParameter("message"));
-        PageGenerator.getInstance().process("login", parameters, request, response);
+
     }
 
     @Override
