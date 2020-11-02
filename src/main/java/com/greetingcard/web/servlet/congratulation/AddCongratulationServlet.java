@@ -5,7 +5,6 @@ import com.alibaba.fastjson.TypeReference;
 import com.greetingcard.ServiceLocator;
 import com.greetingcard.entity.*;
 import com.greetingcard.service.CongratulationService;
-import com.greetingcard.web.templater.PageGenerator;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -25,7 +24,7 @@ public class AddCongratulationServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        PageGenerator.getInstance().process("add-congratulation", request, response);
+
     }
 
     @Override

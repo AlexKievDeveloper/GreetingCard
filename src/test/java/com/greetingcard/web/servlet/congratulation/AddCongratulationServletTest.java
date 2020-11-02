@@ -53,20 +53,6 @@ class AddCongratulationServletTest {
     private AddCongratulationServlet addCongratulationServlet;
 
     @Test
-    @DisplayName("Returns add congratulation form")
-    void doGetTest() throws IOException {
-        //prepare
-        when(request.getServletContext()).thenReturn(context);
-        when(response.getWriter()).thenReturn(writer);
-        //when
-        addCongratulationServlet.doGet(request, response);
-        //then
-        verify(request).getServletContext();
-        verify(request).getLocale();
-        verify(response).getWriter();
-    }
-
-    @Test
     @DisplayName("Saving congratulation to DB")
     void doPostTest() throws IOException, ServletException {
         //prepare
@@ -106,6 +92,6 @@ class AddCongratulationServletTest {
         verify(request).getParameter("plain-link");
         verify(request).getParameter("message");
         verify(request).getParameter("card-id");
-
     }
+
 }

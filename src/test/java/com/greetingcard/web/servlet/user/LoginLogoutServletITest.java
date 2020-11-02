@@ -1,12 +1,7 @@
 package com.greetingcard.web.servlet.user;
 
-import com.greetingcard.dao.jdbc.DataBaseConfigurator;
-import com.greetingcard.dao.jdbc.JdbcUserDao;
 import com.greetingcard.entity.User;
 import com.greetingcard.security.SecurityService;
-import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,25 +38,6 @@ class LoginLogoutServletITest {
     @InjectMocks
     private LoginLogoutServlet loginLogoutServlet;
 
-    private DataBaseConfigurator dataBaseConfigurator = new DataBaseConfigurator();
-    private JdbcUserDao jdbcUserDao;
-    private Flyway flyway;
-
-    public LoginLogoutServletITest() {
-        jdbcUserDao = new JdbcUserDao(dataBaseConfigurator.getDataSource());
-        flyway = dataBaseConfigurator.getFlyway();
-    }
-
-    @BeforeEach
-    void init() {
-        flyway.migrate();
-    }
-
-    @AfterEach
-    void afterAll() {
-        flyway.clean();
-    }
-
     @Test
     @DisplayName("Invalidates the session")
     void doDelete() {
@@ -81,7 +57,7 @@ class LoginLogoutServletITest {
     void doPostTestUserExist() throws IOException {
         //prepare
         byte[] bytes = "{\"login\":\"user\",\"password\":\"user\"}".getBytes();
-        User user = jdbcUserDao.findUserByLogin("user");
+        User user = User.builder().build();
         when(request.getInputStream()).thenReturn(inputStream);
         when(inputStream.readAllBytes()).thenReturn(bytes);
         when(response.getWriter()).thenReturn(printWriter);

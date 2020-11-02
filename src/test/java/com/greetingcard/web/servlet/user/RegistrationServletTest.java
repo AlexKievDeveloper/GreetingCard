@@ -48,4 +48,5 @@ class RegistrationServletTest {
         verify(service).save(any());
         verify(response).sendRedirect("/login");
     }
+
 }
