@@ -24,9 +24,10 @@ public class LoginLogoutServlet extends HttpServlet {
     private int maxInactiveInterval = Integer.parseInt(propertyReader.getProperty("max.inactive.interval"));
 
     @Override
-    protected void doDelete(HttpServletRequest request, HttpServletResponse response) {
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
         log.info("logout");
         request.getSession().invalidate();
+        response.setStatus(HttpServletResponse.SC_OK);
     }
 
     @Override

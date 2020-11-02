@@ -40,7 +40,7 @@ class LoginLogoutServletITest {
 
     @Test
     @DisplayName("Invalidates the session")
-    void doDelete() {
+    void doDelete() throws IOException {
         //prepare
         LoginLogoutServlet loginLogoutServlet = new LoginLogoutServlet();
         when(request.getSession()).thenReturn(httpsession);

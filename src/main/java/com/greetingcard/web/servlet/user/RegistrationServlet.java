@@ -5,7 +5,6 @@ import com.alibaba.fastjson.TypeReference;
 import com.greetingcard.ServiceLocator;
 import com.greetingcard.entity.User;
 import com.greetingcard.security.SecurityService;
-
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServlet;
@@ -37,7 +36,12 @@ public class RegistrationServlet extends HttpServlet {
                 .login(userMap.get("login"))
                 .password(userMap.get("password"))
                 .build();
-        securityService.save(user);
-        response.sendRedirect("/login");
+        try {
+            securityService.save(user);
+        }catch (RuntimeException e){
+            response.getWriter().print(e.getMessage());
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+        response.setStatus(HttpServletResponse.SC_CREATED);
     }
 }

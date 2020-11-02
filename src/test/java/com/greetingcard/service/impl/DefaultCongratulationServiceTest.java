@@ -23,6 +23,8 @@ class DefaultCongratulationServiceTest {
     @Mock
     private Part part;
     @Mock
+    private HttpServletRequest request;
+    @Mock
     private List<Link> linkList;
     @Mock
     private LocalDiskFileDao localDiskFileDao;

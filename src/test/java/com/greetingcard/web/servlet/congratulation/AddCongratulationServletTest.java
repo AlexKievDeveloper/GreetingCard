@@ -68,18 +68,11 @@ class AddCongratulationServletTest {
 
         when(request.getParts()).thenReturn(parts);
         when(congratulationService.getLinkList(any(), any())).thenReturn(linkList);
-        when(congratulationService.getLinkList(any(), any(), any())).thenReturn(linkList);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
         when(user.getId()).thenReturn(1L);
-        when(request.getParameter("message")).thenReturn("message");
-        when(request.getParameter("card-id")).thenReturn("1");
-        when(request.getParameter("youtube")).thenReturn("https://www.youtube.com/watch?v=pCdCHqCUsZg");
-        when(request.getParameter("plain-link")).thenReturn("https://www.studytonight.com/servlet/httpsession.php");
-
         when(request.getInputStream()).thenReturn(servletInputStream);
         when(servletInputStream.readAllBytes()).thenReturn(bytes);
-
         //when
         addCongratulationServlet.doPost(request, response);
         //then
@@ -88,10 +81,5 @@ class AddCongratulationServletTest {
         verify(request).getSession();
         verify(session).getAttribute("user");
         verify(user).getId();
-        verify(request).getParameter("youtube");
-        verify(request).getParameter("plain-link");
-        verify(request).getParameter("message");
-        verify(request).getParameter("card-id");
     }
-
 }

@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 public class GetCardsServlet extends HttpServlet {
@@ -20,8 +21,15 @@ public class GetCardsServlet extends HttpServlet {
         User user = (User) request.getSession().getAttribute("user");
         long userId = user.getId();
 
-        List<Card> cardsList = cardService.getCards(userId, request.getParameter("cards-type"));
-        String json = JSON.toJSONString(cardsList);
+        List<Card> cardsList = null;
+        try {
+            cardsList = cardService.getCards(userId, request.getParameter("cards-type"));
+        } catch (RuntimeException e) {
+            response.getWriter().println(e.getMessage());
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+        String json = JSON.toJSONString(cardsList == null ? Collections.EMPTY_LIST : cardsList);
         response.getWriter().print(json);
+        response.setStatus(HttpServletResponse.SC_OK);
     }
 }

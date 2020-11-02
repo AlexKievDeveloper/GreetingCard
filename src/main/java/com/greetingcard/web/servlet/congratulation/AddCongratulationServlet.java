@@ -23,20 +23,13 @@ public class AddCongratulationServlet extends HttpServlet {
     private CongratulationService congratulationService = ServiceLocator.getBean("DefaultCongratulationService");
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-    }
-
-    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("user");
         long userId = user.getId();
         byte[] bytes = request.getInputStream().readAllBytes();
         String json = new String(bytes, StandardCharsets.UTF_8);
-
-        Map<String, String> parametersMap =
-                JSON.parseObject(json, new TypeReference<LinkedHashMap<String, String>>() {
-                });
+        Map<String, String> parametersMap = JSON.parseObject(json, new TypeReference<LinkedHashMap<String, String>>() {
+        });
 
         String message = parametersMap.get("message");
         int cardId = Integer.parseInt(parametersMap.get("card-id"));
@@ -51,7 +44,12 @@ public class AddCongratulationServlet extends HttpServlet {
                 .status(Status.STARTUP)
                 .linkList(linkList)
                 .build();
-
-        congratulationService.save(congratulation);
+        try {
+            congratulationService.save(congratulation);
+        } catch (RuntimeException e) {
+            response.getWriter().println(e.getMessage());
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+        response.setStatus(HttpServletResponse.SC_CREATED);
     }
 }
