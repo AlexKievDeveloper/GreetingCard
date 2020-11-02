@@ -4,12 +4,13 @@ import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Role;
 import com.greetingcard.entity.Status;
 
+import java.util.List;
 import java.util.Map;
 
 public interface CardDao {
-    Map<Card, Role> getAllCardsByUserId(long id);
+    List<Card> getAllCardsByUserId(long id);
 
-    Map<Card, Role> getCardsByUserIdAndRoleId(long userId, long roleId);
+    List<Card> getCardsByUserIdAndRoleId(long userId, long roleId);
 
     void createCard(Card card);
 

@@ -16,7 +16,9 @@ public class CardAndCongratulationRowMapper {
         Map<Long, Congratulation> congratulationMap = new HashMap<>();
         while (resultSet.next()) {
             if (card == null) {
-                User user = User.builder().id(resultSet.getLong("card_user")).build();
+                User user = User.builder()
+                        .id(resultSet.getLong("card_user"))
+                        .build();
                 card = Card.builder()
                         .id((resultSet.getLong("card_id")))
                         .user(user)

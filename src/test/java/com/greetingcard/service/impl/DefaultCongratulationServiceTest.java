@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,8 @@ import static org.mockito.Mockito.*;
 class DefaultCongratulationServiceTest {
     @Mock
     private Part part;
+    @Mock
+    private HttpServletRequest request;
     @Mock
     private List<Link> linkList;
     @Mock

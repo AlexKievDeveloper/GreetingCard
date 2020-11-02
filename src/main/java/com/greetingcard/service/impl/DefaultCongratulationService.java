@@ -9,6 +9,7 @@ import com.greetingcard.entity.LinkType;
 import com.greetingcard.service.CongratulationService;
 import com.greetingcard.util.PropertyReader;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 import java.io.File;
 import java.nio.file.Files;
@@ -52,8 +53,15 @@ public class DefaultCongratulationService implements CongratulationService {
     }
 
     @Override
-    public void leaveByCardId(long cardId, long userId) {
-        jdbcCongratulationDao.deleteByCardId(cardId, userId);
+    public List<Link> getLinkList(Collection<Part> partList, HttpServletRequest request) {
+        String youtubeLinks = request.getParameter("youtube");
+        String plainLinks = request.getParameter("plain-link");
+
+        List<Link> linkList = new ArrayList<>();
+        addYoutubeLinks(linkList, youtubeLinks);
+        addLinksToImagesAndAudioFiles(partList, linkList);
+        addPlainLinks(linkList, plainLinks);
+        return linkList;
     }
 
     void addYoutubeLinks(List<Link> linkList, String youtubeLinks) {
@@ -65,7 +73,7 @@ public class DefaultCongratulationService implements CongratulationService {
 
         List<String> youtubeLinksCollection = new ArrayList<>();
 
-        while(matcher.find()) {
+        while (matcher.find()) {
             youtubeLinksCollection.add(matcher.group());
         }
 
@@ -138,7 +146,7 @@ public class DefaultCongratulationService implements CongratulationService {
 
             List<String> plainLinksCollection = new ArrayList<>();
 
-            while(matcher.find()) {
+            while (matcher.find()) {
                 plainLinksCollection.add(matcher.group());
             }
 

@@ -1,5 +1,6 @@
 package com.greetingcard.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -8,6 +9,7 @@ import java.util.List;
 
 @Data
 @Builder
+@AllArgsConstructor
 public class Card {
     private long id;
     @EqualsAndHashCode.Exclude

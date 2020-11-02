@@ -1,8 +1,8 @@
 package com.greetingcard.web.servlet.card;
 
+import com.alibaba.fastjson.JSON;
 import com.greetingcard.ServiceLocator;
 import com.greetingcard.entity.Card;
-import com.greetingcard.entity.Role;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
 
@@ -10,8 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
+import java.util.List;
 
 public class GetCardsServlet extends HttpServlet {
     private CardService cardService = ServiceLocator.getBean("DefaultCardService");
@@ -21,9 +21,15 @@ public class GetCardsServlet extends HttpServlet {
         User user = (User) request.getSession().getAttribute("user");
         long userId = user.getId();
 
-        Map<Card, Role> cards = cardService.getCards(userId, request.getParameter("cards-type"));
-
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("cards", cards);
+        List<Card> cardsList = null;
+        try {
+            cardsList = cardService.getCards(userId, request.getParameter("cards-type"));
+        } catch (RuntimeException e) {
+            response.getWriter().println(e.getMessage());
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+        String json = JSON.toJSONString(cardsList == null ? Collections.EMPTY_LIST : cardsList);
+        response.getWriter().print(json);
+        response.setStatus(HttpServletResponse.SC_OK);
     }
 }

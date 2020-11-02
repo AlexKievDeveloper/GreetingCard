@@ -1,5 +1,6 @@
 package com.greetingcard.web.servlet.card;
 
+import com.greetingcard.entity.Card;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
 import org.junit.jupiter.api.DisplayName;
@@ -9,6 +10,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -19,11 +22,11 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class GetCardsServletTest {
+class CardServletTest {
     @Mock
     private CardService cardService;
     @InjectMocks
-    private GetCardsServlet getCardsServlet;
+    private CardServlet servlet;
     @Mock
     private HttpServletRequest request;
     @Mock
@@ -31,70 +34,59 @@ class GetCardsServletTest {
     @Mock
     private HttpSession session;
     @Mock
+    private ServletInputStream inputStream;
+    @Mock
     private PrintWriter writer;
 
     @Test
-    @DisplayName("Return all list of user cards")
-    void doGetAll() throws IOException {
+    @DisplayName("Create new card")
+    void doPost() throws ServletException, IOException {
         User user = User.builder().id(1).build();
+        byte[] bytes = "{\"name\":\"new_Card\"}".getBytes();
+        Card card = Card.builder().user(user).name("new_Card").build();
+        when(request.getInputStream()).thenReturn(inputStream);
+        when(inputStream.readAllBytes()).thenReturn(bytes);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
-        when(request.getParameter("cards-type")).thenReturn("All-cards");
-        when(response.getWriter()).thenReturn(writer);
 
-        getCardsServlet.doGet(request, response);
+        servlet.doPost(request, response);
 
-        verify(cardService).getCards(1, "All-cards");
-        verify(writer).print(anyString());
-        verify(response).setStatus(HttpServletResponse.SC_OK);
+        verify(cardService).createCard(card);
+        verify(response).setStatus(HttpServletResponse.SC_CREATED);
     }
 
     @Test
-    @DisplayName("Return all list of user cards where user admin")
-    void doGetAdmin() throws IOException {
-        User user = User.builder().id(1).build();
-        when(request.getSession()).thenReturn(session);
-        when(session.getAttribute("user")).thenReturn(user);
-        when(request.getParameter("cards-type")).thenReturn("My-cards");
-        when(response.getWriter()).thenReturn(writer);
-
-        getCardsServlet.doGet(request, response);
-
-        verify(cardService).getCards(1, "My-cards");
-        verify(writer).print(anyString());
-        verify(response).setStatus(HttpServletResponse.SC_OK);
-    }
-
-    @Test
-    @DisplayName("Return all list of user cards")
+    @DisplayName("Get card by id")
     void doGet() throws IOException {
         User user = User.builder().id(1).build();
+        when(request.getPathInfo()).thenReturn("/card/22");
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
-        when(request.getParameter("cards-type")).thenReturn("Another`s-cards");
         when(response.getWriter()).thenReturn(writer);
 
-        getCardsServlet.doGet(request, response);
+        servlet.doGet(request, response);
 
-        verify(cardService).getCards(1, "Another`s-cards");
+        verify(cardService).getCardAndCongratulationByCardId(22, user.getId());
+        verify(response).getWriter();
         verify(writer).print(anyString());
         verify(response).setStatus(HttpServletResponse.SC_OK);
     }
 
     @Test
-    @DisplayName("Exception while return all list of user cards")
+    @DisplayName("Get card by id")
     void doGetException() throws IOException {
         User user = User.builder().id(1).build();
+        when(request.getPathInfo()).thenReturn("/card/22");
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
-        when(request.getParameter("cards-type")).thenReturn("Another`s-cards");
         when(response.getWriter()).thenReturn(writer);
-        doThrow(RuntimeException.class).when(cardService).getCards(1, "Another`s-cards");
+        doThrow(RuntimeException.class).when(cardService).getCardAndCongratulationByCardId(22, user.getId());
 
-        getCardsServlet.doGet(request, response);
+        servlet.doGet(request, response);
 
-        verify(cardService).getCards(1, "Another`s-cards");
-        verify(writer).print(anyString());
+        verify(cardService).getCardAndCongratulationByCardId(22, user.getId());
+        verify(response).getWriter();
         verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
 }
+

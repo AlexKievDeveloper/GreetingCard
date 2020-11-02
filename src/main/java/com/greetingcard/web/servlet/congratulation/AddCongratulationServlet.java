@@ -1,5 +1,7 @@
 package com.greetingcard.web.servlet.congratulation;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.greetingcard.ServiceLocator;
 import com.greetingcard.entity.*;
 import com.greetingcard.service.CongratulationService;
@@ -10,30 +12,30 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+
 
 public class AddCongratulationServlet extends HttpServlet {
     private CongratulationService congratulationService = ServiceLocator.getBean("DefaultCongratulationService");
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-    }
-
-    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        Collection<Part> partList = new ArrayList<>(request.getParts());
-        String youtubeLinks = request.getParameter("youtube");
-        String plainLinks = request.getParameter("plain-link");
-        List<Link> linkList = congratulationService.getLinkList(partList, youtubeLinks, plainLinks);
-
         User user = (User) request.getSession().getAttribute("user");
         long userId = user.getId();
-        String message = request.getParameter("message");
-        int cardId = Integer.parseInt(request.getParameter("card-id"));
+        byte[] bytes = request.getInputStream().readAllBytes();
+        String json = new String(bytes, StandardCharsets.UTF_8);
+        Map<String, String> parametersMap = JSON.parseObject(json, new TypeReference<LinkedHashMap<String, String>>() {
+        });
+
+        String message = parametersMap.get("message");
+        int cardId = Integer.parseInt(parametersMap.get("card-id"));
+
+        List<Part> partList = new ArrayList<>(request.getParts());
+        List<Link> linkList = congratulationService.getLinkList(partList, request);
 
         Congratulation congratulation = Congratulation.builder()
                 .message(message)
@@ -42,7 +44,12 @@ public class AddCongratulationServlet extends HttpServlet {
                 .status(Status.STARTUP)
                 .linkList(linkList)
                 .build();
-
-        congratulationService.save(congratulation);
+        try {
+            congratulationService.save(congratulation);
+        } catch (RuntimeException e) {
+            response.getWriter().println(e.getMessage());
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+        response.setStatus(HttpServletResponse.SC_CREATED);
     }
 }
