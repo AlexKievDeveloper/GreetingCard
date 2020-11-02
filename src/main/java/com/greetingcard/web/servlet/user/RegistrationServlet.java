@@ -5,7 +5,6 @@ import com.alibaba.fastjson.TypeReference;
 import com.greetingcard.ServiceLocator;
 import com.greetingcard.entity.User;
 import com.greetingcard.security.SecurityService;
-import com.greetingcard.web.templater.PageGenerator;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServlet;
@@ -15,8 +14,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import static com.greetingcard.web.WebConstants.CONTENT_TYPE;
 
 @Slf4j
 public class RegistrationServlet extends HttpServlet {
@@ -29,7 +26,8 @@ public class RegistrationServlet extends HttpServlet {
         byte[] bytes = request.getInputStream().readAllBytes();
         String json = new String(bytes, StandardCharsets.UTF_8);
         Map<String, String> userMap =
-                JSON.parseObject(json, new TypeReference<LinkedHashMap<String, String>>() {});
+                JSON.parseObject(json, new TypeReference<LinkedHashMap<String, String>>() {
+                });
 
         User user = User.builder()
                 .firstName(userMap.get("firstName"))

@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -28,6 +29,8 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AddCongratulationServletTest {
+    @Mock
+    private ServletInputStream servletInputStream;
     @Mock
     private Part part;
     @Mock
@@ -69,6 +72,14 @@ class AddCongratulationServletTest {
         //prepare
         Collection<Part> parts = new ArrayList<>();
         parts.add(part);
+        String json = "{\n" +
+                "  \"youtube\" : \"https://www.youtube.com/watch?v=r-0qNVT_I4s\",\n" +
+                "  \"plain-link\" : \"https://www.studytonight.com/servlet/httpsession.php\",\n" +
+                "  \"message\" : \"Happy Birthday\",\n" +
+                "  \"card-id\" : \"1\",\n" +
+                "}";
+        byte[] bytes = json.getBytes();
+
         when(request.getParts()).thenReturn(parts);
         when(congratulationService.getLinkList(any(), any())).thenReturn(linkList);
         when(congratulationService.getLinkList(any(), any(), any())).thenReturn(linkList);
@@ -80,9 +91,13 @@ class AddCongratulationServletTest {
         when(request.getParameter("youtube")).thenReturn("https://www.youtube.com/watch?v=pCdCHqCUsZg");
         when(request.getParameter("plain-link")).thenReturn("https://www.studytonight.com/servlet/httpsession.php");
 
+        when(request.getInputStream()).thenReturn(servletInputStream);
+        when(servletInputStream.readAllBytes()).thenReturn(bytes);
+
         //when
         addCongratulationServlet.doPost(request, response);
         //then
+        verify(request).getInputStream();
         verify(request).getParts();
         verify(request).getSession();
         verify(session).getAttribute("user");
@@ -91,5 +106,6 @@ class AddCongratulationServletTest {
         verify(request).getParameter("plain-link");
         verify(request).getParameter("message");
         verify(request).getParameter("card-id");
+
     }
 }

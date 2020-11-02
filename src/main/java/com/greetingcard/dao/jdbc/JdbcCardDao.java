@@ -19,13 +19,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 public class JdbcCardDao implements CardDao {
-    private static final String GET_ALL_CARDS_BY_USER_ID = "SELECT cards.card_id, name, background_image, card_link, status_id, users.user_id, firstName, lastName, login, email, role_id FROM cards LEFT JOIN users_cards ON cards.card_id=users_cards.card_id LEFT JOIN users ON users_cards.user_id=users.user_id WHERE users.user_id = ? ORDER BY cards.card_id";
-    private static final String GET_CARDS_BY_USER_ID_AND_ROLE_ID = "SELECT cards.card_id, name, background_image, card_link, status_id, users.user_id, firstName, lastName, login, email, role_id FROM cards LEFT JOIN users_cards ON cards.card_id=users_cards.card_id LEFT JOIN users ON users_cards.user_id=users.user_id WHERE (users.user_id = ? AND role_id = ?) ORDER BY cards.card_id";
+    private static final String GET_ALL_CARDS_BY_USER_ID = "SELECT cards.card_id, name, background_image, card_link, status_id, users.user_id, firstName, lastName, login, email FROM cards LEFT JOIN users_cards ON cards.card_id=users_cards.card_id LEFT JOIN users ON users_cards.user_id=users.user_id WHERE users.user_id = ? ORDER BY cards.card_id";
+    private static final String GET_CARDS_BY_USER_ID_AND_ROLE_ID = "SELECT cards.card_id, name, background_image, card_link, status_id, users.user_id, firstName, lastName, login, email FROM cards LEFT JOIN users_cards ON cards.card_id=users_cards.card_id LEFT JOIN users ON users_cards.user_id=users.user_id WHERE (users.user_id = ? AND role_id = ?) ORDER BY cards.card_id";
     private static final String SAVE_NEW_CARD = "INSERT INTO cards (user_id, name, status_id) VALUES (?,?,?)";
     private static final String ADD_TO_USERS_CARDS = "INSERT INTO users_cards (card_id, user_id, role_id) VALUES (?,?,?)";
     private static final String CARD_AND_CONGRATULATION = "SELECT c.card_id ,c.user_id as card_user, name, background_image, card_link, c.status_id, cg.congratulation_id, cg.status_id as con_status, message, cg.user_id, firstName, lastName, login, link_id, link,type_id " +
@@ -48,19 +48,18 @@ public class JdbcCardDao implements CardDao {
     }
 
     @Override
-    public Map<Card, Role> getAllCardsByUserId(long id) {
+    public List<Card> getAllCardsByUserId(long id) {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(GET_ALL_CARDS_BY_USER_ID)) {
             preparedStatement.setLong(1, id);
-            Map<Card, Role> cards = new LinkedHashMap<>();
+            List<Card> cardsList = new ArrayList<>();
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     Card card = CARD_ROW_MAPPER.mapRow(resultSet);
-                    Role role = Role.getByNumber(resultSet.getInt("role_id"));
-                    cards.put(card, role);
+                    cardsList.add(card);
                 }
             }
-            return cards;
+            return cardsList;
         } catch (SQLException e) {
             log.error("Exception while getting cards from DB by user id: {}", id, e);
             throw new RuntimeException("Exception while getting cards from DB by user id: " + id, e);
@@ -68,20 +67,19 @@ public class JdbcCardDao implements CardDao {
     }
 
     @Override
-    public Map<Card, Role> getCardsByUserIdAndRoleId(long userId, long roleId) {
+    public List<Card> getCardsByUserIdAndRoleId(long userId, long roleId) {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(GET_CARDS_BY_USER_ID_AND_ROLE_ID)) {
             preparedStatement.setLong(1, userId);
             preparedStatement.setLong(2, roleId);
-            Map<Card, Role> cards = new LinkedHashMap<>();
+            List<Card> cardsList = new ArrayList<>();
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     Card card = CARD_ROW_MAPPER.mapRow(resultSet);
-                    Role role = Role.getByNumber(resultSet.getInt("role_id"));
-                    cards.put(card, role);
+                    cardsList.add(card);
                 }
             }
-            return cards;
+            return cardsList;
         } catch (SQLException e) {
             log.error("Exception while getting my cards from DB by user id: {} and role id: {}", userId, roleId, e);
             throw new RuntimeException("Exception while getting my cards from DB by user id: " + userId +

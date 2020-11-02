@@ -1,7 +1,6 @@
 package com.greetingcard.web.servlet.card;
 
 import com.greetingcard.entity.Card;
-import com.greetingcard.entity.Role;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
 import org.junit.jupiter.api.DisplayName;
@@ -17,8 +16,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Map;
+import java.util.List;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -37,7 +37,7 @@ class GetCardsServletTest {
     @Mock
     private User user;
     @Mock
-    private Map<Card, Role> cards;
+    private List<Card> cardsList;
     @Mock
     private PrintWriter writer;
     @Mock
@@ -51,8 +51,7 @@ class GetCardsServletTest {
         when(session.getAttribute("user")).thenReturn(user);
         when(user.getId()).thenReturn(1L);
         when(request.getParameter("cards-type")).thenReturn("All-cards");
-        when(cardService.getCards(1, "All-cards")).thenReturn(cards);
-        when(request.getServletContext()).thenReturn(context);
+        when(cardService.getCards(1, "All-cards")).thenReturn(cardsList);
         when(response.getWriter()).thenReturn(writer);
         //when
         getCardsServlet.doGet(request, response);
@@ -62,7 +61,7 @@ class GetCardsServletTest {
         verify(user).getId();
         verify(request).getParameter("cards-type");
         verify(cardService).getCards(1, "All-cards");
-        verify(request).getServletContext();
         verify(response).getWriter();
+        verify(writer).print(anyString());
     }
 }

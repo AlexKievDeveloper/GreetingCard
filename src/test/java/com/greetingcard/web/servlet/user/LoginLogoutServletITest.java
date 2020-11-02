@@ -64,7 +64,7 @@ class LoginLogoutServletITest {
 
     @Test
     @DisplayName("Invalidates the session")
-    void doDelete() throws IOException {
+    void doDelete() {
         //prepare
         LoginLogoutServlet loginLogoutServlet = new LoginLogoutServlet();
         when(request.getSession()).thenReturn(httpsession);
@@ -120,5 +120,6 @@ class LoginLogoutServletITest {
         verify(inputStream).readAllBytes();
         verify(response).getWriter();
         verify(printWriter).print("{\"message\":\"Access denied. Please login and try again.\"}");
+        verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
 }
