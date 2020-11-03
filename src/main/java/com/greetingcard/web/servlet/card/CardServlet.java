@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.greetingcard.ServiceLocator;
 import com.greetingcard.entity.Card;
+import com.greetingcard.entity.Status;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
 import lombok.extern.slf4j.Slf4j;
@@ -25,24 +26,24 @@ public class CardServlet extends HttpServlet {
         log.info("Get card request");
 
         String[] path = request.getPathInfo().split("/");
-        long id = Long.parseLong(path[path.length - 1]);
+        long cardId = Long.parseLong(path[path.length - 1]);
 
-        log.info("Received GET request for card id: {}", id);
+        log.info("Received GET request for card id: {}", cardId);
 
         User user = (User) request.getSession().getAttribute("user");
         Card card = null;
         try {
-            card = cardService.getCardAndCongratulationByCardId(id, user.getId());
+            card = cardService.getCardAndCongratulationByCardId(cardId, user.getId());
         } catch (RuntimeException e) {
             response.getWriter().print(e.getMessage());
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            log.error("Exception while getting card: {}, user login: {}", id, user.getLogin());
+            log.error("Exception while getting card: {}, user login: {}", cardId, user.getLogin());
             return;
         }
         String json = JSON.toJSONString(card);
         response.getWriter().print(json);
         response.setStatus(HttpServletResponse.SC_OK);
-        log.info("Successfully writing card to response, id: {}", id);
+        log.info("Successfully writing card to response, id: {}", cardId);
     }
 
     @Override
@@ -74,6 +75,27 @@ public class CardServlet extends HttpServlet {
             return;
         }
         response.setStatus(HttpServletResponse.SC_CREATED);
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        log.info("Received PUT request");
+
+        String[] path = request.getPathInfo().split("/");
+        long cardId = Long.parseLong(path[path.length - 2]);
+
+        log.info("Received PUT request for card id: {}", cardId);
+
+        try {
+            cardService.changeCardStatus(Status.ISOVER, cardId);
+        } catch (RuntimeException e) {
+            response.getWriter().print(e.getMessage());
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            log.error("Exception while changing card status with card id: {}", cardId);
+            return;
+        }
+        response.setStatus(HttpServletResponse.SC_CREATED);
+        log.info("Successfully changed card status for card id: {}", cardId);
     }
 
     @Override

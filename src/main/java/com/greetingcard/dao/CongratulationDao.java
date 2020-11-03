@@ -17,5 +17,7 @@ public interface CongratulationDao {
 
     void changeStatusCongratulationsByCardId(Status status, long cardId);
 
+    void changeCongratulationStatusByCongratulationId(Status status, long congratulationId);
+
     void deleteById(long congratulationId, long userId);
 }

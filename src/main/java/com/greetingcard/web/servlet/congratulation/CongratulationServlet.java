@@ -7,7 +7,6 @@ import com.greetingcard.entity.*;
 import com.greetingcard.service.CongratulationService;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,7 +21,7 @@ public class CongratulationServlet extends HttpServlet {
     private CongratulationService congratulationService = ServiceLocator.getBean("DefaultCongratulationService");
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         User user = (User) request.getSession().getAttribute("user");
         long userId = user.getId();
 
@@ -57,6 +56,27 @@ public class CongratulationServlet extends HttpServlet {
         }
         response.setStatus(HttpServletResponse.SC_CREATED);
         log.info("Successfully creating congratulation for user: {}", user.getLogin());
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        log.info("Received PUT request");
+
+        String[] path = request.getPathInfo().split("/");
+        long congratulationId = Long.parseLong(path[path.length - 2]);
+
+        log.info("Received PUT request for congratulation id: {}", congratulationId);
+
+        try {
+            congratulationService.changeCongratulationStatusByCongratulationId(Status.ISOVER, congratulationId);
+        } catch (RuntimeException e) {
+            response.getWriter().print(e.getMessage());
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            log.error("Exception while changing congratulation status with congratulation id: {}", congratulationId);
+            return;
+        }
+        response.setStatus(HttpServletResponse.SC_CREATED);
+        log.info("Successfully changed congratulation status for congratulation id: {}", congratulationId);
     }
 
     @Override

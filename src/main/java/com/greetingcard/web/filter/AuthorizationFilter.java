@@ -20,7 +20,7 @@ public class AuthorizationFilter implements Filter {
         if (user != null) {
             chain.doFilter(request, response);
         } else {
-            httpServletResponse.sendRedirect("/api/v1/session");
+            httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
     }
 

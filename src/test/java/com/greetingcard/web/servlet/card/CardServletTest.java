@@ -1,6 +1,7 @@
 package com.greetingcard.web.servlet.card;
 
 import com.greetingcard.entity.Card;
+import com.greetingcard.entity.Status;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
 import org.junit.jupiter.api.DisplayName;
@@ -145,6 +146,34 @@ class CardServletTest {
         verify(user).getId();
         verify(user, times(2)).getLogin();
         verify(response).setStatus(HttpServletResponse.SC_NO_CONTENT);
+    }
+
+    @Test
+    @DisplayName("Changing card status")
+    void doPut() throws IOException {
+        //prepare
+        when(request.getPathInfo()).thenReturn("/api/v1/card/1/status");
+        //when
+        servlet.doPut(request, response);
+        //then
+        verify(request).getPathInfo();
+        verify(cardService).changeCardStatus(Status.ISOVER, 1);
+        verify(response).setStatus(HttpServletResponse.SC_CREATED);
+    }
+
+    @Test
+    @DisplayName("Exception while changing card status")
+    void doPutException() throws IOException {
+        //prepare
+        when(request.getPathInfo()).thenReturn("/api/v1/card/1/status");
+        when(response.getWriter()).thenReturn(writer);
+        doThrow(RuntimeException.class).when(cardService).changeCardStatus(Status.ISOVER, 1);
+        //when
+        servlet.doPut(request, response);
+        //then
+        verify(cardService).changeCardStatus(Status.ISOVER, 1);
+        verify(response).getWriter();
+        verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.greetingcard.web.servlet.congratulation;
 
 import com.greetingcard.entity.Link;
+import com.greetingcard.entity.Status;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CongratulationService;
 import org.junit.jupiter.api.DisplayName;
@@ -113,6 +114,34 @@ class CongratulationServletTest {
         verify(session).getAttribute("user");
         verify(user).getId();
         verify(congratulationService).save(any());
+        verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
+
+    @Test
+    @DisplayName("Changing congratulation status")
+    void doPut() throws IOException {
+        //prepare
+        when(request.getPathInfo()).thenReturn("/api/v1/congratulation/1/status");
+        //when
+        congratulationServlet.doPut(request, response);
+        //then
+        verify(request).getPathInfo();
+        verify(congratulationService).changeCongratulationStatusByCongratulationId(Status.ISOVER, 1);
+        verify(response).setStatus(HttpServletResponse.SC_CREATED);
+    }
+
+    @Test
+    @DisplayName("Exception while changing congratulation status")
+    void doPutException() throws IOException {
+        //prepare
+        when(request.getPathInfo()).thenReturn("/api/v1/congratulation/1/status");
+        when(response.getWriter()).thenReturn(printWriter);
+        doThrow(RuntimeException.class).when(congratulationService).changeCongratulationStatusByCongratulationId(Status.ISOVER, 1);
+        //when
+        congratulationServlet.doPut(request, response);
+        //then
+        verify(congratulationService).changeCongratulationStatusByCongratulationId(Status.ISOVER, 1);
+        verify(response).getWriter();
         verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
 

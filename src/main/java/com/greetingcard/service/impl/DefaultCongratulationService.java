@@ -6,6 +6,7 @@ import com.greetingcard.dao.jdbc.JdbcCongratulationDao;
 import com.greetingcard.entity.Congratulation;
 import com.greetingcard.entity.Link;
 import com.greetingcard.entity.LinkType;
+import com.greetingcard.entity.Status;
 import com.greetingcard.service.CongratulationService;
 import com.greetingcard.util.PropertyReader;
 
@@ -43,6 +44,11 @@ public class DefaultCongratulationService implements CongratulationService {
     @Override
     public void save(Congratulation congratulation) {
         jdbcCongratulationDao.save(congratulation);
+    }
+
+    @Override
+    public void changeCongratulationStatusByCongratulationId(Status status, long congratulationId){
+        jdbcCongratulationDao.changeCongratulationStatusByCongratulationId(status, congratulationId);
     }
 
     @Override

@@ -61,6 +61,6 @@ class AuthorizationFilterTest {
         //then
         verify(servletRequest).getSession();
         verify(session).getAttribute("user");
-        verify(servletResponse).sendRedirect("/api/v1/session");
+        verify(servletResponse).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
 }

@@ -277,5 +277,19 @@ class JdbcCongratulationDaoITest {
         assertEquals(Status.STARTUP, actualCongratulation2.getStatus());
         assertEquals(Status.STARTUP, actualCongratulation3.getStatus());
     }
+    @Test
+    @DisplayName("Change status to STARTUP congratulations by id of card")
+    void changeCongratulationStatusByCongratulationId(){
+        //prepare
+        Congratulation congratulationBefore = jdbcCongratulationDao.getCongratulationById(1);
+        assertEquals(Status.STARTUP, congratulationBefore.getStatus());
+
+        //when
+        jdbcCongratulationDao.changeCongratulationStatusByCongratulationId(Status.ISOVER, 1);
+
+        //then
+        Congratulation congratulationAfter = jdbcCongratulationDao.getCongratulationById(1);
+        assertEquals(Status.ISOVER, congratulationAfter.getStatus());
+    }
 }
 

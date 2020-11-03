@@ -48,15 +48,6 @@
         <url-pattern>/api/v1/congratulation/*</url-pattern>
     </servlet-mapping>
 
-    <servlet>
-        <servlet-name>FinishCardServlet</servlet-name>
-        <servlet-class>com.greetingcard.web.servlet.card.FinishCardServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>FinishCardServlet</servlet-name>
-        <url-pattern>/api/v1/card/id/status</url-pattern>
-    </servlet-mapping>
-
     <filter>
         <filter-name>AuthorizationFilter</filter-name>
         <filter-class>com.greetingcard.web.filter.AuthorizationFilter</filter-class>
@@ -67,7 +58,6 @@
         <url-pattern>/api/v1/cards</url-pattern>
         <url-pattern>/api/v1/card</url-pattern>
         <url-pattern>/api/v1/card/*</url-pattern>
-        <url-pattern>/api/v1/card/id/status</url-pattern>
         <url-pattern>/api/v1/congratulation</url-pattern>
         <url-pattern>/api/v1/congratulation/*</url-pattern>
     </filter-mapping>
