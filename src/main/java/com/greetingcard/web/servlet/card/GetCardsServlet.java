@@ -23,10 +23,11 @@ public class GetCardsServlet extends HttpServlet {
 
         List<Card> cardsList = null;
         try {
-            cardsList = cardService.getCards(userId, request.getParameter("cards-type"));
+            cardsList = cardService.getCards(userId, request.getParameter("type"));
         } catch (RuntimeException e) {
             response.getWriter().println(e.getMessage());
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
         }
         String json = JSON.toJSONString(cardsList == null ? Collections.EMPTY_LIST : cardsList);
         response.getWriter().print(json);

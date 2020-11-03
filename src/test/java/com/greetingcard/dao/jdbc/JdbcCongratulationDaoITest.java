@@ -38,7 +38,7 @@ class JdbcCongratulationDaoITest {
     void afterAll() throws IOException {
         flyway.clean();
         Files.deleteIfExists(Path.of("src/main/webapp/static/audio"));
-        Files.deleteIfExists(Path.of("src/main/webapp/static/picture"));
+        Files.deleteIfExists(Path.of("src/main/webapp/static/img"));
         Files.deleteIfExists(Path.of("src/main/webapp/static"));
     }
 
@@ -56,42 +56,42 @@ class JdbcCongratulationDaoITest {
         assertEquals(Status.STARTUP, actualCongratulation.getStatus());
 
         assertEquals(1, actualCongratulation.getLinkList().get(0).getId());
-        assertEquals("you_tube_1", actualCongratulation.getLinkList().get(0).getLink());
+        assertEquals("iywaBOMvYLI", actualCongratulation.getLinkList().get(0).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(0).getCongratulationId());
         assertEquals(LinkType.VIDEO, actualCongratulation.getLinkList().get(0).getType());
 
         assertEquals(2, actualCongratulation.getLinkList().get(1).getId());
-        assertEquals("you_tube_2", actualCongratulation.getLinkList().get(1).getLink());
+        assertEquals("L-iepu3EtyE", actualCongratulation.getLinkList().get(1).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(1).getCongratulationId());
         assertEquals(LinkType.VIDEO, actualCongratulation.getLinkList().get(1).getType());
 
         assertEquals(4, actualCongratulation.getLinkList().get(2).getId());
-        assertEquals("audio_1", actualCongratulation.getLinkList().get(2).getLink());
+        assertEquals("https://www.dropbox.com/s/8cg7h5gehrk7joy/dzidzo_-_kolomijka_bojkivska_%28zf.fm%29.mp3?dl=0", actualCongratulation.getLinkList().get(2).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(2).getCongratulationId());
         assertEquals(LinkType.PICTURE, actualCongratulation.getLinkList().get(2).getType());
 
         assertEquals(5, actualCongratulation.getLinkList().get(3).getId());
-        assertEquals("audio_2", actualCongratulation.getLinkList().get(3).getLink());
+        assertEquals("https://www.dropbox.com/s/3u94pftverackzy/kolomijki_-_kolomijka_zastilna_%28zf.fm%29.mp3?dl=0", actualCongratulation.getLinkList().get(3).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(3).getCongratulationId());
         assertEquals(LinkType.PICTURE, actualCongratulation.getLinkList().get(3).getType());
 
         assertEquals(7, actualCongratulation.getLinkList().get(4).getId());
-        assertEquals("image_1", actualCongratulation.getLinkList().get(4).getLink());
+        assertEquals("https://i.postimg.cc/kXRG5yRC/images.jpg", actualCongratulation.getLinkList().get(4).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(4).getCongratulationId());
         assertEquals(LinkType.AUDIO, actualCongratulation.getLinkList().get(4).getType());
 
         assertEquals(8, actualCongratulation.getLinkList().get(5).getId());
-        assertEquals("image_2", actualCongratulation.getLinkList().get(5).getLink());
+        assertEquals("https://i.postimg.cc/hvfjTLC9/images-1.jpg", actualCongratulation.getLinkList().get(5).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(5).getCongratulationId());
         assertEquals(LinkType.AUDIO, actualCongratulation.getLinkList().get(5).getType());
 
         assertEquals(10, actualCongratulation.getLinkList().get(6).getId());
-        assertEquals("link_1", actualCongratulation.getLinkList().get(6).getLink());
+        assertEquals("https://www.dropbox.com/s/o7i5as1axjmg9if/kolomijki_-_oj__marichko__chicheri_%28zv.fm%29.mp3?dl=0", actualCongratulation.getLinkList().get(6).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(6).getCongratulationId());
         assertEquals(LinkType.PLAIN_LINK, actualCongratulation.getLinkList().get(6).getType());
 
         assertEquals(11, actualCongratulation.getLinkList().get(7).getId());
-        assertEquals("link_1", actualCongratulation.getLinkList().get(7).getLink());
+        assertEquals("https://www.youtube.com/watch?v=YlUKcNNmywk", actualCongratulation.getLinkList().get(7).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(7).getCongratulationId());
         assertEquals(LinkType.PLAIN_LINK, actualCongratulation.getLinkList().get(7).getType());
     }
@@ -128,7 +128,7 @@ class JdbcCongratulationDaoITest {
         assertEquals(2, actualCongratulation.getCard().getId());
         assertEquals(2, actualCongratulation.getUser().getId());
         assertEquals(Status.STARTUP, actualCongratulation.getStatus());
-        assertEquals(13, actualCongratulation.getLinkList().get(0).getId());
+        assertEquals(17, actualCongratulation.getLinkList().get(0).getId());
         assertEquals("you_tube_1", actualCongratulation.getLinkList().get(0).getLink());
         assertEquals(7, actualCongratulation.getLinkList().get(0).getCongratulationId());
         assertEquals(LinkType.VIDEO, actualCongratulation.getLinkList().get(0).getType());
@@ -238,7 +238,7 @@ class JdbcCongratulationDaoITest {
 
         assertEquals(8, actualCongratulation1.getLinkList().size());
         assertEquals(4, actualCongratulation2.getLinkList().size());
-        assertEquals(0, actualCongratulation3.getLinkList().size());
+        assertEquals(4, actualCongratulation3.getLinkList().size());
 
         assertEquals(1, actualCongratulation1.getUser().getId());
         assertEquals(1, actualCongratulation2.getUser().getId());

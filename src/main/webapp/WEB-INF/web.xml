@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <web-app>
-
-    <listener>
-        <listener-class>com.greetingcard.web.listener.ThymeleafInitializerListener</listener-class>
-    </listener>
-
     <servlet>
         <servlet-name>LoginLogoutServlet</servlet-name>
         <servlet-class>com.greetingcard.web.servlet.user.LoginLogoutServlet</servlet-class>
@@ -16,12 +11,12 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>Registration</servlet-name>
+        <servlet-name>RegistrationServlet</servlet-name>
         <servlet-class>com.greetingcard.web.servlet.user.RegistrationServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>Registration</servlet-name>
-        <url-pattern>/registration</url-pattern>
+        <servlet-name>RegistrationServlet</servlet-name>
+        <url-pattern>/api/v1/user</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -30,9 +25,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>GetCardsServlet</servlet-name>
-        <url-pattern>/all-cards</url-pattern>
-        <url-pattern>/my-cards</url-pattern>
-        <url-pattern>/another`s-cards</url-pattern>
+        <url-pattern>/api/v1/cards</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -41,8 +34,8 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>CardServlet</servlet-name>
-        <url-pattern>/card</url-pattern>
-        <url-pattern>/card/*</url-pattern>
+        <url-pattern>/api/v1/card</url-pattern>
+        <url-pattern>/api/v1/card/*</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -56,21 +49,16 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>AddCongratulationServlet</servlet-name>
-        <url-pattern>/add-congratulation</url-pattern>
+        <url-pattern>/api/v1/congratulation</url-pattern>
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>AddCongratulationServlet</servlet-name>
-        <servlet-class>com.greetingcard.web.servlet.congratulation.AddCongratulationServlet</servlet-class>
-        <multipart-config>
-            <max-file-size>10485760</max-file-size>
-            <max-request-size>30971520</max-request-size>
-            <file-size-threshold>5242880</file-size-threshold>
-        </multipart-config>
+        <servlet-name>FinishCardServlet</servlet-name>
+        <servlet-class>com.greetingcard.web.servlet.card.FinishCardServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>AddCongratulationServlet</servlet-name>
-        <url-pattern>/add-congratulation</url-pattern>
+        <servlet-name>FinishCardServlet</servlet-name>
+        <url-pattern>/api/v1/card/id/status</url-pattern>
     </servlet-mapping>
 
     <filter>
@@ -80,13 +68,11 @@
     <filter-mapping>
         <filter-name>AuthorizationFilter</filter-name>
         <url-pattern>/</url-pattern>
-        <url-pattern>/profile</url-pattern>
-        <url-pattern>/card</url-pattern>
-        <url-pattern>/card/*</url-pattern>
-        <url-pattern>/all-cards</url-pattern>
-        <url-pattern>/my-cards</url-pattern>
-        <url-pattern>/another`s-cards</url-pattern>
-        <url-pattern>/add-congratulation</url-pattern>
+        <url-pattern>/api/v1/cards</url-pattern>
+        <url-pattern>/api/v1/card</url-pattern>
+        <url-pattern>/api/v1/card/*</url-pattern>
+        <url-pattern>/api/v1/card/id/status</url-pattern>
+        <url-pattern>/api/v1/congratulation</url-pattern>
     </filter-mapping>
 
 </web-app>

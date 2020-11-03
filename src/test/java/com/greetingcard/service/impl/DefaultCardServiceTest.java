@@ -18,34 +18,34 @@ class DefaultCardServiceTest {
     private DefaultCardService defaultCardService;
 
     @Test
-    @DisplayName("Returns map with cards")
+    @DisplayName("Returns list with cards")
     void getCardsWhenParameterIsAllCards() {
         //when
-        defaultCardService.getCards(1, "All-cards");
+        defaultCardService.getCards(1, "all");
         //then
         verify(jdbcCardDao).getAllCardsByUserId(1);
     }
 
     @Test
-    @DisplayName("Returns map with cards")
+    @DisplayName("Returns list with cards")
     void getCardsWhenParameterIsMyCards() {
         //when
-        defaultCardService.getCards(1, "My-cards");
+        defaultCardService.getCards(1, "my");
         //then
         verify(jdbcCardDao).getCardsByUserIdAndRoleId(1, 1);
     }
 
     @Test
-    @DisplayName("Returns map with cards")
+    @DisplayName("Returns list with cards")
     void getCardsWhenParameterIsAnotherCards() {
         //when
-        defaultCardService.getCards(1, "Another`s-cards");
+        defaultCardService.getCards(1, "other");
         //then
         verify(jdbcCardDao).getCardsByUserIdAndRoleId(1, 2);
     }
 
     @Test
-    @DisplayName("Return card with all congatulations")
+    @DisplayName("Return List with all congratulations")
     void getCardAndCongratulationByCardId() {
         //when
         defaultCardService.getCardAndCongratulationByCardId(1, 1);

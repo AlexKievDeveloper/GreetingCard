@@ -24,7 +24,7 @@ public class LoginLogoutServlet extends HttpServlet {
     private int maxInactiveInterval = Integer.parseInt(propertyReader.getProperty("max.inactive.interval"));
 
     @Override
-    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) {
         log.info("logout");
         request.getSession().invalidate();
         response.setStatus(HttpServletResponse.SC_OK);
@@ -37,7 +37,8 @@ public class LoginLogoutServlet extends HttpServlet {
         byte[] bytes = request.getInputStream().readAllBytes();
         String json = new String(bytes, StandardCharsets.UTF_8);
         Map<String, String> loginPasswordMap =
-                JSON.parseObject(json, new TypeReference<LinkedHashMap<String, String>>() {});
+                JSON.parseObject(json, new TypeReference<LinkedHashMap<String, String>>() {
+                });
 
         String login = loginPasswordMap.get("login");
         String password = loginPasswordMap.get("password");
