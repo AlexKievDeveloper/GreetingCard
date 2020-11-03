@@ -26,7 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class AddCongratulationServletTest {
+class CongratulationServletTest {
     @Mock
     private ServletInputStream servletInputStream;
     @Mock
@@ -46,7 +46,7 @@ class AddCongratulationServletTest {
     @Mock
     private PrintWriter printWriter;
     @InjectMocks
-    private AddCongratulationServlet addCongratulationServlet;
+    private CongratulationServlet congratulationServlet;
 
     @Test
     @DisplayName("Saving congratulation to DB")
@@ -70,7 +70,7 @@ class AddCongratulationServletTest {
         when(request.getInputStream()).thenReturn(servletInputStream);
         when(servletInputStream.readAllBytes()).thenReturn(bytes);
         //when
-        addCongratulationServlet.doPost(request, response);
+        congratulationServlet.doPost(request, response);
         //then
         verify(request).getInputStream();
         //verify(request).getParts();
@@ -105,7 +105,7 @@ class AddCongratulationServletTest {
         when(response.getWriter()).thenReturn(printWriter);
         doThrow(RuntimeException.class).when(congratulationService).save(any());
         //when
-        addCongratulationServlet.doPost(request, response);
+        congratulationServlet.doPost(request, response);
         //then
         verify(request).getInputStream();
         //verify(request).getParts();
@@ -113,6 +113,46 @@ class AddCongratulationServletTest {
         verify(session).getAttribute("user");
         verify(user).getId();
         verify(congratulationService).save(any());
+        verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
+
+    @Test
+    @DisplayName("Deleting congratulation by id")
+    void doDelete() {
+        when(request.getSession()).thenReturn(session);
+        when(session.getAttribute("user")).thenReturn(user);
+        when(request.getPathInfo()).thenReturn("/api/v1/congratulation/1");
+        when(user.getId()).thenReturn(1L);
+        when(user.getLogin()).thenReturn("user");
+
+        congratulationServlet.doDelete(request, response);
+
+        verify(request).getSession();
+        verify(session).getAttribute("user");
+        verify(request).getPathInfo();
+        verify(user).getId();
+        verify(user, times(2)).getLogin();
+        verify(response).setStatus(HttpServletResponse.SC_NO_CONTENT);
+    }
+
+    @Test
+    @DisplayName("Throws Exception while deleting congratulation by id")
+    void doDeleteException() {
+        when(request.getSession()).thenReturn(session);
+        when(session.getAttribute("user")).thenReturn(user);
+        when(request.getPathInfo()).thenReturn("/api/v1/congratulation/1");
+        when(user.getId()).thenReturn(1L);
+        when(user.getLogin()).thenReturn("user");
+        doThrow(RuntimeException.class).when(congratulationService).deleteById(1L, 1L);
+
+        congratulationServlet.doDelete(request, response);
+
+        verify(request).getSession();
+        verify(session).getAttribute("user");
+        verify(request).getPathInfo();
+        verify(user).getId();
+        verify(user, times(2)).getLogin();
+        verify(congratulationService).deleteById(1L, 1L);
         verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
 }

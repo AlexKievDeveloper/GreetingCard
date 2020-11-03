@@ -1,14 +1,11 @@
 package com.greetingcard.dao.jdbc;
 
-import com.greetingcard.ServiceLocator;
 import com.greetingcard.dao.CongratulationDao;
 import com.greetingcard.dao.jdbc.mapper.CongratulationRowMapper;
 import com.greetingcard.dao.jdbc.mapper.CongratulationsRowMapper;
 import com.greetingcard.entity.Congratulation;
 import com.greetingcard.entity.Link;
-import com.greetingcard.entity.LinkType;
 import com.greetingcard.entity.Status;
-import com.greetingcard.util.PropertyReader;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;

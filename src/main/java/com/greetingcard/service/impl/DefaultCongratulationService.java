@@ -45,6 +45,11 @@ public class DefaultCongratulationService implements CongratulationService {
         jdbcCongratulationDao.save(congratulation);
     }
 
+    @Override
+    public void deleteById(long congratulationId, long userId) {
+        jdbcCongratulationDao.deleteById(congratulationId, userId);
+    }
+
     void addYoutubeLinks(List<Link> linkList, String youtubeLinks) {
 
         String pattern = "(https?:\\/\\/)?([\\w-]{1,32}\\.[\\w-]{1,32})[^\\s@]*";

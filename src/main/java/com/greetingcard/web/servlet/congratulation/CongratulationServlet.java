@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class AddCongratulationServlet extends HttpServlet {
+public class CongratulationServlet extends HttpServlet {
     private CongratulationService congratulationService = ServiceLocator.getBean("DefaultCongratulationService");
 
     @Override
@@ -57,5 +57,25 @@ public class AddCongratulationServlet extends HttpServlet {
         }
         response.setStatus(HttpServletResponse.SC_CREATED);
         log.info("Successfully creating congratulation for user: {}", user.getLogin());
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) {
+        log.info("Request for DELETE congratulation");
+        User user = (User) request.getSession().getAttribute("user");
+        String[] path = request.getPathInfo().split("/");
+        long congratulationId = Long.parseLong(path[path.length - 1]);
+
+        log.info("Request DELETE for congratulation with id {}, user: {}", congratulationId, user.getLogin());
+
+        try {
+            congratulationService.deleteById(congratulationId, user.getId());
+        } catch (RuntimeException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            log.error("Exception while deleting congratulation id: {}, user login: {}", congratulationId, user.getLogin());
+            return;
+        }
+        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+        log.info("Successfully deleted congratulation with id: {}, user login: {}", congratulationId, user.getLogin());
     }
 }

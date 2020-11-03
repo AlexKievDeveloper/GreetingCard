@@ -12,4 +12,6 @@ public interface CongratulationService {
     List<Link> getLinkList(String youtubeLinks, String plainLinks);
 
     void save(Congratulation congratulation);
+
+    void deleteById(long congratulationId, long userId);
 }
