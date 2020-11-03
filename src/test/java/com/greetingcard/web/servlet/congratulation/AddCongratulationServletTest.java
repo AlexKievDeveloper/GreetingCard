@@ -62,8 +62,8 @@ class AddCongratulationServletTest {
                 "}";
         byte[] bytes = json.getBytes();
 
-        when(request.getParts()).thenReturn(parts);
-        when(congratulationService.getLinkList(any(), anyString(), anyString())).thenReturn(linkList);
+        //when(request.getParts()).thenReturn(parts);
+        when(congratulationService.getLinkList(anyString(), anyString())).thenReturn(linkList);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
         when(user.getId()).thenReturn(1L);
@@ -73,7 +73,7 @@ class AddCongratulationServletTest {
         addCongratulationServlet.doPost(request, response);
         //then
         verify(request).getInputStream();
-        verify(request).getParts();
+        //verify(request).getParts();
         verify(request).getSession();
         verify(session).getAttribute("user");
         verify(user).getId();
@@ -95,8 +95,8 @@ class AddCongratulationServletTest {
                 "}";
         byte[] bytes = json.getBytes();
 
-        when(request.getParts()).thenReturn(parts);
-        when(congratulationService.getLinkList(any(), anyString(), anyString())).thenReturn(linkList);
+        //when(request.getParts()).thenReturn(parts);
+        when(congratulationService.getLinkList(anyString(), anyString())).thenReturn(linkList);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
         when(user.getId()).thenReturn(1L);
@@ -108,7 +108,7 @@ class AddCongratulationServletTest {
         addCongratulationServlet.doPost(request, response);
         //then
         verify(request).getInputStream();
-        verify(request).getParts();
+        //verify(request).getParts();
         verify(request).getSession();
         verify(session).getAttribute("user");
         verify(user).getId();

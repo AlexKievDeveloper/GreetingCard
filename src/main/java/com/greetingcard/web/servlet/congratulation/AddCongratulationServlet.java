@@ -11,10 +11,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,8 +38,7 @@ public class AddCongratulationServlet extends HttpServlet {
         String youtubeLinks = parametersMap.get("youtube");
         String plainLinks = parametersMap.get("plain_link");
 
-        List<Part> partList = new ArrayList<>(request.getParts());
-        List<Link> linkList = congratulationService.getLinkList(partList, youtubeLinks, plainLinks);
+        List<Link> linkList = congratulationService.getLinkList(youtubeLinks, plainLinks);
 
         Congratulation congratulation = Congratulation.builder()
                 .message(message)

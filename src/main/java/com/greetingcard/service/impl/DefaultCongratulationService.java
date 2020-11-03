@@ -9,14 +9,8 @@ import com.greetingcard.entity.LinkType;
 import com.greetingcard.service.CongratulationService;
 import com.greetingcard.util.PropertyReader;
 
-import javax.servlet.http.Part;
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,8 +18,8 @@ public class DefaultCongratulationService implements CongratulationService {
     private final JdbcCongratulationDao jdbcCongratulationDao;
     private final LocalDiskFileDao localDiskFileDao;
     private final PropertyReader propertyReader = ServiceLocator.getBean("PropertyReader");
-    private final String pathToImageStorage = propertyReader.getProperty("img.storage.path");
-    private final String pathToAudioStorage = propertyReader.getProperty("audio.storage.path");
+/*    private final String pathToImageStorage = propertyReader.getProperty("img.storage.path");
+    private final String pathToAudioStorage = propertyReader.getProperty("audio.storage.path");*/
 
     public DefaultCongratulationService(JdbcCongratulationDao jdbcCongratulationDao, LocalDiskFileDao localDiskFileDao) {
         this.jdbcCongratulationDao = jdbcCongratulationDao;
@@ -38,10 +32,10 @@ public class DefaultCongratulationService implements CongratulationService {
     }
 
     @Override
-    public List<Link> getLinkList(Collection<Part> partList, String youtubeLinks, String plainLinks) {
+    public List<Link> getLinkList(String youtubeLinks, String plainLinks) {
         List<Link> linkList = new ArrayList<>();
         addYoutubeLinks(linkList, youtubeLinks);
-        addLinksToImagesAndAudioFiles(partList, linkList);
+        //addLinksToImagesAndAudioFiles(partList, linkList);
         addPlainLinks(linkList, plainLinks);
         return linkList;
     }
@@ -87,7 +81,7 @@ public class DefaultCongratulationService implements CongratulationService {
         } else throw new IllegalArgumentException("Wrong youtube link url!");
     }
 
-    void addLinksToImagesAndAudioFiles(Collection<Part> partList, List<Link> linkList) {
+/*    void addLinksToImagesAndAudioFiles(Collection<Part> partList, List<Link> linkList) {
 
         for (Part part : partList) {
             if (part.getSize() > 1000) {
@@ -121,7 +115,7 @@ public class DefaultCongratulationService implements CongratulationService {
                 }
             }
         }
-    }
+    }*/
 
     void addPlainLinks(List<Link> linkList, String plainLinks) {
         if (!plainLinks.equals("")) {
