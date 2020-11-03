@@ -56,14 +56,14 @@ class AddCongratulationServletTest {
         parts.add(part);
         String json = "{\n" +
                 "  \"youtube\" : \"https://www.youtube.com/watch?v=r-0qNVT_I4s\",\n" +
-                "  \"plain-link\" : \"https://www.studytonight.com/servlet/httpsession.php\",\n" +
+                "  \"plain_link\" : \"https://www.studytonight.com/servlet/httpsession.php\",\n" +
                 "  \"message\" : \"Happy Birthday\",\n" +
-                "  \"card-id\" : \"1\",\n" +
+                "  \"card_id\" : \"1\",\n" +
                 "}";
         byte[] bytes = json.getBytes();
 
         when(request.getParts()).thenReturn(parts);
-        when(congratulationService.getLinkList(any(), any())).thenReturn(linkList);
+        when(congratulationService.getLinkList(any(), anyString(), anyString())).thenReturn(linkList);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
         when(user.getId()).thenReturn(1L);
@@ -89,14 +89,14 @@ class AddCongratulationServletTest {
         parts.add(part);
         String json = "{\n" +
                 "  \"youtube\" : \"https://www.youtube.com/watch?v=r-0qNVT_I4s\",\n" +
-                "  \"plain-link\" : \"https://www.studytonight.com/servlet/httpsession.php\",\n" +
+                "  \"plain_link\" : \"https://www.studytonight.com/servlet/httpsession.php\",\n" +
                 "  \"message\" : \"Happy Birthday\",\n" +
-                "  \"card-id\" : \"1\",\n" +
+                "  \"card_id\" : \"1\",\n" +
                 "}";
         byte[] bytes = json.getBytes();
 
         when(request.getParts()).thenReturn(parts);
-        when(congratulationService.getLinkList(any(), any())).thenReturn(linkList);
+        when(congratulationService.getLinkList(any(), anyString(), anyString())).thenReturn(linkList);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
         when(user.getId()).thenReturn(1L);

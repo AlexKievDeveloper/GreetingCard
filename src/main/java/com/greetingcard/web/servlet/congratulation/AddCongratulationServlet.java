@@ -36,10 +36,12 @@ public class AddCongratulationServlet extends HttpServlet {
         });
 
         String message = parametersMap.get("message");
-        int cardId = Integer.parseInt(parametersMap.get("card-id"));
+        int cardId = Integer.parseInt(parametersMap.get("card_id"));
+        String youtubeLinks = parametersMap.get("youtube");
+        String plainLinks = parametersMap.get("plain_link");
 
         List<Part> partList = new ArrayList<>(request.getParts());
-        List<Link> linkList = congratulationService.getLinkList(partList, request);
+        List<Link> linkList = congratulationService.getLinkList(partList, youtubeLinks, plainLinks);
 
         Congratulation congratulation = Congratulation.builder()
                 .message(message)
