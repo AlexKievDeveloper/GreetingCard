@@ -7,7 +7,6 @@ import com.greetingcard.entity.Card;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,7 +37,7 @@ public class CardServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         User user = (User) request.getSession().getAttribute("user");
         byte[] bytes = request.getInputStream().readAllBytes();
         String json = new String(bytes, StandardCharsets.UTF_8);

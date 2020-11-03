@@ -38,7 +38,7 @@ class JdbcCongratulationDaoITest {
     void afterAll() throws IOException {
         flyway.clean();
         Files.deleteIfExists(Path.of("src/main/webapp/static/audio"));
-        Files.deleteIfExists(Path.of("src/main/webapp/static/picture"));
+        Files.deleteIfExists(Path.of("src/main/webapp/static/img"));
         Files.deleteIfExists(Path.of("src/main/webapp/static"));
     }
 

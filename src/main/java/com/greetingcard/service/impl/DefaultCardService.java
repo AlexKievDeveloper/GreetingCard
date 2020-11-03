@@ -18,11 +18,11 @@ public class DefaultCardService implements CardService {
     public List<Card> getCards(long userId, String cardsType) {
 
         switch (cardsType) {
-            case "All-cards":
+            case "all":
                 return jdbcCardDao.getAllCardsByUserId(userId);
-            case "My-cards":
+            case "my":
                 return jdbcCardDao.getCardsByUserIdAndRoleId(userId, 1);
-            case "Another`s-cards":
+            case "other":
                 return jdbcCardDao.getCardsByUserIdAndRoleId(userId, 2);
             default:
                 return null;

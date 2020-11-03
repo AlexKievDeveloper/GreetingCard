@@ -40,7 +40,7 @@ class LoginLogoutServletITest {
 
     @Test
     @DisplayName("Invalidates the session")
-    void doDelete() throws IOException {
+    void doDelete() {
         //prepare
         LoginLogoutServlet loginLogoutServlet = new LoginLogoutServlet();
         when(request.getSession()).thenReturn(httpsession);
@@ -74,6 +74,7 @@ class LoginLogoutServletITest {
         verify(request).getSession();
         verify(httpsession).setAttribute("user", user);
         verify(httpsession).setMaxInactiveInterval(anyInt());
+        verify(response).setStatus(HttpServletResponse.SC_OK);
     }
 
     @Test

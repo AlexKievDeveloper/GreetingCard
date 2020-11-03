@@ -10,7 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,7 +39,7 @@ class CardServletTest {
 
     @Test
     @DisplayName("Create new card")
-    void doPost() throws ServletException, IOException {
+    void doPost() throws IOException {
         User user = User.builder().id(1).build();
         byte[] bytes = "{\"name\":\"new_Card\"}".getBytes();
         Card card = Card.builder().user(user).name("new_Card").build();
@@ -51,6 +50,10 @@ class CardServletTest {
 
         servlet.doPost(request, response);
 
+        verify(request).getInputStream();
+        verify(inputStream).readAllBytes();
+        verify(request).getSession();
+        verify(session).getAttribute("user");
         verify(cardService).createCard(card);
         verify(response).setStatus(HttpServletResponse.SC_CREATED);
     }
@@ -66,6 +69,9 @@ class CardServletTest {
 
         servlet.doGet(request, response);
 
+        verify(request).getPathInfo();
+        verify(request).getSession();
+        verify(session).getAttribute("user");
         verify(cardService).getCardAndCongratulationByCardId(22, user.getId());
         verify(response).getWriter();
         verify(writer).print(anyString());
@@ -84,6 +90,9 @@ class CardServletTest {
 
         servlet.doGet(request, response);
 
+        verify(request).getPathInfo();
+        verify(request).getSession();
+        verify(session).getAttribute("user");
         verify(cardService).getCardAndCongratulationByCardId(22, user.getId());
         verify(response).getWriter();
         verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
