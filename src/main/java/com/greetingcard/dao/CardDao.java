@@ -12,7 +12,7 @@ public interface CardDao {
 
     List<Card> getCardsByUserIdAndRoleId(long userId, long roleId);
 
-    void createCard(Card card);
+    long createCard(Card card);
 
     Card getCardAndCongratulationByCardId(long cardId, long userId);
 

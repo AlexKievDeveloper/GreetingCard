@@ -50,7 +50,7 @@ class FinishCardServletTest {
     }
 
     @Test
-    @DisplayName("Changing card status")
+    @DisplayName("Exception while changing card status")
     void doPutException() throws IOException {
         //prepare
         byte[] bytes = "{\"id\":\"1\"}".getBytes();

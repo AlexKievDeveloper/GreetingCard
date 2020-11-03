@@ -28,6 +28,7 @@ public class LoginLogoutServlet extends HttpServlet {
         log.info("logout");
         request.getSession().invalidate();
         response.setStatus(HttpServletResponse.SC_OK);
+        log.info("Successfully logout");
     }
 
     @Override
@@ -51,11 +52,13 @@ public class LoginLogoutServlet extends HttpServlet {
             httpSession.setAttribute("user", user);
             httpSession.setMaxInactiveInterval(maxInactiveInterval);
             response.setStatus(HttpServletResponse.SC_OK);
+            log.info("Successfully login");
         } else {
             Map<String, String> messageMap = new LinkedHashMap<>();
             messageMap.put("message", "Access denied. Please login and try again.");
             response.getWriter().print(JSON.toJSONString(messageMap));
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            log.error("Error while checking credentials");
         }
     }
 }

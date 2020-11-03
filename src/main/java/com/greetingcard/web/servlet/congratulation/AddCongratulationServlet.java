@@ -5,6 +5,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.greetingcard.ServiceLocator;
 import com.greetingcard.entity.*;
 import com.greetingcard.service.CongratulationService;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -18,6 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class AddCongratulationServlet extends HttpServlet {
     private CongratulationService congratulationService = ServiceLocator.getBean("DefaultCongratulationService");
 
@@ -25,6 +27,9 @@ public class AddCongratulationServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("user");
         long userId = user.getId();
+
+        log.info("Received POST request for adding congratulation from user: {}", user.getLogin());
+
         byte[] bytes = request.getInputStream().readAllBytes();
         String json = new String(bytes, StandardCharsets.UTF_8);
         Map<String, String> parametersMap = JSON.parseObject(json, new TypeReference<LinkedHashMap<String, String>>() {
@@ -48,8 +53,10 @@ public class AddCongratulationServlet extends HttpServlet {
         } catch (RuntimeException e) {
             response.getWriter().println(e.getMessage());
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            log.error("Exception while creating for user: {}", user.getLogin());
             return;
         }
         response.setStatus(HttpServletResponse.SC_CREATED);
+        log.info("Successfully creating congratulation for user: {}", user.getLogin());
     }
 }

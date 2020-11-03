@@ -66,7 +66,6 @@ public class JdbcCardDaoITest {
         for (Card card : actualList) {
             assertNotNull(card.getUser());
         }
-
     }
 
     @Test
@@ -129,7 +128,7 @@ public class JdbcCardDaoITest {
         Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
         List<Congratulation> actualCongratulationList = actualCard.getCongratulationList();
 
-        String  f = JSON.toJSONString(actualCard);
+        String f = JSON.toJSONString(actualCard);
         System.out.println(f);
         //then
         List<Link> fromRoma = actualCongratulationList.get(0).getLinkList();

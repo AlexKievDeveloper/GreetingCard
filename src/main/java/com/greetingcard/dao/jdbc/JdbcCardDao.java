@@ -79,7 +79,7 @@ public class JdbcCardDao implements CardDao {
     }
 
     @Override
-    public void createCard(Card card) {
+    public long createCard(Card card) {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statementInCards = connection.prepareStatement(SAVE_NEW_CARD, PreparedStatement.RETURN_GENERATED_KEYS)) {
             connection.setAutoCommit(false);
@@ -87,13 +87,16 @@ public class JdbcCardDao implements CardDao {
             statementInCards.setString(2, card.getName());
             statementInCards.setInt(3, Status.STARTUP.getStatusNumber());
             statementInCards.execute();
+            long id = 0;
             try (ResultSet resultSet = statementInCards.getGeneratedKeys()) {
                 while (resultSet.next()) {
-                    card.setId(resultSet.getInt(1));
+                    id = resultSet.getInt(1);
+                    card.setId(id);
                 }
             }
             addNewCards(card, connection);
             connection.commit();
+            return id;
         } catch (SQLException e) {
             log.error("Exception while creating new card", e);
             throw new RuntimeException("Exception while creating new card", e);

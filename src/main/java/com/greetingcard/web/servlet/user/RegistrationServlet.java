@@ -41,7 +41,9 @@ public class RegistrationServlet extends HttpServlet {
         } catch (RuntimeException e) {
             response.getWriter().print(e.getMessage());
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            log.error("Exception while registration user {}", user);
         }
         response.setStatus(HttpServletResponse.SC_CREATED);
+        log.info("Successfully registered: {}", user);
     }
 }

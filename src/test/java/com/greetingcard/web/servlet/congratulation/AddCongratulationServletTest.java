@@ -82,7 +82,7 @@ class AddCongratulationServletTest {
     }
 
     @Test
-    @DisplayName("Saving congratulation to DB")
+    @DisplayName("Exception while saving congratulation to DB")
     void doPostExceptionTest() throws IOException, ServletException {
         //prepare
         Collection<Part> parts = new ArrayList<>();
