@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <web-app>
-
-    <listener>
-        <listener-class>com.greetingcard.web.listener.ThymeleafInitializerListener</listener-class>
-    </listener>
-
     <servlet>
         <servlet-name>LoginLogoutServlet</servlet-name>
         <servlet-class>com.greetingcard.web.servlet.user.LoginLogoutServlet</servlet-class>
@@ -40,7 +35,7 @@
     <servlet-mapping>
         <servlet-name>CardServlet</servlet-name>
         <url-pattern>/api/v1/card</url-pattern>
-        <url-pattern>/api/v1/card*</url-pattern>
+        <url-pattern>/api/v1/card/*</url-pattern>
     </servlet-mapping>
 
     <servlet>
