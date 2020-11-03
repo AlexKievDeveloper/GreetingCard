@@ -1,5 +1,6 @@
 package com.greetingcard.dao.jdbc;
 
+import com.alibaba.fastjson.JSON;
 import com.greetingcard.entity.*;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.AfterEach;
@@ -128,6 +129,8 @@ public class JdbcCardDaoITest {
         Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
         List<Congratulation> actualCongratulationList = actualCard.getCongratulationList();
 
+        String  f = JSON.toJSONString(actualCard);
+        System.out.println(f);
         //then
         List<Link> fromRoma = actualCongratulationList.get(0).getLinkList();
         List<Link> fromSasha = actualCongratulationList.get(1).getLinkList();
