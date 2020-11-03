@@ -24,18 +24,17 @@ public class GetCardsServlet extends HttpServlet {
         User user = (User) request.getSession().getAttribute("user");
         long userId = user.getId();
         log.info("Received GET request for cards with type: {}, from user: {}", request.getParameter("type"), user.getLogin());
-        List<Card> cardsList = null;
+
         try {
-            cardsList = cardService.getCards(userId, request.getParameter("type"));
+            List<Card> cardsList = cardService.getCards(userId, request.getParameter("type"));
+            String json = JSON.toJSONString(cardsList == null ? Collections.EMPTY_LIST : cardsList);
+            response.getWriter().print(json);
+            response.setStatus(HttpServletResponse.SC_OK);
+            log.info("Successfully writing cards to response with type: {}, for user: {}", request.getParameter("type"), user.getLogin());
         } catch (RuntimeException e) {
             response.getWriter().println(e.getMessage());
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             log.error("Exception while getting cards with type: {}, from user: {}", request.getParameter("type"), user.getLogin());
-            return;
         }
-        String json = JSON.toJSONString(cardsList == null ? Collections.EMPTY_LIST : cardsList);
-        response.getWriter().print(json);
-        response.setStatus(HttpServletResponse.SC_OK);
-        log.info("Successfully writing cards to response with type: {}, for user: {}", request.getParameter("type"), user.getLogin());
     }
 }

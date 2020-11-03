@@ -24,7 +24,6 @@ public class CongratulationServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         User user = (User) request.getSession().getAttribute("user");
         long userId = user.getId();
-
         log.info("Received POST request for adding congratulation from user: {}", user.getLogin());
 
         byte[] bytes = request.getInputStream().readAllBytes();
@@ -48,14 +47,13 @@ public class CongratulationServlet extends HttpServlet {
                 .build();
         try {
             congratulationService.save(congratulation);
+            response.setStatus(HttpServletResponse.SC_CREATED);
+            log.info("Successfully creating congratulation for user: {}", user.getLogin());
         } catch (RuntimeException e) {
             response.getWriter().println(e.getMessage());
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             log.error("Exception while creating for user: {}", user.getLogin());
-            return;
         }
-        response.setStatus(HttpServletResponse.SC_CREATED);
-        log.info("Successfully creating congratulation for user: {}", user.getLogin());
     }
 
     @Override
@@ -69,14 +67,13 @@ public class CongratulationServlet extends HttpServlet {
 
         try {
             congratulationService.changeCongratulationStatusByCongratulationId(Status.ISOVER, congratulationId);
+            response.setStatus(HttpServletResponse.SC_CREATED);
+            log.info("Successfully changed congratulation status for congratulation id: {}", congratulationId);
         } catch (RuntimeException e) {
             response.getWriter().print(e.getMessage());
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             log.error("Exception while changing congratulation status with congratulation id: {}", congratulationId);
-            return;
         }
-        response.setStatus(HttpServletResponse.SC_CREATED);
-        log.info("Successfully changed congratulation status for congratulation id: {}", congratulationId);
     }
 
     @Override
@@ -90,12 +87,11 @@ public class CongratulationServlet extends HttpServlet {
 
         try {
             congratulationService.deleteById(congratulationId, user.getId());
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            log.info("Successfully deleted congratulation with id: {}, user login: {}", congratulationId, user.getLogin());
         } catch (RuntimeException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             log.error("Exception while deleting congratulation id: {}, user login: {}", congratulationId, user.getLogin());
-            return;
         }
-        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-        log.info("Successfully deleted congratulation with id: {}, user login: {}", congratulationId, user.getLogin());
     }
 }

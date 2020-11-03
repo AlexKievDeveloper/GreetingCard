@@ -24,26 +24,23 @@ public class CardServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         log.info("Get card request");
-
         String[] path = request.getPathInfo().split("/");
         long cardId = Long.parseLong(path[path.length - 1]);
 
         log.info("Received GET request for card id: {}", cardId);
-
         User user = (User) request.getSession().getAttribute("user");
-        Card card = null;
+
         try {
-            card = cardService.getCardAndCongratulationByCardId(cardId, user.getId());
+            Card card = cardService.getCardAndCongratulationByCardId(cardId, user.getId());
+            String json = JSON.toJSONString(card);
+            response.getWriter().print(json);
+            response.setStatus(HttpServletResponse.SC_OK);
+            log.info("Successfully writing card to response, id: {}", cardId);
         } catch (RuntimeException e) {
             response.getWriter().print(e.getMessage());
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             log.error("Exception while getting card: {}, user login: {}", cardId, user.getLogin());
-            return;
         }
-        String json = JSON.toJSONString(card);
-        response.getWriter().print(json);
-        response.setStatus(HttpServletResponse.SC_OK);
-        log.info("Successfully writing card to response, id: {}", cardId);
     }
 
     @Override
@@ -55,10 +52,9 @@ public class CardServlet extends HttpServlet {
         String json = new String(bytes, StandardCharsets.UTF_8);
         Map<String, String> nameOfCard = JSON.parseObject(json, new TypeReference<LinkedHashMap<String, String>>() {
         });
+
         String name = nameOfCard.get("name");
-
         log.info("Received POST request for creating card name: {}, user login: {}", name, user.getLogin());
-
         Card card = Card.builder().user(user).name(name).build();
 
         try {
@@ -68,13 +64,12 @@ public class CardServlet extends HttpServlet {
             String jsonForResponse = JSON.toJSONString(parametersMap);
             response.getWriter().print(jsonForResponse);
             log.info("Successfully created card name: {}, id: {}", name, cardId);
+            response.setStatus(HttpServletResponse.SC_CREATED);
         } catch (RuntimeException e) {
             response.getWriter().print(e.getMessage());
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             log.error("Exception while creating card: {}, user login: {}", name, user.getLogin());
-            return;
         }
-        response.setStatus(HttpServletResponse.SC_CREATED);
     }
 
     @Override
@@ -88,14 +83,13 @@ public class CardServlet extends HttpServlet {
 
         try {
             cardService.changeCardStatus(Status.ISOVER, cardId);
+            response.setStatus(HttpServletResponse.SC_CREATED);
+            log.info("Successfully changed card status for card id: {}", cardId);
         } catch (RuntimeException e) {
             response.getWriter().print(e.getMessage());
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             log.error("Exception while changing card status with card id: {}", cardId);
-            return;
         }
-        response.setStatus(HttpServletResponse.SC_CREATED);
-        log.info("Successfully changed card status for card id: {}", cardId);
     }
 
     @Override
@@ -109,12 +103,11 @@ public class CardServlet extends HttpServlet {
 
         try {
             cardService.deleteCardById(cardId, user.getId());
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            log.info("Successfully deleted card with id: {}, user login: {}", cardId, user.getLogin());
         } catch (RuntimeException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             log.error("Exception while deleting card id: {}, user login: {}", cardId, user.getLogin());
-            return;
         }
-        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-        log.info("Successfully deleted card with id: {}, user login: {}", cardId, user.getLogin());
     }
 }
