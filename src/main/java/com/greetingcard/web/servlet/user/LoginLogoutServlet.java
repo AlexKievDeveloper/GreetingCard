@@ -27,7 +27,7 @@ public class LoginLogoutServlet extends HttpServlet {
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) {
         log.info("logout");
         request.getSession().invalidate();
-        response.setStatus(HttpServletResponse.SC_OK);
+        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         log.info("Successfully logout");
     }
 

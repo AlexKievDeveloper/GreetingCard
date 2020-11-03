@@ -75,4 +75,24 @@ public class CardServlet extends HttpServlet {
         }
         response.setStatus(HttpServletResponse.SC_CREATED);
     }
+
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) {
+        log.info("Request for DELETE card");
+        User user = (User) request.getSession().getAttribute("user");
+        String[] path = request.getPathInfo().split("/");
+        long cardId = Long.parseLong(path[path.length - 1]);
+
+        log.info("Request DELETE for card with id {}, user: {}", cardId, user.getLogin());
+
+        try {
+            cardService.deleteCardById(cardId, user.getId());
+        } catch (RuntimeException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            log.error("Exception while deleting card id: {}, user login: {}", cardId, user.getLogin());
+            return;
+        }
+        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+        log.info("Successfully deleted card with id: {}, user login: {}", cardId, user.getLogin());
+    }
 }

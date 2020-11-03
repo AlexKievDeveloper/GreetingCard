@@ -23,6 +23,8 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class CardServletTest {
     @Mock
+    private User user;
+    @Mock
     private CardService cardService;
     @InjectMocks
     private CardServlet servlet;
@@ -123,6 +125,46 @@ class CardServletTest {
         verify(session).getAttribute("user");
         verify(cardService).getCardAndCongratulationByCardId(22, user.getId());
         verify(response).getWriter();
+        verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
+
+    @Test
+    @DisplayName("Deleting card by id")
+    void doDelete() {
+        when(request.getSession()).thenReturn(session);
+        when(session.getAttribute("user")).thenReturn(user);
+        when(request.getPathInfo()).thenReturn("/api/v1/card/1");
+        when(user.getId()).thenReturn(1L);
+        when(user.getLogin()).thenReturn("user");
+
+        servlet.doDelete(request, response);
+
+        verify(request).getSession();
+        verify(session).getAttribute("user");
+        verify(request).getPathInfo();
+        verify(user).getId();
+        verify(user, times(2)).getLogin();
+        verify(response).setStatus(HttpServletResponse.SC_NO_CONTENT);
+    }
+
+    @Test
+    @DisplayName("Throws Exception while deleting card by id")
+    void doDeleteException() {
+        when(request.getSession()).thenReturn(session);
+        when(session.getAttribute("user")).thenReturn(user);
+        when(request.getPathInfo()).thenReturn("/api/v1/card/1");
+        when(user.getId()).thenReturn(1L);
+        when(user.getLogin()).thenReturn("user");
+        doThrow(RuntimeException.class).when(cardService).deleteCardById(1L, 1L);
+
+        servlet.doDelete(request, response);
+
+        verify(request).getSession();
+        verify(session).getAttribute("user");
+        verify(request).getPathInfo();
+        verify(user).getId();
+        verify(user, times(2)).getLogin();
+        verify(cardService).deleteCardById(1L, 1L);
         verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
 }
