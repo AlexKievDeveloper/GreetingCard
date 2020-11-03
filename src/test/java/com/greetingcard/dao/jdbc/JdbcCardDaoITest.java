@@ -149,7 +149,7 @@ public class JdbcCardDaoITest {
 
         assertEquals(8, fromRoma.size());
         assertEquals(4, fromSasha.size());
-        assertEquals(0, fromNastya.size());
+        assertEquals(4, fromNastya.size());
     }
 
     @Test
