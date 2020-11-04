@@ -31,7 +31,6 @@ class AuthorizationFilterTest {
     @Mock
     private User user;
 
-
     AuthorizationFilterTest() {
         authorizationFilter = new AuthorizationFilter();
     }

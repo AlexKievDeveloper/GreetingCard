@@ -52,14 +52,14 @@ class CardRowMapperTest {
         verify(mockResultSet).getInt("status_id");
 
         assertEquals(1, actualUser.getId());
-        assertEquals("firstName" , actualUser.getFirstName());
-        assertEquals("lastName" , actualUser.getLastName());
-        assertEquals("login" , actualUser.getLogin());
-        assertEquals("email" , actualUser.getEmail());
+        assertEquals("firstName", actualUser.getFirstName());
+        assertEquals("lastName", actualUser.getLastName());
+        assertEquals("login", actualUser.getLogin());
+        assertEquals("email", actualUser.getEmail());
         assertEquals(1, actualCard.getId());
-        assertEquals("Card" , actualCard.getName());
-        assertEquals("/link" , actualCard.getBackgroundImage());
-        assertEquals("/link" , actualCard.getCardLink());
+        assertEquals("Card", actualCard.getName());
+        assertEquals("/link", actualCard.getBackgroundImage());
+        assertEquals("/link", actualCard.getCardLink());
         assertEquals(Status.STARTUP, actualCard.getStatus());
     }
 }

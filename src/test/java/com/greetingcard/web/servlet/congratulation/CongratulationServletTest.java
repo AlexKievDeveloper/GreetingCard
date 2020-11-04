@@ -16,11 +16,8 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.Part;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -30,8 +27,6 @@ import static org.mockito.Mockito.*;
 class CongratulationServletTest {
     @Mock
     private ServletInputStream servletInputStream;
-    @Mock
-    private Part part;
     @Mock
     private User user;
     @Mock
@@ -51,10 +46,8 @@ class CongratulationServletTest {
 
     @Test
     @DisplayName("Saving congratulation to DB")
-    void doPostTest() throws IOException, ServletException {
+    void doPostTest() throws IOException {
         //prepare
-        Collection<Part> parts = new ArrayList<>();
-        parts.add(part);
         String json = "{\n" +
                 "  \"youtube\" : \"https://www.youtube.com/watch?v=r-0qNVT_I4s\",\n" +
                 "  \"plain_link\" : \"https://www.studytonight.com/servlet/httpsession.php\",\n" +
@@ -63,7 +56,6 @@ class CongratulationServletTest {
                 "}";
         byte[] bytes = json.getBytes();
 
-        //when(request.getParts()).thenReturn(parts);
         when(congratulationService.getLinkList(anyString(), anyString())).thenReturn(linkList);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
@@ -74,7 +66,6 @@ class CongratulationServletTest {
         congratulationServlet.doPost(request, response);
         //then
         verify(request).getInputStream();
-        //verify(request).getParts();
         verify(request).getSession();
         verify(session).getAttribute("user");
         verify(user).getId();
@@ -84,10 +75,8 @@ class CongratulationServletTest {
 
     @Test
     @DisplayName("Exception while saving congratulation to DB")
-    void doPostExceptionTest() throws IOException, ServletException {
+    void doPostExceptionTest() throws IOException {
         //prepare
-        Collection<Part> parts = new ArrayList<>();
-        parts.add(part);
         String json = "{\n" +
                 "  \"youtube\" : \"https://www.youtube.com/watch?v=r-0qNVT_I4s\",\n" +
                 "  \"plain_link\" : \"https://www.studytonight.com/servlet/httpsession.php\",\n" +
@@ -96,7 +85,6 @@ class CongratulationServletTest {
                 "}";
         byte[] bytes = json.getBytes();
 
-        //when(request.getParts()).thenReturn(parts);
         when(congratulationService.getLinkList(anyString(), anyString())).thenReturn(linkList);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
@@ -109,7 +97,6 @@ class CongratulationServletTest {
         congratulationServlet.doPost(request, response);
         //then
         verify(request).getInputStream();
-        //verify(request).getParts();
         verify(request).getSession();
         verify(session).getAttribute("user");
         verify(user).getId();

@@ -36,7 +36,7 @@ public class RegistrationServlet extends HttpServlet {
                 .password(userMap.get("password"))
                 .build();
 
-        log.info("Registration request for user: {}", user);
+        log.info("Registration request for user login: {}", user.getLogin());
 
         try {
             securityService.save(user);
@@ -45,7 +45,7 @@ public class RegistrationServlet extends HttpServlet {
         } catch (RuntimeException e) {
             response.getWriter().print(e.getMessage());
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            log.error("Exception while registration user {}", user);
+            log.error("Exception while registration user login: {}", user.getLogin());
         }
     }
 }

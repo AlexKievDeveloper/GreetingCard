@@ -1,11 +1,9 @@
 package com.greetingcard.dao;
 
 import com.greetingcard.entity.Card;
-import com.greetingcard.entity.Role;
 import com.greetingcard.entity.Status;
 
 import java.util.List;
-import java.util.Map;
 
 public interface CardDao {
     List<Card> getAllCardsByUserId(long id);

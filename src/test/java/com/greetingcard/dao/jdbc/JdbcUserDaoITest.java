@@ -88,9 +88,9 @@ class JdbcUserDaoITest {
         jdbcUserDao.update(user);
         User actualUser = jdbcUserDao.findUserByLogin("update");
         //then
-        assertEquals("update",actualUser.getFirstName());
-        assertEquals("update",actualUser.getLastName());
-        assertEquals("update",actualUser.getLogin());
+        assertEquals("update", actualUser.getFirstName());
+        assertEquals("update", actualUser.getLastName());
+        assertEquals("update", actualUser.getLogin());
     }
 
 }
