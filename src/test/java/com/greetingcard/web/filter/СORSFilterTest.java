@@ -38,7 +38,9 @@ class СORSFilterTest {
         corsFilter.doFilter(servletRequest,servletResponse,filterChain);
 
         verify(servletResponse).addHeader("Access-Control-Allow-Origin", "http://localhost:3000");
-        verify(servletResponse).addHeader("Access-Control-Allow-Methods", "GET, OPTIONS, HEAD, PUT, POST");
+        verify(servletResponse).addHeader("Access-Control-Allow-Methods", "GET, OPTIONS, HEAD, PUT, POST, DELETE");
+        verify(servletResponse).addHeader("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+        verify(servletResponse).addHeader("Access-Control-Allow-Credentials", "true");
         verify(servletResponse).setStatus(HttpServletResponse.SC_ACCEPTED);
     }
 }
