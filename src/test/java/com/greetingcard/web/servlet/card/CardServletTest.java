@@ -93,10 +93,12 @@ class CardServletTest {
     @DisplayName("Get card by id")
     void doGet() throws IOException {
         User user = User.builder().id(1).build();
+        Card card = Card.builder().build();
         when(request.getPathInfo()).thenReturn("/card/22");
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
         when(response.getWriter()).thenReturn(writer);
+        when(cardService.getCardAndCongratulationByCardId(22,user.getId())).thenReturn(card);
 
         servlet.doGet(request, response);
 
@@ -107,6 +109,24 @@ class CardServletTest {
         verify(response).getWriter();
         verify(writer).print(anyString());
         verify(response).setStatus(HttpServletResponse.SC_OK);
+    }
+
+    @Test
+    @DisplayName("Get card by id when the user has no access")
+    void doGetNoAccesses() throws IOException {
+        User user = User.builder().id(1).build();
+        Card card = Card.builder().build();
+        when(request.getPathInfo()).thenReturn("/card/22");
+        when(request.getSession()).thenReturn(session);
+        when(session.getAttribute("user")).thenReturn(user);
+        when(cardService.getCardAndCongratulationByCardId(22,user.getId())).thenReturn(null);
+
+        servlet.doGet(request, response);
+
+        verify(request).getPathInfo();
+        verify(request).getSession();
+        verify(session).getAttribute("user");
+        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
 
     @Test
