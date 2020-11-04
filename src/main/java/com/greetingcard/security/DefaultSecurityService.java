@@ -24,12 +24,15 @@ public class DefaultSecurityService implements SecurityService {
 
     @Override
     public User login(String login, String password) {
+        log.info("login: {}", login);
         User user = jdbcUserDao.findUserByLogin(login);
+
         if (user != null) {
             String salt = user.getSalt();
             String hashPassword = getHashPassword(salt.concat(password));
 
             if (user.getPassword().equals(hashPassword)) {
+                log.info("RETURN USER!");
                 return user;
             }
         }

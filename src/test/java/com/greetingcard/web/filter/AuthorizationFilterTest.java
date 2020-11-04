@@ -31,7 +31,6 @@ class AuthorizationFilterTest {
     @Mock
     private User user;
 
-
     AuthorizationFilterTest() {
         authorizationFilter = new AuthorizationFilter();
     }
@@ -61,6 +60,6 @@ class AuthorizationFilterTest {
         //then
         verify(servletRequest).getSession();
         verify(session).getAttribute("user");
-        verify(servletResponse).sendRedirect("/login");
+        verify(servletResponse).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
 }

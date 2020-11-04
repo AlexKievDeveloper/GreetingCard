@@ -66,22 +66,22 @@ class JdbcCongratulationDaoITest {
         assertEquals(LinkType.VIDEO, actualCongratulation.getLinkList().get(1).getType());
 
         assertEquals(4, actualCongratulation.getLinkList().get(2).getId());
-        assertEquals("https://www.dropbox.com/s/8cg7h5gehrk7joy/dzidzo_-_kolomijka_bojkivska_%28zf.fm%29.mp3?dl=0", actualCongratulation.getLinkList().get(2).getLink());
+        assertEquals("https://i.postimg.cc/kXRG5yRC/images.jpg", actualCongratulation.getLinkList().get(2).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(2).getCongratulationId());
         assertEquals(LinkType.PICTURE, actualCongratulation.getLinkList().get(2).getType());
 
         assertEquals(5, actualCongratulation.getLinkList().get(3).getId());
-        assertEquals("https://www.dropbox.com/s/3u94pftverackzy/kolomijki_-_kolomijka_zastilna_%28zf.fm%29.mp3?dl=0", actualCongratulation.getLinkList().get(3).getLink());
+        assertEquals("https://i.postimg.cc/hvfjTLC9/images-1.jpg", actualCongratulation.getLinkList().get(3).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(3).getCongratulationId());
         assertEquals(LinkType.PICTURE, actualCongratulation.getLinkList().get(3).getType());
 
         assertEquals(7, actualCongratulation.getLinkList().get(4).getId());
-        assertEquals("https://i.postimg.cc/kXRG5yRC/images.jpg", actualCongratulation.getLinkList().get(4).getLink());
+        assertEquals("https://www.dropbox.com/s/8cg7h5gehrk7joy/dzidzo_-_kolomijka_bojkivska_%28zf.fm%29.mp3?dl=0", actualCongratulation.getLinkList().get(4).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(4).getCongratulationId());
         assertEquals(LinkType.AUDIO, actualCongratulation.getLinkList().get(4).getType());
 
         assertEquals(8, actualCongratulation.getLinkList().get(5).getId());
-        assertEquals("https://i.postimg.cc/hvfjTLC9/images-1.jpg", actualCongratulation.getLinkList().get(5).getLink());
+        assertEquals("https://www.dropbox.com/s/3u94pftverackzy/kolomijki_-_kolomijka_zastilna_%28zf.fm%29.mp3?dl=0", actualCongratulation.getLinkList().get(5).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(5).getCongratulationId());
         assertEquals(LinkType.AUDIO, actualCongratulation.getLinkList().get(5).getType());
 
@@ -276,6 +276,21 @@ class JdbcCongratulationDaoITest {
         assertEquals(Status.STARTUP, actualCongratulation1.getStatus());
         assertEquals(Status.STARTUP, actualCongratulation2.getStatus());
         assertEquals(Status.STARTUP, actualCongratulation3.getStatus());
+    }
+
+    @Test
+    @DisplayName("Change status to STARTUP congratulations by id of card")
+    void changeCongratulationStatusByCongratulationId() {
+        //prepare
+        Congratulation congratulationBefore = jdbcCongratulationDao.getCongratulationById(1);
+        assertEquals(Status.STARTUP, congratulationBefore.getStatus());
+
+        //when
+        jdbcCongratulationDao.changeCongratulationStatusByCongratulationId(Status.ISOVER, 1);
+
+        //then
+        Congratulation congratulationAfter = jdbcCongratulationDao.getCongratulationById(1);
+        assertEquals(Status.ISOVER, congratulationAfter.getStatus());
     }
 }
 

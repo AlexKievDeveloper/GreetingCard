@@ -1,14 +1,11 @@
 package com.greetingcard.dao.jdbc;
 
-import com.greetingcard.ServiceLocator;
 import com.greetingcard.dao.CongratulationDao;
 import com.greetingcard.dao.jdbc.mapper.CongratulationRowMapper;
 import com.greetingcard.dao.jdbc.mapper.CongratulationsRowMapper;
 import com.greetingcard.entity.Congratulation;
 import com.greetingcard.entity.Link;
-import com.greetingcard.entity.LinkType;
 import com.greetingcard.entity.Status;
-import com.greetingcard.util.PropertyReader;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
@@ -30,6 +27,7 @@ public class JdbcCongratulationDao implements CongratulationDao {
     private static final String FIND_IMAGE_AND_AUDIO_LINKS_BY_CARD_ID = "SELECT link, type_id FROM links l LEFT JOIN congratulations cg ON cg.congratulation_id = l.congratulation_id where card_id=? and (type_id = 2 OR type_id = 3) and user_id =?";
     private static final String FIND_CONGRATULATIONS_BY_CARD_ID = "SELECT cg.congratulation_id, user_id, card_id, status_id, message, link_id, link, type_id FROM congratulations cg LEFT JOIN links on cg.congratulation_id = links.congratulation_id WHERE card_id=?";
     private static final String CHANGE_STATUS_CONGRATULATION_BY_CARD_ID = "UPDATE congratulations SET status_id = ? where card_id = ?";
+    private static final String CHANGE_CONGRATULATION_STATUS_BY_CONGRATULATION_ID = "UPDATE congratulations SET status_id = ? where congratulation_id = ?";
     private static final String DELETE_BY_ID = "DELETE FROM congratulations WHERE congratulation_id=? and user_id=?";
     private static final String FIND_IMAGE_AND_AUDIO_LINKS_BY_CONGRATULATION_ID = "SELECT link, type_id FROM links l LEFT JOIN congratulations cg ON cg.congratulation_id = l.congratulation_id where cg.congratulation_id=? and (type_id = 2 OR type_id = 3) and user_id =?";
 
@@ -120,6 +118,19 @@ public class JdbcCongratulationDao implements CongratulationDao {
         } catch (SQLException e) {
             log.error("Exception while change status congratulation - {}", cardId, e);
             throw new RuntimeException("Exception while change status congratulation ", e);
+        }
+    }
+
+    @Override
+    public void changeCongratulationStatusByCongratulationId(Status status, long congratulationId) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(CHANGE_CONGRATULATION_STATUS_BY_CONGRATULATION_ID)) {
+            statement.setInt(1, status.getStatusNumber());
+            statement.setLong(2, congratulationId);
+            statement.execute();
+        } catch (SQLException e) {
+            log.error("Exception while changing congratulation status, id: {}", congratulationId, e);
+            throw new RuntimeException("Exception while changing congratulation status", e);
         }
     }
 

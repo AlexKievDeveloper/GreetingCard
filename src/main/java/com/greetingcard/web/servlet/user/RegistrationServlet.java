@@ -21,7 +21,6 @@ public class RegistrationServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        log.info("registration request");
 
         byte[] bytes = request.getInputStream().readAllBytes();
         String json = new String(bytes, StandardCharsets.UTF_8);
@@ -36,12 +35,17 @@ public class RegistrationServlet extends HttpServlet {
                 .login(userMap.get("login"))
                 .password(userMap.get("password"))
                 .build();
+
+        log.info("Registration request for user login: {}", user.getLogin());
+
         try {
             securityService.save(user);
+            response.setStatus(HttpServletResponse.SC_CREATED);
+            log.info("Successfully registered: {}", user);
         } catch (RuntimeException e) {
             response.getWriter().print(e.getMessage());
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            log.error("Exception while registration user login: {}", user.getLogin());
         }
-        response.setStatus(HttpServletResponse.SC_CREATED);
     }
 }

@@ -47,7 +47,7 @@ class GetCardsServletTest {
         getCardsServlet.doGet(request, response);
         verify(request).getSession();
         verify(session).getAttribute("user");
-        verify(request).getParameter("type");
+        verify(request, times(3)).getParameter("type");
         verify(response).getWriter();
         verify(cardService).getCards(1, "all");
         verify(writer).print(anyString());
@@ -66,7 +66,7 @@ class GetCardsServletTest {
         getCardsServlet.doGet(request, response);
         verify(request).getSession();
         verify(session).getAttribute("user");
-        verify(request).getParameter("type");
+        verify(request, times(3)).getParameter("type");
         verify(response).getWriter();
         verify(cardService).getCards(1, "my");
         verify(writer).print(anyString());
@@ -86,7 +86,7 @@ class GetCardsServletTest {
 
         verify(request).getSession();
         verify(session).getAttribute("user");
-        verify(request).getParameter("type");
+        verify(request, times(3)).getParameter("type");
         verify(response).getWriter();
         verify(cardService).getCards(1, "other");
         verify(writer).print(anyString());
@@ -107,7 +107,7 @@ class GetCardsServletTest {
 
         verify(request).getSession();
         verify(session).getAttribute("user");
-        verify(request).getParameter("type");
+        verify(request, times(3)).getParameter("type");
         verify(response).getWriter();
         verify(cardService).getCards(1, "other");
         verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

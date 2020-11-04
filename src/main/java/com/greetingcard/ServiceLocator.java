@@ -1,6 +1,5 @@
 package com.greetingcard;
 
-import com.greetingcard.dao.file.LocalDiskFileDao;
 import com.greetingcard.dao.jdbc.JdbcCardDao;
 import com.greetingcard.dao.jdbc.JdbcCongratulationDao;
 import com.greetingcard.dao.jdbc.JdbcUserDao;
@@ -31,8 +30,6 @@ public class ServiceLocator {
         JdbcUserDao jdbcUserDao = new JdbcUserDao(dataSource);
         JdbcCardDao jdbcCardDao = new JdbcCardDao(dataSource);
 
-        LocalDiskFileDao localDiskFileDao = new LocalDiskFileDao();
-
         DefaultSecurityService defaultSecurityService = new DefaultSecurityService(jdbcUserDao);
         register("DefaultSecurityService", defaultSecurityService);
 
@@ -40,7 +37,7 @@ public class ServiceLocator {
         register("DefaultCardService", defaultCardService);
 
         DefaultCongratulationService defaultCongratulationService =
-                new DefaultCongratulationService(jdbcCongratulationDao, localDiskFileDao);
+                new DefaultCongratulationService(jdbcCongratulationDao);
         register("DefaultCongratulationService", defaultCongratulationService);
     }
 
