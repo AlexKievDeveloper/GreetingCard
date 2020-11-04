@@ -32,10 +32,15 @@ public class CardServlet extends HttpServlet {
 
         try {
             Card card = cardService.getCardAndCongratulationByCardId(cardId, user.getId());
-            String json = JSON.toJSONString(card);
-            response.getWriter().print(json);
-            response.setStatus(HttpServletResponse.SC_OK);
-            log.info("Successfully writing card to response, id: {}", cardId);
+            if (card == null) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                log.info("User has no access : {}", cardId);
+            } else {
+                String json = JSON.toJSONString(card);
+                response.getWriter().print(json);
+                response.setStatus(HttpServletResponse.SC_OK);
+                log.info("Successfully writing card to response, id: {}", cardId);
+            }
         } catch (RuntimeException e) {
             response.getWriter().print(e.getMessage());
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
