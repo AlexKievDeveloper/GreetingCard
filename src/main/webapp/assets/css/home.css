@@ -1,0 +1,99 @@
+html {
+	box-sizing: border-box;
+	overflow-x: hidden;
+}
+
+*, *:before, *:after {
+	box-sizing: border-box;
+}
+
+@font-face {
+	font-family: 'Sunshiney';
+	src: url('fonts/Sunshiney.ttf');
+}
+
+@font-face {
+	font-family: 'Spartan';
+	src: url('fonts/Spartan-Regular.ttf');
+}
+
+@font-face {
+	font-family: 'Merriweather';
+	src: url('fonts/merriweather.bold.ttf');
+}
+
+.wrapper {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	background-color: #C1CF7A;
+	min-width: 100vw;
+	max-width: 100vh;
+	min-height: 100vh;
+}
+.app-description__row {
+	display: flex;
+	justify-content: space-between;
+	height: 731px;
+	background-color: white;
+	padding: 46px 0px 0px 125px;
+}
+.text-description__column {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: center;
+	margin-left: 107.5px;
+	padding-top: 75px;
+	text-align: center;
+
+}
+.app-name {
+	font-family: 'Sunshiney';
+	font-size: 48px;
+}
+.app-name_home {
+	font-size: 240px;
+}
+.app-description {
+	font-family: 'Spartan';
+	font-size: 58px;
+	line-height: 65px;
+	opacity: 0.5;
+	width: 753px;
+	margin-top: 43px;
+}
+.app-example-picture {
+	width:100%;
+	margin-left: 232.5px;
+	background: linear-gradient(180deg, #FFFFFF 0%, rgba(255, 255, 255, 0) 30%), url(../../assets/pictures/app-example.png) no-repeat;
+}
+.call-to-action__row {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	padding-left: 80px;
+	height: 100%;
+	flex: 1 0 auto;
+}
+.call-to-action {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-width: 570px;
+	height: 150px;
+	margin-right: 115px;
+	padding: 0px 20px;
+	font-family: 'Merriweather';
+	font-size: 86px;
+	text-decoration: none;
+	background-color: #fee600;
+	color: black;
+	border-radius: 1px;
+}
+.yellow-button {}
+.white-button {
+	background-color: white;
+	border: 6px solid #FEE600;
+	border-radius: 5px;
+}
