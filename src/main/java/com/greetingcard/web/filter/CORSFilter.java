@@ -24,8 +24,7 @@ public class CORSFilter implements Filter {
             response.setStatus(HttpServletResponse.SC_ACCEPTED);
             return;
         }
-
-        chain.doFilter(request, servletResponse);
+        chain.doFilter(request, response);
     }
 
     @Override
