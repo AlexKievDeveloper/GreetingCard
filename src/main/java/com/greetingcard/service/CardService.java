@@ -1,14 +1,13 @@
-package com.greetingcard.dao;
+package com.greetingcard.service;
 
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Status;
 
 import java.util.List;
 
-public interface CardDao {
-    List<Card> getAllCardsByUserId(long id);
+public interface CardService {
 
-    List<Card> getCardsByUserIdAndRoleId(long userId, long roleId);
+    List<Card> getCards(long userId, String cardsType);
 
     long createCard(Card card);
 
@@ -16,5 +15,5 @@ public interface CardDao {
 
     void deleteCardById(long cardId, long userId);
 
-    void changeCardStatusById(Status status, long cardId);
+    void changeCardStatus(Status status, long cardId);
 }
