@@ -6,6 +6,8 @@ import com.greetingcard.entity.Language;
 import com.greetingcard.entity.User;
 import com.greetingcard.util.PropertyReader;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -13,9 +15,13 @@ import java.util.Base64;
 import java.util.UUID;
 
 @Slf4j
+@Service
 public class DefaultSecurityService implements SecurityService {
 
-    private PropertyReader propertyReader = ServiceLocator.getBean("PropertyReader");
+//    private PropertyReader propertyReader = ServiceLocator.getBean("PropertyReader");
+    @Autowired
+    private PropertyReader propertyReader;
+    @Autowired
     private JdbcUserDao jdbcUserDao;
 
     public DefaultSecurityService(JdbcUserDao jdbcUserDao) {

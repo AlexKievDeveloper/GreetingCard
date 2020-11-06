@@ -2,12 +2,18 @@ package com.greetingcard.dao.jdbc.mapper;
 
 import com.greetingcard.entity.Language;
 import com.greetingcard.entity.User;
+import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class UserRowMapper {
+public class UserRowMapper implements RowMapper<User> {
+
     public User mapRow(ResultSet resultSet) throws SQLException {
+        return mapRow(resultSet, 0);
+    }
+
+    public User mapRow(ResultSet resultSet, int i) throws SQLException {
         return User.builder()
                 .id(resultSet.getInt("user_id"))
                 .firstName(resultSet.getString("firstName"))

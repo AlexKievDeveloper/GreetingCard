@@ -1,12 +1,14 @@
 package com.greetingcard.util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
 @Slf4j
+@Service
 public class PropertyReader {
     private static final Properties properties = new Properties();
 
