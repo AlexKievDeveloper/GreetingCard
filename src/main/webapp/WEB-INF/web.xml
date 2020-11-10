@@ -3,6 +3,9 @@
 <web-app>
 
     <display-name>greetingcard</display-name>
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
 
     <servlet>
         <servlet-name>dispatcher</servlet-name>
@@ -75,14 +78,5 @@
         <url-pattern>/api/v1/congratulation</url-pattern>
         <url-pattern>/api/v1/congratulation/*</url-pattern>
     </filter-mapping>
-
-    <listener>
-        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-    </listener>
-
-    <context-param>
-        <param-name>contextConfigLocation</param-name>
-        <param-value>classpath:/spring/root-context.xml</param-value>
-    </context-param>
 
 </web-app>

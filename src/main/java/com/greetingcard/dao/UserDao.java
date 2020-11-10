@@ -4,7 +4,7 @@ import com.greetingcard.entity.User;
 
 public interface UserDao {
 
-    User findUserByLogin(String login);
+    User findByLogin(String login);
 
     void save (User user);
 

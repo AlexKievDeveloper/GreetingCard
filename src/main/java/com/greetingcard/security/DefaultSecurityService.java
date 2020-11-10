@@ -31,7 +31,7 @@ public class DefaultSecurityService implements SecurityService {
     @Override
     public User login(String login, String password) {
         log.info("login: {}", login);
-        User user = jdbcUserDao.findUserByLogin(login);
+        User user = jdbcUserDao.findByLogin(login);
 
         if (user != null) {
             String salt = user.getSalt();

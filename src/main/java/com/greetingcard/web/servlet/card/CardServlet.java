@@ -37,6 +37,7 @@ public class CardServlet extends HttpServlet {
                 log.info("User has no access : {}", cardId);
             } else {
                 String json = JSON.toJSONString(card);
+                response.setCharacterEncoding("UTF-8");
                 response.getWriter().print(json);
                 response.setStatus(HttpServletResponse.SC_OK);
                 log.info("Successfully writing card to response, id: {}", cardId);

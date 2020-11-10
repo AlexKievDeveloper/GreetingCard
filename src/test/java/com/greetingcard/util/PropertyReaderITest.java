@@ -11,10 +11,10 @@ class PropertyReaderITest {
     PropertyReader actualProperties = new PropertyReader();
 
     @Test
-    @DisplayName("Returns complex properties from application-test.properties file")
+    @DisplayName("Returns complex properties from application.properties file")
     void getPropertiesDevEnvironmentTest() {
         //prepare
-        actualProperties.readProperties("/application-test.properties");
+        actualProperties.readProperties("/application.properties");
 
         //then
         assertEquals("jdbc:postgresql://ec2-54-75-231-215.eu-west-1.compute.amazonaws.com:5432/dftoi6ipqclcmp?sslmode=require&sslfactory=org.postgresql.ssl.NonValidatingFactory&", actualProperties.getProperty("jdbc.url"));
@@ -25,10 +25,10 @@ class PropertyReaderITest {
     }
 
     @Test
-    @DisplayName("Returns properties from application-test.properties file when properties do not exist")
+    @DisplayName("Returns properties from application.properties file when properties do not exist")
     void getPropertiesNull() {
         //prepare
-        actualProperties.readProperties("/application-test.properties");
+        actualProperties.readProperties("/application.properties");
 
         //then
         assertEquals("", actualProperties.getProperty("nothing"));

@@ -27,13 +27,13 @@ class DefaultSecurityServiceTest {
     @DisplayName("Login user and return session")
     void loginTest() {
         //prepare
-        when(jdbcUserDao.findUserByLogin("user")).thenReturn(user);
+        when(jdbcUserDao.findByLogin("user")).thenReturn(user);
         when(user.getSalt()).thenReturn("salt");
         when(user.getPassword()).thenReturn("8031377c4c15e1611986089444c8ff58c95358ffdc95d692a6d10c7b633e99df");
         //when
         securityService.login("user", "8031377c4c15e1611986089444c8ff58c95358ffdc95d692a6d10c7b633e99df");
         //then
-        verify(jdbcUserDao).findUserByLogin("user");
+        verify(jdbcUserDao).findByLogin("user");
         verify(user).getSalt();
         verify(user).getPassword();
     }

@@ -1,6 +1,5 @@
 package com.greetingcard.dao.jdbc;
 
-import com.greetingcard.dao.UserDao;
 import com.greetingcard.entity.Language;
 import com.greetingcard.entity.User;
 import org.flywaydb.core.Flyway;
@@ -11,25 +10,21 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.XmlWebApplicationContext;
+import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
+@SpringJUnitWebConfig(value = FlywayConfig.class)
 class JdbcUserDaoITest {
+
     @Autowired
-    private ApplicationContext appContext;
-    private DataBaseConfigurator dataBaseConfigurator = new DataBaseConfigurator();
     private JdbcUserDao jdbcUserDao;
+
+    @Autowired
     private Flyway flyway;
 
-    public JdbcUserDaoITest() {
-        jdbcUserDao = new JdbcUserDao(dataBaseConfigurator.getDataSource());
-
-        flyway = dataBaseConfigurator.getFlyway();
-    }
 
     @BeforeEach
     void init() {
@@ -47,7 +42,7 @@ class JdbcUserDaoITest {
         //prepare
         String login = "user";
         //when
-        User actualUser = jdbcUserDao.findUserByLogin(login);
+        User actualUser = jdbcUserDao.findByLogin(login);
         //then
         assertNotNull(actualUser);
         assertEquals(2, actualUser.getId());
@@ -67,7 +62,6 @@ class JdbcUserDaoITest {
         //prepare
         String login = "user";
         //when
-        jdbcUserDao = appContext.getBean("jdbcUserDao", JdbcUserDao.class);
         User actualUser = jdbcUserDao.findByLogin(login);
         //then
         assertNotNull(actualUser);
@@ -91,7 +85,7 @@ class JdbcUserDaoITest {
                 .language(Language.ENGLISH).build();
         //when
         jdbcUserDao.save(expected);
-        User actualUser = jdbcUserDao.findUserByLogin("login_test");
+        User actualUser = jdbcUserDao.findByLogin("login_test");
         //then
         assertNotNull(actualUser);
         assertEquals("firstName_test", actualUser.getFirstName());
@@ -108,13 +102,13 @@ class JdbcUserDaoITest {
     @DisplayName("Update user")
     void update() {
         //prepare
-        User user = jdbcUserDao.findUserByLogin("user");
+        User user = jdbcUserDao.findByLogin("user");
         user.setFirstName("update");
         user.setLastName("update");
         user.setLogin("update");
         //when
         jdbcUserDao.update(user);
-        User actualUser = jdbcUserDao.findUserByLogin("update");
+        User actualUser = jdbcUserDao.findByLogin("update");
         //then
         assertEquals("update", actualUser.getFirstName());
         assertEquals("update", actualUser.getLastName());

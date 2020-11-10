@@ -27,11 +27,7 @@ public class ServiceLocator {
         JdbcCongratulationDao jdbcCongratulationDao = new JdbcCongratulationDao(dataSource);
         register("JdbcCongratulationDao", jdbcCongratulationDao);
 
-        JdbcUserDao jdbcUserDao = new JdbcUserDao(dataSource);
         JdbcCardDao jdbcCardDao = new JdbcCardDao(dataSource);
-
-        DefaultSecurityService defaultSecurityService = new DefaultSecurityService(jdbcUserDao);
-        register("DefaultSecurityService", defaultSecurityService);
 
         DefaultCardService defaultCardService = new DefaultCardService(jdbcCardDao);
         register("DefaultCardService", defaultCardService);
