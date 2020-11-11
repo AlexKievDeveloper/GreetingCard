@@ -6,15 +6,14 @@ import com.greetingcard.dao.jdbc.mapper.CongratulationsRowMapper;
 import com.greetingcard.entity.Congratulation;
 import com.greetingcard.entity.Link;
 import com.greetingcard.entity.Status;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Repository;
 
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -23,7 +22,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Slf4j
-@Repository
+@Setter
 public class JdbcCongratulationDao implements CongratulationDao {
     private static final String GET_CONGRATULATION = "SELECT congratulations.congratulation_id, user_id, card_id, status_id, message, link_id, link, type_id FROM congratulations LEFT JOIN links on congratulations.congratulation_id = links.congratulation_id WHERE congratulations.congratulation_id=?";
     private static final String SAVE_CONGRATULATION = "INSERT INTO congratulations (message, card_id, user_id, status_id) VALUES (?,?,?,?)";
@@ -40,16 +39,9 @@ public class JdbcCongratulationDao implements CongratulationDao {
     private static final CongratulationsRowMapper CONGRATULATIONS_ROW_MAPPER = new CongratulationsRowMapper();
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    @Autowired
-    private final DataSource dataSource;
-
-    public JdbcCongratulationDao(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
 
     public Congratulation getCongratulationById(int congratulationId) {
         return jdbcTemplate.query(GET_CONGRATULATION, CONGRATULATION_ROW_MAPPER, congratulationId);
-
     }
 
     @Override
@@ -77,7 +69,6 @@ public class JdbcCongratulationDao implements CongratulationDao {
             statementInLinks.executeBatch();
             return statementInLinks;
         });
-
         log.debug("Added new congratulation {} to DB", congratulation.getId());
     }
 
@@ -120,7 +111,6 @@ public class JdbcCongratulationDao implements CongratulationDao {
                 throw new RuntimeException("Exception while deleting file", e);
             }
         }
-
         jdbcTemplate.update(deleteQuery, id, userId);
     }
 }

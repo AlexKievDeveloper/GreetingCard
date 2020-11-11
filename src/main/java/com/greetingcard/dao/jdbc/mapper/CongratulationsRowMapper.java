@@ -14,9 +14,8 @@ import java.util.Map;
 public class CongratulationsRowMapper implements ResultSetExtractor<List<Congratulation>> {
     @Override
     public List<Congratulation> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-        resultSet.next();
 
-        if (resultSet.getRow() == 0) {
+        if (!resultSet.next()) {
             return null;
         }
 

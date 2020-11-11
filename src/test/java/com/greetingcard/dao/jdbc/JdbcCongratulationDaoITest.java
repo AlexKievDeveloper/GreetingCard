@@ -130,7 +130,6 @@ class JdbcCongratulationDaoITest {
         assertEquals(LinkType.VIDEO, actualCongratulation.getLinkList().get(0).getType());
     }
 
-
     @Test
     @DisplayName("Delete congratulations by id of card with all parameters")
     void deleteByCardId() throws IOException {

@@ -24,17 +24,10 @@ public class ServiceLocator {
         DataSource dataSource = new DataSourceFactory(propertyReader).getDataSource();
         register("DataSource", dataSource);
 
-        JdbcCongratulationDao jdbcCongratulationDao = new JdbcCongratulationDao(dataSource);
-        register("JdbcCongratulationDao", jdbcCongratulationDao);
-
         JdbcCardDao jdbcCardDao = new JdbcCardDao(dataSource);
 
         DefaultCardService defaultCardService = new DefaultCardService(jdbcCardDao);
         register("DefaultCardService", defaultCardService);
-
-        DefaultCongratulationService defaultCongratulationService =
-                new DefaultCongratulationService(jdbcCongratulationDao);
-        register("DefaultCongratulationService", defaultCongratulationService);
     }
 
     public static <T> void register(String nameBean, T bean) {

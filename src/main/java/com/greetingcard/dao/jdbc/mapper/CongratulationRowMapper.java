@@ -14,9 +14,7 @@ public class CongratulationRowMapper implements ResultSetExtractor<Congratulatio
     @Override
     public Congratulation extractData(ResultSet resultSet) throws SQLException, DataAccessException {
 
-        resultSet.next();
-
-        if (resultSet.getRow() == 0) {
+        if (!resultSet.next()) {
             return null;
         }
 

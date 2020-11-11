@@ -26,7 +26,7 @@ class CongratulationRowMapperTest {
     void extractData() throws SQLException {
         //prepare
         CongratulationRowMapper congratulationRowMapper = new CongratulationRowMapper();
-        when(mockResultSet.getRow()).thenReturn(1);
+        when(mockResultSet.next()).thenReturn(true).thenReturn(false);
         when(mockResultSet.getInt("congratulation_id")).thenReturn(1);
         when(mockResultSet.getString("message")).thenReturn("from Roma");
         when(mockResultSet.getInt("card_id")).thenReturn(1);
@@ -41,7 +41,7 @@ class CongratulationRowMapperTest {
 
         //then
         assertNotNull(actualCongratulation);
-        verify(mockResultSet).getRow();
+        verify(mockResultSet, times(2)).next();
         verify(mockResultSet, times(2)).getInt("congratulation_id");
         verify(mockResultSet).getString("message");
         verify(mockResultSet).getInt("card_id");
