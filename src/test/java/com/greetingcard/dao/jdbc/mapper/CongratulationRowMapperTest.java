@@ -13,7 +13,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CongratulationRowMapperTest {
@@ -22,9 +23,10 @@ class CongratulationRowMapperTest {
 
     @Test
     @DisplayName("Returns an object of class Congratulation from result set")
-    void mapRow() throws SQLException {
+    void extractData() throws SQLException {
         //prepare
         CongratulationRowMapper congratulationRowMapper = new CongratulationRowMapper();
+        when(mockResultSet.next()).thenReturn(true).thenReturn(false);
         when(mockResultSet.getInt("congratulation_id")).thenReturn(1);
         when(mockResultSet.getString("message")).thenReturn("from Roma");
         when(mockResultSet.getInt("card_id")).thenReturn(1);
@@ -35,9 +37,19 @@ class CongratulationRowMapperTest {
         when(mockResultSet.getInt("type_id")).thenReturn(1);
 
         //when
-        Congratulation actualCongratulation = congratulationRowMapper.mapRow(mockResultSet);
+        Congratulation actualCongratulation = congratulationRowMapper.extractData(mockResultSet);
 
         //then
+        assertNotNull(actualCongratulation);
+        verify(mockResultSet, times(2)).next();
+        verify(mockResultSet, times(2)).getInt("congratulation_id");
+        verify(mockResultSet).getString("message");
+        verify(mockResultSet).getInt("card_id");
+        verify(mockResultSet).getInt("user_id");
+        verify(mockResultSet).getInt("status_id");
+        verify(mockResultSet, times(2)).getInt("link_id");
+        verify(mockResultSet).getString("link");
+        verify(mockResultSet).getInt("type_id");
         assertEquals(1, actualCongratulation.getId());
         assertEquals("from Roma", actualCongratulation.getMessage());
         assertEquals(1, actualCongratulation.getCard().getId());

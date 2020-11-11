@@ -8,10 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Repository;
 
 @Slf4j
-@Repository
 @Setter
 public class JdbcUserDao implements UserDao {
     private static final UserRowMapper USER_ROW_MAPPER = new UserRowMapper();
@@ -25,7 +23,7 @@ public class JdbcUserDao implements UserDao {
     @Override
     public User findByLogin(@NonNull String login) {
         log.info("Getting user by login {}", login);
-        return jdbcTemplate.queryForObject(FIND_USER_BY_LOGIN, new Object[] {login}, USER_ROW_MAPPER);
+        return jdbcTemplate.queryForObject(FIND_USER_BY_LOGIN, new Object[]{login}, USER_ROW_MAPPER);
     }
 
     @Override
@@ -40,5 +38,4 @@ public class JdbcUserDao implements UserDao {
         log.info("Edit user's (user_id:{}) personal information", user.getId());
         jdbcTemplate.update(UPDATE_USER, user.getFirstName(), user.getLastName(), user.getLogin(), user.getId());
     }
-
 }
