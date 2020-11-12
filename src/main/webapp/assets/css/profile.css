@@ -1,0 +1,283 @@
+html {
+	box-sizing: border-box;
+	overflow-x: hidden;
+}
+
+*, *:before, *:after {
+	box-sizing: inherit;
+}
+
+@font-face {
+	font-family: 'Sunshiney';
+	src: url('fonts/Sunshiney.ttf');
+}
+
+@font-face {
+	font-family: 'Merriweather';
+	src: url('fonts/merriweather.bold.ttf');
+}
+
+@font-face {
+	font-family: 'Teen';
+	src: url('fonts/teen.regular.ttf');
+}
+
+.wrapper {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	background-color: #C1CF7A;
+	min-width: 100vw;
+	max-width: 100vh;
+	min-height: 100vh;
+}
+
+.header{
+	width: 100%;
+	height: 98px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0px 34px;
+	top: 0;
+	font-size: 20px;
+	background-color: white;
+	z-index: 2;
+}
+
+.app-name {
+	font-family: 'Sunshiney';
+	font-size: 48px;
+}
+
+.header-right__row {
+	display: flex;
+	position: relative;
+	width: 652px;
+}
+
+.navigation-row {
+	display: flex;
+	justify-content: space-between;
+	width: 419px;
+	margin-right: 96px;
+
+}
+
+.navigation-link {
+	width:65px;
+	height:65px;
+	clip-path: circle(50% at 50% 50%);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.navigation-link img {
+	width: 50px;
+	height: auto;
+}
+
+.home {
+	background-color: #FCF6BD;
+}
+.profile {
+	background-color: #A9DEF9;
+}
+.profile img{
+	width: 38px;
+	height: 38px;
+}
+.my-cards {
+	background-color: #E4C1F9;
+}
+.log-out {
+	background-color: #C1FBA4;
+}
+
+.user-greeting {
+	position: absolute;
+	top: 29px;
+	right: 0;
+	font-family: 'Merriweather';
+	font-size: 18;
+	text-align: center;
+	color: black;
+}
+
+.main-functions {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	position: relative;
+	flex: 1 0 auto;
+}
+.command__row {
+	height: 58px;
+	width: 100%;
+	background-color: #A46578;
+	position: sticky;
+	top: 0;
+	z-index: 2;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.filter {
+	display:flex;
+	justify-content: center;
+	margin-left: 34px;
+	border-radius: 5px;
+}
+
+
+.actions__row {
+	display: flex;
+	margin-right: 184px;
+}
+
+.command-button {
+	padding: 12px 16px;
+	text-decoration: none;
+	font-family: 'Merriweather';
+	font-size: 16px;
+	color: black;
+	border-radius: 2px;
+	align-self: center;
+	cursor: pointer;
+}
+.white-button {
+	background-color: white;
+	border: 2px solid #FEE600;
+}
+.yellow-button {
+	background-color: #FEE600;
+	margin-left: 80px;
+	margin-right: 44px;
+}
+
+input[type="submit"] {
+	border: none;
+}
+
+.container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	min-width: 100%;
+	max-width: 100%;
+	min-height: ;
+	flex: 1 0 auto;
+	padding: 65px 0px 100px;
+}
+
+.profile-picture__row {
+	display: flex;
+	position: relative;
+	justify-content: space-between;
+	align-items: center;
+}
+.profile-picture-change__column {
+	display: flex;
+	flex-direction: column;
+	padding: 10px;
+	border-radius: 16px 0px 0px 16px;
+	justify-content: space-between;
+	background-color: white;
+	border: 3px solid black;
+	border-right: none;
+	height: 420px;
+	position: absolute;
+	top: 40px;
+	left: -68px;
+}
+.file-adder {}
+.adder {}
+.element-type-icon {
+	width: 45px;
+	height: auto;
+}
+.files-input {
+		display: none;
+}
+.profile-picture__picture {
+	width: 500px;
+	height: 500px;
+	border-radius: 39px;
+	border: 3px solid black;
+}
+.profile-picture__picture > img {
+	object-fit: contain;
+}
+
+.none {
+	background-color: rgba(169, 222, 249, 0.7);
+}
+.profile-picture__picture > .no-picture {
+	margin: 47px;
+	width: 400px;
+	height: 400px;
+}
+.profile-text-change__column {
+	display: flex;
+	flex-direction: column;
+	height: 460px;
+	align-self: center;
+	align-items: flex-end;
+	justify-content: center;
+	padding: 0 68px;
+	margin-left: 142px;
+	background-color: white;
+	border: 3px solid black;
+	border-radius: 39px;
+}
+
+.no-border {
+	border: none;
+}
+
+.input-text-element__row {
+	display: flex;
+}
+.input-text-element__row>label {
+	min-width: 142px;
+	font-family: 'Merriweather';
+	font-size: 24px;
+	text-align: center;
+}
+.input-text-element__row>input[type="text"] {
+	font-family: 'Teen';
+	font-size: 24px;
+	text-align: center;
+}
+.styled-as-input {
+	width: 200px;
+	height: 30px;
+	margin-bottom: 12px;
+
+	padding: 5px 15px 5px;
+	background: none;
+	border-left: none;
+	border-top: none;
+	border-right: none;
+	border-bottom: 2px solid rgba(0, 0, 0, 0.5);
+}
+
+.styled-as-input:hover {
+	background-color: rgba(0, 0, 0, 0.2);
+}
+
+.styled-as-input:active {
+	background-color: rgba(0, 0, 0, 0.3);
+}
+
+.styled-as-input:focus {
+	background-color: rgba(0, 0, 0, 0.3);
+}
+.profile-details-changeable {
+	display: flex;
+	margin: auto;
+}
+.no-margin-left {
+	margin-left: 0;
+}
