@@ -1,12 +1,11 @@
 package com.greetingcard.security;
 
-import com.greetingcard.ServiceLocator;
 import com.greetingcard.dao.jdbc.JdbcUserDao;
 import com.greetingcard.entity.Language;
 import com.greetingcard.entity.User;
-import com.greetingcard.util.PropertyReader;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.MessageDigest;
@@ -17,13 +16,13 @@ import java.util.UUID;
 @Slf4j
 @Service
 public class DefaultSecurityService implements SecurityService {
-
-//    private PropertyReader propertyReader = ServiceLocator.getBean("PropertyReader");
-    @Autowired
-    private PropertyReader propertyReader;
-    @Autowired
+    @Value("${algorithm}")
+    private String algorithm;
+    @Value("${iteration}")
+    private int iteration;
     private JdbcUserDao jdbcUserDao;
 
+    @Autowired
     public DefaultSecurityService(JdbcUserDao jdbcUserDao) {
         this.jdbcUserDao = jdbcUserDao;
     }
@@ -65,9 +64,6 @@ public class DefaultSecurityService implements SecurityService {
     }
 
     String getHashPassword(String saltAndPassword) {
-        String algorithm = propertyReader.getProperty("algorithm");
-        int iteration = Integer.parseInt(propertyReader.getProperty("iteration"));
-
         try {
             MessageDigest digest = MessageDigest.getInstance(algorithm);
             byte[] bytes = saltAndPassword.getBytes();

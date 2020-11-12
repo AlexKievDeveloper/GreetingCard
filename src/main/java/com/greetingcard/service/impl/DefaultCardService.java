@@ -4,12 +4,14 @@ import com.greetingcard.dao.jdbc.JdbcCardDao;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Status;
 import com.greetingcard.service.CardService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 public class DefaultCardService implements CardService {
     private final JdbcCardDao jdbcCardDao;
 
+    @Autowired
     public DefaultCardService(JdbcCardDao jdbcCardDao) {
         this.jdbcCardDao = jdbcCardDao;
     }

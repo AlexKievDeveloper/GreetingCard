@@ -1,12 +1,14 @@
 package com.greetingcard.service.impl;
 
 import com.greetingcard.dao.jdbc.JdbcCardDao;
+import com.greetingcard.entity.Status;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.mockito.Mockito.verify;
 
@@ -15,6 +17,7 @@ class DefaultCardServiceTest {
     @Mock
     private JdbcCardDao jdbcCardDao;
     @InjectMocks
+    @Autowired
     private DefaultCardService defaultCardService;
 
     @Test
@@ -51,5 +54,14 @@ class DefaultCardServiceTest {
         defaultCardService.getCardAndCongratulationByCardId(1, 1);
         //then
         verify(jdbcCardDao).getCardAndCongratulationByCardId(1, 1);
+    }
+
+    @Test
+    @DisplayName("Return List with all congratulations")
+    void changeCardStatus() {
+        //when
+        defaultCardService.changeCardStatus(Status.STARTUP, 1);
+        //then
+        verify(jdbcCardDao).changeCardStatusById(Status.STARTUP, 1);
     }
 }
