@@ -2,12 +2,12 @@ package com.greetingcard.web.servlet.card;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.greetingcard.ServiceLocator;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Status;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +19,8 @@ import java.util.Map;
 
 @Slf4j
 public class CardServlet extends HttpServlet {
-    private CardService cardService = ServiceLocator.getBean("DefaultCardService");
+    @Autowired
+    private CardService cardService;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {

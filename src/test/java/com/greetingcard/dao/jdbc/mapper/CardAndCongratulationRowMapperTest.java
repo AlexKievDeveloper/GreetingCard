@@ -23,7 +23,7 @@ class CardAndCongratulationRowMapperTest {
 
     @Test
     @DisplayName("Returns an object of class Card with all congratulations from result set")
-    void mapRow() throws SQLException {
+    void extractData() throws SQLException {
         //prepare
         CardAndCongratulationRowMapper rowMapper = new CardAndCongratulationRowMapper();
 
@@ -50,7 +50,7 @@ class CardAndCongratulationRowMapperTest {
         when(mockResultSet.getInt("type_id")).thenReturn(1);
 
         //when
-        Card actualCard = rowMapper.mapRow(mockResultSet);
+        Card actualCard = rowMapper.extractData(mockResultSet);
 
         //then
         verify(mockResultSet).getLong("card_id");
