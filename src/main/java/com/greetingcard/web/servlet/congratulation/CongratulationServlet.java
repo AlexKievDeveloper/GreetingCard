@@ -52,7 +52,7 @@ public class CongratulationServlet extends HttpServlet {
         } catch (RuntimeException e) {
             response.getWriter().println(e.getMessage());
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            log.error("Exception while creating for user: {}", user.getLogin());
+            log.error("Exception while creating congratulation for user: {}", user.getLogin());
         }
     }
 

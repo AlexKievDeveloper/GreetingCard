@@ -34,6 +34,12 @@
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
     </bean>
 
+    <bean id="securityService" class="com.greetingcard.security.DefaultSecurityService">
+        <property name="userDao" ref="userDao"/>
+        <property name="algorithm" value="${algorithm}"/>
+        <property name="iteration" value="${iteration}"/>
+    </bean>
+
     <bean id ="maxInactiveInterval" class="java.lang.Integer">
         <constructor-arg value="${max.inactive.interval}"/>
     </bean>

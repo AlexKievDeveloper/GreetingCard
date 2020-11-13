@@ -1,5 +1,6 @@
 package com.greetingcard.dao.jdbc;
 
+import com.greetingcard.dao.UserDao;
 import com.greetingcard.entity.Language;
 import com.greetingcard.entity.User;
 import org.flywaydb.core.Flyway;
@@ -12,15 +13,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
 @SpringJUnitWebConfig(value = FlywayConfig.class)
 class JdbcUserDaoITest {
 
     @Autowired
-    private JdbcUserDao jdbcUserDao;
+    private UserDao userDao;
 
     @Autowired
     private Flyway flyway;
@@ -28,21 +27,15 @@ class JdbcUserDaoITest {
 
     @BeforeEach
     void init() {
+        flyway.clean();
         flyway.migrate();
     }
 
-    @AfterEach
-    void afterAll() {
-        flyway.clean();
-    }
-
     @Test
-    @DisplayName("Returns User from table")
+    @DisplayName("Find user by login")
     void findUserByLoginTest() {
-        //prepare
-        String login = "user";
         //when
-        User actualUser = jdbcUserDao.findByLogin(login);
+        User actualUser = userDao.findByLogin("user");
         //then
         assertNotNull(actualUser);
         assertEquals(2, actualUser.getId());
@@ -51,27 +44,7 @@ class JdbcUserDaoITest {
         assertEquals("user", actualUser.getLogin());
         assertEquals("@user", actualUser.getEmail());
 
-        assertEquals("8031377c4c15e1611986089444c8ff58c95358ffdc95d692a6d10c7b633e99df", actualUser.getPassword());
-        assertEquals("salt", actualUser.getSalt());
-        assertEquals(Language.ENGLISH, actualUser.getLanguage());
-    }
-
-    @Test
-    @DisplayName("Returns User from table (spring)")
-    void findUserByLoginSpringTest() {
-        //prepare
-        String login = "user";
-        //when
-        User actualUser = jdbcUserDao.findByLogin(login);
-        //then
-        assertNotNull(actualUser);
-        assertEquals(2, actualUser.getId());
-        assertEquals("user", actualUser.getFirstName());
-        assertEquals("user", actualUser.getLastName());
-        assertEquals("user", actualUser.getLogin());
-        assertEquals("@user", actualUser.getEmail());
-
-        assertEquals("8031377c4c15e1611986089444c8ff58c95358ffdc95d692a6d10c7b633e99df", actualUser.getPassword());
+        assertEquals("gDE3fEwV4WEZhgiURMj/WMlTWP/cldaSptEMe2M+md8=", actualUser.getPassword());
         assertEquals("salt", actualUser.getSalt());
         assertEquals(Language.ENGLISH, actualUser.getLanguage());
     }
@@ -83,9 +56,10 @@ class JdbcUserDaoITest {
         User expected = User.builder().firstName("firstName_test").lastName("lastName_test")
                 .login("login_test").email("email_test").password("password").salt("salt")
                 .language(Language.ENGLISH).build();
+        UserDao userDao = new JdbcUserDao();
         //when
-        jdbcUserDao.save(expected);
-        User actualUser = jdbcUserDao.findByLogin("login_test");
+        userDao.save(expected);
+        User actualUser = userDao.findByLogin("login_test");
         //then
         assertNotNull(actualUser);
         assertEquals("firstName_test", actualUser.getFirstName());
@@ -102,13 +76,13 @@ class JdbcUserDaoITest {
     @DisplayName("Update user")
     void update() {
         //prepare
-        User user = jdbcUserDao.findByLogin("user");
+        User user = userDao.findByLogin("user");
         user.setFirstName("update");
         user.setLastName("update");
         user.setLogin("update");
         //when
-        jdbcUserDao.update(user);
-        User actualUser = jdbcUserDao.findByLogin("update");
+        userDao.update(user);
+        User actualUser = userDao.findByLogin("update");
         //then
         assertEquals("update", actualUser.getFirstName());
         assertEquals("update", actualUser.getLastName());

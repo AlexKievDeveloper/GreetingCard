@@ -1,11 +1,11 @@
 package com.greetingcard.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
-@Setter
+@AllArgsConstructor
 @Getter
 public class UserCredential {
-    private String login;
+    private String user;
     private String password;
 }

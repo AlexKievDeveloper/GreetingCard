@@ -8,10 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Repository;
 
 @Slf4j
-@Repository
 @Setter
 public class JdbcUserDao implements UserDao {
     private static final UserRowMapper USER_ROW_MAPPER = new UserRowMapper();
@@ -19,7 +17,6 @@ public class JdbcUserDao implements UserDao {
     private static final String SAVE_USER = "INSERT INTO users (firstName, lastName, login, email, password, salt, language_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
     private static final String UPDATE_USER = "UPDATE users SET firstName=?, lastName=?, login=? WHERE user_id=?;";
 
-    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Override
