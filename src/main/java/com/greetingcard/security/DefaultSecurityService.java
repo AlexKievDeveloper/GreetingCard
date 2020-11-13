@@ -4,9 +4,6 @@ import com.greetingcard.dao.jdbc.JdbcUserDao;
 import com.greetingcard.entity.Language;
 import com.greetingcard.entity.User;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -14,15 +11,12 @@ import java.util.Base64;
 import java.util.UUID;
 
 @Slf4j
-@Service
 public class DefaultSecurityService implements SecurityService {
-    @Value("${algorithm}")
+
     private String algorithm;
-    @Value("${iteration}")
     private int iteration;
     private JdbcUserDao jdbcUserDao;
 
-    @Autowired
     public DefaultSecurityService(JdbcUserDao jdbcUserDao) {
         this.jdbcUserDao = jdbcUserDao;
     }

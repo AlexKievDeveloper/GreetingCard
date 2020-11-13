@@ -39,7 +39,6 @@ public class JdbcCardDao implements CardDao {
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private TransactionTemplate transactionTemplate;
 
-    @Autowired
     public JdbcCardDao(CongratulationDao congratulationDao, JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate, TransactionTemplate transactionTemplate) {
         this.congratulationDao = congratulationDao;
         this.jdbcTemplate = jdbcTemplate;
