@@ -40,8 +40,7 @@ public class UserController {
 
     @PostMapping(value = "/api/v1/session", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public AuthenticationResponse login(@RequestBody UserCredential userCredential, HttpServletRequest request,
-                                        HttpServletResponse response) {
+    public AuthenticationResponse login(@RequestBody UserCredential userCredential, HttpSession session) {
         log.info("login request");
         String login = userCredential.getUser();
         String password = userCredential.getPassword();
@@ -51,20 +50,14 @@ public class UserController {
 
         if (user != null) {
 
-            HttpSession session = request.getSession();
-
             session.setAttribute("user", user);
             session.setMaxInactiveInterval(maxInactiveInterval);
-
-            response.setStatus(HttpServletResponse.SC_OK);
 
             authenticationResponse.setLogin(user.getLogin());
             authenticationResponse.setMessage(AUTHENTICATION_SUCCESS.getMessage());
             log.info("Successfully authentication");
 
         } else {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
             authenticationResponse.setMessage(ACCESS_DENIED.getMessage());
             log.info("Credentials not valid");
         }
