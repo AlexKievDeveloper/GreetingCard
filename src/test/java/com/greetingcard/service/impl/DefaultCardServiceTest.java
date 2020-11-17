@@ -1,4 +1,5 @@
-package com.greetingcard.service.impl;
+
+/*package com.greetingcard.service.impl;
 
 import com.greetingcard.dao.jdbc.JdbcCardDao;
 import org.junit.jupiter.api.DisplayName;
@@ -52,4 +53,4 @@ class DefaultCardServiceTest {
         //then
         verify(jdbcCardDao).getCardAndCongratulationByCardId(1, 1);
     }
-}
+}*/

@@ -8,14 +8,14 @@ import org.springframework.context.annotation.ImportResource;
 
 import javax.sql.DataSource;
 
-@ImportResource(locations = "classpath:spring/applicationContext.xml")
+@ImportResource(locations = {"classpath:spring/applicationContext.xml", "file:src/main/webapp/WEB-INF/dispatcher-servlet.xml"})
 @Configuration
 public class FlywayConfig {
     @Autowired
     private DataSource dataSource;
 
     @Bean
-    public Flyway flyway(){
+    public Flyway flyway() {
         return Flyway.configure().dataSource(dataSource).locations("testDB/migration").baselineOnMigrate(true).load();
     }
 }

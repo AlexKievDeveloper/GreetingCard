@@ -1,3 +1,4 @@
+/*
 package com.greetingcard.service.impl;
 
 import com.greetingcard.dao.jdbc.JdbcCardDao;
@@ -49,3 +50,4 @@ public class DefaultCardService implements CardService {
         jdbcCardDao.changeCardStatusById(status, cardId);
     }
 }
+*/

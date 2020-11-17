@@ -1,6 +1,6 @@
-package com.greetingcard.dao.jdbc;
 
-import com.greetingcard.ServiceLocator;
+/*package com.greetingcard.dao.jdbc;
+
 import com.greetingcard.dao.CardDao;
 import com.greetingcard.dao.CongratulationDao;
 import com.greetingcard.dao.jdbc.mapper.CardAndCongratulationRowMapper;
@@ -166,3 +166,4 @@ public class JdbcCardDao implements CardDao {
         }
     }
 }
+*/

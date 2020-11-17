@@ -1,3 +1,4 @@
+/*
 package com.greetingcard.security;
 
 import com.greetingcard.dao.jdbc.JdbcUserDao;
@@ -51,3 +52,4 @@ class DefaultSecurityServiceTest {
         assertEquals(expectedPassword, actualPassword);
     }
 }
+*/

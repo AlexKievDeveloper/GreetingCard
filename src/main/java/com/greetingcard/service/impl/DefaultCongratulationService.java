@@ -1,27 +1,27 @@
 package com.greetingcard.service.impl;
 
-import com.greetingcard.dao.jdbc.JdbcCongratulationDao;
+import com.greetingcard.dao.CongratulationDao;
 import com.greetingcard.entity.Congratulation;
 import com.greetingcard.entity.Link;
 import com.greetingcard.entity.LinkType;
 import com.greetingcard.entity.Status;
 import com.greetingcard.service.CongratulationService;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
+@Setter
 public class DefaultCongratulationService implements CongratulationService {
-    private final JdbcCongratulationDao jdbcCongratulationDao;
-
-    public DefaultCongratulationService(JdbcCongratulationDao jdbcCongratulationDao) {
-        this.jdbcCongratulationDao = jdbcCongratulationDao;
-    }
+    private CongratulationDao congratulationDao;
 
     @Override
     public Congratulation getCongratulationById(int congratulationId) {
-        return jdbcCongratulationDao.getCongratulationById(congratulationId);
+        return congratulationDao.getCongratulationById(congratulationId);
     }
 
     @Override
@@ -34,17 +34,17 @@ public class DefaultCongratulationService implements CongratulationService {
 
     @Override
     public void save(Congratulation congratulation) {
-        jdbcCongratulationDao.save(congratulation);
+        congratulationDao.save(congratulation);
     }
 
     @Override
     public void changeCongratulationStatusByCongratulationId(Status status, long congratulationId) {
-        jdbcCongratulationDao.changeCongratulationStatusByCongratulationId(status, congratulationId);
+        congratulationDao.changeCongratulationStatusByCongratulationId(status, congratulationId);
     }
 
     @Override
     public void deleteById(long congratulationId, long userId) {
-        jdbcCongratulationDao.deleteById(congratulationId, userId);
+        congratulationDao.deleteById(congratulationId, userId);
     }
 
     void addYoutubeLinks(List<Link> linkList, String youtubeLinks) {
@@ -61,14 +61,13 @@ public class DefaultCongratulationService implements CongratulationService {
         }
 
         for (String youtubeLink : youtubeLinksCollection) {
-
-            if (youtubeLink.contains("youtu")) {
+            if (youtubeLink.contains("youtu") && youtubeLink.length() < 500) {
                 Link video = Link.builder()
                         .link(getYoutubeVideoId(youtubeLink))
                         .type(LinkType.VIDEO)
                         .build();
                 linkList.add(video);
-            }
+            } else throw new IllegalArgumentException("Wrong youtube link url!");
         }
     }
 
@@ -85,25 +84,28 @@ public class DefaultCongratulationService implements CongratulationService {
 
     void addPlainLinks(List<Link> linkList, String plainLinks) {
         if (!plainLinks.equals("")) {
+            if (plainLinks.length() < 500) {
 
-            String pattern = "(https?:\\/\\/)?([\\w-]{1,32}\\.[\\w-]{1,32})[^\\s@]*";
+                String pattern = "(https?:\\/\\/)?([\\w-]{1,32}\\.[\\w-]{1,32})[^\\s@]*";
 
-            Pattern compiledPattern = Pattern.compile(pattern);
-            Matcher matcher = compiledPattern.matcher(plainLinks);
+                Pattern compiledPattern = Pattern.compile(pattern);
+                Matcher matcher = compiledPattern.matcher(plainLinks);
 
-            List<String> plainLinksCollection = new ArrayList<>();
+                List<String> plainLinksCollection = new ArrayList<>();
 
-            while (matcher.find()) {
-                plainLinksCollection.add(matcher.group());
-            }
+                while (matcher.find()) {
+                    plainLinksCollection.add(matcher.group());
+                }
 
-            for (String plainLink : plainLinksCollection) {
-                Link link = Link.builder()
-                        .link(plainLink)
-                        .type(LinkType.PLAIN_LINK)
-                        .build();
-                linkList.add(link);
-            }
+                for (String plainLink : plainLinksCollection) {
+                    Link link = Link.builder()
+                            .link(plainLink)
+                            .type(LinkType.PLAIN_LINK)
+                            .build();
+                    linkList.add(link);
+                }
+            } else throw new IllegalArgumentException("Sorry, congratulation not saved. The link is very long. " +
+                    "Please use a link up to 500 characters.");
         }
     }
 }

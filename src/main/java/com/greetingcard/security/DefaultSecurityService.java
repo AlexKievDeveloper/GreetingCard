@@ -1,10 +1,11 @@
+/*
+
 package com.greetingcard.security;
 
-import com.greetingcard.ServiceLocator;
 import com.greetingcard.dao.jdbc.JdbcUserDao;
 import com.greetingcard.entity.Language;
 import com.greetingcard.entity.User;
-import com.greetingcard.util.PropertyReader;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,8 +20,10 @@ import java.util.UUID;
 public class DefaultSecurityService implements SecurityService {
 
 //    private PropertyReader propertyReader = ServiceLocator.getBean("PropertyReader");
-    @Autowired
-    private PropertyReader propertyReader;
+*/
+/*    @Autowired
+    private PropertyReader propertyReader;*//*
+
     @Autowired
     private JdbcUserDao jdbcUserDao;
 
@@ -83,3 +86,5 @@ public class DefaultSecurityService implements SecurityService {
     }
 
 }
+
+*/

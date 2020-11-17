@@ -1,34 +1,25 @@
+/*
 package com.greetingcard.web.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
 import com.greetingcard.dto.UserCredential;
-import com.greetingcard.entity.User;
 import com.greetingcard.security.SecurityService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/session")
+@RequestMapping("/api/v1")
 public class UserController {
     @Autowired
     private SecurityService securityService;
     @Autowired
     private int maxInactiveInterval;
 
-
-    @DeleteMapping
+    @DeleteMapping("/session")
     public void logout(@RequestAttribute HttpSession session, HttpServletResponse response) {
         log.info("logout");
         session.invalidate();
@@ -36,12 +27,26 @@ public class UserController {
         log.info("Successfully logout");
     }
 
-    @PostMapping
+    @PostMapping("/session")
     public void login(@RequestBody UserCredential userCredential) {
         log.info("login request");
         String login = userCredential.getLogin();
         String password = userCredential.getPassword();
         log.info("login for user {}", login);
+    }
+}
+        */
+/*            try {
+
+                response.setStatus(HttpServletResponse.SC_CREATED);
+
+            } catch (RuntimeException e) {
+                response.getWriter().print(e.getMessage());
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                log.error("Exception while registration user login: {}", user.getLogin());
+            }*//*
+
+
 
 //        try {
 //            User user = securityService.login(login, password);
@@ -62,5 +67,6 @@ public class UserController {
 //            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 //            log.error("Exception while checking credentials");
 //        }
-    }
-}
+
+
+*/

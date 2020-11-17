@@ -8,7 +8,6 @@ import com.greetingcard.entity.Link;
 import com.greetingcard.entity.Status;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -37,7 +36,6 @@ public class JdbcCongratulationDao implements CongratulationDao {
 
     private static final CongratulationRowMapper CONGRATULATION_ROW_MAPPER = new CongratulationRowMapper();
     private static final CongratulationsRowMapper CONGRATULATIONS_ROW_MAPPER = new CongratulationsRowMapper();
-    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     public Congratulation getCongratulationById(int congratulationId) {
@@ -71,7 +69,6 @@ public class JdbcCongratulationDao implements CongratulationDao {
         });
         log.debug("Added new congratulation {} to DB", congratulation.getId());
     }
-
 
     @Override
     public void deleteByCardId(long cardId, long userId) {
