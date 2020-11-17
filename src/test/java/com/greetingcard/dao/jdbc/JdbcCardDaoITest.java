@@ -177,7 +177,7 @@ public class JdbcCardDaoITest {
     }
 
     @Test
-    @DisplayName("Delete card when user does not has access")
+    @DisplayName("Remove card if user does not have access")
     void deleteCardByIdNoAccess() {
         //when
         jdbcCardDao.deleteCardById(1, 10000);
