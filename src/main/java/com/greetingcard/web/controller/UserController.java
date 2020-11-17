@@ -3,7 +3,6 @@ package com.greetingcard.web.controller;
 import com.greetingcard.dto.UserCredential;
 import com.greetingcard.security.SecurityService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -13,7 +12,7 @@ import javax.servlet.http.HttpSession;
 @RestController
 @RequestMapping("/api/v1/session")
 public class UserController {
-    @Autowired
+
     private SecurityService securityService;
 
     @DeleteMapping

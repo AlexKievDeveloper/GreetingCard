@@ -149,6 +149,24 @@ public class JdbcCardDaoITest {
     }
 
     @Test
+    @DisplayName("Return null when user does not has cards or access")
+    public void getCardAndCongratulationNoAccess() {
+        //when
+        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1, -1);
+        //then
+        assertNull(actualCard);
+    }
+
+    @Test
+    @DisplayName("Return null if card does not exist")
+    public void getCardAndCongratulationNotExist() {
+        //when
+        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(-1000, 1);
+        //then
+        assertNull(actualCard);
+    }
+
+    @Test
     @DisplayName("Delete card with all parameters")
     void deleteCardById() {
         //when
@@ -156,6 +174,16 @@ public class JdbcCardDaoITest {
         //then
         Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
         assertNull(actualCard);
+    }
+
+    @Test
+    @DisplayName("Delete card when user does not has access")
+    void deleteCardByIdNoAccess() {
+        //when
+        jdbcCardDao.deleteCardById(1, 10000);
+        //then
+        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
+        assertNotNull(actualCard);
     }
 
     @Test

@@ -8,6 +8,7 @@ import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -22,7 +23,6 @@ public class CardServlet extends HttpServlet {
     @Autowired
     private CardService cardService;
 
-    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         log.info("Get card request");
         String[] path = request.getPathInfo().split("/");

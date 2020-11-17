@@ -1,6 +1,5 @@
 package com.greetingcard.web.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
@@ -22,6 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfigurer.sharedHttpSession;
 
@@ -29,9 +29,9 @@ import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfig
 class GetCardsControllerTest {
     private MockMvc mockMvc;
     @InjectMocks
-    GetCardsController controller;
+    private GetCardsController controller;
     @Mock
-    CardService cardService;
+    private CardService cardService;
 
     @BeforeEach
     void setUp() {
@@ -40,14 +40,13 @@ class GetCardsControllerTest {
     }
 
     @Test
-    void getCards() throws Exception {
+    void getCardsAll() throws Exception {
         User user = User.builder().id(1).build();
         Card card1 = Card.builder().name("card1").user(user).build();
         Card card2 = Card.builder().name("card2").user(user).build();
         List<Card> list = new ArrayList<>();
         list.add(card1);
         list.add(card2);
-        String ddd = JSON.toJSONString(list);
 
         when(cardService.getCards(1, "all")).thenReturn(list);
 
@@ -55,7 +54,25 @@ class GetCardsControllerTest {
                 .sessionAttr("user", user)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
+                .andExpect(jsonPath("$[0].id").value("0"))
+                .andExpect(jsonPath("$[0].name").value("card1"))
+                .andExpect(jsonPath("$[1].name").value("card2"))
                 .andExpect(status().isOk());
         verify(cardService).getCards(1, "all");
+    }
+
+    @Test
+    void getCardsAllNoAccessorCards() throws Exception {
+        User user = User.builder().id(100).build();
+
+        when(cardService.getCards(100, "all")).thenReturn(null);
+
+        mockMvc.perform(get("/api/v1/cards?type=all")
+                .sessionAttr("user", user)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$.message").value("Sorry, you do not have cards"))
+                .andExpect(status().isOk());
+        verify(cardService).getCards(100, "all");
     }
 }
