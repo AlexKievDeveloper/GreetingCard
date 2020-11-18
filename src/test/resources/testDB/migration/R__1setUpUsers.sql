@@ -1,5 +1,5 @@
 INSERT INTO users(firstName, lastName, login, email, password, salt, language_id)
-VALUES ('admin','admin','admin', '@admin','2bb7998496899acdd8137fad3a44faf96a84a03d7f230ce42e97cd17c7ae429e','salt',1);
+VALUES ('admin','admin','admin', '@admin','K7eZhJaJms3YE3+tOkT6+WqEoD1/IwzkLpfNF8euQp4=','salt',1);
 INSERT INTO users(firstName, lastName, login, email, password, salt, language_id)
 VALUES ('user','user','user', '@user','gDE3fEwV4WEZhgiURMj/WMlTWP/cldaSptEMe2M+md8=','salt',2);
 INSERT INTO users(firstName, lastName, login, email, password, salt, language_id)

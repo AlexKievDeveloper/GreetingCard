@@ -16,4 +16,7 @@ public class User {
     private String password;
     private String salt;
     private Language language;
+    private String google;
+    private String facebook;
+    private String pathToPhoto;
 }

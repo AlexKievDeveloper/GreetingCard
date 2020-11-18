@@ -5,8 +5,6 @@ import com.greetingcard.entity.Language;
 import com.greetingcard.entity.User;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import java.security.MessageDigest;

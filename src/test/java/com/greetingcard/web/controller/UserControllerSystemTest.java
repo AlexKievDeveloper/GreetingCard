@@ -1,9 +1,8 @@
-package com.greetingcard.web.servlet.user;
+package com.greetingcard.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greetingcard.dao.jdbc.FlywayConfig;
 import com.greetingcard.entity.User;
-import com.greetingcard.web.controller.UserController;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

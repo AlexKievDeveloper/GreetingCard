@@ -21,7 +21,7 @@ public class JdbcUserDao implements UserDao {
     @Override
     public User findByLogin(@NonNull String login) {
         log.info("Getting user by login {}", login);
-        return jdbcTemplate.query(FIND_USER_BY_LOGIN, new Object[] {login}, USER_ROW_MAPPER);
+        return jdbcTemplate.query(FIND_USER_BY_LOGIN, USER_ROW_MAPPER, login);
     }
 
     @Override
@@ -36,5 +36,4 @@ public class JdbcUserDao implements UserDao {
         log.info("Edit user's (user_id:{}) personal information", user.getId());
         jdbcTemplate.update(UPDATE_USER, user.getFirstName(), user.getLastName(), user.getLogin(), user.getId());
     }
-
 }

@@ -1,14 +1,22 @@
 package com.greetingcard.dao.jdbc.mapper;
 
 import com.greetingcard.entity.*;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CongratulationRowMapper {
-    public Congratulation mapRow(ResultSet resultSet) throws SQLException {
+public class CongratulationRowMapper implements ResultSetExtractor<Congratulation> {
+
+    @Override
+    public Congratulation extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+
+        if (!resultSet.next()) {
+            return null;
+        }
 
         Congratulation congratulation = Congratulation.builder()
                 .id(resultSet.getInt("congratulation_id"))
