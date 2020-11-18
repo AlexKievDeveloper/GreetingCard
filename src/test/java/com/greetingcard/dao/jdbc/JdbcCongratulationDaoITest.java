@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import java.io.IOException;
@@ -27,6 +28,7 @@ class JdbcCongratulationDaoITest {
 
     @BeforeEach
     void init() {
+        flyway.clean();
         flyway.migrate();
     }
 
@@ -128,6 +130,40 @@ class JdbcCongratulationDaoITest {
         assertEquals("you_tube_1", actualCongratulation.getLinkList().get(0).getLink());
         assertEquals(7, actualCongratulation.getLinkList().get(0).getCongratulationId());
         assertEquals(LinkType.VIDEO, actualCongratulation.getLinkList().get(0).getType());
+    }
+
+    @Test
+    @DisplayName("Saving an object of class Congratulation to the DB")
+    void saveTestExceptionToLongLinkValue() {
+        //prepare
+        Link link = Link.builder()
+                .link("https://www.studytonight.com/servlet/httpsession.phppppppppppppppppppppppppppppppppppp" +
+                        "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp" +
+                        "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp" +
+                        "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp" +
+                        "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp" +
+                        "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp" +
+                        "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp" +
+                        "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp" +
+                        "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp")
+                .congratulationId(7)
+                .type(LinkType.PLAIN_LINK)
+                .build();
+
+        List<Link> linkList = new ArrayList<>();
+        linkList.add(link);
+
+        Congratulation congratulation = Congratulation.builder()
+                .message("from JdbcTest")
+                .card(Card.builder().id(2).build())
+                .user(User.builder().id(2).build())
+                .status(Status.STARTUP)
+                .build();
+
+        congratulation.setLinkList(linkList);
+
+        //when + then
+        assertThrows(DataIntegrityViolationException.class, () -> jdbcCongratulationDao.save(congratulation));
     }
 
     @Test
