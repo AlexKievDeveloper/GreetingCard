@@ -1,5 +1,3 @@
-package com.greetingcard.dao.jdbc;
-
 import com.greetingcard.entity.*;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.AfterEach;
