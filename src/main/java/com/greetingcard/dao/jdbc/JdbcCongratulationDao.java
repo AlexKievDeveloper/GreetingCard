@@ -111,4 +111,3 @@ public class JdbcCongratulationDao implements CongratulationDao {
         jdbcTemplate.update(deleteQuery, id, userId);
     }
 }
-

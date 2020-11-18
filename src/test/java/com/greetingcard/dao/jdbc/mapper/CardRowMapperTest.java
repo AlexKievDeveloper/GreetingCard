@@ -37,7 +37,7 @@ class CardRowMapperTest {
         when(mockResultSet.getString("card_link")).thenReturn("/link");
         when(mockResultSet.getInt("status_id")).thenReturn(1);
         //when
-        Card actualCard = cardRowMapper.mapRow(mockResultSet);
+        Card actualCard = cardRowMapper.mapRow(mockResultSet,0);
         User actualUser = actualCard.getUser();
         //then
         verify(mockResultSet).getLong("user_id");
