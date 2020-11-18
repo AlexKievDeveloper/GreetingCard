@@ -5,7 +5,6 @@ import com.greetingcard.dao.jdbc.mapper.UserRowMapper;
 import com.greetingcard.entity.User;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.lang.NonNull;
 
@@ -22,7 +21,7 @@ public class JdbcUserDao implements UserDao {
     @Override
     public User findByLogin(@NonNull String login) {
         log.info("Getting user by login {}", login);
-        return jdbcTemplate.queryForObject(FIND_USER_BY_LOGIN, new Object[] {login}, USER_ROW_MAPPER);
+        return jdbcTemplate.query(FIND_USER_BY_LOGIN, new Object[] {login}, USER_ROW_MAPPER);
     }
 
     @Override
