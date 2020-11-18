@@ -9,6 +9,7 @@ import org.springframework.context.annotation.ImportResource;
 import javax.sql.DataSource;
 
 @ImportResource(locations = {"classpath:spring/applicationContext.xml","file:src/main/webapp/dispatcher-servlet.xml"})
+
 @Configuration
 public class FlywayConfig {
     @Autowired
