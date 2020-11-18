@@ -8,7 +8,6 @@ import com.greetingcard.entity.Status;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,15 +27,15 @@ public class CardController {
         this.cardService = cardService;
     }
 
-    @GetMapping
-    public ResponseEntity<Object> getCard(HttpSession session, @RequestParam long id) throws JsonProcessingException {
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<Object> getCard(HttpSession session, @PathVariable long id) throws JsonProcessingException {
         log.info("Get card request");
         User user = (User) session.getAttribute("user");
         Card card = cardService.getCardAndCongratulationByCardId(id, user.getId());
         if (card == null) {
             log.info("User has no access : {}", id);
             ObjectMapper mapper = new JsonMapper();
-            String json = mapper.writeValueAsString(Map.of("message","Sorry, you are not a member of this congratulation"));
+            String json = mapper.writeValueAsString(Map.of("message", "Sorry, you are not a member of this congratulation"));
             return ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body(json);
         } else {
             log.info("Successfully writing card to response, id: {}", id);
@@ -48,13 +47,13 @@ public class CardController {
     public ResponseEntity<Object> createCard(@RequestBody Card card, HttpSession session) throws JsonProcessingException {
         log.info("Creating card request");
         int length = card.getName().length();
-        if (length==0 || length>250){
+        if (length == 0 || length > 250) {
             throw new IllegalArgumentException("Name is short or too long");
         }
         User user = (User) session.getAttribute("user");
         card.setUser(user);
         ObjectMapper mapper = new JsonMapper();
-        String json = mapper.writeValueAsString(Map.of("id",cardService.createCard(card)));
+        String json = mapper.writeValueAsString(Map.of("id", cardService.createCard(card)));
         return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(json);
     }
 

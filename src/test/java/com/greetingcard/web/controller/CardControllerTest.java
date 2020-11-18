@@ -11,11 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -46,8 +41,7 @@ class CardControllerTest {
         User user = User.builder().id(2).build();
         Card card1 = Card.builder().name("card1").user(user).build();
         when(cardService.getCardAndCongratulationByCardId(1, 2)).thenReturn(card1);
-        mockMvc.perform(get("/api/v1/card")
-                .param("id", "1")
+        mockMvc.perform(get("/api/v1/card/{id}", 1)
                 .sessionAttr("user", user)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -61,8 +55,7 @@ class CardControllerTest {
     void getCardNoAccessOrCard() throws Exception {
         User user = User.builder().id(-1).build();
         when(cardService.getCardAndCongratulationByCardId(1, -1)).thenReturn(null);
-        mockMvc.perform(get("/api/v1/card")
-                .param("id", "1")
+        mockMvc.perform(get("/api/v1/card/{id}", 1)
                 .sessionAttr("user", user)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
