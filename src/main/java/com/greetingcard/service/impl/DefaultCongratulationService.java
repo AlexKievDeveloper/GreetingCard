@@ -61,13 +61,14 @@ public class DefaultCongratulationService implements CongratulationService {
         }
 
         for (String youtubeLink : youtubeLinksCollection) {
-            if (youtubeLink.contains("youtu") && youtubeLink.length() < 500) {
-                Link video = Link.builder()
-                        .link(getYoutubeVideoId(youtubeLink))
-                        .type(LinkType.VIDEO)
-                        .build();
-                linkList.add(video);
-            } else throw new IllegalArgumentException("Wrong youtube link url!");
+            if (!youtubeLink.contains("youtu") && youtubeLink.length() > 500) {
+                throw new IllegalArgumentException("Wrong youtube link url!");
+            }
+            Link video = Link.builder()
+                    .link(getYoutubeVideoId(youtubeLink))
+                    .type(LinkType.VIDEO)
+                    .build();
+            linkList.add(video);
         }
     }
 
@@ -83,29 +84,30 @@ public class DefaultCongratulationService implements CongratulationService {
     }
 
     void addPlainLinks(List<Link> linkList, String plainLinks) {
-        if (!plainLinks.equals("")) {
-            if (plainLinks.length() < 500) {
-
-                String pattern = "(https?:\\/\\/)?([\\w-]{1,32}\\.[\\w-]{1,32})[^\\s@]*";
-
-                Pattern compiledPattern = Pattern.compile(pattern);
-                Matcher matcher = compiledPattern.matcher(plainLinks);
-
-                List<String> plainLinksCollection = new ArrayList<>();
-
-                while (matcher.find()) {
-                    plainLinksCollection.add(matcher.group());
-                }
-
-                for (String plainLink : plainLinksCollection) {
-                    Link link = Link.builder()
-                            .link(plainLink)
-                            .type(LinkType.PLAIN_LINK)
-                            .build();
-                    linkList.add(link);
-                }
-            } else throw new IllegalArgumentException("Sorry, congratulation not saved. The link is very long. " +
+        if (plainLinks.length() > 500) {
+            throw new IllegalArgumentException("Sorry, congratulation not saved. The link is very long. " +
                     "Please use a link up to 500 characters.");
+        }
+
+        if (!plainLinks.equals("")) {
+            String pattern = "(https?:\\/\\/)?([\\w-]{1,32}\\.[\\w-]{1,32})[^\\s@]*";
+
+            Pattern compiledPattern = Pattern.compile(pattern);
+            Matcher matcher = compiledPattern.matcher(plainLinks);
+
+            List<String> plainLinksCollection = new ArrayList<>();
+
+            while (matcher.find()) {
+                plainLinksCollection.add(matcher.group());
+            }
+
+            for (String plainLink : plainLinksCollection) {
+                Link link = Link.builder()
+                        .link(plainLink)
+                        .type(LinkType.PLAIN_LINK)
+                        .build();
+                linkList.add(link);
+            }
         }
     }
 }
