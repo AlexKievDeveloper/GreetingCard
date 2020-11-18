@@ -24,12 +24,11 @@ import java.util.Map;
 public class CardController {
     private CardService cardService;
 
-    @Autowired
     public CardController(CardService cardService) {
         this.cardService = cardService;
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<Object> getCard(HttpSession session, @RequestParam long id) throws JsonProcessingException {
         log.info("Get card request");
         User user = (User) session.getAttribute("user");
@@ -48,8 +47,8 @@ public class CardController {
     @PostMapping
     public ResponseEntity<Object> createCard(@RequestBody Card card, HttpSession session) throws JsonProcessingException {
         log.info("Creating card request");
-        int lenght = card.getName().length();
-        if (lenght<=0 || lenght>250){
+        int length = card.getName().length();
+        if (length==0 || length>250){
             throw new IllegalArgumentException("Name is short or too long");
         }
         User user = (User) session.getAttribute("user");
