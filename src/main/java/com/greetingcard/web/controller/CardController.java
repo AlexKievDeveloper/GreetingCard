@@ -22,6 +22,7 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "api/v1/", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 public class CardController {
+
     private CardService cardService;
 
     public CardController(CardService cardService) {
