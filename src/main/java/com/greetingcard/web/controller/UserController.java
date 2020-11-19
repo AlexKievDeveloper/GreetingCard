@@ -1,53 +1,65 @@
 package com.greetingcard.web.controller;
 
-import com.greetingcard.dto.UserCredential;
+import com.greetingcard.entity.User;
 import com.greetingcard.security.SecurityService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
+
 import javax.servlet.http.HttpSession;
+import java.util.Map;
+
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/session")
 public class UserController {
-
+    @Autowired
     private SecurityService securityService;
+    @Autowired
+    private int maxInactiveInterval;
 
-    @DeleteMapping
-    public void logout(@RequestAttribute HttpSession session, HttpServletResponse response) {
-        log.info("logout");
+    @DeleteMapping(value = "/api/v1/session")
+    public ResponseEntity logout(HttpSession session) {
         session.invalidate();
-        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         log.info("Successfully logout");
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @PostMapping
-    public void login(@RequestBody UserCredential userCredential) {
+    @PostMapping(value = "/api/v1/session", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity login(@RequestBody Map<String, String> userCredential, HttpSession session) {
         log.info("login request");
-        String login = userCredential.getLogin();
-        String password = userCredential.getPassword();
+        String login = userCredential.get("user");
+        String password = userCredential.get("password");
         log.info("login for user {}", login);
+        User user = securityService.login(login, password);
+        if (user == null) {
+            log.info("Credentials not valid");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Access denied. Please check your login and password"));
+        }
+        session.setAttribute("user", user);
+        session.setMaxInactiveInterval(maxInactiveInterval);
+        log.info("Successfully authentication");
+        return ResponseEntity.status(HttpStatus.OK).body(login);
+    }
 
-//        try {
-//            User user = securityService.login(login, password);
-//            if (user != null) {
-//                HttpSession httpSession = request.getSession();
-//                httpSession.setAttribute("user", user);
-//                httpSession.setMaxInactiveInterval(maxInactiveInterval);
-//                response.setStatus(HttpServletResponse.SC_OK);
-//                log.info("Successfully login");
-//            } else {
-//                Map<String, String> messageMap = new LinkedHashMap<>();
-//                messageMap.put("message", "Access denied. Please login and try again.");
-//                response.getWriter().print(JSON.toJSONString(messageMap));
-//                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//                log.info("Credentials not valid");
-//            }
-//        } catch (RuntimeException e) {
-//            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-//            log.error("Exception while checking credentials");
-//        }
+    @PostMapping(value = "/api/v1/user", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity register(@RequestBody Map<String, String> userCredentials) {
+        User user = User.builder()
+                .firstName(userCredentials.get("firstName"))
+                .lastName(userCredentials.get("lastName"))
+                .email(userCredentials.get("email"))
+                .login(userCredentials.get("login"))
+                .password(userCredentials.get("password"))
+                .build();
+        log.info("Registration request for user login: {}", user.getLogin());
+        securityService.save(user);
+        log.info("Successfully registered: {}", user);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

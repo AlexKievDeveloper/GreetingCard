@@ -3,6 +3,10 @@ out
 *.iml
 target
 logs
+setUp.sql
+setUpContent.sql
+setUpTable.sql
+
 
 
 

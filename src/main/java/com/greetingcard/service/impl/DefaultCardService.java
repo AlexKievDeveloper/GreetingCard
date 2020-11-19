@@ -4,17 +4,11 @@ import com.greetingcard.dao.CardDao;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Status;
 import com.greetingcard.service.CardService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 public class DefaultCardService implements CardService {
-    private final CardDao jdbcCardDao;
-
-    @Autowired
-    public DefaultCardService(CardDao jdbcCardDao) {
-        this.jdbcCardDao = jdbcCardDao;
-    }
+    private CardDao jdbcCardDao;
 
     @Override
     public List<Card> getCards(long userId, String cardsType) {
@@ -49,5 +43,9 @@ public class DefaultCardService implements CardService {
     @Override
     public void changeCardStatus(Status status, long cardId) {
         jdbcCardDao.changeCardStatusById(status, cardId);
+    }
+
+    public void setJdbcCardDao(CardDao jdbcCardDao) {
+        this.jdbcCardDao = jdbcCardDao;
     }
 }
