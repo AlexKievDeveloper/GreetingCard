@@ -6,11 +6,14 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
 import java.util.Map;
@@ -18,6 +21,8 @@ import java.util.Map;
 
 @Slf4j
 @RestController
+@Setter
+@PropertySource(value = "classpath:application.properties")
 public class UserController {
     @Autowired
     private SecurityService securityService;
@@ -25,7 +30,7 @@ public class UserController {
     private int maxInactiveInterval;
 
     @DeleteMapping(value = "/api/v1/session")
-    public ResponseEntity logout(HttpSession session) {
+    public ResponseEntity<?> logout(HttpSession session) {
         session.invalidate();
         log.info("Successfully logout");
         return ResponseEntity.status(HttpStatus.OK).build();
@@ -33,7 +38,7 @@ public class UserController {
 
     @PostMapping(value = "/api/v1/session", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity login(@RequestBody Map<String, String> userCredential, HttpSession session) {
+    public ResponseEntity<?> login(@RequestBody Map<String, String> userCredential, HttpSession session) {
         log.info("login request");
         String login = userCredential.get("user");
         String password = userCredential.get("password");
@@ -51,7 +56,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/api/v1/user", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity register(@RequestBody Map<String, String> userCredentials) {
+    public ResponseEntity<?> register(@RequestBody Map<String, String> userCredentials) {
         User user = User.builder()
                 .firstName(userCredentials.get("firstName"))
                 .lastName(userCredentials.get("lastName"))
