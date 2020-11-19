@@ -7,6 +7,7 @@ import com.greetingcard.dao.jdbc.mapper.CardRowMapper;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Role;
 import com.greetingcard.entity.Status;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Slf4j
+@Setter
 public class JdbcCardDao implements CardDao {
     private static final String GET_ALL_CARDS_BY_USER_ID = "SELECT cards.card_id, name, background_image, card_link, status_id, users.user_id, firstName, lastName, login, email FROM cards LEFT JOIN users_cards ON cards.card_id=users_cards.card_id LEFT JOIN users ON users_cards.user_id=users.user_id WHERE users.user_id = :id ORDER BY cards.card_id";
     private static final String GET_CARDS_BY_USER_ID_AND_ROLE_ID = "SELECT cards.card_id, name, background_image, card_link, status_id, users.user_id, firstName, lastName, login, email FROM cards LEFT JOIN users_cards ON cards.card_id=users_cards.card_id LEFT JOIN users ON users_cards.user_id=users.user_id WHERE (users.user_id = :userId AND role_id = :roleId) ORDER BY cards.card_id";
@@ -37,13 +39,6 @@ public class JdbcCardDao implements CardDao {
     private JdbcTemplate jdbcTemplate;
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private TransactionTemplate transactionTemplate;
-
-    public JdbcCardDao(CongratulationDao congratulationDao, JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate, TransactionTemplate transactionTemplate) {
-        this.congratulationDao = congratulationDao;
-        this.jdbcTemplate = jdbcTemplate;
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-        this.transactionTemplate = transactionTemplate;
-    }
 
     @Override
     public List<Card> getAllCardsByUserId(long id) {
@@ -102,22 +97,6 @@ public class JdbcCardDao implements CardDao {
                 congratulationDao.changeStatusCongratulationsByCardId(newStatus, cardId);
             }
         });
-    }
-
-    public void setCongratulationDao(CongratulationDao congratulationDao) {
-        this.congratulationDao = congratulationDao;
-    }
-
-    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    public void setNamedParameterJdbcTemplate(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-    }
-
-    public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
-        this.transactionTemplate = transactionTemplate;
     }
 
 }

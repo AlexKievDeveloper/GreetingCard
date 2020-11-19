@@ -1,12 +1,16 @@
 package com.greetingcard.service.impl;
 
 import com.greetingcard.dao.CardDao;
+import com.greetingcard.dao.jdbc.JdbcCardDao;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Status;
 import com.greetingcard.service.CardService;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
+@Setter
 public class DefaultCardService implements CardService {
     private CardDao jdbcCardDao;
 
@@ -43,9 +47,5 @@ public class DefaultCardService implements CardService {
     @Override
     public void changeCardStatus(Status status, long cardId) {
         jdbcCardDao.changeCardStatusById(status, cardId);
-    }
-
-    public void setJdbcCardDao(CardDao jdbcCardDao) {
-        this.jdbcCardDao = jdbcCardDao;
     }
 }
