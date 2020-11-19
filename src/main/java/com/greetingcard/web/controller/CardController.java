@@ -15,11 +15,12 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "api/v1/card", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "api/v1/", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 public class CardController {
     private CardService cardService;
 
@@ -27,7 +28,22 @@ public class CardController {
         this.cardService = cardService;
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "cards")
+    public ResponseEntity<Object> getCards(HttpSession session, @RequestParam String type) throws JsonProcessingException {
+        log.info("getCards");
+        User user = (User) session.getAttribute("user");
+        long userId = user.getId();
+        List<Card> cardList = cardService.getCards(userId, type);
+        if (cardList == null) {
+            ObjectMapper mapper = new ObjectMapper();
+            String json = mapper.writeValueAsString(Map.of("message", "Sorry, you do not have cards"));
+            return ResponseEntity.status(HttpStatus.OK).body(json);
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(cardList);
+        }
+    }
+
+    @GetMapping(value = "card/{id}")
     public ResponseEntity<Object> getCard(HttpSession session, @PathVariable long id) throws JsonProcessingException {
         log.info("Get card request");
         User user = (User) session.getAttribute("user");
@@ -43,7 +59,7 @@ public class CardController {
         }
     }
 
-    @PostMapping
+    @PostMapping("card")
     public ResponseEntity<Object> createCard(@RequestBody Card card, HttpSession session) throws JsonProcessingException {
         log.info("Creating card request");
         int length = card.getName().length();
@@ -57,7 +73,7 @@ public class CardController {
         return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(json);
     }
 
-    @PutMapping(value = "/{id}/status")
+    @PutMapping(value = "card/{id}/status")
     public ResponseEntity<Object> changeStatus(@PathVariable long id) {
         log.info("Received PUT request");
         cardService.changeCardStatus(Status.ISOVER, id);
@@ -65,7 +81,7 @@ public class CardController {
         return ResponseEntity.status(HttpServletResponse.SC_OK).build();
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "card/{id}")
     public ResponseEntity<Object> delete(@PathVariable long id, HttpSession session) {
         log.info("Request for DELETE card");
         User user = (User) session.getAttribute("user");
