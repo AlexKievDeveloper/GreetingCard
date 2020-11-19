@@ -2,8 +2,10 @@ package com.greetingcard.web.controller;
 
 import com.greetingcard.entity.User;
 import com.greetingcard.security.SecurityService;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +21,8 @@ import java.util.Map;
 public class UserController {
     @Autowired
     private SecurityService securityService;
-    @Autowired
+    @Value("${max.inactive.interval}")
     private int maxInactiveInterval;
-
 
     @DeleteMapping(value = "/api/v1/session")
     public ResponseEntity logout(HttpSession session) {

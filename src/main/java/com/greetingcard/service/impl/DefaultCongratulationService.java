@@ -61,7 +61,7 @@ public class DefaultCongratulationService implements CongratulationService {
         }
 
         for (String youtubeLink : youtubeLinksCollection) {
-            if (!youtubeLink.contains("youtu") && youtubeLink.length() > 500) {
+            if (!youtubeLink.contains("youtu") || youtubeLink.length() > 500) {
                 throw new IllegalArgumentException("Wrong youtube link url!");
             }
             Link video = Link.builder()
