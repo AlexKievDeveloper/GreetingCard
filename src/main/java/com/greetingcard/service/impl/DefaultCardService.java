@@ -1,6 +1,6 @@
 package com.greetingcard.service.impl;
 
-import com.greetingcard.dao.jdbc.JdbcCardDao;
+import com.greetingcard.dao.CardDao;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Status;
 import com.greetingcard.service.CardService;
@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 public class DefaultCardService implements CardService {
-    private final JdbcCardDao jdbcCardDao;
+    private final CardDao jdbcCardDao;
 
     @Autowired
-    public DefaultCardService(JdbcCardDao jdbcCardDao) {
+    public DefaultCardService(CardDao jdbcCardDao) {
         this.jdbcCardDao = jdbcCardDao;
     }
 

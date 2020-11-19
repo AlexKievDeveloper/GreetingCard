@@ -1,6 +1,6 @@
 package com.greetingcard.service.impl;
 
-import com.greetingcard.dao.jdbc.JdbcCardDao;
+import com.greetingcard.dao.CardDao;
 import com.greetingcard.entity.Status;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,7 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class DefaultCardServiceTest {
     @Mock
-    private JdbcCardDao jdbcCardDao;
+    private CardDao jdbcCardDao;
     @InjectMocks
     @Autowired
     private DefaultCardService defaultCardService;
