@@ -50,7 +50,7 @@ class CardAndCongratulationRowMapperTest {
         when(mockResultSet.getInt("type_id")).thenReturn(1);
 
         //when
-        Card actualCard = rowMapper.extractData(mockResultSet);
+        rowMapper.extractData(mockResultSet);
 
         //then
         verify(mockResultSet).getLong("card_id");

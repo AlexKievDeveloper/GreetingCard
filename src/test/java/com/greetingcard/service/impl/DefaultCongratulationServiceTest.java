@@ -56,9 +56,8 @@ class DefaultCongratulationServiceTest {
         //prepare
         String youtubeLinks = "https://www.yoube.com/watch?v=JcDy3ny-H0k\r\nhttps://www.youtube.com/watch?v=JcDy3ny-H0k";
         //when + then
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> {
-            defaultCongratulationService.addYoutubeLinks(linkList, youtubeLinks);
-        });
+        var e = assertThrows(IllegalArgumentException.class, () ->
+                defaultCongratulationService.addYoutubeLinks(linkList, youtubeLinks));
         assertEquals("Wrong youtube link url!", e.getMessage());
     }
 
@@ -77,9 +76,8 @@ class DefaultCongratulationServiceTest {
     @DisplayName("Throws illegal argument exception if youtube url has incorrect format")
     void getYoutubeVideoIdExceptionTest() {
         //when + then
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> {
-            defaultCongratulationService.getYoutubeVideoId("https://www.youtube.com");
-        });
+        var e = assertThrows(IllegalArgumentException.class, () ->
+                defaultCongratulationService.getYoutubeVideoId("https://www.youtube.com"));
         assertEquals("Wrong youtube link url!", e.getMessage());
     }
 
@@ -120,9 +118,8 @@ class DefaultCongratulationServiceTest {
                 "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp" +
                 "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp";
         //when
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> {
-            defaultCongratulationService.addPlainLinks(linkList, plainLinks);
-        });
+        var e = assertThrows(IllegalArgumentException.class, () ->
+                defaultCongratulationService.addPlainLinks(linkList, plainLinks));
         //then
         verify(linkList, times(0)).add(any());
         assertEquals(0, linkList.size());

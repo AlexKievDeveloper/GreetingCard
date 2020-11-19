@@ -1,8 +1,9 @@
 package com.greetingcard.web.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greetingcard.entity.User;
 import com.greetingcard.security.SecurityService;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,30 +11,31 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-
 import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 
 @Slf4j
 @RestController
+@RequestMapping(value = "/api/v1/")
 public class UserController {
     @Autowired
     private SecurityService securityService;
     @Value("${max.inactive.interval}")
     private int maxInactiveInterval;
 
-    @DeleteMapping(value = "/api/v1/session")
+    private ObjectMapper objectMapper = new ObjectMapper();
+
+    @DeleteMapping(value = "session")
     public ResponseEntity logout(HttpSession session) {
         session.invalidate();
         log.info("Successfully logout");
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @PostMapping(value = "/api/v1/session", produces = MediaType.APPLICATION_JSON_VALUE,
+    @PostMapping(value = "session", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity login(@RequestBody Map<String, String> userCredential, HttpSession session) {
+    public ResponseEntity login(@RequestBody Map<String, String> userCredential, HttpSession session) throws JsonProcessingException {
         log.info("login request");
         String login = userCredential.get("user");
         String password = userCredential.get("password");
@@ -41,16 +43,18 @@ public class UserController {
         User user = securityService.login(login, password);
         if (user == null) {
             log.info("Credentials not valid");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("message", "Access denied. Please check your login and password"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(objectMapper
+                    .writeValueAsString(Map.of("message",
+                            "Access denied. Please check your login and password")));
         }
         session.setAttribute("user", user);
         session.setMaxInactiveInterval(maxInactiveInterval);
         log.info("Successfully authentication");
-        return ResponseEntity.status(HttpStatus.OK).body(login);
+        return ResponseEntity.status(HttpStatus.OK).body(objectMapper
+                .writeValueAsString(Map.of("login", login)));
     }
 
-    @PostMapping(value = "/api/v1/user", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "user", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity register(@RequestBody Map<String, String> userCredentials) {
         User user = User.builder()
                 .firstName(userCredentials.get("firstName"))

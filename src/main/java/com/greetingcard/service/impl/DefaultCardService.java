@@ -1,12 +1,10 @@
 package com.greetingcard.service.impl;
 
 import com.greetingcard.dao.CardDao;
-import com.greetingcard.dao.jdbc.JdbcCardDao;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Status;
 import com.greetingcard.service.CardService;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 

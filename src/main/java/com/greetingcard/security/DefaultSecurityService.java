@@ -5,15 +5,12 @@ import com.greetingcard.entity.Language;
 import com.greetingcard.entity.User;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.UUID;
 
 @Slf4j
-@Service
 @Setter
 public class DefaultSecurityService implements SecurityService {
 
@@ -26,6 +23,10 @@ public class DefaultSecurityService implements SecurityService {
     @Override
     public User login(String login, String password) {
         log.info("login: {}", login);
+        if (login.length() > 50) {
+            throw new IllegalArgumentException("Sorry, login is too long." +
+                    "Please put login up to 50 characters.");
+        }
         User user = userDao.findByLogin(login);
 
         if (user != null) {
@@ -42,6 +43,30 @@ public class DefaultSecurityService implements SecurityService {
 
     @Override
     public void save(User user) {
+        if (user.getLogin().length() > 50) {
+            throw new IllegalArgumentException("Sorry, login is too long. " +
+                    "Please put login up to 50 characters.");
+        }
+        if (user.getFirstName().length() > 40) {
+            throw new IllegalArgumentException("Sorry, first name is too long. " +
+                    "Please put first name up to 40 characters.");
+        }
+
+        if (user.getLastName().length() > 40) {
+            throw new IllegalArgumentException("Sorry, last name is too long. " +
+                    "Please put last name up to 40 characters.");
+        }
+
+        if (user.getEmail().length() > 50) {
+            throw new IllegalArgumentException("Sorry, email is too long. " +
+                    "Please put email up to 40 characters.");
+        }
+
+        if (user.getPassword().length() > 200) {
+            throw new IllegalArgumentException("Sorry, password is too long. " +
+                    "Please put password up to 40 characters.");
+        }
+
         String salt = UUID.randomUUID().toString();
         String saltAndPassword = getHashPassword(salt.concat(user.getPassword()));
 
