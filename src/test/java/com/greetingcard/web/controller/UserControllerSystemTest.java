@@ -83,6 +83,8 @@ class UserControllerSystemTest {
                 .content(json))
                 .andDo(print())
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.login").value("user"))
+                .andExpect(jsonPath("$.userId").value("2"))
                 .andReturn().getRequest().getSession();
 
         //then

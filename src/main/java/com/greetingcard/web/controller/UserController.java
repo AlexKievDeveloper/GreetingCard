@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import javax.servlet.http.HttpSession;
 import java.util.Map;
 
@@ -28,7 +29,7 @@ public class UserController {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    @DeleteMapping(value = "session")
+    @DeleteMapping("session")
     public ResponseEntity logout(HttpSession session) {
         session.invalidate();
         log.info("Successfully logout");
@@ -53,7 +54,7 @@ public class UserController {
         session.setMaxInactiveInterval(maxInactiveInterval);
         log.info("Successfully authentication");
         return ResponseEntity.status(HttpStatus.OK).body(objectMapper
-                .writeValueAsString(Map.of("login", login)));
+                .writeValueAsString(Map.of("login", login, "userId", user.getId())));
     }
 
     @PostMapping(value = "user", consumes = MediaType.APPLICATION_JSON_VALUE)

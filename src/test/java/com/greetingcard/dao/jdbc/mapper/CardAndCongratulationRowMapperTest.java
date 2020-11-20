@@ -1,6 +1,5 @@
 package com.greetingcard.dao.jdbc.mapper;
 
-import com.greetingcard.entity.Card;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
