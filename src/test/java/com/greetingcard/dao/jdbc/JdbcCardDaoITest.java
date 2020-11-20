@@ -2,7 +2,6 @@ package com.greetingcard.dao.jdbc;
 
 import com.greetingcard.entity.*;
 import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,19 +17,14 @@ public class JdbcCardDaoITest {
     @Autowired
     private JdbcCardDao jdbcCardDao;
 
-    @Autowired
-    private Flyway flyway;
-
-    @BeforeEach
-    void init() {
-        flyway.clean();
-        flyway.migrate();
-    }
-
-    @AfterEach
-    void afterAll() {
-        flyway.clean();
-    }
+//    @Autowired
+//    private Flyway flyway;
+//
+//    @BeforeEach
+//    void init() {
+//        flyway.clean();
+//        flyway.migrate();
+//    }
 
     @Test
     @DisplayName("Returns List<Cards> from DB")

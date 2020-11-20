@@ -28,6 +28,7 @@
         <hamcrest-library.version>2.2</hamcrest-library.version>
         <json-path.version>2.4.0</json-path.version>
         <jackson-databind.version>2.11.3</jackson-databind.version>
+        <email.version>1.6.2</email.version>
     </properties>
 
     <build>
@@ -125,11 +126,16 @@
             <artifactId>jackson-databind</artifactId>
             <version>${jackson-databind.version}</version>
         </dependency>
-        <!--Thymeleaf-->
+        <!--Mail-->
         <dependency>
-            <groupId>org.thymeleaf</groupId>
-            <artifactId>thymeleaf</artifactId>
-            <version>${thymeleaf.version}</version>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>${email.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${spring.version}</version>
         </dependency>
         <!--Test-->
         <dependency>
@@ -144,7 +150,6 @@
             <version>5.4.1</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
