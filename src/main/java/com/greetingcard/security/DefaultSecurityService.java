@@ -5,7 +5,6 @@ import com.greetingcard.entity.Language;
 import com.greetingcard.entity.User;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -13,7 +12,6 @@ import java.util.Base64;
 import java.util.UUID;
 
 @Slf4j
-@Service
 @Setter
 public class DefaultSecurityService implements SecurityService {
 
@@ -26,6 +24,7 @@ public class DefaultSecurityService implements SecurityService {
     @Override
     public User login(String login, String password) {
         log.info("login: {}", login);
+        checkUserCredentials(login, 50, "login");
         User user = userDao.findByLogin(login);
 
         if (user != null) {
@@ -42,6 +41,12 @@ public class DefaultSecurityService implements SecurityService {
 
     @Override
     public void save(User user) {
+        checkUserCredentials(user.getFirstName(), 40, "first name");
+        checkUserCredentials(user.getLastName(), 40, "last name");
+        checkUserCredentials(user.getEmail(), 50, "email");
+        checkUserCredentials(user.getLogin(), 50, "login");
+        checkUserCredentials(user.getPassword(), 200, "password");
+
         String salt = UUID.randomUUID().toString();
         String saltAndPassword = getHashPassword(salt.concat(user.getPassword()));
 
@@ -74,5 +79,13 @@ public class DefaultSecurityService implements SecurityService {
             throw new RuntimeException(e);
         }
     }
+
+    private void checkUserCredentials(String fieldValue, int maxCharacters, String fieldName) {
+        if (fieldValue.length() > maxCharacters) {
+            throw new IllegalArgumentException("Sorry, " + fieldName + " is too long. " +
+                    "Please put " + fieldName + " up to " + maxCharacters + " characters.");
+        }
+    }
+
 
 }

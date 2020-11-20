@@ -23,53 +23,6 @@
         <url-pattern>/</url-pattern>
     </servlet-mapping>
 
-<!--    <servlet>-->
-<!--        <servlet-name>LoginLogoutServlet</servlet-name>-->
-<!--        <servlet-class>com.greetingcard.web.servlet.user.LoginLogoutServlet</servlet-class>-->
-<!--    </servlet>-->
-<!--    <servlet-mapping>-->
-<!--        <servlet-name>LoginLogoutServlet</servlet-name>-->
-<!--        <url-pattern>/api/v1/session</url-pattern>-->
-<!--    </servlet-mapping>-->
-
-<!--    <servlet>-->
-<!--        <servlet-name>RegistrationServlet</servlet-name>-->
-<!--        <servlet-class>com.greetingcard.web.servlet.user.RegistrationServlet</servlet-class>-->
-<!--    </servlet>-->
-<!--    <servlet-mapping>-->
-<!--        <servlet-name>RegistrationServlet</servlet-name>-->
-<!--        <url-pattern>/api/v1/user</url-pattern>-->
-<!--    </servlet-mapping>-->
-
-<!--    <servlet>-->
-<!--        <servlet-name>GetCardsServlet</servlet-name>-->
-<!--        <servlet-class>com.greetingcard.web.servlet.card.GetCardsServlet</servlet-class>-->
-<!--    </servlet>-->
-<!--    <servlet-mapping>-->
-<!--        <servlet-name>GetCardsServlet</servlet-name>-->
-<!--        <url-pattern>/api/v1/cards</url-pattern>-->
-<!--    </servlet-mapping>-->
-
-<!--    <servlet>-->
-<!--        <servlet-name>CardServlet</servlet-name>-->
-<!--        <servlet-class>com.greetingcard.web.servlet.card.CardServlet</servlet-class>-->
-<!--    </servlet>-->
-<!--    <servlet-mapping>-->
-<!--        <servlet-name>CardServlet</servlet-name>-->
-<!--        <url-pattern>/api/v1/card</url-pattern>-->
-<!--        <url-pattern>/api/v1/card/*</url-pattern>-->
-<!--    </servlet-mapping>-->
-
-<!--    <servlet>-->
-<!--        <servlet-name>CongratulationServlet</servlet-name>-->
-<!--        <servlet-class>com.greetingcard.web.servlet.congratulation.CongratulationServlet</servlet-class>-->
-<!--    </servlet>-->
-<!--    <servlet-mapping>-->
-<!--        <servlet-name>CongratulationServlet</servlet-name>-->
-<!--        <url-pattern>/api/v1/congratulation</url-pattern>-->
-<!--        <url-pattern>/api/v1/congratulation/*</url-pattern>-->
-<!--    </servlet-mapping>-->
-
     <filter>
         <filter-name>AuthorizationFilter</filter-name>
         <filter-class>com.greetingcard.web.filter.AuthorizationFilter</filter-class>

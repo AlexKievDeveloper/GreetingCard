@@ -7,12 +7,11 @@ import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringJUnitWebConfig(value = FlywayConfig.class)
 class DefaultSecurityServiceTest {
@@ -43,6 +42,13 @@ class DefaultSecurityServiceTest {
         assertEquals("gDE3fEwV4WEZhgiURMj/WMlTWP/cldaSptEMe2M+md8=", actual.getPassword());
         assertEquals("salt", actual.getSalt());
         assertEquals(Language.ENGLISH, actual.getLanguage());
+    }
+
+    @Test
+    @DisplayName("Login user if login too long")
+    void testLoginIfLoginTooLong() {
+        assertThrows(IllegalArgumentException.class, () ->
+                securityService.login("logintoooooooooooooooooooooloooooooooooooooooooooonggggg", "user"));
     }
 
     @Test

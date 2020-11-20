@@ -23,6 +23,7 @@ import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -62,9 +63,7 @@ class UserControllerSystemTest {
                 .andDo(print())
                 .andExpect(status().isOk());
         assertNotNull(session);
-        assertThrows(IllegalStateException.class, () -> {
-            session.getAttribute("user");
-        });
+        assertThrows(IllegalStateException.class, () -> session.getAttribute("user"));
     }
 
     @Test
@@ -84,6 +83,8 @@ class UserControllerSystemTest {
                 .content(json))
                 .andDo(print())
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.login").value("user"))
+                .andExpect(jsonPath("$.userId").value("2"))
                 .andReturn().getRequest().getSession();
 
         //then
@@ -111,6 +112,7 @@ class UserControllerSystemTest {
                 .content(json))
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value("Access denied. Please check your login and password"))
                 .andReturn().getRequest().getSession();
         //then
         assertNotNull(result);
@@ -136,5 +138,28 @@ class UserControllerSystemTest {
                 .content(json))
                 .andDo(print())
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    @DisplayName("Registration new user if login too long")
+    void testRegistrationIfLoginTooLong() throws Exception {
+        //prepare
+        String json = "{\n" +
+                "  \"firstName\" : \"user\",\n" +
+                "  \"lastName\" : \"user\",\n" +
+                "  \"email\" : \"user@test\",\n" +
+                "  \"login\" : \"usertooooooooooooooooooooooloooooooooooooooooooooooooooooooooong\",\n" +
+                "  \"password\" : \"user\" \n" +
+                "}";
+
+        mockMvc.perform(post("/api/v1/user")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .content(json))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("Sorry, login is too long. " +
+                                "Please put login up to 50 characters."));
     }
 }
