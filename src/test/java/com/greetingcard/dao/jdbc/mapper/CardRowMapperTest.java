@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -37,7 +38,8 @@ class CardRowMapperTest {
         when(mockResultSet.getString("card_link")).thenReturn("/link");
         when(mockResultSet.getInt("status_id")).thenReturn(1);
         //when
-        Card actualCard = cardRowMapper.mapRow(mockResultSet,0);
+        Card actualCard = cardRowMapper.mapRow(mockResultSet, 0);
+        assertNotNull(actualCard);
         User actualUser = actualCard.getUser();
         //then
         verify(mockResultSet).getLong("user_id");
