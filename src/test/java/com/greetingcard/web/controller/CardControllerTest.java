@@ -1,19 +1,25 @@
 package com.greetingcard.web.controller;
 
+import com.greetingcard.dao.jdbc.FlywayConfig;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Status;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
+import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,122 +32,110 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfigurer.sharedHttpSession;
 
 @ExtendWith(MockitoExtension.class)
+@SpringJUnitWebConfig(value = FlywayConfig.class)
 class CardControllerTest {
     private MockMvc mockMvc;
-    @InjectMocks
-    private CardController controller;
-    @Mock
-    private CardService cardService;
-
+    @Autowired
+    private WebApplicationContext context;
+    @Autowired
+    private Flyway flyway;
     @BeforeEach
     void setUp() {
+        flyway.clean();
+        flyway.migrate();
         MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(controller).apply(sharedHttpSession()).build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(sharedHttpSession()).build();
     }
 
     @Test
+    @DisplayName("Return card by card_id and user_id")
     void getCard() throws Exception {
         User user = User.builder().id(2).build();
-        Card card1 = Card.builder().name("card1").user(user).build();
-        when(cardService.getCardAndCongratulationByCardId(1, 2)).thenReturn(card1);
         mockMvc.perform(get("/api/v1/card/{id}", 1)
-                .sessionAttr("user", user)
-                .contentType(MediaType.APPLICATION_JSON))
+                .sessionAttr("user", user))
                 .andDo(print())
                 .andExpect(jsonPath("$.id").value("0"))
                 .andExpect(jsonPath("$.name").value("card1"))
                 .andExpect(status().isOk());
-        verify(cardService).getCardAndCongratulationByCardId(1, 2);
+
     }
 
     @Test
+    @DisplayName("Return message when user is not a member of this card")
     void getCardNoAccessOrCard() throws Exception {
         User user = User.builder().id(-1).build();
-        when(cardService.getCardAndCongratulationByCardId(1, -1)).thenReturn(null);
         mockMvc.perform(get("/api/v1/card/{id}", 1)
-                .sessionAttr("user", user)
-                .contentType(MediaType.APPLICATION_JSON))
+                .sessionAttr("user", user))
                 .andDo(print())
-                .andExpect(jsonPath("$.message").value("Sorry, you are not a member of this congratulation"))
+                .andExpect(jsonPath("$.message").value("Sorry, you are not a member of this card"))
                 .andExpect(status().isForbidden());
-        verify(cardService).getCardAndCongratulationByCardId(1, -1);
+
     }
 
     @Test
+    @DisplayName("Create card")
     void createCard() throws Exception {
         String json = "{\"name\":\"test\"}";
         User user = User.builder().id(2).build();
-        Card card1 = Card.builder().name("test").user(user).build();
-        when(cardService.createCard(card1)).thenReturn(100L);
 
         mockMvc.perform(post("/api/v1/card")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json)
-                .characterEncoding("utf-8"))
+                .characterEncoding("utf-8")
+                .sessionAttr("user", user))
                 .andDo(print())
-                .andExpect(jsonPath("$.id").value("100"))
+                .andExpect(jsonPath("$.id").value("4"))
                 .andExpect(status().isCreated());
-        verify(cardService).createCard(card1);
+
     }
 
     @Test
+    @DisplayName("Change status of card")
     void doPut() throws Exception {
-        doNothing().when(cardService).changeCardStatus(Status.ISOVER, 1);
         mockMvc.perform(put("/api/v1/card/{id}/status", 1)
-                .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("utf-8"))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(cardService).changeCardStatus(Status.ISOVER, 1);
     }
 
     @Test
+    @DisplayName("Delete card")
     void doDelete() throws Exception {
         User user = User.builder().id(1).build();
-        doNothing().when(cardService).deleteCardById(1, 1);
         mockMvc.perform(delete("/api/v1/card/{id}", 1)
-                .contentType(MediaType.APPLICATION_JSON)
                 .sessionAttr("user", user)
                 .characterEncoding("utf-8"))
                 .andDo(print())
                 .andExpect(status().isOk());
-        verify(cardService).deleteCardById(1, 1);
     }
 
     @Test
+    @DisplayName("Return all card of user")
     void getCardsAll() throws Exception {
         User user = User.builder().id(1).build();
-        Card card1 = Card.builder().name("card1").user(user).build();
-        Card card2 = Card.builder().name("card2").user(user).build();
-        List<Card> list = new ArrayList<>();
-        list.add(card1);
-        list.add(card2);
-
-        when(cardService.getCards(1, "all")).thenReturn(list);
-
         mockMvc.perform(get("/api/v1/cards?type=all")
-                .sessionAttr("user", user)
-                .contentType(MediaType.APPLICATION_JSON))
+                .sessionAttr("user", user))
                 .andDo(print())
-                .andExpect(jsonPath("$[0].id").value("0"))
-                .andExpect(jsonPath("$[0].name").value("card1"))
-                .andExpect(jsonPath("$[1].name").value("card2"))
+                .andExpect(jsonPath("$[0].id").value("1"))
+                .andExpect(jsonPath("$[0].name").value("greeting Nomar"))
+                .andExpect(jsonPath("$[0].status").value("STARTUP"))
+                .andExpect(jsonPath("$[1].id").value("2"))
+                .andExpect(jsonPath("$[1].name").value("greeting Oleksandr"))
+                .andExpect(jsonPath("$[1].status").value("ISOVER"))
+                .andExpect(jsonPath("$[2].id").value("3"))
+                .andExpect(jsonPath("$[2].name").value("no_congratulation"))
+                .andExpect(jsonPath("$[2].status").value("STARTUP"))
                 .andExpect(status().isOk());
-        verify(cardService).getCards(1, "all");
     }
 
     @Test
-    void getCardsAllNoAccessorCards() throws Exception {
+    @DisplayName("Return message id user does not have cards")
+    void getCardsAllHaveNotCards() throws Exception {
         User user = User.builder().id(100).build();
-
-        when(cardService.getCards(100, "all")).thenReturn(null);
-
         mockMvc.perform(get("/api/v1/cards?type=all")
-                .sessionAttr("user", user)
-                .contentType(MediaType.APPLICATION_JSON))
+                .sessionAttr("user", user))
                 .andDo(print())
                 .andExpect(jsonPath("$.message").value("Sorry, you do not have cards"))
                 .andExpect(status().isOk());
-        verify(cardService).getCards(100, "all");
     }
 }

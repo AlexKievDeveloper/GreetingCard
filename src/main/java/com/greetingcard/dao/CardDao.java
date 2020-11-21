@@ -10,7 +10,7 @@ public interface CardDao {
 
     List<Card> getCardsByUserIdAndRoleId(long userId, long roleId);
 
-    long createCard(Card card);
+    Long createCard(Card card);
 
     Card getCardAndCongratulationByCardId(long cardId, long userId);
 

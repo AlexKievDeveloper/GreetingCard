@@ -17,7 +17,7 @@ import javax.servlet.http.HttpSession;
 @Slf4j
 @Setter
 @RestController
-@RequestMapping(value = "/api/v1/user/",produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/user/",produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProfileController {
 
     SecurityService service;
@@ -26,7 +26,7 @@ public class ProfileController {
         this.service = service;
     }
 
-    @GetMapping("id")
+    @GetMapping("{id}")
     public ResponseEntity<Object> getUser(HttpSession session){
         User user = (User) session.getAttribute("user");
         user.setSalt(null);
