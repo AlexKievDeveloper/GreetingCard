@@ -17,7 +17,6 @@ class DefaultCardServiceTest {
     @Mock
     private CardDao jdbcCardDao;
     @InjectMocks
-    @Autowired
     private DefaultCardService defaultCardService;
 
     @Test

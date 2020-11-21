@@ -13,7 +13,6 @@ import java.util.Base64;
 import java.util.UUID;
 
 @Slf4j
-@Service
 @Setter
 public class DefaultSecurityService implements SecurityService {
 
@@ -57,6 +56,11 @@ public class DefaultSecurityService implements SecurityService {
     @Override
     public void update(User user) {
         userDao.update(user);
+    }
+
+    @Override
+    public User findById(long id) {
+        return userDao.findById(id);
     }
 
 
