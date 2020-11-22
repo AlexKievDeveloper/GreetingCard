@@ -20,7 +20,6 @@ public class CongratulationsRowMapper implements ResultSetExtractor<List<Congrat
         }
 
         Map<Long, Congratulation> congratulationMap = new HashMap<>();
-        Card card = Card.builder().id(resultSet.getLong("card_id")).build();
 
         do {
             long congratulation_id = resultSet.getLong("congratulation_id");
@@ -29,7 +28,7 @@ public class CongratulationsRowMapper implements ResultSetExtractor<List<Congrat
                 Congratulation congratulation = Congratulation.builder()
                         .id(congratulation_id)
                         .user(user)
-                        .card(card)
+                        .cardId(resultSet.getLong("card_id"))
                         .message(resultSet.getString("message"))
                         .status(Status.getByNumber(resultSet.getInt("status_id")))
                         .linkList(new ArrayList<>())

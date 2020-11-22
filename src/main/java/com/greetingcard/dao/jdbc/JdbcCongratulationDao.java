@@ -48,7 +48,7 @@ public class JdbcCongratulationDao implements CongratulationDao {
         jdbcTemplate.update(connection -> {
             PreparedStatement statement = connection.prepareStatement(SAVE_CONGRATULATION, new String[]{"congratulation_id"});
             statement.setString(1, congratulation.getMessage());
-            statement.setLong(2, congratulation.getCard().getId());
+            statement.setLong(2, congratulation.getCardId());
             statement.setLong(3, congratulation.getUser().getId());
             statement.setInt(4, congratulation.getStatus().getStatusNumber());
             return statement;

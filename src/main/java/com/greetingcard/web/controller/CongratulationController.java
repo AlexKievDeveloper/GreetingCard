@@ -34,7 +34,7 @@ public class CongratulationController {
 
         Congratulation congratulation = Congratulation.builder()
                 .message(parametersMap.get("message"))
-                .card(Card.builder().id(Integer.parseInt(parametersMap.get("card_id"))).build())
+                .cardId(Long.parseLong(parametersMap.get("card_id")))
                 .user(User.builder().id(userId).build())
                 .status(Status.STARTUP)
                 .linkList(linkList)

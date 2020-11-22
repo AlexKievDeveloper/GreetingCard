@@ -12,6 +12,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.nullValue;
+import static org.postgresql.hostchooser.HostRequirement.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -46,10 +49,10 @@ class ProfileControllerTest {
                 .andExpect(jsonPath("$.lastName").value("test"))
                 .andExpect(jsonPath("$.login").value("test"))
                 .andExpect(jsonPath("$.email").value("test"))
-//                .andExpect(jsonPath("$.password").value("null"))
-//                .andExpect(jsonPath("$.salt").value("null"))
-//                .andExpect(jsonPath("$.google").value("null"))
-//                .andExpect(jsonPath("$.facebook").value("null"))
+                .andExpect(jsonPath("$.password").value(nullValue(String.class)))
+                .andExpect(jsonPath("$.salt").value(nullValue(String.class)))
+                .andExpect(jsonPath("$.google").value(nullValue(String.class)))
+                .andExpect(jsonPath("$.facebook").value(nullValue(String.class)))
                 .andExpect(jsonPath("$.pathToPhoto").value("link"))
                 .andExpect(status().isOk());
 

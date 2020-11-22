@@ -54,8 +54,8 @@ class CardControllerTest {
         mockMvc.perform(get("/api/v1/card/{id}", 1)
                 .sessionAttr("user", user))
                 .andDo(print())
-                .andExpect(jsonPath("$.id").value("0"))
-                .andExpect(jsonPath("$.name").value("card1"))
+                .andExpect(jsonPath("$.id").value("1"))
+                .andExpect(jsonPath("$.name").value("greeting Nomar"))
                 .andExpect(status().isOk());
 
     }
