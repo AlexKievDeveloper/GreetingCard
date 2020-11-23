@@ -5,26 +5,24 @@ import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringJUnitWebConfig(value = FlywayConfig.class)
+//@SpringJUnitWebConfig(value = FlywayConfig.class)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = DataBaseFactory.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class JdbcCardDaoITest {
     @Autowired
     private JdbcCardDao jdbcCardDao;
-
-//    @Autowired
-//    private Flyway flyway;
-//
-//    @BeforeEach
-//    void init() {
-//        flyway.clean();
-//        flyway.migrate();
-//    }
 
     @Test
     @DisplayName("Returns List<Cards> from DB")
