@@ -17,22 +17,18 @@ import javax.servlet.http.HttpSession;
 @Slf4j
 @Setter
 @RestController
-@RequestMapping(value = "/api/v1/user/",produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/user",produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProfileController {
 
-    SecurityService service;
+    private SecurityService service;
 
     public ProfileController(SecurityService service) {
         this.service = service;
     }
 
-    @GetMapping("{id}")
+    @GetMapping
     public ResponseEntity<Object> getUser(HttpSession session){
         User user = (User) session.getAttribute("user");
-        user.setSalt(null);
-        user.setPassword(null);
-        user.setGoogle(null);
-        user.setFacebook(null);
         return ResponseEntity.status(HttpServletResponse.SC_OK).body(user);
     }
 

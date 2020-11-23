@@ -41,7 +41,7 @@ class ProfileControllerTest {
                 .lastName("test")
                 .email("test")
                 .pathToPhoto("link").build();
-        mockMvc.perform(get("/api/v1/user/{id}", 2)
+        mockMvc.perform(get("/api/v1/user")
                 .sessionAttr("user", user))
                 .andDo(print())
                 .andExpect(jsonPath("$.id").value("2"))
