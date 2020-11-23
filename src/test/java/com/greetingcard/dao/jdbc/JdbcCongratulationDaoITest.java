@@ -49,7 +49,7 @@ class JdbcCongratulationDaoITest {
         //then
         assertEquals(1, actualCongratulation.getId());
         assertEquals("from Roma", actualCongratulation.getMessage());
-        assertEquals(1, actualCongratulation.getCard().getId());
+        assertEquals(1, actualCongratulation.getCardId());
         assertEquals(1, actualCongratulation.getUser().getId());
         assertEquals(Status.STARTUP, actualCongratulation.getStatus());
 
@@ -109,7 +109,7 @@ class JdbcCongratulationDaoITest {
 
         Congratulation congratulation = Congratulation.builder()
                 .message("from JdbcTest")
-                .card(Card.builder().id(2).build())
+                .cardId(2L)
                 .user(User.builder().id(2).build())
                 .status(Status.STARTUP)
                 .build();
@@ -123,7 +123,7 @@ class JdbcCongratulationDaoITest {
         Congratulation actualCongratulation = jdbcCongratulationDao.getCongratulationById(7);
         assertEquals(7, actualCongratulation.getId());
         assertEquals("from JdbcTest", actualCongratulation.getMessage());
-        assertEquals(2, actualCongratulation.getCard().getId());
+        assertEquals(2, actualCongratulation.getCardId());
         assertEquals(2, actualCongratulation.getUser().getId());
         assertEquals(Status.STARTUP, actualCongratulation.getStatus());
         assertEquals(17, actualCongratulation.getLinkList().get(0).getId());
@@ -155,7 +155,7 @@ class JdbcCongratulationDaoITest {
 
         Congratulation congratulation = Congratulation.builder()
                 .message("from JdbcTest")
-                .card(Card.builder().id(2).build())
+                .cardId(2L)
                 .user(User.builder().id(2).build())
                 .status(Status.STARTUP)
                 .build();
@@ -178,7 +178,7 @@ class JdbcCongratulationDaoITest {
         links.add(Link.builder().link("src/main/webapp/static/img").type(LinkType.PICTURE).build());
 
         Congratulation congratulation = Congratulation.builder()
-                .card(Card.builder().id(1).build())
+                .cardId(1L)
                 .user(User.builder().id(1).build())
                 .message("test delete link")
                 .status(Status.STARTUP)
@@ -209,7 +209,7 @@ class JdbcCongratulationDaoITest {
         links.add(Link.builder().link("src/main/webapp/static/img").congratulationId(7).type(LinkType.PICTURE).build());
 
         Congratulation congratulation = Congratulation.builder()
-                .card(Card.builder().id(1).build())
+                .cardId(2)
                 .user(User.builder().id(1).build())
                 .message("test delete link")
                 .status(Status.STARTUP)

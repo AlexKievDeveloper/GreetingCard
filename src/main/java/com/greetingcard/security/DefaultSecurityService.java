@@ -64,6 +64,11 @@ public class DefaultSecurityService implements SecurityService {
         userDao.update(user);
     }
 
+    @Override
+    public User findById(long id) {
+        return userDao.findById(id);
+    }
+
 
     String getHashPassword(String saltAndPassword) {
         try {

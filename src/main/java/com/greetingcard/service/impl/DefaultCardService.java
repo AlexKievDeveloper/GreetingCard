@@ -28,7 +28,7 @@ public class DefaultCardService implements CardService {
     }
 
     @Override
-    public long createCard(Card card) {
+    public Long createCard(Card card) {
         return jdbcCardDao.createCard(card);
     }
 
