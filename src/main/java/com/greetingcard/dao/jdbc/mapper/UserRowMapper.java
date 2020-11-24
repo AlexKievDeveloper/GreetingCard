@@ -25,7 +25,9 @@ public class UserRowMapper implements ResultSetExtractor<User> {
                 .password(resultSet.getString("password"))
                 .salt(resultSet.getString("salt"))
                 .language(Language.getByNumber(resultSet.getInt("language_id")))
+                .google(resultSet.getString("google"))
+                .facebook(resultSet.getString("facebook"))
+                .pathToPhoto(resultSet.getString("pathToPhoto"))
                 .build();
     }
 }
-

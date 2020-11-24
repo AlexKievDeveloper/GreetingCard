@@ -10,6 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringJUnitWebConfig(value = FlywayConfig.class)
@@ -78,12 +82,14 @@ class JdbcUserDaoITest {
 
     @Test
     @DisplayName("Update user")
-    void testUpdate() {
+    void testUpdate() throws IOException {
         //prepare
         User user = userDao.findByLogin("user");
         user.setFirstName("update");
         user.setLastName("update");
         user.setLogin("update");
+        user.setPathToPhoto("src/main/webapp/static/updatePhoto");
+
         //when
         userDao.update(user);
         User actualUser = userDao.findByLogin("update");
@@ -91,6 +97,7 @@ class JdbcUserDaoITest {
         assertEquals("update", actualUser.getFirstName());
         assertEquals("update", actualUser.getLastName());
         assertEquals("update", actualUser.getLogin());
+        assertEquals("src/main/webapp/static/updatePhoto", actualUser.getPathToPhoto());
     }
 
     @Test

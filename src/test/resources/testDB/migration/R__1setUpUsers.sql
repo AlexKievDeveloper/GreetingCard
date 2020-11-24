@@ -1,7 +1,7 @@
 INSERT INTO users(firstName, lastName, login, email, password, salt, language_id)
 VALUES ('admin','admin','admin', '@admin','K7eZhJaJms3YE3+tOkT6+WqEoD1/IwzkLpfNF8euQp4=','salt',1);
-INSERT INTO users(firstName, lastName, login, email, password, salt, language_id)
-VALUES ('user','user','user', '@user','gDE3fEwV4WEZhgiURMj/WMlTWP/cldaSptEMe2M+md8=','salt',2);
+INSERT INTO users(firstName, lastName, login, email, password, salt, language_id, pathToPhoto)
+VALUES ('user','user','user', '@user','gDE3fEwV4WEZhgiURMj/WMlTWP/cldaSptEMe2M+md8=','salt',2,'src/main/webapp/static/testPhoto');
 INSERT INTO users(firstName, lastName, login, email, password, salt, language_id)
 VALUES ('new','new','new', '@new','new','new',2);
 

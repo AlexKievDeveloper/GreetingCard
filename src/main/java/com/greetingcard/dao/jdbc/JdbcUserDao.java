@@ -13,11 +13,10 @@ import org.springframework.lang.NonNull;
 @Setter
 public class JdbcUserDao implements UserDao {
     private static final UserRowMapper USER_ROW_MAPPER = new UserRowMapper();
-    private static final String FIND_USER_BY_LOGIN = "SELECT user_id, firstName, lastName, login, email, password, salt, language_id FROM users WHERE login = ?";
+    private static final String FIND_USER_BY_LOGIN = "SELECT user_id, firstName, lastName, login, email, password, salt, language_id, facebook, google, pathToPhoto FROM users WHERE login = ?";
     private static final String SAVE_USER = "INSERT INTO users (firstName, lastName, login, email, password, salt, language_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    private static final String UPDATE_USER = "UPDATE users SET firstName=?, lastName=?, login=? WHERE user_id=?;";
-    private static final String FIND_USER_BY_ID = "SELECT user_id, firstName, lastName, login, email, language_id FROM users WHERE user_id = ?";
-
+    private static final String UPDATE_USER = "UPDATE users SET firstName=?, lastName=?, login=?, pathToPhoto=? WHERE user_id=?;";
+    private static final String FIND_USER_BY_ID = "SELECT user_id, firstName, lastName, login, email, language_id, facebook, google, pathToPhoto FROM users WHERE user_id = ?";
 
     private JdbcTemplate jdbcTemplate;
 
@@ -37,7 +36,7 @@ public class JdbcUserDao implements UserDao {
     @Override
     public void update(@NonNull User user) {
         log.info("Edit user's (user_id:{}) personal information", user.getId());
-        jdbcTemplate.update(UPDATE_USER, user.getFirstName(), user.getLastName(), user.getLogin(), user.getId());
+        jdbcTemplate.update(UPDATE_USER, user.getFirstName(), user.getLastName(), user.getLogin(),user.getPathToPhoto(), user.getId());
     }
 
     @Override
