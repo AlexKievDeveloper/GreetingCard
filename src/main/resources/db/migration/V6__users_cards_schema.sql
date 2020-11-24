@@ -6,5 +6,6 @@ CREATE TABLE users_cards
     role_id        INTEGER NOT NULL,
     FOREIGN KEY (card_id) REFERENCES cards (card_id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users (user_id),
-    FOREIGN KEY (role_id) REFERENCES roles (role_id)
+    FOREIGN KEY (role_id) REFERENCES roles (role_id),
+    UNIQUE(card_id, user_id)
 );

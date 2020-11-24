@@ -6,7 +6,7 @@ import com.greetingcard.entity.Link;
 import com.greetingcard.entity.LinkType;
 import com.greetingcard.entity.Status;
 import com.greetingcard.service.CongratulationService;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -15,9 +15,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
-@Setter
+@RequiredArgsConstructor
 public class DefaultCongratulationService implements CongratulationService {
-    private CongratulationDao congratulationDao;
+    private final CongratulationDao congratulationDao;
 
     @Override
     public Congratulation getCongratulationById(int congratulationId) {

@@ -71,7 +71,7 @@ class UserControllerSystemTest {
     void testLoginIfUserExist() throws Exception {
         //prepare
         Map<String, String> userCredential = new HashMap<>();
-        userCredential.put("user", "user");
+        userCredential.put("login", "user");
         userCredential.put("password", "user");
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(userCredential);
@@ -100,7 +100,7 @@ class UserControllerSystemTest {
     void testLoginIfUserIsNotExist() throws Exception {
         //prepare
         Map<String, String> userCredential = new HashMap<>();
-        userCredential.put("user", "user_don't_create");
+        userCredential.put("login", "user_don't_create");
         userCredential.put("password", "user");
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(userCredential);
