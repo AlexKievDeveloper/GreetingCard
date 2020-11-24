@@ -3,6 +3,7 @@ package com.greetingcard.web.controller;
 import com.greetingcard.entity.User;
 import com.greetingcard.security.SecurityService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,8 +24,6 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 @RequestMapping(value = "/api/v1/user")
 public class ProfileController {
     private SecurityService service;
-    //TODO:set value from properties
-    private String uploadPathFilm = "src/main/webapp/static/userPhoto";
 
     public ProfileController(SecurityService service) {
         this.service = service;
@@ -42,26 +41,20 @@ public class ProfileController {
         return ResponseEntity.status(HttpServletResponse.SC_OK).body(profileUser);
     }
 
-    @PutMapping(consumes = MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Object> updateUser(@RequestParam MultipartFile file,
+    @PutMapping(consumes = MULTIPART_FORM_DATA_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateUser(@RequestParam MultipartFile file,
                                              @RequestParam String firstName,
                                              @RequestParam String lastName,
                                              @RequestParam String login,
                                              @RequestParam String pathToPhoto,
-                                             HttpSession session) throws IOException {
+                                             HttpSession session){
         User user = (User) session.getAttribute("user");
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setLogin(login);
+        user.setPathToPhoto(pathToPhoto);
 
-        if (file.isEmpty()) {
-            String uuidFile = UUID.randomUUID().toString();
-            String fileName = uuidFile + "." + file.getOriginalFilename();
-            file.transferTo(new File(uploadPathFilm + "/" + fileName));
-            Files.deleteIfExists(Path.of(pathToPhoto));
-            user.setPathToPhoto(fileName);
-        }
-        service.update(user);
+        service.update(user,file);
         return ResponseEntity.status(HttpServletResponse.SC_OK).build();
     }
 

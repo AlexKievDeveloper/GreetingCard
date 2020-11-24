@@ -7,10 +7,6 @@
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
 
-    <context:component-scan base-package="com.greetingcard">
-        <context:exclude-filter type="regex" expression="com\.greetingcard\.controller\..*"/>
-    </context:component-scan>
-
     <context:property-placeholder location="classpath:application.properties" order="1" ignore-unresolvable="true"/>
     <context:property-placeholder location="classpath:dev.properties" order="2"/>
 
@@ -38,6 +34,7 @@
         <property name="userDao" ref="userDao"/>
         <property name="algorithm" value="${algorithm}"/>
         <property name="iteration" value="${iteration}"/>
+        <property name="pathToUserPhoto" value="${user.photo}"/>
     </bean>
 
     <bean id="congratulationDao" class="com.greetingcard.dao.jdbc.JdbcCongratulationDao">
@@ -71,4 +68,7 @@
         <property name="jdbcCardDao" ref="cardDao"/>
     </bean>
 
+    <context:component-scan base-package="com.greetingcard">
+        <context:exclude-filter type="regex" expression="com\.greetingcard\.controller\..*"/>
+    </context:component-scan>
 </beans>

@@ -13,11 +13,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
+import org.springframework.web.multipart.MultipartFile;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringJUnitWebConfig(value = FlywayConfig.class)
 @ExtendWith(MockitoExtension.class)
@@ -25,9 +32,9 @@ class DefaultSecurityServiceTest {
     @Autowired
     private DefaultSecurityService securityService;
     @InjectMocks
-    DefaultSecurityService mockSecurityService;
+    private DefaultSecurityService mockSecurityService;
     @Mock
-    UserDao userDao;
+    private UserDao userDao;
     @Autowired
     private Flyway flyway;
 
@@ -75,11 +82,28 @@ class DefaultSecurityServiceTest {
 
     @Test
     @DisplayName("Find user by id")
-    void findById(){
+    void findById() {
         //when
         mockSecurityService.findById(1);
         //then
         verify(userDao).findById(1);
     }
 
+    @Test
+    @DisplayName("Update user by id")
+    void updateUser() throws IOException {
+        Files.createDirectories(Path.of("src/test/java/file/pathToUserPhoto"));
+        MockMultipartFile file = new MockMultipartFile("file", "image.jpg",
+                "image/jpg", "test-image.jpg".getBytes());
+        User user = User.builder()
+                .id(100L)
+                .firstName("test")
+                .lastName("test")
+                .login("test")
+                .pathToPhoto("testFile").build();
+        //when
+        securityService.update(user, file);
+        //then
+        assertNotEquals("testFile",user.getPathToPhoto());
+    }
 }

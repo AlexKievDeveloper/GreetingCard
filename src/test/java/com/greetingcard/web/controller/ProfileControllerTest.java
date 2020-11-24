@@ -16,9 +16,13 @@ import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequ
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -67,24 +71,25 @@ class ProfileControllerTest {
     @Test
     @DisplayName("Update field of user")
     void updateUser() throws Exception {
-        User user = User.builder()
-                .id(2).login("test").firstName("test").lastName("test").email("test")
-                .password("password").salt("salt").pathToPhoto("link").build();
-
-        ByteArrayInputStream fis = new ByteArrayInputStream("/home/me/Desktop/someDir/image.jpg".getBytes());
-        MockMultipartFile multipartFile = new MockMultipartFile("file", fis);
-        MockMultipartFile file = new MockMultipartFile("data", "dummy.csv",
-                "text/plain", "Some dataset...".getBytes());
-
-        MockMultipartHttpServletRequestBuilder builder =
-                MockMvcRequestBuilders.fileUpload("/api/v1/user");
+        Files.createDirectories(Path.of("src/test/java/file/pathToUserPhoto"));
+        User user = User.builder().id(1).build();
+        MockMultipartFile file = new MockMultipartFile("file", "image.jpg",
+                "image/jpg", "test-image.jpg".getBytes());
+        MockMultipartHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart("/api/v1/user");
         builder.with(request -> {
             request.setMethod("PUT");
             return request;
         });
         mockMvc.perform(builder
-                .file(file))
+                .file(file)
+                .param("firstName", "firstName")
+                .param("lastName", "parametersJson")
+                .param("login", "parametersJson")
+                .param("pathToPhoto", "parametersJson")
+                .sessionAttr("user", user)
+                .characterEncoding("utf-8")
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+                .andDo(print())
                 .andExpect(status().isOk());
-
     }
 }
