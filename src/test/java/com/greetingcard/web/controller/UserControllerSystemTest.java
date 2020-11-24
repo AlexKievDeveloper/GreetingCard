@@ -21,11 +21,11 @@ import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringJUnitWebConfig(value = FlywayConfig.class)
 class UserControllerSystemTest {
@@ -72,7 +72,7 @@ class UserControllerSystemTest {
     void testLoginIfUserExist() throws Exception {
         //prepare
         Map<String, String> userCredential = new HashMap<>();
-        userCredential.put("user", "user");
+        userCredential.put("login", "user");
         userCredential.put("password", "user");
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(userCredential);
@@ -99,7 +99,7 @@ class UserControllerSystemTest {
     void testLoginIfUserIsNotExist() throws Exception {
         //prepare
         Map<String, String> userCredential = new HashMap<>();
-        userCredential.put("user", "user_don't_create");
+        userCredential.put("login", "user_don't_create");
         userCredential.put("password", "user");
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(userCredential);

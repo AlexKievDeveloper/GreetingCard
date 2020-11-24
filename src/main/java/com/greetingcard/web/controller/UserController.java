@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
 
-
 @Slf4j
 @RestController
 @Setter
@@ -40,7 +39,7 @@ public class UserController {
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> login(@RequestBody Map<String, String> userCredential, HttpSession session) {
         log.info("login request");
-        String login = userCredential.get("user");
+        String login = userCredential.get("login");
         String password = userCredential.get("password");
         log.info("login for user {}", login);
         User user = securityService.login(login, password);

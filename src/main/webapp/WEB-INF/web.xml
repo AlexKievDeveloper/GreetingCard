@@ -23,82 +23,6 @@
         <url-pattern>/</url-pattern>
     </servlet-mapping>
 
-<!--    <servlet>-->
-<!--        <servlet-name>LoginLogoutServlet</servlet-name>-->
-<!--        <servlet-class>com.greetingcard.web.servlet.user.LoginLogoutServlet</servlet-class>-->
-<!--    </servlet>-->
-<!--    <servlet-mapping>-->
-<!--        <servlet-name>LoginLogoutServlet</servlet-name>-->
-<!--        <url-pattern>/api/v1/session</url-pattern>-->
-<!--    </servlet-mapping>-->
-
-<!--    <servlet>-->
-<!--        <servlet-name>RegistrationServlet</servlet-name>-->
-<!--        <servlet-class>com.greetingcard.web.servlet.user.RegistrationServlet</servlet-class>-->
-<!--    </servlet>-->
-<!--    <servlet-mapping>-->
-<!--        <servlet-name>RegistrationServlet</servlet-name>-->
-<!--        <url-pattern>/api/v1/user</url-pattern>-->
-<!--    </servlet-mapping>-->
-
-<!--    <servlet>-->
-<!--        <servlet-name>GetCardsServlet</servlet-name>-->
-<!--        <servlet-class>com.greetingcard.web.servlet.card.GetCardsServlet</servlet-class>-->
-<!--    </servlet>-->
-<!--    <servlet-mapping>-->
-<!--        <servlet-name>GetCardsServlet</servlet-name>-->
-<!--        <url-pattern>/api/v1/cards</url-pattern>-->
-<!--    </servlet-mapping>-->
-
-<!--    <servlet>-->
-<!--        <servlet-name>CardServlet</servlet-name>-->
-<!--        <servlet-class>com.greetingcard.web.servlet.card.CardServlet</servlet-class>-->
-<!--    </servlet>-->
-<!--    <servlet-mapping>-->
-<!--        <servlet-name>CardServlet</servlet-name>-->
-<!--        <url-pattern>/api/v1/card</url-pattern>-->
-<!--        <url-pattern>/api/v1/card/*</url-pattern>-->
-<!--    </servlet-mapping>-->
-
-<!--    <servlet>-->
-<!--        <servlet-name>CongratulationServlet</servlet-name>-->
-<!--        <servlet-class>com.greetingcard.web.servlet.congratulation.CongratulationServlet</servlet-class>-->
-<!--    </servlet>-->
-<!--    <servlet-mapping>-->
-<!--        <servlet-name>CongratulationServlet</servlet-name>-->
-<!--        <url-pattern>/api/v1/congratulation</url-pattern>-->
-<!--        <url-pattern>/api/v1/congratulation/*</url-pattern>-->
-<!--    </servlet-mapping>-->
-
-    <filter>
-        <filter-name>CorsFilter</filter-name>
-        <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
-        <init-param>
-            <param-name>cors.allowed.origins</param-name>
-            <param-value>https://main.d177anvw131z2v.amplifyapp.com</param-value>
-        </init-param>
-        <init-param>
-            <param-name>cors.allowed.headers</param-name>
-            <param-value>Content-Type,X-Requested-With</param-value>
-        </init-param>
-        <init-param>
-            <param-name>cors.allowed.methods</param-name>
-            <param-value>GET,POST,HEAD,OPTIONS,PUT,DELETE</param-value>
-        </init-param>
-        <init-param>
-            <param-name>cors.support.credentials</param-name>
-            <param-value>true</param-value>
-        </init-param>
-        <init-param>
-            <param-name>cors.preflight.maxage</param-name>
-            <param-value>10</param-value>
-        </init-param>
-    </filter>
-    <filter-mapping>
-        <filter-name>CorsFilter</filter-name>
-        <url-pattern>*</url-pattern>
-    </filter-mapping>
-
     <filter>
         <filter-name>AuthorizationFilter</filter-name>
         <filter-class>com.greetingcard.web.filter.AuthorizationFilter</filter-class>
@@ -112,13 +36,5 @@
         <url-pattern>/api/v1/congratulation</url-pattern>
         <url-pattern>/api/v1/congratulation/*</url-pattern>
     </filter-mapping>
-
-    <session-config>
-        <session-timeout>20160</session-timeout>
-        <cookie-config>
-            <http-only>false</http-only>
-            <secure>true</secure>
-        </cookie-config>
-    </session-config>
 
 </web-app>

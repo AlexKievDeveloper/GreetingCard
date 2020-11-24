@@ -11,12 +11,15 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -43,34 +46,47 @@ class CongratulationControllerTest {
     @DisplayName("Creating new congratulation from json which we get from request body")
     void createCongratulation() throws Exception {
         User user = User.builder().id(1).build();
-        String parametersJson = "{\"message\":\"Happy new year!\", \"card_id\":\"1\", \"youtube\":\"https://www.youtube.com/watch?v=BmBr5diz8WA\", \"plain_link\":\"https://www.studytonight.com/servlet/httpsession.php\"}";
-        mockMvc.perform(post("/api/v1/congratulation")
-                .content(parametersJson)
+        MockMultipartFile mockImageFile = new MockMultipartFile("files_image", "image.jpg", "image/jpg", "test-image.jpg".getBytes());
+        MockMultipartFile mockAudioFile = new MockMultipartFile("files_audio", "audio.mp3", "audio/mpeg", "test-audio.mp3".getBytes());
+        String parametersJson = "{\"message\":\"Happy new year!\", \"card_id\":\"1\", \"youtube\":\"https://www.youtube.com/watch?v=BmBr5diz8WA\", \"image_links\":\"https://www.davno.ru/assets/images/cards/big/birthday-1061.jpg\"}";
+        //String parametersJson = {message:Happy new year!, card_id:1, youtube:https://www.youtube.com/watch?v=BmBr5diz8WA, image_links:https://www.davno.ru/assets/images/cards/big/birthday-1061.jpg}
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/congratulation")
+                .file(mockImageFile)
+                .file(mockAudioFile)
+                .param("json", parametersJson)
+                .characterEncoding("utf-8")
                 .sessionAttr("user", user)
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andDo(print())
                 .andExpect(status().isCreated());
     }
 
     @Test
-    @DisplayName("Return bad request while creating congratulation in case to long value of plain link")
-    void createCongratulationExceptionOfToLongPlainLinkValue() throws Exception {
+    @DisplayName("Return bad request while creating congratulation in case to long value of image link")
+    void createCongratulationExceptionOfToLongImageLinkValue() throws Exception {
         User user = User.builder().id(1).build();
+        MockMultipartFile mockImageFile = new MockMultipartFile("files_image", "image.jpg", "image/jpg", "test-image.jpg".getBytes());
+        MockMultipartFile mockAudioFile = new MockMultipartFile("files_audio", "audio.mp3", "audio/mpeg", "test-audio.mp3".getBytes());
         String parametersJson = "{\"message\":\"Happy new year!\", \"card_id\":\"1\", \"youtube\":\"https://www.youtube.com/watch?v=BmBr5diz8WA\", " +
-                "\"plain_link\":\"https://www.studytonight.com/servlet/httpsession.phppppppppppppppppppppppppppppppppppp" +
-                "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp" +
-                "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp" +
-                "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp" +
-                "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp" +
-                "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp" +
-                "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp" +
-                "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp" +
-                "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp" +
-                "\"}";
-        mockMvc.perform(post("/api/v1/congratulation")
-                .content(parametersJson)
+                "\"image_links\":\"https://www.davno.ru/assets/images/cards/big/birthday-1061111111111111111111111111111" +
+                "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111" +
+                "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111" +
+                "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111" +
+                "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111" +
+                "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111" +
+                "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111" +
+                "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111" +
+                "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111" +
+                "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111" +
+                ".jpg\"}";
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/congratulation")
+                .file(mockImageFile)
+                .file(mockAudioFile)
+                .param("json", parametersJson)
                 .sessionAttr("user", user)
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andDo(print())
                 .andExpect(jsonPath("$.message").value("Sorry, congratulation not saved. The link is very long. Please use a link up to 500 characters."))
                 .andExpect(status().isBadRequest());
@@ -80,20 +96,24 @@ class CongratulationControllerTest {
     @DisplayName("Return bad request while creating congratulation in case to long value of youtube link")
     void createCongratulationExceptionOfToLongYoutubeLinkValue() throws Exception {
         User user = User.builder().id(1).build();
+        MockMultipartFile mockImageFile = new MockMultipartFile("files_image", "image.jpg", "image/jpg", "test-image.jpg".getBytes());
+        MockMultipartFile mockAudioFile = new MockMultipartFile("files_audio", "audio.mp3", "audio/mpeg", "test-audio.mp3".getBytes());
         String parametersJson = "{\"message\":\"Happy new year!\", \"card_id\":\"1\", \"youtube\":\"https://www.youtube.com/watch?v=BmBr5diz8WA" +
-                "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp" +
-                "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp" +
-                "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp" +
-                "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp" +
-                "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp" +
-                "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp" +
-                "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp" +
-                "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp\", " +
-                "\"plain_link\":\"https://www.studytonight.com/servlet/httpsession.php\"}";
-        mockMvc.perform(post("/api/v1/congratulation")
-                .content(parametersJson)
+                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\", " +
+                "\"image_links\":\"https://www.davno.ru/assets/images/cards/big/birthday-1061.jpg\"}";
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/congratulation")
+                .file(mockImageFile)
+                .file(mockAudioFile)
+                .param("json", parametersJson)
                 .sessionAttr("user", user)
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andDo(print())
                 .andExpect(jsonPath("$.message").value("Wrong youtube link url!"))
                 .andExpect(status().isBadRequest());
