@@ -16,13 +16,19 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-//@SpringJUnitWebConfig(value = FlywayConfig.class)
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = DataBaseFactory.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@SpringJUnitWebConfig(value = FlywayConfig.class)
 public class JdbcCardDaoITest {
     @Autowired
     private JdbcCardDao jdbcCardDao;
+
+    @Autowired
+    private Flyway flyway;
+
+    @BeforeEach
+    void init() {
+        flyway.clean();
+        flyway.migrate();
+    }
 
     @Test
     @DisplayName("Returns List<Cards> from DB")
@@ -100,10 +106,11 @@ public class JdbcCardDaoITest {
         User user = User.builder().id(1).build();
         Card card = Card.builder().user(user).name("greeting").status(Status.STARTUP).build();
         //when
-        jdbcCardDao.createCard(card);
+        Long id = jdbcCardDao.createCard(card);
         List<Card> actualList = jdbcCardDao.getAllCardsByUserId(1);
         Card actualCard = actualList.get(3);
         //then
+        assertEquals(4, id);
         assertEquals(4, actualList.size());
         assertEquals(actualCard.getUser().getId(), card.getUser().getId());
         assertEquals(actualCard.getName(), card.getName());

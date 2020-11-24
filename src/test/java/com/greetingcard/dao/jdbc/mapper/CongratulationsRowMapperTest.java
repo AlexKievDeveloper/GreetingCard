@@ -50,7 +50,7 @@ class CongratulationsRowMapperTest {
         verify(mockResultSet).getInt("link_id");
         verify(mockResultSet).getString("link");
         verify(mockResultSet).getInt("type_id");
-        assertEquals(1L, congratulationList.get(0).getCard().getId());
+        assertEquals(1L, congratulationList.get(0).getCardId());
         assertEquals(1L, congratulationList.get(0).getUser().getId());
         assertEquals(1L, congratulationList.get(0).getId());
         assertEquals("from Roma", congratulationList.get(0).getMessage());

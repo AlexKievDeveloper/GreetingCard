@@ -92,4 +92,19 @@ class JdbcUserDaoITest {
         assertEquals("update", actualUser.getLastName());
         assertEquals("update", actualUser.getLogin());
     }
+
+    @Test
+    @DisplayName("Find user by id")
+    void testFindUserById() {
+        //when
+        User actualUser = userDao.findById(2);
+        //then
+        assertNotNull(actualUser);
+        assertEquals(2, actualUser.getId());
+        assertEquals("user", actualUser.getFirstName());
+        assertEquals("user", actualUser.getLastName());
+        assertEquals("user", actualUser.getLogin());
+        assertEquals("@user", actualUser.getEmail());
+    }
+
 }

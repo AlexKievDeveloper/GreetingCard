@@ -44,7 +44,7 @@ public class CardAndCongratulationRowMapper implements ResultSetExtractor<Card> 
                 Congratulation congratulation = Congratulation.builder()
                         .id(congratulation_id)
                         .user(user)
-                        .card(card)
+                        .cardId(card.getId())
                         .message(resultSet.getString("message"))
                         .status(Status.getByNumber(resultSet.getInt("con_status")))
                         .linkList(new ArrayList<>())

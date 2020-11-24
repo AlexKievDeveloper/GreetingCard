@@ -21,7 +21,7 @@ public class CongratulationRowMapper implements ResultSetExtractor<Congratulatio
         Congratulation congratulation = Congratulation.builder()
                 .id(resultSet.getInt("congratulation_id"))
                 .message(resultSet.getString("message"))
-                .card(Card.builder().id(resultSet.getInt("card_id")).build())
+                .cardId(resultSet.getLong("card_id"))
                 .user(User.builder().id(resultSet.getInt("user_id")).build())
                 .status(Status.getByNumber(resultSet.getInt("status_id")))
                 .build();

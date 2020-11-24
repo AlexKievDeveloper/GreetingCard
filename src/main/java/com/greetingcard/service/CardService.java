@@ -9,7 +9,7 @@ public interface CardService {
 
     List<Card> getCards(long userId, String cardsType);
 
-    long createCard(Card card);
+    Long createCard(Card card);
 
     Card getCardAndCongratulationByCardId(long cardId, long userId);
 
