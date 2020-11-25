@@ -20,7 +20,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "api/v1/",produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "api/v1/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CardController {
 
     private CardService cardService;

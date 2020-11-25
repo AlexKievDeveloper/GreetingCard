@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,7 +22,6 @@ class JdbcUserDaoITest {
 
     @Autowired
     private Flyway flyway;
-
 
     @BeforeEach
     void init() {

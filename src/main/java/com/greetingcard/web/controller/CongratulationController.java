@@ -1,6 +1,9 @@
 package com.greetingcard.web.controller;
 
-import com.greetingcard.entity.*;
+import com.greetingcard.entity.Congratulation;
+import com.greetingcard.entity.Link;
+import com.greetingcard.entity.Status;
+import com.greetingcard.entity.User;
 import com.greetingcard.service.CongratulationService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;

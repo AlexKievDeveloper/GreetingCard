@@ -20,7 +20,7 @@ public class ExceptionHandlingController {
     }
 
     @ExceptionHandler(JsonProcessingException.class)
-    public ResponseEntity<?> parsingJson(){
+    public ResponseEntity<?> parsingJson() {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }
