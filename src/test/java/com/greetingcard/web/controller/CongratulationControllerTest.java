@@ -6,9 +6,7 @@ import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -25,7 +23,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfigurer.sharedHttpSession;
 
-@ExtendWith(MockitoExtension.class)
 @SpringJUnitWebConfig(value = FlywayConfig.class)
 class CongratulationControllerTest {
     private MockMvc mockMvc;
@@ -60,36 +57,6 @@ class CongratulationControllerTest {
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andDo(print())
                 .andExpect(status().isCreated());
-    }
-
-    @Test
-    @DisplayName("Return bad request while creating congratulation in case to long value of image link")
-    void createCongratulationExceptionOfToLongImageLinkValue() throws Exception {
-        User user = User.builder().id(1).build();
-        MockMultipartFile mockImageFile = new MockMultipartFile("files_image", "image.jpg", "image/jpg", "test-image.jpg".getBytes());
-        MockMultipartFile mockAudioFile = new MockMultipartFile("files_audio", "audio.mp3", "audio/mpeg", "test-audio.mp3".getBytes());
-        String parametersJson = "{\"message\":\"Happy new year!\", \"card_id\":\"1\", \"youtube\":\"https://www.youtube.com/watch?v=BmBr5diz8WA\", " +
-                "\"image_links\":\"https://www.davno.ru/assets/images/cards/big/birthday-1061111111111111111111111111111" +
-                "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111" +
-                "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111" +
-                "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111" +
-                "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111" +
-                "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111" +
-                "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111" +
-                "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111" +
-                "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111" +
-                "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111" +
-                ".jpg\"}";
-
-        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/congratulation")
-                .file(mockImageFile)
-                .file(mockAudioFile)
-                .param("json", parametersJson)
-                .sessionAttr("user", user)
-                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
-                .andDo(print())
-                .andExpect(jsonPath("$.message").value("Sorry, congratulation not saved. The link is very long. Please use a link up to 500 characters."))
-                .andExpect(status().isBadRequest());
     }
 
     @Test

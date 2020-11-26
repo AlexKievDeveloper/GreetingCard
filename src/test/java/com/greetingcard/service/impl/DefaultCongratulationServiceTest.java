@@ -50,50 +50,17 @@ class DefaultCongratulationServiceTest {
         MultipartFile[] mockAudioFiles = new MultipartFile[]{mockAudioFile};
         String imageLinks = "https://www.davno.ru/assets/images/cards/big/birthday-1061.jpg\r\nhttps://www.davno.ru/assets/images/cards/big/birthday-1061.jpg";
         String youtubeLinks = "https://www.youtube.com/watch?v=JcDy3ny-H0k\r\nhttps://www.youtube.com/watch?v=JcDy3ny-H0k";
-        when(parametersMap.get("image_links")).thenReturn(imageLinks);
+        ;
         when(parametersMap.get("youtube")).thenReturn(youtubeLinks);
 
         //when
         List<Link> actualList = defaultCongratulationService.getLinkList(mockImageFiles, mockAudioFiles, parametersMap);
 
         //then
-        verify(parametersMap).get("image_links");
         verify(parametersMap).get("youtube");
         assertNotNull(actualList);
     }
 
-/*    @Test
-    @DisplayName("Adds links to linkList")
-    void addImageLinksTest() {
-        //prepare
-        String image_links = "https://lh3.googleusercontent.com/proxy/wUdjgP5yX8ThxJ2JhAf7k-hWzj_U8sZJi1-q_Z66vD55gSzYNlsXs_PdQ9RCTwS0inYy4IDV-03WLhiqAnXAmI0131mtEz-tie49C0pDiNRaPFq0fC8w-y10oOMctTBUOnySAKfAZmcmBUeDpfoi \r\n" +
-                "https://lh3.googleusercontent.com/proxy/wUdjgP5yX8ThxJ2JhAf7k-hWzj_U8sZJi1-q_Z66vD55gSzYNlsXs_PdQ9RCTwS0inYy4IDV-03WLhiqAnXAmI0131mtEz-tie49C0pDiNRaPFq0fC8w-y10oOMctTBUOnySAKfAZmcmBUeDpfoi";
-        //when
-        defaultCongratulationService.addImageLinks(linkList, image_links);
-        //then
-        assertEquals(2, linkList.size());
-        assertEquals("https://lh3.googleusercontent.com/proxy/wUdjgP5yX8ThxJ2JhAf7k-hWzj_U8sZJi1-q_Z66vD55gSzYNlsXs_PdQ9RCTwS0inYy4IDV-03WLhiqAnXAmI0131mtEz-tie49C0pDiNRaPFq0fC8w-y10oOMctTBUOnySAKfAZmcmBUeDpfoi", linkList.get(0).getLink());
-        assertEquals("https://lh3.googleusercontent.com/proxy/wUdjgP5yX8ThxJ2JhAf7k-hWzj_U8sZJi1-q_Z66vD55gSzYNlsXs_PdQ9RCTwS0inYy4IDV-03WLhiqAnXAmI0131mtEz-tie49C0pDiNRaPFq0fC8w-y10oOMctTBUOnySAKfAZmcmBUeDpfoi", linkList.get(1).getLink());
-        assertEquals(LinkType.PICTURE, linkList.get(0).getType());
-        assertEquals(LinkType.PICTURE, linkList.get(1).getType());
-    }
-
-    @Test
-    @DisplayName("Adds links to linkList")
-    void addImageLinksTestThrowException() {
-        //prepare
-        String image_links = "https://lh3.googleusercontent.com/proxy/wUdjgP5yX8ThxJ2JhAf7k-hWzj_U8sZJi1-q_Z66vD55gSzYNlsXs_PdQ9RCTwS0inYy4IDV-03WLhiqAnXAmI0131mtEz-tie49C0pDiNRaPFq0fC8w-y10oOMctTBUOnySAKfAZmcmBUeDpfoi" +
-                "https://lh3.googleusercontent.com/proxy/wUdjgP5yX8ThxJ2JhAf7k-hWzj_U8sZJi1-q_Z66vD55gSzYNlsXs_PdQ9RCTwS0inYy4IDV-03WLhiqAnXAmI0131mtEz-tie49C0pDiNRaPFq0fC8w-y10oOMctTBUOnySAKfAZmcmBUeDpfoi" +
-                "https://lh3.googleusercontent.com/proxy/wUdjgP5yX8ThxJ2JhAf7k-hWzj_U8sZJi1-q_Z66vD55gSzYNlsXs_PdQ9RCTwS0inYy4IDV-03WLhiqAnXAmI0131mtEz-tie49C0pDiNRaPFq0fC8w-y10oOMctTBUOnySAKfAZmcmBUeDpfoi" +
-                "https://lh3.googleusercontent.com/proxy/wUdjgP5yX8ThxJ2JhAf7k-hWzj_U8sZJi1-q_Z66vD55gSzYNlsXs_PdQ9RCTwS0inYy4IDV-03WLhiqAnXAmI0131mtEz-tie49C0pDiNRaPFq0fC8w-y10oOMctTBUOnySAKfAZmcmBUeDpfoi" +
-                "https://lh3.googleusercontent.com/proxy/wUdjgP5yX8ThxJ2JhAf7k-hWzj_U8sZJi1-q_Z66vD55gSzYNlsXs_PdQ9RCTwS0inYy4IDV-03WLhiqAnXAmI0131mtEz-tie49C0pDiNRaPFq0fC8w-y10oOMctTBUOnySAKfAZmcmBUeDpfoi";
-        //when + then
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> {
-            defaultCongratulationService.addImageLinks(linkList, image_links);
-        });
-        assertEquals("Sorry, congratulation not saved. The link is very long. Please use a link up to 500 characters.", e.getMessage());
-    }
-*/
     @Test
     @DisplayName("Adds youtube links to linkList")
     void addYoutubeLinksTest() {

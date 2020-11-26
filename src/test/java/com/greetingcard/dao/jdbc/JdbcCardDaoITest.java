@@ -2,7 +2,6 @@ package com.greetingcard.dao.jdbc;
 
 import com.greetingcard.entity.*;
 import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,11 +24,6 @@ public class JdbcCardDaoITest {
     void init() {
         flyway.clean();
         flyway.migrate();
-    }
-
-    @AfterEach
-    void afterAll() {
-        flyway.clean();
     }
 
     @Test
@@ -108,10 +102,11 @@ public class JdbcCardDaoITest {
         User user = User.builder().id(1).build();
         Card card = Card.builder().user(user).name("greeting").status(Status.STARTUP).build();
         //when
-        jdbcCardDao.createCard(card);
+        Long id = jdbcCardDao.createCard(card);
         List<Card> actualList = jdbcCardDao.getAllCardsByUserId(1);
         Card actualCard = actualList.get(3);
         //then
+        assertEquals(4, id);
         assertEquals(4, actualList.size());
         assertEquals(actualCard.getUser().getId(), card.getUser().getId());
         assertEquals(actualCard.getName(), card.getName());

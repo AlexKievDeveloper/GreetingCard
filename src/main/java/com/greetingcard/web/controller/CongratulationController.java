@@ -2,7 +2,10 @@ package com.greetingcard.web.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.greetingcard.entity.*;
+import com.greetingcard.entity.Congratulation;
+import com.greetingcard.entity.Link;
+import com.greetingcard.entity.Status;
+import com.greetingcard.entity.User;
 import com.greetingcard.service.CongratulationService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.HashMap;
@@ -22,7 +24,6 @@ import java.util.List;
 @Setter
 @RestController
 @RequestMapping(value = "/api/v1/congratulation")
-@MultipartConfig
 public class CongratulationController {
     private CongratulationService congratulationService;
 
@@ -30,10 +31,11 @@ public class CongratulationController {
         this.congratulationService = congratulationService;
     }
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createCongratulation(@RequestParam(required = false) MultipartFile[] files_image,
                                                   @RequestParam(required = false) MultipartFile[] files_audio,
-                                                  HttpSession session, @RequestParam String json) throws IOException {
+                                                  @RequestParam String json,
+                                                  HttpSession session) throws IOException {
 
         log.info("Received request for saving congratulation");
         log.info("Image files: {}", files_image.length);
@@ -56,7 +58,7 @@ public class CongratulationController {
 
         Congratulation congratulation = Congratulation.builder()
                 .message(parametersMap.get("message"))
-                .card(Card.builder().id(Integer.parseInt(parametersMap.get("card_id"))).build())
+                .cardId(Long.parseLong(parametersMap.get("card_id")))
                 .user(User.builder().id(userId).build())
                 .status(Status.STARTUP)
                 .linkList(linkList)

@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.mockito.Mockito.verify;
 
@@ -17,7 +16,6 @@ class DefaultCardServiceTest {
     @Mock
     private CardDao jdbcCardDao;
     @InjectMocks
-    @Autowired
     private DefaultCardService defaultCardService;
 
     @Test

@@ -131,7 +131,7 @@ public class DefaultCongratulationService implements CongratulationService {
                     }
 
                     Link link = Link.builder()
-                            .link(Paths.get(rootDirectory, pathToStorage, uniqueFileName).toString())
+                            .link("/".concat(pathToStorage).concat("/").concat(uniqueFileName))
                             .type(linkType)
                             .build();
                     log.info("saveFilesAndCreateLinks.I`m going to add link to list: {}", link.getLink());

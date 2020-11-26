@@ -13,9 +13,10 @@ import java.util.List;
 public class Congratulation {
     private long id;
     private String message;
-    private Card card;
+    private long cardId;
     private User user;
     private Status status;
     @EqualsAndHashCode.Exclude
     private List<Link> linkList;
+
 }

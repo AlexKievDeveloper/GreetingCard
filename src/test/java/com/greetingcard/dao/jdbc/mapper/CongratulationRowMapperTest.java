@@ -29,7 +29,7 @@ class CongratulationRowMapperTest {
         when(mockResultSet.next()).thenReturn(true).thenReturn(false);
         when(mockResultSet.getInt("congratulation_id")).thenReturn(1);
         when(mockResultSet.getString("message")).thenReturn("from Roma");
-        when(mockResultSet.getInt("card_id")).thenReturn(1);
+        when(mockResultSet.getLong("card_id")).thenReturn(1L);
         when(mockResultSet.getInt("user_id")).thenReturn(1);
         when(mockResultSet.getInt("status_id")).thenReturn(1);
         when(mockResultSet.getInt("link_id")).thenReturn(1);
@@ -44,7 +44,7 @@ class CongratulationRowMapperTest {
         verify(mockResultSet, times(2)).next();
         verify(mockResultSet, times(2)).getInt("congratulation_id");
         verify(mockResultSet).getString("message");
-        verify(mockResultSet).getInt("card_id");
+        verify(mockResultSet).getLong("card_id");
         verify(mockResultSet).getInt("user_id");
         verify(mockResultSet).getInt("status_id");
         verify(mockResultSet, times(2)).getInt("link_id");
@@ -52,7 +52,7 @@ class CongratulationRowMapperTest {
         verify(mockResultSet).getInt("type_id");
         assertEquals(1, actualCongratulation.getId());
         assertEquals("from Roma", actualCongratulation.getMessage());
-        assertEquals(1, actualCongratulation.getCard().getId());
+        assertEquals(1, actualCongratulation.getCardId());
         assertEquals(1, actualCongratulation.getUser().getId());
         assertEquals(Status.STARTUP, actualCongratulation.getStatus());
         assertEquals(1, actualCongratulation.getLinkList().get(0).getId());

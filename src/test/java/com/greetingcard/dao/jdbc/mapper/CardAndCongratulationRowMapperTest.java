@@ -1,6 +1,5 @@
 package com.greetingcard.dao.jdbc.mapper;
 
-import com.greetingcard.entity.Card;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,7 +49,7 @@ class CardAndCongratulationRowMapperTest {
         when(mockResultSet.getInt("type_id")).thenReturn(1);
 
         //when
-        Card actualCard = rowMapper.extractData(mockResultSet);
+        rowMapper.extractData(mockResultSet);
 
         //then
         verify(mockResultSet).getLong("card_id");

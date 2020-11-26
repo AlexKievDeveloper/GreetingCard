@@ -21,7 +21,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @Setter
@@ -61,8 +60,8 @@ public class JdbcCardDao implements CardDao {
     }
 
     @Override
-    public long createCard(Card card) {
-        transactionTemplate.execute(status -> {
+    public Long createCard(Card card) {
+        Long newCardId = transactionTemplate.execute(status -> {
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(connection -> {
                 PreparedStatement preparedStatement = connection.prepareStatement(SAVE_NEW_CARD, new String[]{"card_id"});
@@ -71,11 +70,11 @@ public class JdbcCardDao implements CardDao {
                 preparedStatement.setInt(3, Status.STARTUP.getStatusNumber());
                 return preparedStatement;
             }, keyHolder);
-            long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+            long id = keyHolder.getKey().longValue();
             jdbcTemplate.update(ADD_TO_USERS_CARDS, id, card.getUser().getId(), Role.ADMIN.getRoleNumber());
             return id;
         });
-        return 0;
+        return newCardId;
     }
 
     @Override

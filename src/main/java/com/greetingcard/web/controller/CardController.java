@@ -20,7 +20,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "api/v1/", produces = MediaType.APPLICATION_JSON_VALUE/*, consumes = MediaType.APPLICATION_JSON_VALUE*/)
+@RequestMapping(value = "api/v1/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CardController {
 
     private CardService cardService;
@@ -30,15 +30,13 @@ public class CardController {
     }
 
     @GetMapping(value = "cards")
-    public ResponseEntity<Object> getCards(HttpSession session, @RequestParam String type) throws JsonProcessingException {
+    public ResponseEntity<Object> getCards(HttpSession session, @RequestParam String type) {
         log.info("getCards");
         User user = (User) session.getAttribute("user");
         long userId = user.getId();
         List<Card> cardList = cardService.getCards(userId, type);
-        if (cardList == null) {
-            ObjectMapper mapper = new ObjectMapper();
-            String json = mapper.writeValueAsString(Map.of("message", "Sorry, you do not have cards"));
-            return ResponseEntity.status(HttpStatus.OK).body(json);
+        if (cardList.size() == 0) {
+            return ResponseEntity.status(HttpStatus.OK).build();
         } else {
             return ResponseEntity.status(HttpStatus.OK).body(cardList);
         }
@@ -52,7 +50,7 @@ public class CardController {
         if (card == null) {
             log.info("User has no access : {}", id);
             ObjectMapper mapper = new JsonMapper();
-            String json = mapper.writeValueAsString(Map.of("message", "Sorry, you are not a member of this congratulation"));
+            String json = mapper.writeValueAsString(Map.of("message", "Sorry, you are not a member of this card"));
             return ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body(json);
         } else {
             log.info("Successfully writing card to response, id: {}", id);
@@ -60,7 +58,7 @@ public class CardController {
         }
     }
 
-    @PostMapping("card")
+    @PostMapping(value = "card", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> createCard(@RequestBody Card card, HttpSession session) throws JsonProcessingException {
         log.info("Creating card request");
         int length = card.getName().length();
