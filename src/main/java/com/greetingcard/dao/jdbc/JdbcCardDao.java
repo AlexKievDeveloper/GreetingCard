@@ -61,7 +61,7 @@ public class JdbcCardDao implements CardDao {
 
     @Override
     public Long createCard(Card card) {
-    Long newCardId = transactionTemplate.execute(status -> {
+        Long newCardId = transactionTemplate.execute(status -> {
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(connection -> {
                 PreparedStatement preparedStatement = connection.prepareStatement(SAVE_NEW_CARD, new String[]{"card_id"});

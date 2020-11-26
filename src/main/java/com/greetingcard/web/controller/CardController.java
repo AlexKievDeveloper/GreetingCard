@@ -30,15 +30,13 @@ public class CardController {
     }
 
     @GetMapping(value = "cards")
-    public ResponseEntity<Object> getCards(HttpSession session, @RequestParam String type) throws JsonProcessingException {
+    public ResponseEntity<Object> getCards(HttpSession session, @RequestParam String type) {
         log.info("getCards");
         User user = (User) session.getAttribute("user");
         long userId = user.getId();
         List<Card> cardList = cardService.getCards(userId, type);
         if (cardList.size() == 0) {
-            ObjectMapper mapper = new ObjectMapper();
-            String json = mapper.writeValueAsString(Map.of("message", "Sorry, you do not have cards"));
-            return ResponseEntity.status(HttpStatus.OK).body(json);
+            return ResponseEntity.status(HttpStatus.OK).build();
         } else {
             return ResponseEntity.status(HttpStatus.OK).body(cardList);
         }
