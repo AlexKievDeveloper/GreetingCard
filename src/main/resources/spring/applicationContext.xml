@@ -34,7 +34,7 @@
         <property name="userDao" ref="userDao"/>
         <property name="algorithm" value="${algorithm}"/>
         <property name="iteration" value="${iteration}"/>
-        <property name="pathToUserPhoto" value="${user.photo}"/>
+        <property name="pathToFile" value="${dir.files}"/>
     </bean>
 
     <bean id="congratulationDao" class="com.greetingcard.dao.jdbc.JdbcCongratulationDao">

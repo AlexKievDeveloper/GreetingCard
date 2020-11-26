@@ -2,6 +2,7 @@ package com.greetingcard.web.controller;
 
 import com.greetingcard.dao.jdbc.FlywayConfig;
 import com.greetingcard.entity.User;
+import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,9 +31,13 @@ class ProfileControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private WebApplicationContext context;
+    @Autowired
+    private Flyway flyway;
 
     @BeforeEach
     void init() {
+        flyway.clean();
+        flyway.migrate();
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
     }

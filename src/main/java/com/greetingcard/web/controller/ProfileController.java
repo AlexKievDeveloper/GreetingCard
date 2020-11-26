@@ -37,18 +37,18 @@ public class ProfileController {
 
     @PutMapping(consumes = MULTIPART_FORM_DATA_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateUser(@RequestParam MultipartFile file,
-                                        @RequestParam String firstName,
-                                        @RequestParam String lastName,
-                                        @RequestParam String login,
-                                        @RequestParam String pathToPhoto,
-                                        HttpSession session) {
+                                             @RequestParam String firstName,
+                                             @RequestParam String lastName,
+                                             @RequestParam String login,
+                                             @RequestParam String pathToPhoto,
+                                             HttpSession session){
         User user = (User) session.getAttribute("user");
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setLogin(login);
         user.setPathToPhoto(pathToPhoto);
 
-        service.update(user, file);
+        service.update(user,file);
         return ResponseEntity.status(HttpServletResponse.SC_OK).build();
     }
 

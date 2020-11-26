@@ -26,7 +26,7 @@ public class DefaultSecurityService implements SecurityService {
 
     private int iteration;
 
-    private String pathToUserPhoto;
+    private String pathToFile;
 
     @Override
     public User login(String login, String password) {
@@ -68,11 +68,13 @@ public class DefaultSecurityService implements SecurityService {
 
     @Override
     public void update(User user, MultipartFile file) {
+        String profileFile = "profilePhoto";
         if (!file.isEmpty()) {
             String uuidFile = UUID.randomUUID().toString();
             String fileName = uuidFile + "." + file.getOriginalFilename();
             try {
-                file.transferTo(new File(pathToUserPhoto + "/" + fileName));
+                Files.createDirectories(Path.of(pathToFile,profileFile));
+                file.transferTo(new File(String.valueOf(Path.of(pathToFile,profileFile,fileName))));
             } catch (IOException e) {
                 log.error("Can not save new photo: {}", fileName);
                 throw new RuntimeException("Can not save new photo",e);
