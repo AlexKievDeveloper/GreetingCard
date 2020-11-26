@@ -40,8 +40,8 @@ public class CongratulationsRowMapper implements ResultSetExtractor<List<Congrat
             if (linkId != 0) {
                 Link link = Link.builder()
                         .id(linkId)
-                        .type(LinkType.getByNumber(resultSet.getInt("type_id")))
                         .link(resultSet.getString("link"))
+                        .type(LinkType.getByNumber(resultSet.getInt("type_id")))
                         .build();
                 congratulationMap.get(congratulation_id).getLinkList().add(link);
             }

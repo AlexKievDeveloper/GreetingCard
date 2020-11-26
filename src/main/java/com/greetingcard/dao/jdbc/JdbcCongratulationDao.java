@@ -67,12 +67,8 @@ public class JdbcCongratulationDao implements CongratulationDao {
                 statementInLinks.addBatch();
             }
 
-            int[] i = statementInLinks.executeBatch();
+            statementInLinks.executeBatch();
             connection.commit();
-
-            for (int i1 : i) {
-                log.info("Execute batch: {}", i1);
-            }
 
             return statementInLinks;
         });
