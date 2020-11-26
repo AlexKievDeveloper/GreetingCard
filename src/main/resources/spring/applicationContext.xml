@@ -55,7 +55,7 @@
 
     <bean id="congratulationService" class="com.greetingcard.service.impl.DefaultCongratulationService">
         <property name="congratulationDao" ref="congratulationDao"/>
-       <!-- <property name="rootDirectory" ref="rootDirectory"/>-->
+        <property name="rootDirectory" ref="rootDirectory"/>
     </bean>
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
