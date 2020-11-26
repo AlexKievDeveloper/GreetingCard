@@ -1,6 +1,5 @@
 package com.greetingcard.web.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greetingcard.entity.*;
@@ -13,7 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import java.util.List;
 @Setter
 @RestController
 @RequestMapping(value = "/api/v1/congratulation")
+@MultipartConfig
 public class CongratulationController {
     private CongratulationService congratulationService;
 
@@ -29,25 +31,29 @@ public class CongratulationController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createCongratulation(@RequestParam MultipartFile[] files_image, @RequestParam MultipartFile[] files_audio,
-                                                  HttpSession session, @RequestParam String json) throws JsonProcessingException {
+    public ResponseEntity<?> createCongratulation(@RequestParam(required = false) MultipartFile[] files_image,
+                                                  @RequestParam(required = false) MultipartFile[] files_audio,
+                                                  HttpSession session, @RequestParam String json) throws IOException {
 
         log.info("Received request for saving congratulation");
-        log.info("Image files: :" + files_image.length);
-        log.info("Audio files: :" + files_audio.length);
+        log.info("Image files: {}", files_image.length);
+        log.info("Audio files: {}", files_audio.length);
 
         ObjectMapper objectMapper = new ObjectMapper();
         TypeReference<HashMap<String, String>> typeRef = new TypeReference<>() {
         };
 
-        HashMap<String, String> parametersMap = objectMapper.readValue(json, typeRef);
+        String jsonString = new String(json.getBytes());
+
+        HashMap<String, String> parametersMap = objectMapper.readValue(jsonString, typeRef);
         log.info("Got Map from json");
         User user = (User) session.getAttribute("user");
         long userId = user.getId();
         log.info("Request for adding congratulation from user: {}", user.getLogin());
 
         List<Link> linkList = congratulationService.getLinkList(files_image, files_audio, parametersMap);
-        log.info("Got linkList and saved files");
+        log.info("Got linkList: {} and saved files", linkList);
+
         Congratulation congratulation = Congratulation.builder()
                 .message(parametersMap.get("message"))
                 .card(Card.builder().id(Integer.parseInt(parametersMap.get("card_id"))).build())

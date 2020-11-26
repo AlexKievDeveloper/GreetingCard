@@ -26,12 +26,8 @@
         <constructor-arg value="${max.inactive.interval}"/>
     </bean>
 
-    <bean id="pathToImageStorage" class="java.lang.String">
-        <constructor-arg value="src/test/resources/static/img/"/>
-    </bean>
-
-    <bean id="pathToAudioStorage" class="java.lang.String">
-        <constructor-arg value="src/test/resources/static/audio/"/>
+    <bean id="rootDirectory" class="java.lang.String">
+        <constructor-arg value="${dir.files}"/>
     </bean>
 
     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
@@ -56,14 +52,9 @@
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
     </bean>
 
-    <bean id="localDiskFileDao" class="com.greetingcard.dao.file.LocalDiskFileDao">
-    </bean>
-
     <bean id="congratulationService" class="com.greetingcard.service.impl.DefaultCongratulationService">
         <property name="congratulationDao" ref="congratulationDao"/>
-        <property name="localDiskFileDao" ref="localDiskFileDao"/>
-        <property name="pathToImageStorage" ref="pathToImageStorage"/>
-        <property name="pathToAudioStorage" ref="pathToAudioStorage"/>
+        <property name="rootDirectory" ref="rootDirectory"/>
     </bean>
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">

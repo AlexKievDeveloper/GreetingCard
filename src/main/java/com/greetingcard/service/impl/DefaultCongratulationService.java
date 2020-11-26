@@ -1,7 +1,6 @@
 package com.greetingcard.service.impl;
 
 import com.greetingcard.dao.CongratulationDao;
-import com.greetingcard.dao.file.LocalDiskFileDao;
 import com.greetingcard.entity.Congratulation;
 import com.greetingcard.entity.Link;
 import com.greetingcard.entity.LinkType;
@@ -11,10 +10,13 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,9 +24,7 @@ import java.util.regex.Pattern;
 @Setter
 public class DefaultCongratulationService implements CongratulationService {
     private CongratulationDao congratulationDao;
-    private LocalDiskFileDao localDiskFileDao;
-    private String pathToImageStorage;
-    private String pathToAudioStorage;
+    private String rootDirectory;
 
     @Override
     public Congratulation getCongratulationById(int congratulationId) {
@@ -34,8 +34,6 @@ public class DefaultCongratulationService implements CongratulationService {
     @Override
     public List<Link> getLinkList(MultipartFile[] files_image, MultipartFile[] files_audio, Map<String, String> parametersMap) {
         List<Link> linkList = new ArrayList<>();
-        addImageLinks(linkList, parametersMap.get("image_links"));
-        log.info("Service level.Created images links");
         addYoutubeLinks(linkList, parametersMap.get("youtube"));
         log.info("Service level.Created youtube links");
         addLinksToLocalImagesAndAudioFiles(files_image, files_audio, linkList);
@@ -56,25 +54,6 @@ public class DefaultCongratulationService implements CongratulationService {
     @Override
     public void deleteById(long congratulationId, long userId) {
         congratulationDao.deleteById(congratulationId, userId);
-    }
-
-    void addImageLinks(List<Link> linkList, String image_links) {
-        if (image_links.length() > 500) {
-            throw new IllegalArgumentException("Sorry, congratulation not saved. The link is very long. " +
-                    "Please use a link up to 500 characters.");
-        }
-
-        if (!image_links.equals("")) {
-            List<String> plainLinksCollection = getLinksListFromText(image_links);
-
-            for (String imageLink : plainLinksCollection) {
-                Link link = Link.builder()
-                        .link(imageLink)
-                        .type(LinkType.PICTURE)
-                        .build();
-                linkList.add(link);
-            }
-        }
     }
 
     void addYoutubeLinks(List<Link> linkList, String youtubeLinks) {
@@ -120,12 +99,13 @@ public class DefaultCongratulationService implements CongratulationService {
         while (matcher.find()) {
             linkList.add(matcher.group());
         }
-
         return linkList;
     }
 
     void saveFilesAndCreateLinks(MultipartFile[] files, List<Link> linkList) {
+
         for (MultipartFile multipartFile : files) {
+            log.info("saveFilesAndCreateLinks. Multipart: {}", multipartFile.getOriginalFilename());
             if (multipartFile.getSize() > 1000 && !multipartFile.isEmpty()) {
                 String salt = UUID.randomUUID().toString();
                 String fileName = multipartFile.getOriginalFilename();
@@ -140,24 +120,30 @@ public class DefaultCongratulationService implements CongratulationService {
                         case "image/jpeg":
                         case "image/jpg":
                         case "image/png":
-                            pathToStorage = pathToImageStorage;
+                            pathToStorage = "img";
+
                             linkType = LinkType.PICTURE;
                             break;
                         case "audio/mpeg":
-                            pathToStorage = pathToAudioStorage;
+                            pathToStorage = "audio";
                             linkType = LinkType.AUDIO;
                             break;
                     }
 
                     Link link = Link.builder()
-                            .link(pathToStorage.concat(uniqueFileName))
+                            .link(Paths.get(rootDirectory, pathToStorage, uniqueFileName).toString())
                             .type(linkType)
                             .build();
+                    log.info("saveFilesAndCreateLinks.I`m going to add link to list: {}", link.getLink());
                     linkList.add(link);
 
-                    File file = new File(pathToStorage, uniqueFileName);
-                    if (Files.notExists(Path.of(file.getPath()))) {
-                        localDiskFileDao.saveFileInStorage(multipartFile, file);
+                    try {
+                        Files.createDirectories(Paths.get(rootDirectory, pathToStorage));
+                        log.info("Root directory: {}, path to storage: {}, uniqueFileName: {}", rootDirectory, pathToStorage, uniqueFileName);
+                        multipartFile.transferTo(Paths.get(rootDirectory, pathToStorage, uniqueFileName));
+                    } catch (IOException e) {
+                        log.error("Exception while saving multipart file: {}", multipartFile, e);
+                        throw new RuntimeException("Exception while saving multipart file: " + multipartFile);
                     }
                 }
             }
