@@ -18,6 +18,10 @@
         <property name="initialSize" value="${connections.amount}"/>
     </bean>
 
+    <bean id="maxInactiveInterval" class="java.lang.Integer">
+        <constructor-arg value="${max.inactive.interval}"/>
+    </bean>
+
     <bean id="rootDirectory" class="java.lang.String">
         <constructor-arg value="${dir.files}"/>
     </bean>

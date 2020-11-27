@@ -21,7 +21,7 @@ import java.util.Map;
 @RequestMapping(value = "/api/v1/")
 public class UserController {
     private SecurityService securityService;
-
+    @Autowired
     private int maxInactiveInterval;
 
     private ObjectMapper objectMapper = new ObjectMapper();
