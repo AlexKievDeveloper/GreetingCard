@@ -91,8 +91,7 @@ class DefaultSecurityServiceTest {
 
     @Test
     @DisplayName("Update user by id")
-    void updateUser() throws IOException {
-        Files.createDirectories(Path.of("src/test/java/file/pathToUserPhoto"));
+    void updateUser() {
         MockMultipartFile file = new MockMultipartFile("file", "image.jpg",
                 "image/jpg", "test-image.jpg".getBytes());
         User user = User.builder()
