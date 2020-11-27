@@ -68,7 +68,7 @@ public class DefaultSecurityService implements SecurityService {
 
     @Override
     public void update(User user, MultipartFile file) {
-        String profileFile = "profilePhoto";
+        String profileFile = "profile";
         if (!file.isEmpty()) {
             String uuidFile = UUID.randomUUID().toString();
             String fileName = uuidFile + "." + file.getOriginalFilename();

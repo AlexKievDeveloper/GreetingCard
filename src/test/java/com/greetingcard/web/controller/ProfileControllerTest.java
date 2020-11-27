@@ -70,9 +70,8 @@ class ProfileControllerTest {
     @Test
     @DisplayName("Update field of user")
     void updateUser() throws Exception {
-        Files.createDirectories(Path.of("src/test/java/file/pathToUserPhoto"));
         User user = User.builder().id(1).build();
-        MockMultipartFile file = new MockMultipartFile("file", "image.jpg",
+        MockMultipartFile file = new MockMultipartFile("profileFile", "image.jpg",
                 "image/jpg", "test-image.jpg".getBytes());
         MockMultipartHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart("/api/v1/user");
         builder.with(request -> {

@@ -36,7 +36,7 @@ public class ProfileController {
     }
 
     @PutMapping(consumes = MULTIPART_FORM_DATA_VALUE, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updateUser(@RequestParam MultipartFile file,
+    public ResponseEntity<?> updateUser(@RequestParam MultipartFile profileFile,
                                              @RequestParam String firstName,
                                              @RequestParam String lastName,
                                              @RequestParam String login,
@@ -48,7 +48,7 @@ public class ProfileController {
         user.setLogin(login);
         user.setPathToPhoto(pathToPhoto);
 
-        service.update(user,file);
+        service.update(user,profileFile);
         return ResponseEntity.status(HttpServletResponse.SC_OK).build();
     }
 
