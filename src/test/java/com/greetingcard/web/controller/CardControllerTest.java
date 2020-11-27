@@ -1,17 +1,12 @@
 package com.greetingcard.web.controller;
 
 import com.greetingcard.dao.jdbc.FlywayConfig;
-import com.greetingcard.entity.Card;
-import com.greetingcard.entity.Status;
 import com.greetingcard.entity.User;
-import com.greetingcard.service.CardService;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +16,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -39,6 +30,7 @@ class CardControllerTest {
     private WebApplicationContext context;
     @Autowired
     private Flyway flyway;
+
     @BeforeEach
     void setUp() {
         flyway.clean();
@@ -125,17 +117,6 @@ class CardControllerTest {
                 .andExpect(jsonPath("$[2].id").value("3"))
                 .andExpect(jsonPath("$[2].name").value("no_congratulation"))
                 .andExpect(jsonPath("$[2].status").value("STARTUP"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("Return message id user does not have cards")
-    void getCardsAllHaveNotCards() throws Exception {
-        User user = User.builder().id(100).build();
-        mockMvc.perform(get("/api/v1/cards?type=all")
-                .sessionAttr("user", user))
-                .andDo(print())
-                .andExpect(jsonPath("$.message").value("Sorry, you do not have cards"))
                 .andExpect(status().isOk());
     }
 }

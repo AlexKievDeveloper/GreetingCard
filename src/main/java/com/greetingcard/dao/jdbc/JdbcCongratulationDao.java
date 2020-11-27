@@ -57,14 +57,19 @@ public class JdbcCongratulationDao implements CongratulationDao {
         int key = Objects.requireNonNull(keyHolder.getKey()).intValue();
 
         jdbcTemplate.update(connection -> {
+            connection.setAutoCommit(false);
             PreparedStatement statementInLinks = connection.prepareStatement(SAVE_LINK);
             for (Link link : congratulation.getLinkList()) {
+                log.info("Dao level. Saving link: {}", link);
                 statementInLinks.setString(1, link.getLink());
                 statementInLinks.setInt(2, link.getType().getTypeNumber());
                 statementInLinks.setInt(3, key);
                 statementInLinks.addBatch();
             }
+
             statementInLinks.executeBatch();
+            connection.commit();
+
             return statementInLinks;
         });
         log.debug("Added new congratulation {} to DB", congratulation.getId());

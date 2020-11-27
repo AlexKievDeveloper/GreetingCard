@@ -5,7 +5,12 @@ import com.greetingcard.entity.Language;
 import com.greetingcard.entity.User;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -20,6 +25,8 @@ public class DefaultSecurityService implements SecurityService {
     private String algorithm;
 
     private int iteration;
+
+    private String pathToFile;
 
     @Override
     public User login(String login, String password) {
@@ -60,7 +67,26 @@ public class DefaultSecurityService implements SecurityService {
     }
 
     @Override
-    public void update(User user) {
+    public void update(User user, MultipartFile file) {
+        String profileFile = "profile";
+        if (!file.isEmpty()) {
+            String uuidFile = UUID.randomUUID().toString();
+            String fileName = uuidFile + "." + file.getOriginalFilename();
+            try {
+                Files.createDirectories(Path.of(pathToFile,profileFile));
+                file.transferTo(new File(String.valueOf(Path.of(pathToFile,profileFile,fileName))));
+            } catch (IOException e) {
+                log.error("Can not save new photo: {}", fileName);
+                throw new RuntimeException("Can not save new photo",e);
+            }
+
+            try {
+                Files.deleteIfExists(Path.of(user.getPathToPhoto()));
+            } catch (IOException e) {
+                log.error("Can not delete old photo: {}", user.getPathToPhoto());
+            }
+            user.setPathToPhoto(fileName);
+        }
         userDao.update(user);
     }
 

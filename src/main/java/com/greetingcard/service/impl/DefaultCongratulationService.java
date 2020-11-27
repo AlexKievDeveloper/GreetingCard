@@ -6,18 +6,30 @@ import com.greetingcard.entity.Link;
 import com.greetingcard.entity.LinkType;
 import com.greetingcard.entity.Status;
 import com.greetingcard.service.CongratulationService;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
-@RequiredArgsConstructor
+@Setter
 public class DefaultCongratulationService implements CongratulationService {
-    private final CongratulationDao congratulationDao;
+    private CongratulationDao congratulationDao;
+    private String rootDirectory;
+
+    public DefaultCongratulationService(CongratulationDao congratulationDao, String rootDirectory) {
+        this.congratulationDao = congratulationDao;
+        this.rootDirectory = rootDirectory;
+    }
 
     @Override
     public Congratulation getCongratulationById(int congratulationId) {
@@ -25,10 +37,12 @@ public class DefaultCongratulationService implements CongratulationService {
     }
 
     @Override
-    public List<Link> getLinkList(String youtubeLinks, String plainLinks) {
+    public List<Link> getLinkList(MultipartFile[] files_image, MultipartFile[] files_audio, Map<String, String> parametersMap) {
         List<Link> linkList = new ArrayList<>();
-        addYoutubeLinks(linkList, youtubeLinks);
-        addPlainLinks(linkList, plainLinks);
+        addYoutubeLinks(linkList, parametersMap.get("youtube"));
+        log.info("Service level.Created youtube links");
+        addLinksToLocalImagesAndAudioFiles(files_image, files_audio, linkList);
+        log.info("Service level.Saved image and audio files and created links");
         return linkList;
     }
 
@@ -49,16 +63,7 @@ public class DefaultCongratulationService implements CongratulationService {
 
     void addYoutubeLinks(List<Link> linkList, String youtubeLinks) {
 
-        String pattern = "(https?://)?([\\w-]{1,32}\\.[\\w-]{1,32})[^\\s@]*";
-
-        Pattern compiledPattern = Pattern.compile(pattern);
-        Matcher matcher = compiledPattern.matcher(youtubeLinks);
-
-        List<String> youtubeLinksCollection = new ArrayList<>();
-
-        while (matcher.find()) {
-            youtubeLinksCollection.add(matcher.group());
-        }
+        List<String> youtubeLinksCollection = getLinksListFromText(youtubeLinks);
 
         for (String youtubeLink : youtubeLinksCollection) {
             if (!youtubeLink.contains("youtu") || youtubeLink.length() > 500) {
@@ -73,8 +78,8 @@ public class DefaultCongratulationService implements CongratulationService {
     }
 
     String getYoutubeVideoId(String url) {
-        String pattern = "(?<=watch\\?v=|/videos/|embed/|youtu.be/|/v/|/e/|watch\\?v%3D|watch\\?" +
-                "feature=player_embedded&v=|%2Fvideos%2F|embed%\u200C\u200B2F|youtu.be%2F|%2Fv%2F)[^#&?\\n]*";
+        String pattern = "(?<=watch\\?v=|/videos/|embed\\/|youtu.be\\/|\\/v\\/|\\/e\\/|watch\\?v%3D|watch\\?" +
+                "feature=player_embedded&v=|%2Fvideos%2F|embed%\u200C\u200B2F|youtu.be%2F|%2Fv%2F)[^#\\&\\?\\n]*";
 
         Pattern compiledPattern = Pattern.compile(pattern);
         Matcher matcher = compiledPattern.matcher(url);
@@ -83,30 +88,69 @@ public class DefaultCongratulationService implements CongratulationService {
         } else throw new IllegalArgumentException("Wrong youtube link url!");
     }
 
-    void addPlainLinks(List<Link> linkList, String plainLinks) {
-        if (plainLinks.length() > 500) {
-            throw new IllegalArgumentException("Sorry, congratulation not saved. The link is very long. " +
-                    "Please use a link up to 500 characters.");
+    void addLinksToLocalImagesAndAudioFiles(MultipartFile[] files_image, MultipartFile[] files_audio, List<Link> linkList) {
+        saveFilesAndCreateLinks(files_image, linkList);
+        saveFilesAndCreateLinks(files_audio, linkList);
+    }
+
+    List<String> getLinksListFromText(String text) {
+        String pattern = "(https?:\\/\\/)?([\\w-]{1,32}\\.[\\w-]{1,32})[^\\s@]*";
+
+        Pattern compiledPattern = Pattern.compile(pattern);
+        Matcher matcher = compiledPattern.matcher(text);
+
+        List<String> linkList = new ArrayList<>();
+
+        while (matcher.find()) {
+            linkList.add(matcher.group());
         }
+        return linkList;
+    }
 
-        if (!plainLinks.equals("")) {
-            String pattern = "(https?://)?([\\w-]{1,32}\\.[\\w-]{1,32})[^\\s@]*";
+    void saveFilesAndCreateLinks(MultipartFile[] files, List<Link> linkList) {
 
-            Pattern compiledPattern = Pattern.compile(pattern);
-            Matcher matcher = compiledPattern.matcher(plainLinks);
+        for (MultipartFile multipartFile : files) {
+            log.info("saveFilesAndCreateLinks. Multipart: {}", multipartFile.getOriginalFilename());
+            if (multipartFile.getSize() > 1000 && !multipartFile.isEmpty()) {
+                String salt = UUID.randomUUID().toString();
+                String fileName = multipartFile.getOriginalFilename();
+                String linkContentType = multipartFile.getContentType();
 
-            List<String> plainLinksCollection = new ArrayList<>();
+                if (linkContentType != null && fileName != null) {
+                    String uniqueFileName = salt.concat(fileName);
+                    LinkType linkType = null;
+                    String pathToStorage = null;
 
-            while (matcher.find()) {
-                plainLinksCollection.add(matcher.group());
-            }
+                    switch (linkContentType) {
+                        case "image/jpeg":
+                        case "image/jpg":
+                        case "image/png":
+                            pathToStorage = "img";
 
-            for (String plainLink : plainLinksCollection) {
-                Link link = Link.builder()
-                        .link(plainLink)
-                        .type(LinkType.PLAIN_LINK)
-                        .build();
-                linkList.add(link);
+                            linkType = LinkType.PICTURE;
+                            break;
+                        case "audio/mpeg":
+                            pathToStorage = "audio";
+                            linkType = LinkType.AUDIO;
+                            break;
+                    }
+
+                    Link link = Link.builder()
+                            .link("/".concat(pathToStorage).concat("/").concat(uniqueFileName))
+                            .type(linkType)
+                            .build();
+                    log.info("saveFilesAndCreateLinks.I`m going to add link to list: {}", link.getLink());
+                    linkList.add(link);
+
+                    try {
+                        Files.createDirectories(Paths.get(rootDirectory, pathToStorage));
+                        log.info("Root directory: {}, path to storage: {}, uniqueFileName: {}", rootDirectory, pathToStorage, uniqueFileName);
+                        multipartFile.transferTo(Paths.get(rootDirectory, pathToStorage, uniqueFileName));
+                    } catch (IOException e) {
+                        log.error("Exception while saving multipart file: {}", multipartFile, e);
+                        throw new RuntimeException("Exception while saving multipart file: " + multipartFile);
+                    }
+                }
             }
         }
     }

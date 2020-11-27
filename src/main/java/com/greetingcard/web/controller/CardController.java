@@ -20,7 +20,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "api/v1/",produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "api/v1/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CardController {
 
     private CardService cardService;
@@ -33,14 +33,13 @@ public class CardController {
     }
 
     @GetMapping(value = "cards")
-    public ResponseEntity<Object> getCards(HttpSession session, @RequestParam String type) throws JsonProcessingException {
+    public ResponseEntity<Object> getCards(HttpSession session, @RequestParam String type) {
         log.info("getCards");
         User user = (User) session.getAttribute("user");
         long userId = user.getId();
         List<Card> cardList = cardService.getCards(userId, type);
         if (cardList.size() == 0) {
-            String json = objectMapper.writeValueAsString(Map.of("message", "Sorry, you do not have cards"));
-            return ResponseEntity.status(HttpStatus.OK).body(json);
+            return ResponseEntity.status(HttpStatus.OK).build();
         } else {
             return ResponseEntity.status(HttpStatus.OK).body(cardList);
         }

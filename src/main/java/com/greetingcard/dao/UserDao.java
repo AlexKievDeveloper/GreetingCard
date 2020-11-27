@@ -6,7 +6,7 @@ public interface UserDao {
 
     User findByLogin(String login);
 
-    void save (User user);
+    void save(User user);
 
     void update(User user);
 
