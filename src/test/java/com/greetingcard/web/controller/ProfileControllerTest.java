@@ -1,6 +1,6 @@
 package com.greetingcard.web.controller;
 
-import com.greetingcard.dao.jdbc.FlywayConfig;
+import com.greetingcard.dao.jdbc.TestConfiguration;
 import com.greetingcard.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,22 +12,20 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.nullValue;
-import static org.postgresql.hostchooser.HostRequirement.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringJUnitWebConfig(value = FlywayConfig.class)
+@SpringJUnitWebConfig(value = TestConfiguration.class)
 class ProfileControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private WebApplicationContext context;
 
     @BeforeEach
-    void init() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
     }

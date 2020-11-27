@@ -1,7 +1,11 @@
 package com.greetingcard.security;
 
+import com.github.database.rider.core.api.configuration.DBUnit;
+import com.github.database.rider.core.api.configuration.Orthography;
+import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.spring.api.DBRider;
 import com.greetingcard.dao.UserDao;
-import com.greetingcard.dao.jdbc.FlywayConfig;
+import com.greetingcard.dao.jdbc.TestConfiguration;
 import com.greetingcard.entity.Language;
 import com.greetingcard.entity.User;
 import org.flywaydb.core.Flyway;
@@ -19,21 +23,30 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringJUnitWebConfig(value = FlywayConfig.class)
+
+@DBRider
+@DBUnit(caseSensitiveTableNames = false, caseInsensitiveStrategy = Orthography.LOWERCASE)
+@DataSet(value = {"languages.xml",  "types.xml", "roles.xml",  "statuses.xml", "users.xml",  "cards.xml", "cardsUsers.xml",
+        "congratulations.xml", "links.xml"},
+        executeStatementsBefore = "SELECT setval('users_user_id_seq', 3);",
+        cleanAfter = true)
+@SpringJUnitWebConfig(value = TestConfiguration.class)
 @ExtendWith(MockitoExtension.class)
 class DefaultSecurityServiceTest {
     @Autowired
     private DefaultSecurityService securityService;
+
     @InjectMocks
-    DefaultSecurityService mockSecurityService;
+    private DefaultSecurityService mockSecurityService;
+
     @Mock
-    UserDao userDao;
+    private UserDao userDao;
+
     @Autowired
     private Flyway flyway;
 
     @BeforeEach
-    void init() {
-        flyway.clean();
+    void setUp(){
         flyway.migrate();
     }
 
@@ -50,7 +63,7 @@ class DefaultSecurityServiceTest {
         assertEquals("@user", actual.getEmail());
         assertEquals("gDE3fEwV4WEZhgiURMj/WMlTWP/cldaSptEMe2M+md8=", actual.getPassword());
         assertEquals("salt", actual.getSalt());
-        assertEquals(Language.ENGLISH, actual.getLanguage());
+        assertEquals(Language.UKRAINIAN, actual.getLanguage());
     }
 
     @Test

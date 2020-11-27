@@ -1,6 +1,10 @@
 package com.greetingcard.web.controller;
 
-import com.greetingcard.dao.jdbc.FlywayConfig;
+import com.github.database.rider.core.api.configuration.DBUnit;
+import com.github.database.rider.core.api.configuration.Orthography;
+import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.spring.api.DBRider;
+import com.greetingcard.dao.jdbc.TestConfiguration;
 import com.greetingcard.entity.User;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,17 +24,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfigurer.sharedHttpSession;
 
-@SpringJUnitWebConfig(value = FlywayConfig.class)
+@DBRider
+@DBUnit(caseSensitiveTableNames = false, caseInsensitiveStrategy = Orthography.LOWERCASE)
+@DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardsUsers.xml",
+        "congratulations.xml", "links.xml"},
+        executeStatementsBefore = "SELECT setval('congratulations_congratulation_id_seq', 6);", cleanAfter = true)
+@SpringJUnitWebConfig(value = TestConfiguration.class)
 class CongratulationControllerTest {
     private MockMvc mockMvc;
-    @Autowired
-    private Flyway flyway;
+
     @Autowired
     private WebApplicationContext context;
 
+    @Autowired
+    private Flyway flyway;
+
     @BeforeEach
     void setUp() {
-        flyway.clean();
         flyway.migrate();
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(sharedHttpSession()).build();

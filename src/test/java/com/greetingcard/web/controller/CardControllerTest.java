@@ -1,17 +1,16 @@
 package com.greetingcard.web.controller;
 
-import com.greetingcard.dao.jdbc.FlywayConfig;
-import com.greetingcard.entity.Card;
-import com.greetingcard.entity.Status;
+import com.github.database.rider.core.api.configuration.DBUnit;
+import com.github.database.rider.core.api.configuration.Orthography;
+import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.spring.api.DBRider;
+import com.greetingcard.dao.jdbc.TestConfiguration;
 import com.greetingcard.entity.User;
-import com.greetingcard.service.CardService;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,27 +20,31 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfigurer.sharedHttpSession;
 
+
+@DBRider
+@DBUnit(caseSensitiveTableNames = false, caseInsensitiveStrategy = Orthography.LOWERCASE)
+@DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardsUsers.xml",
+        "congratulations.xml", "links.xml"},
+        executeStatementsBefore = "SELECT setval('cards_card_id_seq', 3); SELECT setval(' users_cards_users_cards_id_seq', 6);",
+        cleanAfter = true)
 @ExtendWith(MockitoExtension.class)
-@SpringJUnitWebConfig(value = FlywayConfig.class)
+@SpringJUnitWebConfig(value = TestConfiguration.class)
 class CardControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private WebApplicationContext context;
+
     @Autowired
     private Flyway flyway;
+
     @BeforeEach
     void setUp() {
-        flyway.clean();
         flyway.migrate();
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(sharedHttpSession()).build();
@@ -69,7 +72,6 @@ class CardControllerTest {
                 .andDo(print())
                 .andExpect(jsonPath("$.message").value("Sorry, you are not a member of this card"))
                 .andExpect(status().isForbidden());
-
     }
 
     @Test
@@ -86,7 +88,6 @@ class CardControllerTest {
                 .andDo(print())
                 .andExpect(jsonPath("$.id").value("4"))
                 .andExpect(status().isCreated());
-
     }
 
     @Test

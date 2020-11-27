@@ -1,0 +1,27 @@
+<dataset>
+    <USERS user_id ="1"
+           firstName = "admin"
+           lastName = "admin"
+           login = "admin"
+           email = "@admin"
+           password = "password"
+           salt = "salt"
+           language_id = "1"/>
+    <USERS user_id ="2"
+           firstName = "user"
+           lastName = "user"
+           login = "user"
+           email = "@user"
+           password = "gDE3fEwV4WEZhgiURMj/WMlTWP/cldaSptEMe2M+md8="
+           salt = "salt"
+           language_id = "1"/>
+    <USERS user_id ="3"
+           firstName = "new"
+           lastName = "new"
+           login = "new"
+           email = "@new"
+           password = "password"
+           salt = "salt"
+           language_id = "2"/>
+</dataset>
+

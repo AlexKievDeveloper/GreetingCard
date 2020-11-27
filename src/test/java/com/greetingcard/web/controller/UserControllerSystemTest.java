@@ -1,7 +1,11 @@
 package com.greetingcard.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.greetingcard.dao.jdbc.FlywayConfig;
+import com.github.database.rider.core.api.configuration.DBUnit;
+import com.github.database.rider.core.api.configuration.Orthography;
+import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.spring.api.DBRider;
+import com.greetingcard.dao.jdbc.TestConfiguration;
 import com.greetingcard.entity.User;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +32,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringJUnitWebConfig(value = FlywayConfig.class)
+
+@DBRider
+@DBUnit(caseSensitiveTableNames = false, caseInsensitiveStrategy = Orthography.LOWERCASE)
+@DataSet(value = {"languages.xml",  "types.xml", "roles.xml",  "statuses.xml", "users.xml",  "cards.xml", "cardsUsers.xml",
+        "congratulations.xml", "links.xml"},
+        executeStatementsBefore = "SELECT setval('users_user_id_seq', 3);",
+        cleanAfter = true)
+@SpringJUnitWebConfig(value = TestConfiguration.class)
 class UserControllerSystemTest {
     @Autowired
     private UserController userController;
@@ -42,8 +53,7 @@ class UserControllerSystemTest {
     private Flyway flyway;
 
     @BeforeEach
-    void init() {
-        flyway.clean();
+    void setUp() {
         flyway.migrate();
         mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
     }
@@ -71,7 +81,7 @@ class UserControllerSystemTest {
     void testLoginIfUserExist() throws Exception {
         //prepare
         Map<String, String> userCredential = new HashMap<>();
-        userCredential.put("user", "user");
+        userCredential.put("login", "user");
         userCredential.put("password", "user");
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(userCredential);
@@ -100,7 +110,7 @@ class UserControllerSystemTest {
     void testLoginIfUserIsNotExist() throws Exception {
         //prepare
         Map<String, String> userCredential = new HashMap<>();
-        userCredential.put("user", "user_don't_create");
+        userCredential.put("login", "user_don't_create");
         userCredential.put("password", "user");
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(userCredential);
