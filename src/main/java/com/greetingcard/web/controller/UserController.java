@@ -27,7 +27,8 @@ public class UserController {
     @Value("${max.inactive.interval}")
     private int maxInactiveInterval;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @DeleteMapping("session")
     public ResponseEntity logout(HttpSession session) {
@@ -40,7 +41,7 @@ public class UserController {
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity login(@RequestBody Map<String, String> userCredential, HttpSession session) throws JsonProcessingException {
         log.info("login request");
-        String login = userCredential.get("user");
+        String login = userCredential.get("login");
         String password = userCredential.get("password");
         log.info("login for user {}", login);
         User user = securityService.login(login, password);

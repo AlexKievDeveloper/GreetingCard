@@ -11,4 +11,6 @@ public interface SecurityService {
     void update(User user);
 
     User findById(long id);
+
+    User findByLogin(String login);
 }
