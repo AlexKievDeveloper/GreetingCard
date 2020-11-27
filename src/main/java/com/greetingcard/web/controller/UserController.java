@@ -6,8 +6,7 @@ import com.greetingcard.entity.User;
 import com.greetingcard.security.SecurityService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +19,9 @@ import java.util.Map;
 @Setter
 @RestController
 @RequestMapping(value = "/api/v1/")
-@PropertySource(value = "classpath:application.properties")
 public class UserController {
     private SecurityService securityService;
 
-    @Value("${max.inactive.interval}")
     private int maxInactiveInterval;
 
     private ObjectMapper objectMapper = new ObjectMapper();

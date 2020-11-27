@@ -1,0 +1,14 @@
+<dataset>
+  <CARDS card_id = "1"
+         user_id = "1"
+         name = "greeting Nomar"
+         status_id = "1"/>
+    <CARDS card_id = "2"
+           user_id = "2"
+           name = "greeting Oleksandr"
+           status_id = "2"/>
+    <CARDS card_id = "3"
+           user_id = "2"
+           name = "no_congratulation"
+           status_id = "1"/>
+</dataset>

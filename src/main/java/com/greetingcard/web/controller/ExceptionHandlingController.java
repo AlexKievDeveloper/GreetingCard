@@ -25,4 +25,9 @@ public class ExceptionHandlingController {
         String json = mapper.writeValueAsString(Map.of("message", e.getMessage()));
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(json);
     }
+
+    @ExceptionHandler(JsonProcessingException.class)
+    public ResponseEntity<?> parsingJson() {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
 }
