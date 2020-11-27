@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -191,4 +192,27 @@ public class JdbcCardDaoITest {
         assertEquals(Status.ISOVER, card.getStatus());
     }
 
+    @Test
+    @DisplayName("Get card status id")
+    void getCardStatusById() {
+        Optional<Status> status = jdbcCardDao.getCardStatusById(1);
+        //then
+        assertEquals(Status.STARTUP, status.get());
+    }
+
+    @Test
+    @DisplayName("Get card status id - ISOVER")
+    void getCardStatusByIdIsOver() {
+        Optional<Status> status = jdbcCardDao.getCardStatusById(2);
+        //then
+        assertEquals(Status.ISOVER, status.get());
+    }
+
+    @Test
+    @DisplayName("Get card status id")
+    void getCardStatusByIdNotExistingCard() {
+        Optional<Status> status = jdbcCardDao.getCardStatusById(-1);
+        //then
+        assertTrue(status.isEmpty());
+    }
 }

@@ -6,6 +6,7 @@ import com.greetingcard.entity.User;
 import com.greetingcard.security.SecurityService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,8 @@ public class UserController {
 
     private int maxInactiveInterval;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     public UserController(SecurityService securityService) {
         this.securityService = securityService;

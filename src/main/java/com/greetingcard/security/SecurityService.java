@@ -12,4 +12,6 @@ public interface SecurityService {
     void update(User user, MultipartFile file);
 
     User findById(long id);
+
+    User findByLogin(String login);
 }

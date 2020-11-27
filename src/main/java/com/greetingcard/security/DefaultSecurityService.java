@@ -95,6 +95,10 @@ public class DefaultSecurityService implements SecurityService {
         return userDao.findById(id);
     }
 
+    @Override
+    public User findByLogin(String login) {
+        return userDao.findByLogin(login);
+    }
 
     String getHashPassword(String saltAndPassword) {
         try {

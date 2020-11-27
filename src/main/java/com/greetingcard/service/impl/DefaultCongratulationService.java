@@ -26,6 +26,11 @@ public class DefaultCongratulationService implements CongratulationService {
     private CongratulationDao congratulationDao;
     private String rootDirectory;
 
+    public DefaultCongratulationService(CongratulationDao congratulationDao, String rootDirectory) {
+        this.congratulationDao = congratulationDao;
+        this.rootDirectory = rootDirectory;
+    }
+
     @Override
     public Congratulation getCongratulationById(int congratulationId) {
         return congratulationDao.getCongratulationById(congratulationId);
