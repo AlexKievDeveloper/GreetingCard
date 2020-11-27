@@ -49,7 +49,6 @@ class CardControllerTest {
                 .andExpect(jsonPath("$.id").value("1"))
                 .andExpect(jsonPath("$.name").value("greeting Nomar"))
                 .andExpect(status().isOk());
-
     }
 
     @Test
@@ -61,7 +60,6 @@ class CardControllerTest {
                 .andDo(print())
                 .andExpect(jsonPath("$.message").value("Sorry, you are not a member of this card"))
                 .andExpect(status().isForbidden());
-
     }
 
     @Test
@@ -78,7 +76,6 @@ class CardControllerTest {
                 .andDo(print())
                 .andExpect(jsonPath("$.id").value("4"))
                 .andExpect(status().isCreated());
-
     }
 
     @Test

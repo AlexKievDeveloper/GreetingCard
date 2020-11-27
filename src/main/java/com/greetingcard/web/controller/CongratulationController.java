@@ -38,8 +38,6 @@ public class CongratulationController {
                                                   HttpSession session) throws IOException {
 
         log.info("Received request for saving congratulation");
-        log.info("Image files: {}", files_image.length);
-        log.info("Audio files: {}", files_audio.length);
 
         ObjectMapper objectMapper = new ObjectMapper();
         TypeReference<HashMap<String, String>> typeRef = new TypeReference<>() {

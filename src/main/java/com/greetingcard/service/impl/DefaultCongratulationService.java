@@ -58,12 +58,9 @@ public class DefaultCongratulationService implements CongratulationService {
 
     void addYoutubeLinks(List<Link> linkList, String youtubeLinks) {
 
-        List<String> youtubeLinksCollection = getLinksListFromText(youtubeLinks);
+        List<String> youtubeLinksCollection = getYoutubeLinksListFromText(youtubeLinks);
 
         for (String youtubeLink : youtubeLinksCollection) {
-            if (!youtubeLink.contains("youtu") || youtubeLink.length() > 500) {
-                throw new IllegalArgumentException("Wrong youtube link url!");
-            }
             Link video = Link.builder()
                     .link(getYoutubeVideoId(youtubeLink))
                     .type(LinkType.VIDEO)
@@ -88,7 +85,7 @@ public class DefaultCongratulationService implements CongratulationService {
         saveFilesAndCreateLinks(files_audio, linkList);
     }
 
-    List<String> getLinksListFromText(String text) {
+    List<String> getYoutubeLinksListFromText(String text) {
         String pattern = "(https?:\\/\\/)?([\\w-]{1,32}\\.[\\w-]{1,32})[^\\s@]*";
 
         Pattern compiledPattern = Pattern.compile(pattern);
@@ -97,53 +94,55 @@ public class DefaultCongratulationService implements CongratulationService {
         List<String> linkList = new ArrayList<>();
 
         while (matcher.find()) {
-            linkList.add(matcher.group());
+            String youtubeLink = matcher.group();
+            if (!youtubeLink.contains("youtu") || youtubeLink.length() > 500) {
+                throw new IllegalArgumentException("Wrong youtube link url!");
+            }
+            linkList.add(youtubeLink);
         }
         return linkList;
     }
 
     void saveFilesAndCreateLinks(MultipartFile[] files, List<Link> linkList) {
+        if (files != null) {
+            for (MultipartFile multipartFile : files) {
+                log.info("saveFilesAndCreateLinks. Multipart: {}", multipartFile.getOriginalFilename());
+                if (multipartFile.getSize() > 1000 && !multipartFile.isEmpty()) {
+                    String salt = UUID.randomUUID().toString();
+                    String fileName = multipartFile.getOriginalFilename();
+                    String linkContentType = multipartFile.getContentType();
 
-        for (MultipartFile multipartFile : files) {
-            log.info("saveFilesAndCreateLinks. Multipart: {}", multipartFile.getOriginalFilename());
-            if (multipartFile.getSize() > 1000 && !multipartFile.isEmpty()) {
-                String salt = UUID.randomUUID().toString();
-                String fileName = multipartFile.getOriginalFilename();
-                String linkContentType = multipartFile.getContentType();
+                    if (linkContentType != null && fileName != null) {
+                        String uniqueFileName = salt.concat(fileName);
+                        LinkType linkType = null;
+                        String pathToStorage = null;
 
-                if (linkContentType != null && fileName != null) {
-                    String uniqueFileName = salt.concat(fileName);
-                    LinkType linkType = null;
-                    String pathToStorage = null;
+                        for (LinkType linkTypeValue : LinkType.values()) {
+                            if (linkTypeValue.getAdditionalTypes().contains(linkContentType)) {
+                                linkType = linkTypeValue;
+                                pathToStorage = linkTypeValue.getPathToStorage();
+                            }
+                        }
 
-                    switch (linkContentType) {
-                        case "image/jpeg":
-                        case "image/jpg":
-                        case "image/png":
-                            pathToStorage = "img";
+                        if (linkType == null) {
+                            throw new IllegalArgumentException("Sorry, this format is not supported by the application: ".concat(linkContentType));
+                        }
 
-                            linkType = LinkType.PICTURE;
-                            break;
-                        case "audio/mpeg":
-                            pathToStorage = "audio";
-                            linkType = LinkType.AUDIO;
-                            break;
-                    }
+                        Link link = Link.builder()
+                                .link("/".concat(pathToStorage).concat("/").concat(uniqueFileName))
+                                .type(linkType)
+                                .build();
+                        log.info("saveFilesAndCreateLinks.I`m going to add link to list: {}", link.getLink());
+                        linkList.add(link);
 
-                    Link link = Link.builder()
-                            .link("/".concat(pathToStorage).concat("/").concat(uniqueFileName))
-                            .type(linkType)
-                            .build();
-                    log.info("saveFilesAndCreateLinks.I`m going to add link to list: {}", link.getLink());
-                    linkList.add(link);
-
-                    try {
-                        Files.createDirectories(Paths.get(rootDirectory, pathToStorage));
-                        log.info("Root directory: {}, path to storage: {}, uniqueFileName: {}", rootDirectory, pathToStorage, uniqueFileName);
-                        multipartFile.transferTo(Paths.get(rootDirectory, pathToStorage, uniqueFileName));
-                    } catch (IOException e) {
-                        log.error("Exception while saving multipart file: {}", multipartFile, e);
-                        throw new RuntimeException("Exception while saving multipart file: " + multipartFile);
+                        try {
+                            Files.createDirectories(Paths.get(rootDirectory, pathToStorage));
+                            log.info("Root directory: {}, path to storage: {}, uniqueFileName: {}", rootDirectory, pathToStorage, uniqueFileName);
+                            multipartFile.transferTo(Paths.get(rootDirectory, pathToStorage, uniqueFileName));
+                        } catch (IOException e) {
+                            log.error("Exception while saving multipart file: {}", multipartFile, e);
+                            throw new RuntimeException("Exception while saving multipart file: " + multipartFile);
+                        }
                     }
                 }
             }

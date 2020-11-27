@@ -2,10 +2,12 @@ package com.greetingcard.web.controller;
 
 import com.greetingcard.dao.jdbc.FlywayConfig;
 import com.greetingcard.entity.User;
-import org.flywaydb.core.Flyway;
+import com.greetingcard.service.impl.DefaultCongratulationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -25,16 +27,19 @@ import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfig
 
 @SpringJUnitWebConfig(value = FlywayConfig.class)
 class CongratulationControllerTest {
+    private MockMvc mockMvcForCreateCongratulation;
     private MockMvc mockMvc;
-    @Autowired
-    private Flyway flyway;
+    private final byte[] bytes = new byte[1024 * 1024 * 10];
+
+    @Mock
+    private DefaultCongratulationService defaultCongratulationService;
+    @InjectMocks
+    private CongratulationController mockCongratulationController;
     @Autowired
     private WebApplicationContext context;
 
     @BeforeEach
     void setUp() {
-        flyway.clean();
-        flyway.migrate();
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(sharedHttpSession()).build();
     }
@@ -42,13 +47,13 @@ class CongratulationControllerTest {
     @Test
     @DisplayName("Creating new congratulation from json which we get from request body")
     void createCongratulation() throws Exception {
+        mockMvcForCreateCongratulation = MockMvcBuilders.standaloneSetup(mockCongratulationController).apply(sharedHttpSession()).build();
         User user = User.builder().id(1).build();
-        MockMultipartFile mockImageFile = new MockMultipartFile("files_image", "image.jpg", "image/jpg", "test-image.jpg".getBytes());
-        MockMultipartFile mockAudioFile = new MockMultipartFile("files_audio", "audio.mp3", "audio/mpeg", "test-audio.mp3".getBytes());
-        String parametersJson = "{\"message\":\"Happy new year!\", \"card_id\":\"1\", \"youtube\":\"https://www.youtube.com/watch?v=BmBr5diz8WA\", \"image_links\":\"https://www.davno.ru/assets/images/cards/big/birthday-1061.jpg\"}";
-        //String parametersJson = {message:Happy new year!, card_id:1, youtube:https://www.youtube.com/watch?v=BmBr5diz8WA, image_links:https://www.davno.ru/assets/images/cards/big/birthday-1061.jpg}
+        MockMultipartFile mockImageFile = new MockMultipartFile("files_image", "image.jpg", "image/jpg", bytes);
+        MockMultipartFile mockAudioFile = new MockMultipartFile("files_audio", "audio.mp3", "audio/mpeg", bytes);
+        String parametersJson = "{\"message\":\"Happy new year!\", \"card_id\":\"1\", \"youtube\":\"https://www.youtube.com/watch?v=BmBr5diz8WA\"}";
 
-        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/congratulation")
+        mockMvcForCreateCongratulation.perform(MockMvcRequestBuilders.multipart("/api/v1/congratulation")
                 .file(mockImageFile)
                 .file(mockAudioFile)
                 .param("json", parametersJson)
@@ -62,9 +67,10 @@ class CongratulationControllerTest {
     @Test
     @DisplayName("Return bad request while creating congratulation in case to long value of youtube link")
     void createCongratulationExceptionOfToLongYoutubeLinkValue() throws Exception {
+
         User user = User.builder().id(1).build();
-        MockMultipartFile mockImageFile = new MockMultipartFile("files_image", "image.jpg", "image/jpg", "test-image.jpg".getBytes());
-        MockMultipartFile mockAudioFile = new MockMultipartFile("files_audio", "audio.mp3", "audio/mpeg", "test-audio.mp3".getBytes());
+        MockMultipartFile mockImageFile = new MockMultipartFile("files_image", "image.jpg", "image/jpg", bytes);
+        MockMultipartFile mockAudioFile = new MockMultipartFile("files_audio", "audio.mp3", "audio/mpeg", bytes);
         String parametersJson = "{\"message\":\"Happy new year!\", \"card_id\":\"1\", \"youtube\":\"https://www.youtube.com/watch?v=BmBr5diz8WA" +
                 "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
                 "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
@@ -72,8 +78,7 @@ class CongratulationControllerTest {
                 "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
                 "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
                 "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\", " +
-                "\"image_links\":\"https://www.davno.ru/assets/images/cards/big/birthday-1061.jpg\"}";
+                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"}";
 
         mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/congratulation")
                 .file(mockImageFile)
@@ -102,5 +107,3 @@ class CongratulationControllerTest {
                 .andExpect(status().isNoContent());
     }
 }
-
-

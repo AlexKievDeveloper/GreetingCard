@@ -20,14 +20,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringJUnitWebConfig(value = FlywayConfig.class)
 class ProfileControllerTest {
-    private MockMvc mockMvc;
+    private MockMvc mockMvcForCreateCongratulation;
     @Autowired
     private WebApplicationContext context;
 
     @BeforeEach
     void init() {
         MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+        mockMvcForCreateCongratulation = MockMvcBuilders.webAppContextSetup(context).build();
     }
 
     @Test
@@ -39,7 +39,7 @@ class ProfileControllerTest {
                 .lastName("test")
                 .email("test")
                 .pathToPhoto("link").build();
-        mockMvc.perform(get("/api/v1/user")
+        mockMvcForCreateCongratulation.perform(get("/api/v1/user")
                 .sessionAttr("user", user))
                 .andDo(print())
                 .andExpect(jsonPath("$.id").value("2"))
