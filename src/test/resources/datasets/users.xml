@@ -7,6 +7,7 @@
            password = "password"
            salt = "salt"
            language_id = "1"/>
+
     <USERS user_id ="2"
            firstName = "user"
            lastName = "user"
@@ -24,4 +25,3 @@
            salt = "salt"
            language_id = "2"/>
 </dataset>
-

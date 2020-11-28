@@ -7,10 +7,7 @@ import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.greetingcard.entity.*;
 import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
@@ -38,15 +35,8 @@ class JdbcCongratulationDaoITest {
     private Flyway flyway;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         flyway.migrate();
-    }
-
-    @AfterEach
-    void afterAll() throws IOException {
-        Files.deleteIfExists(Path.of("src/main/webapp/static/audio"));
-        Files.deleteIfExists(Path.of("src/main/webapp/static/img"));
-        Files.deleteIfExists(Path.of("src/main/webapp/static"));
     }
 
     @Test
@@ -187,6 +177,9 @@ class JdbcCongratulationDaoITest {
         assertEquals(3, congratulationList.get(0).getId());
         assertFalse(Files.exists(Path.of("src/main/webapp/static/audio")));
         assertFalse(Files.exists(Path.of("src/main/webapp/static/img")));
+        Files.deleteIfExists(Path.of("src/main/webapp/static/audio"));
+        Files.deleteIfExists(Path.of("src/main/webapp/static/img"));
+        Files.deleteIfExists(Path.of("src/main/webapp/static"));
     }
 
     @Test
@@ -217,6 +210,9 @@ class JdbcCongratulationDaoITest {
         assertNull(actual);
         assertFalse(Files.exists(Path.of("src/main/webapp/static/audio")));
         assertFalse(Files.exists(Path.of("src/main/webapp/static/img")));
+        Files.deleteIfExists(Path.of("src/main/webapp/static/audio"));
+        Files.deleteIfExists(Path.of("src/main/webapp/static/img"));
+        Files.deleteIfExists(Path.of("src/main/webapp/static"));
     }
 
     @Test

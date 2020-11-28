@@ -6,11 +6,7 @@ import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.greetingcard.entity.*;
 import org.flywaydb.core.Flyway;
-import org.junit.Before;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
@@ -20,10 +16,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DBRider
 @DBUnit(caseSensitiveTableNames = false, caseInsensitiveStrategy = Orthography.LOWERCASE)
-@DataSet(value = {"languages.xml",  "types.xml", "roles.xml",  "statuses.xml", "users.xml",  "cards.xml", "cardsUsers.xml",
+@DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardsUsers.xml",
         "congratulations.xml", "links.xml"},
-        executeStatementsBefore = "SELECT setval('cards_card_id_seq', 3); SELECT setval(' users_cards_users_cards_id_seq', 6);",
-         cleanAfter = true)
+        cleanAfter = true)
 @SpringJUnitWebConfig(value = TestConfiguration.class)
 public class JdbcCardDaoITest {
     @Autowired
@@ -33,7 +28,7 @@ public class JdbcCardDaoITest {
     private Flyway flyway;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         flyway.migrate();
     }
 

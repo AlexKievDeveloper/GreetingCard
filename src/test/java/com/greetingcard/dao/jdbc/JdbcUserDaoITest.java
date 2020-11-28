@@ -8,11 +8,11 @@ import com.greetingcard.dao.UserDao;
 import com.greetingcard.entity.Language;
 import com.greetingcard.entity.User;
 import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
+
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,7 +32,7 @@ class JdbcUserDaoITest {
     private Flyway flyway;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         flyway.migrate();
     }
 
@@ -86,12 +86,14 @@ class JdbcUserDaoITest {
 
     @Test
     @DisplayName("Update user")
-    void testUpdate() {
+    void testUpdate() throws IOException {
         //prepare
         User user = userDao.findByLogin("user");
         user.setFirstName("update");
         user.setLastName("update");
         user.setLogin("update");
+        user.setPathToPhoto("src/main/webapp/static/updatePhoto");
+
         //when
         userDao.update(user);
         User actualUser = userDao.findByLogin("update");
@@ -99,6 +101,7 @@ class JdbcUserDaoITest {
         assertEquals("update", actualUser.getFirstName());
         assertEquals("update", actualUser.getLastName());
         assertEquals("update", actualUser.getLogin());
+        assertEquals("src/main/webapp/static/updatePhoto", actualUser.getPathToPhoto());
     }
 
     @Test

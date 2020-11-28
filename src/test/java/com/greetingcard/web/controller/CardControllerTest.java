@@ -5,6 +5,7 @@ import com.github.database.rider.core.api.configuration.Orthography;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.greetingcard.dao.jdbc.TestConfiguration;
+
 import com.greetingcard.entity.User;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
@@ -126,17 +127,6 @@ class CardControllerTest {
                 .andExpect(jsonPath("$[2].id").value("3"))
                 .andExpect(jsonPath("$[2].name").value("no_congratulation"))
                 .andExpect(jsonPath("$[2].status").value("STARTUP"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("Return message id user does not have cards")
-    void getCardsAllHaveNotCards() throws Exception {
-        User user = User.builder().id(100).build();
-        mockMvc.perform(get("/api/v1/cards?type=all")
-                .sessionAttr("user", user))
-                .andDo(print())
-                .andExpect(jsonPath("$.message").value("Sorry, you do not have cards"))
                 .andExpect(status().isOk());
     }
 }

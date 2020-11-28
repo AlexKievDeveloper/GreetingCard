@@ -4,13 +4,15 @@ import com.greetingcard.dao.CardDao;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Status;
 import com.greetingcard.service.CardService;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
+
 
 import java.util.List;
+import java.util.Optional;
 
-@Setter
+@RequiredArgsConstructor
 public class DefaultCardService implements CardService {
-    private CardDao jdbcCardDao;
+    private final CardDao jdbcCardDao;
 
     @Override
     public List<Card> getCards(long userId, String cardsType) {
@@ -45,5 +47,9 @@ public class DefaultCardService implements CardService {
     @Override
     public void changeCardStatus(Status status, long cardId) {
         jdbcCardDao.changeCardStatusById(status, cardId);
+    }
+
+    public Optional<Status> getCardStatusById(long cardId) {
+        return jdbcCardDao.getCardStatusById(cardId);
     }
 }

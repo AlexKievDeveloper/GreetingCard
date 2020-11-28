@@ -12,26 +12,25 @@ import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 @DBRider
 @DBUnit(caseSensitiveTableNames = false, caseInsensitiveStrategy = Orthography.LOWERCASE)
-@DataSet(value = {"languages.xml",  "types.xml", "roles.xml",  "statuses.xml", "users.xml",  "cards.xml", "cardsUsers.xml",
-        "congratulations.xml", "links.xml"},
-        executeStatementsBefore = "SELECT setval('users_user_id_seq', 3);",
-        cleanAfter = true)
+@DataSet(cleanAfter = true)
 @SpringJUnitWebConfig(value = TestConfiguration.class)
 @ExtendWith(MockitoExtension.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DefaultSecurityServiceTest {
     @Autowired
     private DefaultSecurityService securityService;
@@ -45,13 +44,9 @@ class DefaultSecurityServiceTest {
     @Autowired
     private Flyway flyway;
 
-    @BeforeEach
-    void setUp(){
-        flyway.migrate();
-    }
-
     @Test
     @DisplayName("Login user")
+    @DataSet(value = {"languages.xml", "users.xml"})
     void loginTest() {
         //when
         User actual = securityService.login("user", "user");
@@ -88,11 +83,27 @@ class DefaultSecurityServiceTest {
 
     @Test
     @DisplayName("Find user by id")
-    void findById(){
+    void findById() {
         //when
         mockSecurityService.findById(1);
         //then
         verify(userDao).findById(1);
     }
 
+    @Test
+    @DisplayName("Update user by id")
+    void updateUser() {
+        MockMultipartFile file = new MockMultipartFile("file", "image.jpg",
+                "image/jpg", "test-image.jpg".getBytes());
+        User user = User.builder()
+                .id(100L)
+                .firstName("test")
+                .lastName("test")
+                .login("test")
+                .pathToPhoto("testFile").build();
+        //when
+        securityService.update(user, file);
+        //then
+        assertNotEquals("testFile",user.getPathToPhoto());
+    }
 }

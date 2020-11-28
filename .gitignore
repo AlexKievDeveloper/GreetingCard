@@ -6,7 +6,9 @@ logs
 setUp.sql
 setUpContent.sql
 setUpTable.sql
-
+dev.properties
+profile
+profilePhoto
 
 
 

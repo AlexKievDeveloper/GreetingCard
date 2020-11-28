@@ -2,12 +2,12 @@ package com.greetingcard.web.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Status;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,25 +20,26 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "api/v1/",produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "api/v1/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CardController {
 
     private CardService cardService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     public CardController(CardService cardService) {
         this.cardService = cardService;
     }
 
     @GetMapping(value = "cards")
-    public ResponseEntity<Object> getCards(HttpSession session, @RequestParam String type) throws JsonProcessingException {
+    public ResponseEntity<Object> getCards(HttpSession session, @RequestParam String type) {
         log.info("getCards");
         User user = (User) session.getAttribute("user");
         long userId = user.getId();
         List<Card> cardList = cardService.getCards(userId, type);
         if (cardList.size() == 0) {
-            ObjectMapper mapper = new ObjectMapper();
-            String json = mapper.writeValueAsString(Map.of("message", "Sorry, you do not have cards"));
-            return ResponseEntity.status(HttpStatus.OK).body(json);
+            return ResponseEntity.status(HttpStatus.OK).build();
         } else {
             return ResponseEntity.status(HttpStatus.OK).body(cardList);
         }
@@ -51,8 +52,7 @@ public class CardController {
         Card card = cardService.getCardAndCongratulationByCardId(id, user.getId());
         if (card == null) {
             log.info("User has no access : {}", id);
-            ObjectMapper mapper = new JsonMapper();
-            String json = mapper.writeValueAsString(Map.of("message", "Sorry, you are not a member of this card"));
+            String json = objectMapper.writeValueAsString(Map.of("message", "Sorry, you are not a member of this card"));
             return ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body(json);
         } else {
             log.info("Successfully writing card to response, id: {}", id);
@@ -69,8 +69,7 @@ public class CardController {
         }
         User user = (User) session.getAttribute("user");
         card.setUser(user);
-        ObjectMapper mapper = new JsonMapper();
-        String json = mapper.writeValueAsString(Map.of("id", cardService.createCard(card)));
+        String json = objectMapper.writeValueAsString(Map.of("id", cardService.createCard(card)));
         return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(json);
     }
 
