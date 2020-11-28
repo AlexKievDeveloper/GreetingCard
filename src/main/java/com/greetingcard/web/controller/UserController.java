@@ -21,11 +21,10 @@ import java.util.Map;
 @RequestMapping(value = "/api/v1/")
 public class UserController {
     private SecurityService securityService;
-
+    @Autowired
     private int maxInactiveInterval;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     public UserController(SecurityService securityService) {
         this.securityService = securityService;
