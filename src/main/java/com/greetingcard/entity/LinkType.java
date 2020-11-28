@@ -9,7 +9,7 @@ import java.util.List;
 @Slf4j
 public enum LinkType {
     VIDEO("VIDEO", 1), PICTURE("PICTURE", 2, "img","image/jpeg", "image/jpg", "image/png"),
-    AUDIO("AUDIO",  3, "audio","audio/mpeg"), PLAIN_LINK("PLAIN_LINK", 4);
+    AUDIO("AUDIO",  3, "audio","audio/mpeg");
 
     private final String type;
     private final int number;

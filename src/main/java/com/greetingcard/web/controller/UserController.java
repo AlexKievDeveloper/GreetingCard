@@ -23,8 +23,8 @@ public class UserController {
     private SecurityService securityService;
     @Autowired
     private int maxInactiveInterval;
-
-    private ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     public UserController(SecurityService securityService) {
         this.securityService = securityService;

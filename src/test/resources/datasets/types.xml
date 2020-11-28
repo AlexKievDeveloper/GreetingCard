@@ -5,6 +5,4 @@
            type="AUDIO"/>
     <TYPES type_id="3"
            type="PICTURE"/>
-    <TYPES type_id="4"
-           type="LINK"/>
 </dataset>
