@@ -14,6 +14,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -34,6 +37,7 @@ class DefaultCongratulationServiceTest {
     @Autowired
     private DefaultCongratulationService defaultCongratulationService;
     private List<Link> linkList;
+    private final byte[] bytes = new byte[1024 * 1024 * 10];
 
     @BeforeEach
     void setUp() {
@@ -42,15 +46,13 @@ class DefaultCongratulationServiceTest {
 
     @Test
     @DisplayName("Adds links to linkList")
-    void getLinkListTest() {
+    void getLinkListTest() throws IOException {
         //prepare
-        MockMultipartFile mockImageFile = new MockMultipartFile("files_image", "image.jpg", "image/jpg", "test-image.jpg".getBytes());
-        MockMultipartFile mockAudioFile = new MockMultipartFile("files_audio", "audio.mp3", "audio/mpeg", "test-audio.mp3".getBytes());
+        MockMultipartFile mockImageFile = new MockMultipartFile("files_image", "image.jpg", "image/jpg", bytes);
+        MockMultipartFile mockAudioFile = new MockMultipartFile("files_audio", "audio.mp3", "audio/mpeg", bytes);
         MultipartFile[] mockImageFiles = new MultipartFile[]{mockImageFile};
         MultipartFile[] mockAudioFiles = new MultipartFile[]{mockAudioFile};
-        String imageLinks = "https://www.davno.ru/assets/images/cards/big/birthday-1061.jpg\r\nhttps://www.davno.ru/assets/images/cards/big/birthday-1061.jpg";
         String youtubeLinks = "https://www.youtube.com/watch?v=JcDy3ny-H0k\r\nhttps://www.youtube.com/watch?v=JcDy3ny-H0k";
-        ;
         when(parametersMap.get("youtube")).thenReturn(youtubeLinks);
 
         //when
@@ -59,6 +61,15 @@ class DefaultCongratulationServiceTest {
         //then
         verify(parametersMap).get("youtube");
         assertNotNull(actualList);
+        assertEquals(4, actualList.size());
+        assertEquals("JcDy3ny-H0k", actualList.get(0).getLink());
+        assertEquals("JcDy3ny-H0k", actualList.get(1).getLink());
+        assertEquals(LinkType.PICTURE, actualList.get(2).getType());
+        assertEquals(LinkType.AUDIO, actualList.get(3).getType());
+        assertTrue(new File("/greeting-cards".concat(actualList.get(2).getLink())).exists());
+        assertTrue(new File("/greeting-cards".concat(actualList.get(3).getLink())).exists());
+        Files.deleteIfExists(Path.of("/greeting-cards".concat(actualList.get(2).getLink())));
+        Files.deleteIfExists(Path.of("/greeting-cards".concat(actualList.get(3).getLink())));
     }
 
     @Test
@@ -82,9 +93,8 @@ class DefaultCongratulationServiceTest {
         //prepare
         String youtubeLinks = "https://www.yoube.com/watch?v=JcDy3ny-H0k\r\nhttps://www.youtube.com/watch?v=JcDy3ny-H0k";
         //when + then
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> {
-            defaultCongratulationService.addYoutubeLinks(linkList, youtubeLinks);
-        });
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
+                defaultCongratulationService.addYoutubeLinks(linkList, youtubeLinks));
         assertEquals("Wrong youtube link url!", e.getMessage());
     }
 
@@ -103,43 +113,58 @@ class DefaultCongratulationServiceTest {
     @DisplayName("Throws illegal argument exception if youtube url has incorrect format")
     void getYoutubeVideoIdExceptionTest() {
         //when + then
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> {
-            defaultCongratulationService.getYoutubeVideoId("https://www.youtube.com");
-        });
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
+                defaultCongratulationService.getYoutubeVideoId("https://www.youtube.com"));
         assertEquals("Wrong youtube link url!", e.getMessage());
     }
 
     @Test
     @DisplayName("Return List of links(String format) from text")
-    void getLinksListFromText() {
+    void getYoutubeLinksListFromText() {
         //prepare
-        String text = "https://www.youtube.com/watch?v=JcDy3ny-H0k\r\nhttps://www.youtube.com\r\n" +
-                "https://lh3.googleusercontent.com/proxy/wUdjgP5yX8ThxJ2JhAf7k-hWzj_U8sZJi1-q_Z66vD55gSzYNlsXs_PdQ9RCTwS0inYy4IDV-03WLhiqAnXAmI0131mtEz-tie49C0pDiNRaPFq0fC8w-y10oOMctTBUOnySAKfAZmcmBUeDpfoi";
+        String text = "https://www.youtube.com/watch?v=JcDy3ny-H0k\r\nhttps://www.youtube.com\r\n";
         //when
-        List<String> actualLinkList = defaultCongratulationService.getLinksListFromText(text);
+        List<String> actualLinkList = defaultCongratulationService.getYoutubeLinksListFromText(text);
         //then
         assertNotNull(actualLinkList);
-        assertEquals(3, actualLinkList.size());
+        assertEquals(2, actualLinkList.size());
         assertEquals("https://www.youtube.com/watch?v=JcDy3ny-H0k", actualLinkList.get(0));
         assertEquals("https://www.youtube.com", actualLinkList.get(1));
-        assertEquals("https://lh3.googleusercontent.com/proxy/wUdjgP5yX8ThxJ2JhAf7k-hWzj_U8sZJi1-q_Z66vD55gSzYNlsXs_PdQ9RCTwS0inYy4IDV-03WLhiqAnXAmI0131mtEz-tie49C0pDiNRaPFq0fC8w-y10oOMctTBUOnySAKfAZmcmBUeDpfoi", actualLinkList.get(2));
+    }
+
+    @Test
+    @DisplayName("Throw exception if link is not match valid youtube link format")
+    void getYoutubeLinksListFromTextThrowExceptionIfNotValidFormat() {
+        //prepare
+        String text = "https://www.youtube.com/watch?v=JcDy3ny-H0k\r\nhttps://www.youtube.com\r\nhttps://www.studytonight.com/servlet/httpsession.php#";
+        //when + then
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
+                defaultCongratulationService.getYoutubeLinksListFromText(text));
+        assertEquals("Wrong youtube link url!", e.getMessage());
+    }
+
+    @Test
+    @DisplayName("Throw exception if link is not match valid youtube link format")
+    void getYoutubeLinksListFromTextThrowExceptionIfLinkIsTooLong() {
+        //prepare
+        String text = "https://www.youtube.com/watch?v=JcDy3ny-H0k\r\nhttps://www.youtube.commmmmmmmmmmmmmmmmmmmmmmmmmmm" +
+                "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm" +
+                "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm" +
+                "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm" +
+                "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm" +
+                "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm" +
+                "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm";
+        //when + then
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
+                defaultCongratulationService.getYoutubeLinksListFromText(text));
+        assertEquals("Wrong youtube link url!", e.getMessage());
     }
 
     @Test
     @DisplayName("Saving files and create link(path to file) for each file")
     void saveFilesAndCreateLinksImageCase() throws IOException {
         //prepare
-        MockMultipartFile mockImageFile = new MockMultipartFile("files_image", "image.jpg", "image/jpg",
-                ("test-imageeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" +
-                        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" +
-                        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" +
-                        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" +
-                        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" +
-                        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" +
-                        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" +
-                        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" +
-                        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" +
-                        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee").getBytes());
+        MockMultipartFile mockImageFile = new MockMultipartFile("files_image", "image.jpg", "image/jpg", bytes);
 
         MultipartFile[] mockImageFiles = new MultipartFile[]{mockImageFile};
         //when
@@ -147,24 +172,16 @@ class DefaultCongratulationServiceTest {
         //then
         assertEquals(1, linkList.size());
         assertEquals(LinkType.PICTURE, linkList.get(0).getType());
-        Files.deleteIfExists(Path.of(linkList.get(0).getLink()));
+        assertThat(linkList.get(0).getLink(), matchesPattern("(^\\Wimg\\W)(\\S*)(\\Sjpg$)"));
+        assertTrue(new File("/greeting-cards".concat(linkList.get(0).getLink())).exists());
+        Files.deleteIfExists(Path.of("/greeting-cards".concat(linkList.get(0).getLink())));
     }
 
     @Test
     @DisplayName("Saving files and create link(path to file) for each file")
     void saveFilesAndCreateLinksAudioCase() throws IOException {
         //prepare
-        MockMultipartFile mockImageFile = new MockMultipartFile("files_audio", "audio.mpeg", "audio/mpeg",
-                ("test-audiooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo" +
-                        "ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo" +
-                        "ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo" +
-                        "ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo" +
-                        "ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo" +
-                        "ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo" +
-                        "ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo" +
-                        "ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo" +
-                        "ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo" +
-                        "ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo").getBytes());
+        MockMultipartFile mockImageFile = new MockMultipartFile("files_audio", "audio.mpeg", "audio/mpeg", bytes);
 
         MultipartFile[] mockImageFiles = new MultipartFile[]{mockImageFile};
         //when
@@ -172,6 +189,20 @@ class DefaultCongratulationServiceTest {
         //then
         assertEquals(1, linkList.size());
         assertEquals(LinkType.AUDIO, linkList.get(0).getType());
-        Files.deleteIfExists(Path.of(linkList.get(0).getLink()));
+        assertTrue(new File("/greeting-cards".concat(linkList.get(0).getLink())).exists());
+        Files.deleteIfExists(Path.of("/greeting-cards".concat(linkList.get(0).getLink())));
+    }
+
+    @Test
+    @DisplayName("Saving files and create link(path to file) for each file")
+    void saveFilesAndCreateLinksThrowExceptionIfContentTypeNoeValid() {
+        //prepare
+        MockMultipartFile mockImageFile = new MockMultipartFile("files_image", "image.jpg", "image/gif", bytes);
+        MultipartFile[] mockImageFiles = new MultipartFile[]{mockImageFile};
+
+        //when + then
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
+                defaultCongratulationService.saveFilesAndCreateLinks(mockImageFiles, linkList));
+        assertEquals("Sorry, this format is not supported by the application: image/gif", e.getMessage());
     }
 }

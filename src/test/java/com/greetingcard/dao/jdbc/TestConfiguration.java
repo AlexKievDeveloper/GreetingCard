@@ -16,7 +16,7 @@ public class TestConfiguration {
     private DataSource dataSource;
 
     @Bean
-    public Flyway configureDataSource(){
+    public Flyway configureDataSource() {
         return Flyway.configure().dataSource(dataSource)
                 .locations("classpath:db/migration").baselineOnMigrate(true).load();
     }

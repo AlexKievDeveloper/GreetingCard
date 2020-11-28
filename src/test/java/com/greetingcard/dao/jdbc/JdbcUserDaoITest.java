@@ -12,17 +12,16 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
-import java.io.IOException;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @DBRider
-@DBUnit(caseSensitiveTableNames = false, caseInsensitiveStrategy = Orthography.LOWERCASE)
-@DataSet(value = {"languages.xml",  "types.xml", "roles.xml",  "statuses.xml", "users.xml",  "cards.xml", "cardsUsers.xml",
+@DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE)
+@DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardsUsers.xml",
         "congratulations.xml", "links.xml"},
         executeStatementsBefore = "SELECT setval('users_user_id_seq', 3);",
         cleanAfter = true)
 @SpringJUnitWebConfig(value = TestConfiguration.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JdbcUserDaoITest {
 
     @Autowired
@@ -31,8 +30,8 @@ class JdbcUserDaoITest {
     @Autowired
     private Flyway flyway;
 
-    @BeforeEach
-    void setUp() {
+    @BeforeAll
+    void dbSetUp() {
         flyway.migrate();
     }
 
@@ -86,7 +85,7 @@ class JdbcUserDaoITest {
 
     @Test
     @DisplayName("Update user")
-    void testUpdate() throws IOException {
+    void testUpdate() {
         //prepare
         User user = userDao.findByLogin("user");
         user.setFirstName("update");

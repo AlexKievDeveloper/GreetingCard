@@ -25,11 +25,12 @@ import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfig
 
 @SpringJUnitWebConfig(TestConfiguration.class)
 @DBRider
-@DBUnit(caseSensitiveTableNames = false, caseInsensitiveStrategy = Orthography.LOWERCASE)
-@DataSet(value = {"languages.xml",  "types.xml", "roles.xml",  "statuses.xml", "users.xml",  "cards.xml", "cardsUsers.xml",
+@DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE)
+@DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardsUsers.xml",
         "congratulations.xml", "links.xml"},
         executeStatementsBefore = "SELECT setval('users_user_id_seq', 3);",
         cleanAfter = true)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CardUserControllerSystemTest {
     private MockMvc mockMvc;
 
@@ -41,13 +42,13 @@ class CardUserControllerSystemTest {
 
     private final String URL_ADD_MEMBER = "/api/v1/card/{id}/user";
 
-    @BeforeEach
-    void createDB() {
+    @BeforeAll
+    void dbSetUp() {
         flyway.migrate();
     }
 
     @BeforeEach
-    void setUp() {
+    void setMockMvc() {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(sharedHttpSession()).build();
     }
@@ -121,7 +122,6 @@ class CardUserControllerSystemTest {
                 .andDo(print())
                 .andExpect(jsonPath("$.message").value("Card is already finished"))
                 .andExpect(status().isBadRequest());
-        ;
     }
 
     @Test

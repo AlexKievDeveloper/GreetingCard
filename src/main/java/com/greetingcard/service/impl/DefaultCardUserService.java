@@ -1,6 +1,5 @@
 package com.greetingcard.service.impl;
 
-import com.greetingcard.dao.CardDao;
 import com.greetingcard.dao.CardUserDao;
 import com.greetingcard.entity.Role;
 import com.greetingcard.entity.Status;
@@ -8,7 +7,6 @@ import com.greetingcard.entity.User;
 import com.greetingcard.security.SecurityService;
 import com.greetingcard.service.CardService;
 import com.greetingcard.service.CardUserService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;

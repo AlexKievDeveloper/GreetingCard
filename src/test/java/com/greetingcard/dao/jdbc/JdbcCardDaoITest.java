@@ -15,11 +15,13 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DBRider
-@DBUnit(caseSensitiveTableNames = false, caseInsensitiveStrategy = Orthography.LOWERCASE)
+@DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE)
 @DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardsUsers.xml",
         "congratulations.xml", "links.xml"},
+        executeStatementsBefore = "SELECT setval('cards_card_id_seq', 3); SELECT setval(' users_cards_users_cards_id_seq', 6);",
         cleanAfter = true)
 @SpringJUnitWebConfig(value = TestConfiguration.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class JdbcCardDaoITest {
     @Autowired
     private JdbcCardDao jdbcCardDao;
@@ -27,8 +29,8 @@ public class JdbcCardDaoITest {
     @Autowired
     private Flyway flyway;
 
-    @BeforeEach
-    void setUp() {
+    @BeforeAll
+    void dbSetUp() {
         flyway.migrate();
     }
 

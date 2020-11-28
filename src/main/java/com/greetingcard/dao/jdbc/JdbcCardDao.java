@@ -9,7 +9,6 @@ import com.greetingcard.entity.Role;
 import com.greetingcard.entity.Status;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -64,7 +63,7 @@ public class JdbcCardDao implements CardDao {
 
     @Override
     public Long createCard(Card card) {
-        Long newCardId = transactionTemplate.execute(status -> {
+        return transactionTemplate.execute(status -> {
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(connection -> {
                 PreparedStatement preparedStatement = connection.prepareStatement(SAVE_NEW_CARD, new String[]{"card_id"});
@@ -77,7 +76,6 @@ public class JdbcCardDao implements CardDao {
             jdbcTemplate.update(ADD_TO_USERS_CARDS, id, card.getUser().getId(), Role.ADMIN.getRoleNumber());
             return id;
         });
-        return newCardId;
     }
 
     @Override

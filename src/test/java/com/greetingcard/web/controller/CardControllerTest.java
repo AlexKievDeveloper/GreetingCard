@@ -8,9 +8,7 @@ import com.greetingcard.dao.jdbc.TestConfiguration;
 
 import com.greetingcard.entity.User;
 import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -29,13 +27,14 @@ import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfig
 
 
 @DBRider
-@DBUnit(caseSensitiveTableNames = false, caseInsensitiveStrategy = Orthography.LOWERCASE)
+@DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE)
 @DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardsUsers.xml",
         "congratulations.xml", "links.xml"},
         executeStatementsBefore = "SELECT setval('cards_card_id_seq', 3); SELECT setval(' users_cards_users_cards_id_seq', 6);",
         cleanAfter = true)
 @ExtendWith(MockitoExtension.class)
 @SpringJUnitWebConfig(value = TestConfiguration.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CardControllerTest {
     private MockMvc mockMvc;
     @Autowired
@@ -44,9 +43,13 @@ class CardControllerTest {
     @Autowired
     private Flyway flyway;
 
-    @BeforeEach
-    void setUp() {
+    @BeforeAll
+    void dbSetUp() {
         flyway.migrate();
+    }
+
+    @BeforeEach
+    void setMockMvc() {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(sharedHttpSession()).build();
     }
@@ -61,7 +64,6 @@ class CardControllerTest {
                 .andExpect(jsonPath("$.id").value("1"))
                 .andExpect(jsonPath("$.name").value("greeting Nomar"))
                 .andExpect(status().isOk());
-
     }
 
     @Test

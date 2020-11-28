@@ -15,12 +15,14 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DBUnit(caseSensitiveTableNames = false, caseInsensitiveStrategy = Orthography.LOWERCASE)
-@SpringJUnitWebConfig(value = TestConfiguration.class)
 @DBRider
-@DataSet(value = {"languages.xml",  "types.xml", "roles.xml",  "statuses.xml", "users.xml",  "cards.xml", "cardsUsers.xml",
+@DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE)
+@DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardsUsers.xml",
         "congratulations.xml", "links.xml"},
-       cleanAfter = true)
+        executeStatementsBefore = "SELECT setval(' users_cards_users_cards_id_seq', 6);",
+        cleanAfter = true)
+@SpringJUnitWebConfig(value = TestConfiguration.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JdbcCardUserDaoITest {
 
     @Autowired
@@ -29,8 +31,8 @@ class JdbcCardUserDaoITest {
     @Autowired
     private Flyway flyway;
 
-    @BeforeEach
-    void setUp() {
+    @BeforeAll
+    void dbSetUp() {
         flyway.migrate();
     }
 
@@ -43,7 +45,6 @@ class JdbcCardUserDaoITest {
     @Test
     void getUserRoleAdmin() {
         Optional<Role> role = jdbcCardUserDao.getUserRole(1, 1);
-
         assertTrue(role.isPresent());
         assertEquals(role.get().getRoleNumber(), 1);
     }
@@ -51,7 +52,6 @@ class JdbcCardUserDaoITest {
     @Test
     void getUserRoleMember() {
         Optional<Role> role = jdbcCardUserDao.getUserRole(1, 2);
-
         assertTrue(role.isPresent());
         assertEquals(role.get().getRoleNumber(), 2);
     }

@@ -3,9 +3,7 @@ package com.greetingcard.web.controller;
 import com.greetingcard.dao.jdbc.TestConfiguration;
 import com.greetingcard.entity.User;
 import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -24,16 +22,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringJUnitWebConfig(value = TestConfiguration.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ProfileControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private WebApplicationContext context;
+
     @Autowired
     private Flyway flyway;
 
-    @BeforeEach
+    @BeforeAll
+    void dbSetUp() {
+        flyway.migrate();
+    }
 
-    void setUp() {
+    @BeforeEach
+    void setMockMvc() {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
     }
