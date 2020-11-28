@@ -53,7 +53,7 @@ class JdbcCongratulationDaoITest {
         assertEquals(1, actualCongratulation.getUser().getId());
         assertEquals(Status.STARTUP, actualCongratulation.getStatus());
 
-        assertEquals(8, actualCongratulation.getLinkList().size());
+        assertEquals(6, actualCongratulation.getLinkList().size());
 
         assertEquals("iywaBOMvYLI", actualCongratulation.getLinkList().get(0).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(0).getCongratulationId());
@@ -78,14 +78,6 @@ class JdbcCongratulationDaoITest {
         assertEquals("https://www.dropbox.com/s/3u94pftverackzy/kolomijki_-_kolomijka_zastilna_%28zf.fm%29.mp3?dl=0", actualCongratulation.getLinkList().get(5).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(5).getCongratulationId());
         assertEquals(LinkType.AUDIO, actualCongratulation.getLinkList().get(5).getType());
-
-        assertEquals("https://www.dropbox.com/s/o7i5as1axjmg9if/kolomijki_-_oj__marichko__chicheri_%28zv.fm%29.mp3?dl=0", actualCongratulation.getLinkList().get(6).getLink());
-        assertEquals(1, actualCongratulation.getLinkList().get(6).getCongratulationId());
-        assertEquals(LinkType.PLAIN_LINK, actualCongratulation.getLinkList().get(6).getType());
-
-        assertEquals("https://www.youtube.com/watch?v=YlUKcNNmywk", actualCongratulation.getLinkList().get(7).getLink());
-        assertEquals(1, actualCongratulation.getLinkList().get(7).getCongratulationId());
-        assertEquals(LinkType.PLAIN_LINK, actualCongratulation.getLinkList().get(7).getType());
     }
 
     @Test
@@ -120,7 +112,7 @@ class JdbcCongratulationDaoITest {
     void saveTestExceptionToLongLinkValue() {
         //prepare
         Link link = Link.builder()
-                .link("https://www.studytonight.com/servlet/httpsession.phppppppppppppppppppppppppppppppppppp" +
+                .link("https://www.youtube.com/watch?v=k7PlG32BzI8pppppppppppppppppppppppppppppppppp" +
                         "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp" +
                         "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp" +
                         "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp" +
@@ -130,7 +122,7 @@ class JdbcCongratulationDaoITest {
                         "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp" +
                         "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp")
                 .congratulationId(7)
-                .type(LinkType.PLAIN_LINK)
+                .type(LinkType.VIDEO)
                 .build();
 
         List<Link> linkList = new ArrayList<>();
@@ -232,9 +224,9 @@ class JdbcCongratulationDaoITest {
         assertEquals(2, actualCongratulation2.getId());
         assertEquals(3, actualCongratulation3.getId());
 
-        assertEquals(8, actualCongratulation1.getLinkList().size());
-        assertEquals(4, actualCongratulation2.getLinkList().size());
-        assertEquals(4, actualCongratulation3.getLinkList().size());
+        assertEquals(6, actualCongratulation1.getLinkList().size());
+        assertEquals(3, actualCongratulation2.getLinkList().size());
+        assertEquals(0, actualCongratulation3.getLinkList().size());
 
         assertEquals(1, actualCongratulation1.getUser().getId());
         assertEquals(1, actualCongratulation2.getUser().getId());

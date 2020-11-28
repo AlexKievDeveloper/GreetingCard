@@ -146,9 +146,9 @@ public class JdbcCardDaoITest {
         assertEquals(1, actualCongratulationList.get(1).getUser().getId());
         assertEquals(2, actualCongratulationList.get(2).getUser().getId());
 
-        assertEquals(8, fromRoma.size());
-        assertEquals(4, fromSasha.size());
-        assertEquals(4, fromNastya.size());
+        assertEquals(6, fromRoma.size());
+        assertEquals(3, fromSasha.size());
+        assertEquals(0, fromNastya.size());
     }
 
     @Test
@@ -198,5 +198,4 @@ public class JdbcCardDaoITest {
         Card card = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
         assertEquals(Status.ISOVER, card.getStatus());
     }
-
 }
