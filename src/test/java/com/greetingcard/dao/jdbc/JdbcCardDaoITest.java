@@ -1,19 +1,27 @@
 package com.greetingcard.dao.jdbc;
 
+import com.github.database.rider.core.api.configuration.DBUnit;
+import com.github.database.rider.core.api.configuration.Orthography;
+import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.spring.api.DBRider;
 import com.greetingcard.entity.*;
 import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringJUnitWebConfig(value = FlywayConfig.class)
+@DBRider
+@DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE)
+@DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardsUsers.xml",
+        "congratulations.xml", "links.xml"},
+        executeStatementsBefore = "SELECT setval('cards_card_id_seq', 3); SELECT setval(' users_cards_users_cards_id_seq', 6);",
+        cleanAfter = true)
+@SpringJUnitWebConfig(value = TestConfiguration.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class JdbcCardDaoITest {
     @Autowired
     private JdbcCardDao jdbcCardDao;
@@ -21,9 +29,8 @@ public class JdbcCardDaoITest {
     @Autowired
     private Flyway flyway;
 
-    @BeforeEach
-    void init() {
-        flyway.clean();
+    @BeforeAll
+    void dbSetUp() {
         flyway.migrate();
     }
 
@@ -34,8 +41,8 @@ public class JdbcCardDaoITest {
         Card expectedCard1 = Card.builder()
                 .id(1)
                 .name("greeting Nomar")
-                .backgroundImage(null)
-                .cardLink(null)
+                .backgroundImage("path_to_image")
+                .cardLink("link_to_greeting")
                 .status(Status.STARTUP)
                 .build();
 
@@ -65,8 +72,8 @@ public class JdbcCardDaoITest {
         Card expectedCard1 = Card.builder()
                 .id(1)
                 .name("greeting Nomar")
-                .backgroundImage(null)
-                .cardLink(null)
+                .backgroundImage("path_to_image")
+                .cardLink("link_to_greeting")
                 .status(Status.STARTUP)
                 .build();
         //when
@@ -128,8 +135,8 @@ public class JdbcCardDaoITest {
         assertEquals(3, actualCongratulationList.size());
         assertEquals(1, actualCard.getId());
         assertEquals("greeting Nomar", actualCard.getName());
-        assertNull(actualCard.getBackgroundImage());
-        assertNull(actualCard.getCardLink());
+        assertEquals("path_to_image", actualCard.getBackgroundImage());
+        assertEquals("link_to_greeting", actualCard.getCardLink());
         assertEquals(Status.STARTUP, actualCard.getStatus());
 
         assertEquals("from Roma", actualCongratulationList.get(0).getMessage());
@@ -192,27 +199,4 @@ public class JdbcCardDaoITest {
         assertEquals(Status.ISOVER, card.getStatus());
     }
 
-    @Test
-    @DisplayName("Get card status id")
-    void getCardStatusById() {
-        Optional<Status> status = jdbcCardDao.getCardStatusById(1);
-        //then
-        assertEquals(Status.STARTUP, status.get());
-    }
-
-    @Test
-    @DisplayName("Get card status id - ISOVER")
-    void getCardStatusByIdIsOver() {
-        Optional<Status> status = jdbcCardDao.getCardStatusById(2);
-        //then
-        assertEquals(Status.ISOVER, status.get());
-    }
-
-    @Test
-    @DisplayName("Get card status id")
-    void getCardStatusByIdNotExistingCard() {
-        Optional<Status> status = jdbcCardDao.getCardStatusById(-1);
-        //then
-        assertTrue(status.isEmpty());
-    }
 }

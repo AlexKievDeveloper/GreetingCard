@@ -1,6 +1,6 @@
 package com.greetingcard.service.impl;
 
-import com.greetingcard.dao.jdbc.FlywayConfig;
+import com.greetingcard.dao.jdbc.TestConfiguration;
 import com.greetingcard.entity.Link;
 import com.greetingcard.entity.LinkType;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@SpringJUnitWebConfig(value = FlywayConfig.class)
+@SpringJUnitWebConfig(value = TestConfiguration.class)
 class DefaultCongratulationServiceTest {
     @Mock
     private Map<String, String> parametersMap;
@@ -93,9 +93,8 @@ class DefaultCongratulationServiceTest {
         //prepare
         String youtubeLinks = "https://www.yoube.com/watch?v=JcDy3ny-H0k\r\nhttps://www.youtube.com/watch?v=JcDy3ny-H0k";
         //when + then
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> {
-            defaultCongratulationService.addYoutubeLinks(linkList, youtubeLinks);
-        });
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
+                defaultCongratulationService.addYoutubeLinks(linkList, youtubeLinks));
         assertEquals("Wrong youtube link url!", e.getMessage());
     }
 
@@ -114,9 +113,8 @@ class DefaultCongratulationServiceTest {
     @DisplayName("Throws illegal argument exception if youtube url has incorrect format")
     void getYoutubeVideoIdExceptionTest() {
         //when + then
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> {
-            defaultCongratulationService.getYoutubeVideoId("https://www.youtube.com");
-        });
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
+                defaultCongratulationService.getYoutubeVideoId("https://www.youtube.com"));
         assertEquals("Wrong youtube link url!", e.getMessage());
     }
 
@@ -140,9 +138,8 @@ class DefaultCongratulationServiceTest {
         //prepare
         String text = "https://www.youtube.com/watch?v=JcDy3ny-H0k\r\nhttps://www.youtube.com\r\nhttps://www.studytonight.com/servlet/httpsession.php#";
         //when + then
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> {
-            defaultCongratulationService.getYoutubeLinksListFromText(text);
-        });
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
+                defaultCongratulationService.getYoutubeLinksListFromText(text));
         assertEquals("Wrong youtube link url!", e.getMessage());
     }
 
@@ -158,9 +155,8 @@ class DefaultCongratulationServiceTest {
                 "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm" +
                 "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm";
         //when + then
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> {
-            defaultCongratulationService.getYoutubeLinksListFromText(text);
-        });
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
+                defaultCongratulationService.getYoutubeLinksListFromText(text));
         assertEquals("Wrong youtube link url!", e.getMessage());
     }
 
@@ -205,9 +201,8 @@ class DefaultCongratulationServiceTest {
         MultipartFile[] mockImageFiles = new MultipartFile[]{mockImageFile};
 
         //when + then
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> {
-            defaultCongratulationService.saveFilesAndCreateLinks(mockImageFiles, linkList);
-        });
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
+                defaultCongratulationService.saveFilesAndCreateLinks(mockImageFiles, linkList));
         assertEquals("Sorry, this format is not supported by the application: image/gif", e.getMessage());
     }
 }

@@ -1,11 +1,14 @@
 package com.greetingcard.web.controller;
 
-import com.greetingcard.dao.jdbc.FlywayConfig;
+import com.github.database.rider.core.api.configuration.DBUnit;
+import com.github.database.rider.core.api.configuration.Orthography;
+import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.spring.api.DBRider;
+import com.greetingcard.dao.jdbc.TestConfiguration;
+
 import com.greetingcard.entity.User;
 import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -22,19 +25,31 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfigurer.sharedHttpSession;
 
+
+@DBRider
+@DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE)
+@DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardsUsers.xml",
+        "congratulations.xml", "links.xml"},
+        executeStatementsBefore = "SELECT setval('cards_card_id_seq', 3); SELECT setval(' users_cards_users_cards_id_seq', 6);",
+        cleanAfter = true)
 @ExtendWith(MockitoExtension.class)
-@SpringJUnitWebConfig(value = FlywayConfig.class)
+@SpringJUnitWebConfig(value = TestConfiguration.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CardControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private WebApplicationContext context;
+
     @Autowired
     private Flyway flyway;
 
-    @BeforeEach
-    void setUp() {
-        flyway.clean();
+    @BeforeAll
+    void dbSetUp() {
         flyway.migrate();
+    }
+
+    @BeforeEach
+    void setMockMvc() {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(sharedHttpSession()).build();
     }

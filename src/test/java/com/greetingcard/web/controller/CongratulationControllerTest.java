@@ -1,11 +1,14 @@
 package com.greetingcard.web.controller;
 
-import com.greetingcard.dao.jdbc.FlywayConfig;
+import com.github.database.rider.core.api.configuration.DBUnit;
+import com.github.database.rider.core.api.configuration.Orthography;
+import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.spring.api.DBRider;
+import com.greetingcard.dao.jdbc.TestConfiguration;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.impl.DefaultCongratulationService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.flywaydb.core.Flyway;
+import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -25,21 +28,36 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfigurer.sharedHttpSession;
 
-@SpringJUnitWebConfig(value = FlywayConfig.class)
+@DBRider
+@DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE)
+@DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardsUsers.xml",
+        "congratulations.xml", "links.xml"},
+        executeStatementsBefore = "SELECT setval('congratulations_congratulation_id_seq', 6);", cleanAfter = true)
+@SpringJUnitWebConfig(value = TestConfiguration.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CongratulationControllerTest {
-    private MockMvc mockMvcForCreateCongratulation;
     private MockMvc mockMvc;
+
     private final byte[] bytes = new byte[1024 * 1024 * 10];
 
     @Mock
     private DefaultCongratulationService defaultCongratulationService;
     @InjectMocks
     private CongratulationController mockCongratulationController;
+
     @Autowired
     private WebApplicationContext context;
 
+    @Autowired
+    private Flyway flyway;
+
+    @BeforeAll
+    void dbSetUp() {
+        flyway.migrate();
+    }
+
     @BeforeEach
-    void setUp() {
+    void setMockMvc() {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(sharedHttpSession()).build();
     }
@@ -47,7 +65,7 @@ class CongratulationControllerTest {
     @Test
     @DisplayName("Creating new congratulation from json which we get from request body")
     void createCongratulation() throws Exception {
-        mockMvcForCreateCongratulation = MockMvcBuilders.standaloneSetup(mockCongratulationController).apply(sharedHttpSession()).build();
+        MockMvc mockMvcForCreateCongratulation = MockMvcBuilders.standaloneSetup(mockCongratulationController).apply(sharedHttpSession()).build();
         User user = User.builder().id(1).build();
         MockMultipartFile mockImageFile = new MockMultipartFile("files_image", "image.jpg", "image/jpg", bytes);
         MockMultipartFile mockAudioFile = new MockMultipartFile("files_audio", "audio.mp3", "audio/mpeg", bytes);

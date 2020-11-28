@@ -1,20 +1,27 @@
 package com.greetingcard.dao.jdbc;
 
+import com.github.database.rider.core.api.configuration.DBUnit;
+import com.github.database.rider.core.api.configuration.Orthography;
+import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.spring.api.DBRider;
 import com.greetingcard.dao.UserDao;
 import com.greetingcard.entity.Language;
 import com.greetingcard.entity.User;
 import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
-import java.io.IOException;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringJUnitWebConfig(value = FlywayConfig.class)
+@DBRider
+@DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE)
+@DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardsUsers.xml",
+        "congratulations.xml", "links.xml"},
+        executeStatementsBefore = "SELECT setval('users_user_id_seq', 3);",
+        cleanAfter = true)
+@SpringJUnitWebConfig(value = TestConfiguration.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JdbcUserDaoITest {
 
     @Autowired
@@ -23,9 +30,8 @@ class JdbcUserDaoITest {
     @Autowired
     private Flyway flyway;
 
-    @BeforeEach
-    void init() {
-        flyway.clean();
+    @BeforeAll
+    void dbSetUp() {
         flyway.migrate();
     }
 
@@ -44,7 +50,7 @@ class JdbcUserDaoITest {
 
         assertEquals("gDE3fEwV4WEZhgiURMj/WMlTWP/cldaSptEMe2M+md8=", actualUser.getPassword());
         assertEquals("salt", actualUser.getSalt());
-        assertEquals(Language.ENGLISH, actualUser.getLanguage());
+        assertEquals(Language.UKRAINIAN, actualUser.getLanguage());
     }
 
     @Test
@@ -79,7 +85,7 @@ class JdbcUserDaoITest {
 
     @Test
     @DisplayName("Update user")
-    void testUpdate() throws IOException {
+    void testUpdate() {
         //prepare
         User user = userDao.findByLogin("user");
         user.setFirstName("update");

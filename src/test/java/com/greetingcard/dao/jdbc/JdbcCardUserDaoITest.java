@@ -15,10 +15,13 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DBUnit(caseSensitiveTableNames = false, caseInsensitiveStrategy = Orthography.LOWERCASE)
-@SpringJUnitWebConfig(value = FlywayConfig.class)
 @DBRider
-@DataSet(cleanBefore = true)
+@DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE)
+@DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardsUsers.xml",
+        "congratulations.xml", "links.xml"},
+        executeStatementsBefore = "SELECT setval(' users_cards_users_cards_id_seq', 6);",
+        cleanAfter = true)
+@SpringJUnitWebConfig(value = TestConfiguration.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JdbcCardUserDaoITest {
 
@@ -29,45 +32,33 @@ class JdbcCardUserDaoITest {
     private Flyway flyway;
 
     @BeforeAll
-    void createDB() {
-        flyway.clean();
+    void dbSetUp() {
         flyway.migrate();
     }
 
     @Test
-    @DataSet(value = "cardUsers.xml")
     @ExpectedDataSet(value = "cardUsersAdded.xml")
     void addMember() {
         jdbcCardUserDao.addUserMember(1, 3);
     }
 
     @Test
-    @DataSet(value = "cardUsers.xml")
     void getUserRoleAdmin() {
         Optional<Role> role = jdbcCardUserDao.getUserRole(1, 1);
-
         assertTrue(role.isPresent());
         assertEquals(role.get().getRoleNumber(), 1);
     }
 
     @Test
-    @DataSet(value = "cardUsers.xml")
     void getUserRoleMember() {
         Optional<Role> role = jdbcCardUserDao.getUserRole(1, 2);
-
         assertTrue(role.isPresent());
         assertEquals(role.get().getRoleNumber(), 2);
     }
 
     @Test
-    @DataSet(value = "cardUsers.xml")
     void getUserRoleNoRecord() {
         Optional<Role> role = jdbcCardUserDao.getUserRole(1, 3);
         assertTrue(role.isEmpty());
-    }
-
-    @AfterAll
-    public void cleanUp() {
-        flyway.clean();
     }
 }

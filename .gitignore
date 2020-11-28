@@ -9,6 +9,7 @@ setUpTable.sql
 src/main/resources/dev.properties
 src/test/resources/dev.properties
 profile
+profilePhoto
 
 
 

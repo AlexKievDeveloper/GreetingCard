@@ -5,7 +5,7 @@ import com.github.database.rider.core.api.configuration.Orthography;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
-import com.greetingcard.dao.jdbc.FlywayConfig;
+import com.greetingcard.dao.jdbc.TestConfiguration;
 import com.greetingcard.entity.User;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.*;
@@ -23,10 +23,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfigurer.sharedHttpSession;
 
-@SpringJUnitWebConfig(FlywayConfig.class)
-@DBUnit(caseSensitiveTableNames = false, caseInsensitiveStrategy = Orthography.LOWERCASE)
+@SpringJUnitWebConfig(TestConfiguration.class)
 @DBRider
-@DataSet(cleanBefore = true)
+@DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE)
+@DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardsUsers.xml",
+        "congratulations.xml", "links.xml"},
+        executeStatementsBefore = "SELECT setval('users_user_id_seq', 3);",
+        cleanAfter = true)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CardUserControllerSystemTest {
     private MockMvc mockMvc;
@@ -37,23 +40,21 @@ class CardUserControllerSystemTest {
     @Autowired
     private Flyway flyway;
 
-    private static final String URL_ADD_MEMBER = "/api/v1/card/{id}/user";
+    private final String URL_ADD_MEMBER = "/api/v1/card/{id}/user";
 
     @BeforeAll
-    void createDB() {
-        flyway.clean();
+    void dbSetUp() {
         flyway.migrate();
     }
 
     @BeforeEach
-    void setUp() {
+    void setMockMvc() {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(sharedHttpSession()).build();
     }
 
     @Test
     @DisplayName("Add member to card - login is empty")
-    @DataSet("cardUsers.xml")
     void addUserMemberIfEmptyLogin() throws Exception {
         User user = User.builder().id(2).build();
         String json = "{\"login\":\"\"}";
@@ -69,7 +70,6 @@ class CardUserControllerSystemTest {
 
     @Test
     @DisplayName("Add member to card - login does not exist")
-    @DataSet("cardUsers.xml")
     void addUserMemberIfNotExistingLogin() throws Exception {
         User user = User.builder().id(2).build();
         String json = "{\"login\":\"u1111\"}";
@@ -84,7 +84,6 @@ class CardUserControllerSystemTest {
 
     @Test
     @DisplayName("Add member to card - user is already added")
-    @DataSet("cardUsers.xml")
     void addUserMemberIfAlreadyMember() throws Exception {
         User user = User.builder().id(1).build();
         String json = "{\"login\":\"admin\"}";
@@ -99,7 +98,6 @@ class CardUserControllerSystemTest {
 
     @Test
     @DisplayName("Add member to card - user is not admin for card")
-    @DataSet("cardUsers.xml")
     void addUserMemberIfNotAdminAddsMember() throws Exception {
         User user = User.builder().id(2).build();
         String json = "{\"login\":\"new\"}";
@@ -114,7 +112,6 @@ class CardUserControllerSystemTest {
 
     @Test
     @DisplayName("Add member to card - card is over")
-    @DataSet("cardUsers.xml")
     void addUserMemberCardIsOver() throws Exception {
         User user = User.builder().id(2).build();
         String json = "{\"login\":\"new\"}";
@@ -125,12 +122,10 @@ class CardUserControllerSystemTest {
                 .andDo(print())
                 .andExpect(jsonPath("$.message").value("Card is already finished"))
                 .andExpect(status().isBadRequest());
-        ;
     }
 
     @Test
     @DisplayName("Add member to card - success")
-    @DataSet("cardUsers.xml")
     @ExpectedDataSet("cardUsersAdded.xml")
     void addUserMember() throws Exception {
         User user = User.builder().id(1).build();
@@ -141,10 +136,5 @@ class CardUserControllerSystemTest {
                 .content(json))
                 .andDo(print())
                 .andExpect(status().isOk());
-    }
-
-    @AfterAll
-    public void cleanUp() {
-        flyway.clean();
     }
 }
