@@ -7,6 +7,7 @@ import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.greetingcard.dao.jdbc.TestConfiguration;
 import com.greetingcard.entity.User;
+import com.greetingcard.entity.UserInfo;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.*;
 import org.mockito.MockitoAnnotations;
@@ -17,18 +18,18 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfigurer.sharedHttpSession;
 
 @SpringJUnitWebConfig(TestConfiguration.class)
 @DBRider
 @DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE)
-@DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardsUsers.xml",
+@DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardUser/cardUsers.xml",
         "congratulations.xml", "links.xml"},
-        executeStatementsBefore = "SELECT setval('users_user_id_seq', 3);",
+        executeStatementsBefore = "SELECT setval('users_user_id_seq', 10);",
         cleanAfter = true)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CardUserControllerSystemTest {
@@ -41,6 +42,7 @@ class CardUserControllerSystemTest {
     private Flyway flyway;
 
     private final String URL_ADD_MEMBER = "/api/v1/card/{id}/user";
+    private final String URL_GET_MEMBERS = "/api/v1/card/{id}/users";
 
     @BeforeAll
     void dbSetUp() {
@@ -126,7 +128,7 @@ class CardUserControllerSystemTest {
 
     @Test
     @DisplayName("Add member to card - success")
-    @ExpectedDataSet("cardUsersAdded.xml")
+    @ExpectedDataSet("cardUser/cardUsersAdded.xml")
     void addUserMember() throws Exception {
         User user = User.builder().id(1).build();
         String json = "{\"login\":\"new\"}";
@@ -136,5 +138,52 @@ class CardUserControllerSystemTest {
                 .content(json))
                 .andDo(print())
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Get users by card (members only) - no members")
+    void getUsersByCardIdForCardWithoutMembers() throws Exception {
+        User user = User.builder().id(1).build();
+        mockMvc.perform(get(URL_GET_MEMBERS, 3)
+                .sessionAttr("user", user))
+                .andDo(print())
+                .andExpect(content().string("[]"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Get users by card (members only) - some members")
+    void getUsersByCardIdForCardWithSomeMembers() throws Exception {
+        UserInfo expectedUser1 = UserInfo.builder().id(1)
+                .firstName("admin")
+                .lastName("admin")
+                .login("admin")
+                .email("@admin")
+                .build();
+
+        UserInfo expectedUser4 = UserInfo.builder().id(4)
+                .firstName("testName")
+                .lastName("testLastName")
+                .login("testLogin")
+                .email("testEmail")
+                .pathToPhoto("testPathToPhoto")
+                .build();
+
+        User user = User.builder().id(1).build();
+        mockMvc.perform(get(URL_GET_MEMBERS, 2)
+                .sessionAttr("user", user))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect( jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].id").value(expectedUser1.getId()))
+                .andExpect(jsonPath("$[0].firstName").value(expectedUser1.getFirstName()))
+                .andExpect(jsonPath("$[0].lastName").value(expectedUser1.getLastName()))
+                .andExpect(jsonPath("$[0].login").value(expectedUser1.getLogin()))
+                .andExpect(jsonPath("$[1].id").value(expectedUser4.getId()))
+                .andExpect(jsonPath("$[1].firstName").value(expectedUser4.getFirstName()))
+                .andExpect(jsonPath("$[1].lastName").value(expectedUser4.getLastName()))
+                .andExpect(jsonPath("$[1].login").value(expectedUser4.getLogin()))
+                .andExpect(jsonPath("$[1].pathToPhoto").value(expectedUser4.getPathToPhoto()));
     }
 }

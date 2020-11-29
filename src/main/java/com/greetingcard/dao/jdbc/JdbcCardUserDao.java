@@ -1,10 +1,13 @@
 package com.greetingcard.dao.jdbc;
 
 import com.greetingcard.dao.CardUserDao;
+import com.greetingcard.dao.jdbc.mapper.UserInfoRowMapper;
 import com.greetingcard.entity.Role;
+import com.greetingcard.entity.UserInfo;
 import lombok.Setter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +17,11 @@ public class JdbcCardUserDao implements CardUserDao {
     private static final String INSERT_MEMBER_USER = "INSERT INTO users_cards (user_id, card_id, role_id) VALUES (:user_id, :card_id, "
             + Role.MEMBER.getRoleNumber() + ")";
     private static final String GET_USER_ROLE = "SELECT role_id FROM users_cards WHERE user_id = :user_id AND card_id = :card_id";
+    private static final String GET_USERS_BY_CARD_ID = "SELECT u.user_id, u.firstName, u.lastName, u.login, u.email, u.pathToPhoto \n" +
+            "FROM users u JOIN users_cards uc ON (u.user_id = uc.user_id)\n" +
+            "WHERE uc.card_id = :card_id\n" +
+            "AND   uc.role_id != " + Role.ADMIN.getRoleNumber() +
+            " ORDER BY u.login";
 
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -28,6 +36,12 @@ public class JdbcCardUserDao implements CardUserDao {
         MapSqlParameterSource params = getSqlParameterSource(cardId, userId);
         List<Integer> roles = namedParameterJdbcTemplate.queryForList(GET_USER_ROLE, params, Integer.class);
         return (roles.size() > 0 ? Optional.of(Role.getByNumber(roles.get(0))) : Optional.empty());
+    }
+
+    @Override
+    public List<UserInfo> getUserMembersByCardId(long cardId) {
+        SqlParameterSource namedParameters = new MapSqlParameterSource("card_id", cardId);
+        return namedParameterJdbcTemplate.query(GET_USERS_BY_CARD_ID, namedParameters, new UserInfoRowMapper());
     }
 
     private MapSqlParameterSource getSqlParameterSource(long cardId, long userId) {

@@ -4,11 +4,13 @@ import com.greetingcard.dao.CardUserDao;
 import com.greetingcard.entity.Role;
 import com.greetingcard.entity.Status;
 import com.greetingcard.entity.User;
+import com.greetingcard.entity.UserInfo;
 import com.greetingcard.security.SecurityService;
 import com.greetingcard.service.CardService;
 import com.greetingcard.service.CardUserService;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -26,6 +28,11 @@ public class DefaultCardUserService implements CardUserService {
         checkIfUserNotAdded(cardId, userId);
         checkIfCardNotFinished(cardId);
         cardUserDao.addUserMember(cardId, userId);
+    }
+
+    @Override
+    public List<UserInfo> getUsersByCardId(long cardId) {
+        return cardUserDao.getUserMembersByCardId(cardId);
     }
 
     void checkIfCardNotFinished(long cardId) {
