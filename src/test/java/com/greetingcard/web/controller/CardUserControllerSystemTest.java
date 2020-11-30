@@ -264,7 +264,7 @@ class CardUserControllerSystemTest {
     @DisplayName("Leave card")
     void leaveCard() throws Exception {
         User user = User.builder().id(1).build();
-        mockMvc.perform(delete("/api/v1/card/{id}/user", 1L)
+        mockMvc.perform(delete("/api/v1/card/{id}/user", 2L)
                 .sessionAttr("user", user)
                 .characterEncoding("utf-8"))
                 .andDo(print())

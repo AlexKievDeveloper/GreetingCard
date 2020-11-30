@@ -44,8 +44,8 @@ public class CardUserController {
         log.info("Users are successfully deleted from card {}", id);
     }
 
-    @DeleteMapping(value = "card/{id}/user")
-    public ResponseEntity<?> leaveCard(@PathVariable long id, HttpSession session) {
+    @DeleteMapping("card/{id}/user")
+    public void leaveCard(@PathVariable long id, HttpSession session) {
         log.info("Request for leave card with id : {}", id);
         User user = (User) session.getAttribute("user");
 
@@ -53,7 +53,6 @@ public class CardUserController {
         cardUserService.deleteUserFromCard(id, user.getId());
 
         log.info("Successfully leave card with id: {}", id);
-        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 }

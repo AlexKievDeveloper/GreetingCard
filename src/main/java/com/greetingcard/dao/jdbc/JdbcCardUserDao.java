@@ -20,13 +20,20 @@ public class JdbcCardUserDao implements CardUserDao {
     private static final String INSERT_MEMBER_USER = "INSERT INTO users_cards (user_id, card_id, role_id) VALUES (:user_id, :card_id, "
             + Role.MEMBER.getRoleNumber() + ")";
     private static final String GET_USER_ROLE = "SELECT role_id FROM users_cards WHERE user_id = :user_id AND card_id = :card_id";
-    private static final String GET_USERS_BY_CARD_ID = "SELECT u.user_id, u.firstName, u.lastName, u.login, u.email, u.pathToPhoto, count(cg.card_id) AS countCongratulations " +
-            "FROM users_cards uc JOIN users u ON (u.user_id = uc.user_id) " +
-            "LEFT JOIN congratulations cg ON (uc.card_id = cg.card_id AND uc.user_id = cg.user_id) " +
-            "WHERE uc.card_id = :card_id " +
-            "AND   uc.role_id != " + Role.ADMIN.getRoleNumber() +
-            " GROUP BY u.user_id, u.firstName, u.lastName, u.login, u.email, u.pathToPhoto " +
-            " ORDER BY u.login";
+    private static final String GET_USERS_BY_CARD_ID =
+            "SELECT u.user_id, " +
+                    "u.firstName, " +
+                    "u.lastName, u.login, " +
+                    "u.email, " +
+                    "u.pathToPhoto, " +
+                    "count(cg.card_id) AS countCongratulations " +
+                    "FROM users_cards uc " +
+                    "JOIN users u ON (u.user_id = uc.user_id) " +
+                    "LEFT JOIN congratulations cg ON (uc.card_id = cg.card_id AND uc.user_id = cg.user_id) " +
+                    "WHERE uc.card_id = :card_id " +
+                    "AND   uc.role_id != " + Role.ADMIN.getRoleNumber() +
+                    " GROUP BY u.user_id, u.firstName, u.lastName, u.login, u.email, u.pathToPhoto " +
+                    " ORDER BY u.login";
     private static final String DELETE_USER = "DELETE from users_cards WHERE user_id = :user_id AND card_id = :card_id";
     private static final String DELETE_LIST_USERS = "DELETE from users_cards WHERE card_id = :card_id AND user_id IN ";
 

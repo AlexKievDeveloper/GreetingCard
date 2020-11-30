@@ -13,7 +13,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.lang.NonNull;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -27,28 +26,52 @@ import java.util.Objects;
 @Slf4j
 @Setter
 public class JdbcCongratulationDao implements CongratulationDao {
-    private static final String GET_CONGRATULATION = "SELECT congratulations.congratulation_id, user_id, card_id, " +
-            "status_id, message, link_id, link, type_id FROM congratulations LEFT JOIN links " +
-            "on congratulations.congratulation_id = links.congratulation_id WHERE congratulations.congratulation_id=?";
+    private static final String GET_CONGRATULATION =
+            "SELECT congratulations.congratulation_id, " +
+                    "user_id, " +
+                    "card_id, " +
+                    "status_id, message, " +
+                    "link_id, link, " +
+                    "type_id " +
+                    "FROM congratulations " +
+                    "LEFT JOIN links ON (congratulations.congratulation_id = links.congratulation_id) " +
+                    "WHERE congratulations.congratulation_id=?";
     private static final String SAVE_CONGRATULATION = "INSERT INTO congratulations (message, card_id, user_id, status_id) VALUES (?,?,?,?)";
     private static final String SAVE_LINK = "INSERT INTO links (link, type_id, congratulation_id) VALUES(?,?,?)";
-    private static final String LEAVE_BY_CARD_ID = "DELETE FROM congratulations WHERE card_id= :card_id and " +
-            "user_id= :user_id";
-    private static final String FIND_IMAGE_AND_AUDIO_LINKS_BY_CARD_ID = "SELECT link FROM links l LEFT JOIN " +
-            "congratulations cg ON cg.congratulation_id = l.congratulation_id where card_id=? " +
-            "and (type_id = 2 OR type_id = 3) and user_id =?";
-    private static final String FIND_CONGRATULATIONS_BY_CARD_ID = "SELECT cg.congratulation_id, user_id, card_id, " +
-            "status_id, message, link_id, link, type_id FROM congratulations cg LEFT JOIN links " +
-            "on cg.congratulation_id = links.congratulation_id WHERE card_id=?";
-    private static final String CHANGE_STATUS_CONGRATULATION_BY_CARD_ID = "UPDATE congratulations SET status_id = ? " +
-            "where card_id = ?";
-    private static final String CHANGE_CONGRATULATION_STATUS_BY_CONGRATULATION_ID = "UPDATE congratulations SET " +
-            "status_id = ? where congratulation_id = ?";
-    private static final String DELETE_BY_ID = "DELETE FROM congratulations WHERE " +
-            "congratulation_id= :congratulation_id and user_id= :user_id";
-    private static final String FIND_IMAGE_AND_AUDIO_LINKS_BY_CONGRATULATION_ID = "SELECT link FROM links l LEFT JOIN " +
-            "congratulations cg ON cg.congratulation_id = l.congratulation_id where cg.congratulation_id=? " +
-            "and (type_id = 2 OR type_id = 3) and user_id =?";
+    private static final String LEAVE_BY_CARD_ID =
+            "DELETE FROM congratulations " +
+                    "WHERE card_id= :card_id and user_id= :user_id";
+    private static final String FIND_IMAGE_AND_AUDIO_LINKS_BY_CARD_ID =
+            "SELECT link " +
+                    "FROM links l " +
+                    "JOIN congratulations cg ON (cg.congratulation_id = l.congratulation_id) " +
+                    "WHERE card_id=? and (type_id = 2 OR type_id = 3) and user_id =?";
+    private static final String FIND_CONGRATULATIONS_BY_CARD_ID =
+            "SELECT cg.congratulation_id, " +
+                    "user_id, card_id, " +
+                    "status_id, " +
+                    "message, " +
+                    "link_id, link, " +
+                    "type_id " +
+                    "FROM congratulations cg " +
+                    "LEFT JOIN links ON (cg.congratulation_id = links.congratulation_id) " +
+                    "WHERE card_id=?";
+    private static final String CHANGE_STATUS_CONGRATULATION_BY_CARD_ID =
+            "UPDATE congratulations " +
+                    "SET status_id = ? " +
+                    "WHERE card_id = ?";
+    private static final String CHANGE_CONGRATULATION_STATUS_BY_CONGRATULATION_ID =
+            "UPDATE congratulations " +
+                    "SET status_id = ? " +
+                    "WHERE congratulation_id = ?";
+    private static final String DELETE_BY_ID =
+            "DELETE FROM congratulations " +
+                    "WHERE congratulation_id= :congratulation_id and user_id= :user_id";
+    private static final String FIND_IMAGE_AND_AUDIO_LINKS_BY_CONGRATULATION_ID =
+            "SELECT link " +
+                    "FROM links l " +
+                    "LEFT JOIN congratulations cg ON (cg.congratulation_id = l.congratulation_id) " +
+                    "WHERE cg.congratulation_id=? and (type_id = 2 OR type_id = 3) and user_id =?";
 
     private static final CongratulationRowMapper CONGRATULATION_ROW_MAPPER = new CongratulationRowMapper();
     private static final CongratulationsRowMapper CONGRATULATIONS_ROW_MAPPER = new CongratulationsRowMapper();
