@@ -12,6 +12,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,5 +77,34 @@ class JdbcCardUserDaoITest {
         assertEquals(2, userInfoList.size());
         assertEquals(1, userInfoList.get(0).getId());
         assertEquals(4, userInfoList.get(1).getId());
+    }
+
+    @Test
+    @ExpectedDataSet("cardUser/cardUsersDeleted.xml")
+    void deleteUserFromCard() {
+        jdbcCardUserDao.deleteUserFromCard(1, 2);
+    }
+
+    @Test
+    void getNamesOfParams() {
+        String[] arrayOfParameters = {"user_id0", "user_id1"};
+        String parameters = jdbcCardUserDao.getNamesOfParams(arrayOfParameters);
+
+        assertEquals("(:user_id0,:user_id1)", parameters);
+    }
+
+
+    @Test
+    @ExpectedDataSet("cardUser/cardUsersListDeleted.xml")
+    void deleteListUsers() {
+        List<UserInfo> userInfoList = new ArrayList<>(2);
+        UserInfo userInfo = new UserInfo();
+        userInfo.setId(1);
+        userInfoList.add(userInfo);
+        UserInfo userInfo4 = new UserInfo();
+        userInfo4.setId(4);
+        userInfoList.add(userInfo4);
+
+        jdbcCardUserDao.deleteListUsers(2, userInfoList);
     }
 }

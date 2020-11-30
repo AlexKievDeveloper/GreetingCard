@@ -43,6 +43,7 @@ class CardUserControllerSystemTest {
 
     private final String URL_ADD_MEMBER = "/api/v1/card/{id}/user";
     private final String URL_GET_MEMBERS = "/api/v1/card/{id}/users";
+    private final String URL_DELETE_MEMBERS = "/api/v1/card/{id}/users";
 
     @BeforeAll
     void dbSetUp() {
@@ -141,9 +142,20 @@ class CardUserControllerSystemTest {
     }
 
     @Test
+    @DisplayName("Get users by card - not admin")
+    void getUsersByCardIdNotAdmin() throws Exception {
+        User user = User.builder().id(1).build();
+        mockMvc.perform(get(URL_GET_MEMBERS, 2)
+                .sessionAttr("user", user))
+                .andDo(print())
+                .andExpect(jsonPath("$.message").value("Only card owner can get users"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     @DisplayName("Get users by card (members only) - no members")
     void getUsersByCardIdForCardWithoutMembers() throws Exception {
-        User user = User.builder().id(1).build();
+        User user = User.builder().id(2).build();
         mockMvc.perform(get(URL_GET_MEMBERS, 3)
                 .sessionAttr("user", user))
                 .andDo(print())
@@ -169,13 +181,13 @@ class CardUserControllerSystemTest {
                 .pathToPhoto("testPathToPhoto")
                 .build();
 
-        User user = User.builder().id(1).build();
+        User user = User.builder().id(2).build();
         mockMvc.perform(get(URL_GET_MEMBERS, 2)
                 .sessionAttr("user", user))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
-                .andExpect( jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].id").value(expectedUser1.getId()))
                 .andExpect(jsonPath("$[0].firstName").value(expectedUser1.getFirstName()))
                 .andExpect(jsonPath("$[0].lastName").value(expectedUser1.getLastName()))
@@ -186,4 +198,66 @@ class CardUserControllerSystemTest {
                 .andExpect(jsonPath("$[1].login").value(expectedUser4.getLogin()))
                 .andExpect(jsonPath("$[1].pathToPhoto").value(expectedUser4.getPathToPhoto()));
     }
+
+
+    @Test
+    @DisplayName("Delete some users - success")
+    @ExpectedDataSet(value = {"cardUser/cardUsersListDeleted.xml", "cardUser/congratulationsDeleted.xml"})
+    void deleteUsers() throws Exception {
+        User user = User.builder().id(2).build();
+        String json = "[{\"id\":\"1\"}, {\"id\":\"4\"}]";
+        mockMvc.perform(delete(URL_DELETE_MEMBERS, 2)
+                .sessionAttr("user", user)
+                .characterEncoding("utf-8")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Delete some users - users already deleted")
+    @DataSet({"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardUser/cardUsersListDeleted.xml", "cardUser/congratulationsDeleted.xml"})
+    @ExpectedDataSet({"cardUser/cardUsersListDeleted.xml", "cardUser/congratulationsDeleted.xml"})
+    void deleteUsersNothingToDelete() throws Exception {
+        User user = User.builder().id(2).build();
+        String json = "[{\"id\":\"1\"}, {\"id\":\"4\"}]";
+        mockMvc.perform(delete(URL_DELETE_MEMBERS, 2)
+                .sessionAttr("user", user)
+                .characterEncoding("utf-8")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Delete users - empty list of users")
+    void deleteUsersEmptyList() throws Exception {
+        User user = User.builder().id(2).build();
+        String json = "[]";
+        mockMvc.perform(delete(URL_DELETE_MEMBERS, 2)
+                .sessionAttr("user", user)
+                .characterEncoding("utf-8")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Delete users - not admin deletes")
+    void deleteUsersEmptyListNotAdmin() throws Exception {
+        User user = User.builder().id(1).build();
+        String json = "[]";
+        mockMvc.perform(delete(URL_DELETE_MEMBERS, 2)
+                .sessionAttr("user", user)
+                .characterEncoding("utf-8")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andDo(print())
+                .andExpect(jsonPath("$.message").value("Only card owner can delete users"))
+                .andExpect(status().isBadRequest());
+    }
+
 }

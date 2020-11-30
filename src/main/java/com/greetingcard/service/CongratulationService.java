@@ -19,4 +19,6 @@ public interface CongratulationService {
     void changeCongratulationStatusByCongratulationId(Status status, long congratulationId);
 
     void deleteById(long congratulationId, long userId);
+
+    void deleteByCardId(long cardId, long userId);
 }

@@ -26,11 +26,20 @@ public class CardUserController {
     }
 
     @GetMapping("card/{id}/users")
-    public List<UserInfo> getUsersByCard(@PathVariable long id) {
+    public List<UserInfo> getUsersByCard(@PathVariable long id, HttpSession session) {
         log.info("Request get users by card {}", id);
-        List<UserInfo> userList = cardUserService.getUsersByCardId(id);
+        User userLoggedIn = (User) session.getAttribute("user");
+        List<UserInfo> userList = cardUserService.getUsersByCardId(id, userLoggedIn);
         log.info("Returned list of {} users", userList.size());
         return userList;
+    }
+
+    @DeleteMapping("card/{id}/users")
+    public void deleteListMembers(@PathVariable long id, @RequestBody List<UserInfo> listUsers, HttpSession session) {
+        log.info("Request to delete {} users from card {}", listUsers.size(), id);
+        User userLoggedIn = (User) session.getAttribute("user");
+        cardUserService.deleteUsers(id, listUsers, userLoggedIn);
+        log.info("Users are successfully deleted from card {}", id);
     }
 
 }

@@ -61,6 +61,11 @@ public class DefaultCongratulationService implements CongratulationService {
         congratulationDao.deleteById(congratulationId, userId);
     }
 
+    @Override
+    public void deleteByCardId(long cardId, long userId) {
+        congratulationDao.deleteByCardId(cardId, userId);
+    }
+
     void addYoutubeLinks(List<Link> linkList, String youtubeLinks) {
 
         List<String> youtubeLinksCollection = getYoutubeLinksListFromText(youtubeLinks);
