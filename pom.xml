@@ -132,13 +132,7 @@
             <version>${flyway.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-            <version>5.4.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
+      <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
             <version>${mockito.version}</version>

@@ -77,6 +77,9 @@ class JdbcCardUserDaoITest {
         assertEquals(2, userInfoList.size());
         assertEquals(1, userInfoList.get(0).getId());
         assertEquals(4, userInfoList.get(1).getId());
+
+        assertEquals(1, userInfoList.get(0).getCountCongratulations());
+        assertEquals(0, userInfoList.get(1).getCountCongratulations());
     }
 
     @Test

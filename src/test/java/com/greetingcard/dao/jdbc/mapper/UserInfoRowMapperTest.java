@@ -27,6 +27,7 @@ class UserInfoRowMapperTest {
         when(mockResultSet.getString("login")).thenReturn("userLogin");
         when(mockResultSet.getString("email")).thenReturn("@userEmail");
         when(mockResultSet.getString("pathToPhoto")).thenReturn("userPathToPhoto");
+        when(mockResultSet.getInt("countCongratulations")).thenReturn(1);
 
         UserInfo userInfoActual = userInfoRowMapper.mapRow(mockResultSet, 0);
 
@@ -37,5 +38,6 @@ class UserInfoRowMapperTest {
         assertEquals("userLogin", userInfoActual.getLogin());
         assertEquals("@userEmail", userInfoActual.getEmail());
         assertEquals("userPathToPhoto", userInfoActual.getPathToPhoto());
+        assertEquals(1, userInfoActual.getCountCongratulations());
     }
 }

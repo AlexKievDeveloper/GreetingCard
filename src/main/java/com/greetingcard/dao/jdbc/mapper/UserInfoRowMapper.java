@@ -17,6 +17,7 @@ public class UserInfoRowMapper implements RowMapper<UserInfo> {
                 .login(resultSet.getString("login"))
                 .email(resultSet.getString("email"))
                 .pathToPhoto(resultSet.getString("pathToPhoto"))
+                .countCongratulations(resultSet.getInt("countCongratulations"))
                 .build();
     }
 }

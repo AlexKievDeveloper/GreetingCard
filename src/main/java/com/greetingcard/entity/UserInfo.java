@@ -17,4 +17,5 @@ public class UserInfo {
     private String login;
     private String email;
     private String pathToPhoto;
+    private int countCongratulations;
 }
