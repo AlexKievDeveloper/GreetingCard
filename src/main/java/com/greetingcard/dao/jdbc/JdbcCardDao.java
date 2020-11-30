@@ -84,6 +84,11 @@ public class JdbcCardDao implements CardDao {
                     "WHERE uc.card_id = :cardId AND uc.user_id = :userId";
     private static final String DELETE_BY_CARD_ID = "DELETE FROM cards WHERE card_id=? and user_id=?";
     private static final String CHANGE_STATUS_OF_CARD_BY_ID = "UPDATE cards SET status_id = ? where card_id = ?";
+    private static final String GET_ALL_CARDS_BY_USER_ID = "SELECT c.card_id ,c.name, c.background_image, c.card_link, c.status_id," +
+            " u.user_id, u.firstName, u.lastName, u.login, u.email " +
+            "FROM users_cards uc JOIN cards c ON (uc.card_id = c.card_id) " +
+            "JOIN users u ON (c.user_id = u.user_id) " +
+            "WHERE uc.user_id = :id ORDER BY c.card_id";
 
     private CongratulationDao congratulationDao;
     private JdbcTemplate jdbcTemplate;
@@ -161,4 +166,5 @@ public class JdbcCardDao implements CardDao {
         List<Integer> statusIds = namedParameterJdbcTemplate.queryForList(GET_CARD_STATUS, parameterSource, Integer.class);
         return (statusIds.size() != 0 ? Optional.of(Status.getByNumber(statusIds.get(0))) : Optional.empty());
     }
+
 }

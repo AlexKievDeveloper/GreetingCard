@@ -74,7 +74,7 @@ public class DefaultSecurityService implements SecurityService {
             String fileName = uuidFile + "." + file.getOriginalFilename();
             try {
                 Files.createDirectories(Path.of(pathToFile,profileFile));
-                file.transferTo(new File(String.valueOf(Path.of(pathToFile,profileFile,fileName))));
+                file.transferTo(Path.of(pathToFile,profileFile,fileName));
             } catch (IOException e) {
                 log.error("Can not save new photo: {}", fileName);
                 throw new RuntimeException("Can not save new photo",e);
@@ -85,7 +85,7 @@ public class DefaultSecurityService implements SecurityService {
             } catch (IOException e) {
                 log.error("Can not delete old photo: {}", user.getPathToPhoto());
             }
-            user.setPathToPhoto(fileName);
+            user.setPathToPhoto("/"+profileFile+"/"+fileName);
         }
         userDao.update(user);
     }
