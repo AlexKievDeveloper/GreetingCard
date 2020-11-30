@@ -38,11 +38,7 @@ public class CardController {
         User user = (User) session.getAttribute("user");
         long userId = user.getId();
         List<Card> cardList = cardService.getCards(userId, type);
-        if (cardList.size() == 0) {
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } else {
-            return ResponseEntity.status(HttpStatus.OK).body(cardList);
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(cardList);
     }
 
     @GetMapping(value = "card/{id}")

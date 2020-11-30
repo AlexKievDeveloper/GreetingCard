@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE)
 @DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardsUsers.xml",
         "congratulations.xml", "links.xml"},
-        executeStatementsBefore = "SELECT setval('users_user_id_seq', 3);",
+        executeStatementsBefore = "SELECT setval('users_user_id_seq', 10);",
         cleanAfter = true)
 @SpringJUnitWebConfig(value = TestConfiguration.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
