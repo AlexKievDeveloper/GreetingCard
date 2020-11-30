@@ -88,4 +88,16 @@ public class CardController {
         cardService.deleteCardById(id, user.getId());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    @PutMapping(value = "/leave-card/{id}")
+    public ResponseEntity<?> leaveCard(@PathVariable long id, HttpSession session) {
+        log.info("Request for leave card with id : {}", id);
+        User user = (User) session.getAttribute("user");
+
+        log.info("Request for leave card from user with id : {}", user.getId());
+        cardService.leaveCardByCardIdAndUserId(id, user.getId());
+
+        log.info("Successfully leave card with id: {}", id);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }

@@ -1,6 +1,7 @@
 package com.greetingcard.service.impl;
 
 import com.greetingcard.dao.CardDao;
+import com.greetingcard.dao.CongratulationDao;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Status;
 import com.greetingcard.service.CardService;
@@ -13,6 +14,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class DefaultCardService implements CardService {
     private final CardDao jdbcCardDao;
+    private final CongratulationDao congratulationDao;
 
     @Override
     public List<Card> getCards(long userId, String cardsType) {
@@ -51,5 +53,10 @@ public class DefaultCardService implements CardService {
 
     public Optional<Status> getCardStatusById(long cardId) {
         return jdbcCardDao.getCardStatusById(cardId);
+    }
+
+    @Override
+    public void leaveCardByCardIdAndUserId(long cardId, long userId) {
+        congratulationDao.deleteByCardId(cardId, userId);
     }
 }
