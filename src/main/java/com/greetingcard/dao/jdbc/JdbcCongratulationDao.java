@@ -95,7 +95,7 @@ public class JdbcCongratulationDao implements CongratulationDao {
 
     @Override
     public void deleteByCardId(long cardId, long userId) {
-        deleteComgratulationFiles(cardId, userId, FIND_IMAGE_AND_AUDIO_LINKS_BY_CARD_ID);
+        deleteCongratulationFiles(cardId, userId, FIND_IMAGE_AND_AUDIO_LINKS_BY_CARD_ID);
         Map<String, Long> params = new HashMap<>();
         params.put("user_id", userId);
         params.put("card_id", cardId);
@@ -105,7 +105,7 @@ public class JdbcCongratulationDao implements CongratulationDao {
 
     @Override
     public void deleteById(long congratulationId, long userId) {
-        deleteComgratulationFiles(congratulationId, userId, FIND_IMAGE_AND_AUDIO_LINKS_BY_CONGRATULATION_ID);
+        deleteCongratulationFiles(congratulationId, userId, FIND_IMAGE_AND_AUDIO_LINKS_BY_CONGRATULATION_ID);
         Map<String, Long> params = new HashMap<>();
         params.put("user_id", userId);
         params.put("congratulation_id", congratulationId);
@@ -128,7 +128,7 @@ public class JdbcCongratulationDao implements CongratulationDao {
         jdbcTemplate.update(CHANGE_CONGRATULATION_STATUS_BY_CONGRATULATION_ID, status.getStatusNumber(), congratulationId);
     }
 
-    void deleteComgratulationFiles(long id, long userId, String findQuery) {
+    void deleteCongratulationFiles(long id, long userId, String findQuery) {
 
         List<String> linkList = jdbcTemplate.queryForList(findQuery, String.class, id, userId);
 
