@@ -78,7 +78,6 @@
 
     <bean id="cardService" class="com.greetingcard.service.impl.DefaultCardService">
         <constructor-arg ref="cardDao"/>
-        <constructor-arg ref="congratulationDao"/>
     </bean>
 
     <bean id="cardUserDao" class="com.greetingcard.dao.jdbc.JdbcCardUserDao">

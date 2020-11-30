@@ -14,7 +14,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class DefaultCardService implements CardService {
     private final CardDao jdbcCardDao;
-    private final CongratulationDao congratulationDao;
 
     @Override
     public List<Card> getCards(long userId, String cardsType) {
