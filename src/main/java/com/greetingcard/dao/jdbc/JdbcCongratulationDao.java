@@ -54,7 +54,6 @@ public class JdbcCongratulationDao implements CongratulationDao {
     private static final CongratulationsRowMapper CONGRATULATIONS_ROW_MAPPER = new CongratulationsRowMapper();
     private JdbcTemplate jdbcTemplate;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
-    private TransactionTemplate transactionTemplate;
 
     public Congratulation getCongratulationById(int congratulationId) {
         return jdbcTemplate.query(GET_CONGRATULATION, CONGRATULATION_ROW_MAPPER, congratulationId);
