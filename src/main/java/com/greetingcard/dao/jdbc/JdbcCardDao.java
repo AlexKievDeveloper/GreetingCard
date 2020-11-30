@@ -26,7 +26,6 @@ import java.util.Optional;
 @Slf4j
 @Setter
 public class JdbcCardDao implements CardDao {
-    private static final String GET_ALL_CARDS_BY_USER_ID = "SELECT cards.card_id, name, background_image, card_link, status_id, users.user_id, firstName, lastName, login, email FROM cards LEFT JOIN users_cards ON cards.card_id=users_cards.card_id LEFT JOIN users ON users_cards.user_id=users.user_id WHERE users.user_id = :id ORDER BY cards.card_id";
     private static final String GET_CARDS_BY_USER_ID_AND_ROLE_ID = "SELECT cards.card_id, name, background_image, card_link, status_id, users.user_id, firstName, lastName, login, email FROM cards LEFT JOIN users_cards ON cards.card_id=users_cards.card_id LEFT JOIN users ON users_cards.user_id=users.user_id WHERE (users.user_id = :userId AND role_id = :roleId) ORDER BY cards.card_id";
     private static final String GET_CARD_STATUS = "SELECT status_id FROM cards WHERE card_id = :card_id";
     private static final String SAVE_NEW_CARD = "INSERT INTO cards (user_id, name, status_id) VALUES (?,?,?)";
@@ -35,6 +34,11 @@ public class JdbcCardDao implements CardDao {
             "FROM users_cards uc JOIN cards c ON uc.card_id = c.card_id LEFT JOIN congratulations cg ON c.card_id=cg.card_id LEFT JOIN users u ON cg.user_id=u.user_id LEFT JOIN links l ON cg.congratulation_id=l.congratulation_id WHERE uc.card_id = :cardId AND uc.user_id = :userId";
     private static final String DELETE_BY_CARD_ID = "DELETE FROM cards WHERE card_id=? and user_id=?";
     private static final String CHANGE_STATUS_OF_CARD_BY_ID = "UPDATE cards SET status_id = ? where card_id = ?";
+    private static final String GET_ALL_CARDS_BY_USER_ID = "SELECT c.card_id ,c.name, c.background_image, c.card_link, c.status_id," +
+            " u.user_id, u.firstName, u.lastName, u.login, u.email " +
+            "FROM users_cards uc JOIN cards c ON (uc.card_id = c.card_id) " +
+            "JOIN users u ON (c.user_id = u.user_id) " +
+            "WHERE uc.user_id = :id ORDER BY c.card_id";
 
     private CongratulationDao congratulationDao;
     private JdbcTemplate jdbcTemplate;
@@ -111,4 +115,5 @@ public class JdbcCardDao implements CardDao {
         List<Integer> statusIds = namedParameterJdbcTemplate.queryForList(GET_CARD_STATUS, parameterSource, Integer.class);
         return (statusIds.size() != 0 ? Optional.of(Status.getByNumber(statusIds.get(0))) : Optional.empty());
     }
+
 }
