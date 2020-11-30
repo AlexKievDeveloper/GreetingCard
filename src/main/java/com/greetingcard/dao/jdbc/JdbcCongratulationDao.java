@@ -13,8 +13,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.lang.NonNull;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.IOException;
@@ -51,8 +49,6 @@ public class JdbcCongratulationDao implements CongratulationDao {
     private static final String FIND_IMAGE_AND_AUDIO_LINKS_BY_CONGRATULATION_ID = "SELECT link FROM links l LEFT JOIN " +
             "congratulations cg ON cg.congratulation_id = l.congratulation_id where cg.congratulation_id=? " +
             "and (type_id = 2 OR type_id = 3) and user_id =?";
-    private static final String LEAVE_CARD_BY_CARD_ID_AND_USER_ID = "DELETE FROM users_cards WHERE  user_id = :user_id " +
-            "AND card_id = :card_id";
 
     private static final CongratulationRowMapper CONGRATULATION_ROW_MAPPER = new CongratulationRowMapper();
     private static final CongratulationsRowMapper CONGRATULATIONS_ROW_MAPPER = new CongratulationsRowMapper();
@@ -99,22 +95,17 @@ public class JdbcCongratulationDao implements CongratulationDao {
 
     @Override
     public void deleteByCardId(long cardId, long userId) {
-        deleteLinks(cardId, userId, FIND_IMAGE_AND_AUDIO_LINKS_BY_CARD_ID);
+        deleteComgratulationFiles(cardId, userId, FIND_IMAGE_AND_AUDIO_LINKS_BY_CARD_ID);
         Map<String, Long> params = new HashMap<>();
         params.put("user_id", userId);
         params.put("card_id", cardId);
-        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                namedJdbcTemplate.update(LEAVE_BY_CARD_ID, params);
-                namedJdbcTemplate.update(LEAVE_CARD_BY_CARD_ID_AND_USER_ID, params);
-            }
-        });
+        namedJdbcTemplate.update(LEAVE_BY_CARD_ID, params);
+
     }
 
     @Override
     public void deleteById(long congratulationId, long userId) {
-        deleteLinks(congratulationId, userId, FIND_IMAGE_AND_AUDIO_LINKS_BY_CONGRATULATION_ID);
+        deleteComgratulationFiles(congratulationId, userId, FIND_IMAGE_AND_AUDIO_LINKS_BY_CONGRATULATION_ID);
         Map<String, Long> params = new HashMap<>();
         params.put("user_id", userId);
         params.put("congratulation_id", congratulationId);
@@ -137,7 +128,7 @@ public class JdbcCongratulationDao implements CongratulationDao {
         jdbcTemplate.update(CHANGE_CONGRATULATION_STATUS_BY_CONGRATULATION_ID, status.getStatusNumber(), congratulationId);
     }
 
-    void deleteLinks(long id, long userId, String findQuery) {
+    void deleteComgratulationFiles(long id, long userId, String findQuery) {
 
         List<String> linkList = jdbcTemplate.queryForList(findQuery, String.class, id, userId);
 

@@ -142,8 +142,7 @@ class JdbcCongratulationDaoITest {
     }
 
     @Test
-    @ExpectedDataSet(value = {"cardsUsersAfterDeleteByCardId.xml", "congratulationsAfterDeleteByCardId.xml",
-            "linksAfterDeleteByCardId.xml"})
+    @ExpectedDataSet(value = {"congratulationsAfterDeleteByCardId.xml", "linksAfterDeleteByCardId.xml"})
     @DisplayName("Delete congratulations by id of card with all parameters")
     void deleteByCardId() throws IOException {
         //prepare

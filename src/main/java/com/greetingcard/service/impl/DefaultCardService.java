@@ -55,8 +55,4 @@ public class DefaultCardService implements CardService {
         return jdbcCardDao.getCardStatusById(cardId);
     }
 
-    @Override
-    public void leaveCardByCardIdAndUserId(long cardId, long userId) {
-        congratulationDao.deleteByCardId(cardId, userId);
-    }
 }

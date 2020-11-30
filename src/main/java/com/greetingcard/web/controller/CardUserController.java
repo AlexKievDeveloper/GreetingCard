@@ -5,6 +5,8 @@ import com.greetingcard.entity.UserInfo;
 import com.greetingcard.service.CardUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -40,6 +42,18 @@ public class CardUserController {
         User userLoggedIn = (User) session.getAttribute("user");
         cardUserService.deleteUsers(id, listUsers, userLoggedIn);
         log.info("Users are successfully deleted from card {}", id);
+    }
+
+    @DeleteMapping(value = "card/{id}/user")
+    public ResponseEntity<?> leaveCard(@PathVariable long id, HttpSession session) {
+        log.info("Request for leave card with id : {}", id);
+        User user = (User) session.getAttribute("user");
+
+        log.info("Request for leave card from user with id : {}", user.getId());
+        cardUserService.deleteUserFromCard(id, user.getId());
+
+        log.info("Successfully leave card with id: {}", id);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 }

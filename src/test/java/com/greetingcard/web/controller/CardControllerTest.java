@@ -131,15 +131,4 @@ class CardControllerTest {
                 .andExpect(jsonPath("$[2].status").value("STARTUP"))
                 .andExpect(status().isOk());
     }
-
-    @Test
-    @DisplayName("Leave card")
-    void leaveCard() throws Exception {
-        User user = User.builder().id(1).build();
-        mockMvc.perform(put("/api/v1/leave-card/{id}", 1L)
-                .sessionAttr("user", user)
-                .characterEncoding("utf-8"))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
 }

@@ -260,4 +260,15 @@ class CardUserControllerSystemTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    @DisplayName("Leave card")
+    void leaveCard() throws Exception {
+        User user = User.builder().id(1).build();
+        mockMvc.perform(delete("/api/v1/card/{id}/user", 1L)
+                .sessionAttr("user", user)
+                .characterEncoding("utf-8"))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
 }
