@@ -7,7 +7,10 @@ import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.greetingcard.entity.*;
 import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
@@ -71,11 +74,13 @@ class JdbcCongratulationDaoITest {
         assertEquals(1, actualCongratulation.getLinkList().get(3).getCongratulationId());
         assertEquals(LinkType.PICTURE, actualCongratulation.getLinkList().get(3).getType());
 
-        assertEquals("https://www.dropbox.com/s/8cg7h5gehrk7joy/dzidzo_-_kolomijka_bojkivska_%28zf.fm%29.mp3?dl=0", actualCongratulation.getLinkList().get(4).getLink());
+        assertEquals("https://www.dropbox.com/s/8cg7h5gehrk7joy/dzidzo_-_kolomijka_bojkivska_%28zf.fm%29.mp3?dl=0",
+                actualCongratulation.getLinkList().get(4).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(4).getCongratulationId());
         assertEquals(LinkType.AUDIO, actualCongratulation.getLinkList().get(4).getType());
 
-        assertEquals("https://www.dropbox.com/s/3u94pftverackzy/kolomijki_-_kolomijka_zastilna_%28zf.fm%29.mp3?dl=0", actualCongratulation.getLinkList().get(5).getLink());
+        assertEquals("https://www.dropbox.com/s/3u94pftverackzy/kolomijki_-_kolomijka_zastilna_%28zf.fm%29.mp3?dl=0",
+                actualCongratulation.getLinkList().get(5).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(5).getCongratulationId());
         assertEquals(LinkType.AUDIO, actualCongratulation.getLinkList().get(5).getType());
     }
@@ -108,7 +113,7 @@ class JdbcCongratulationDaoITest {
     }
 
     @Test
-    @DisplayName("Saving an object of class Congratulation to the DB")
+    @DisplayName("Throw illegalArgumentException while saving an object of class Congratulation to the DB")
     void saveTestExceptionToLongLinkValue() {
         //prepare
         Link link = Link.builder()
@@ -280,5 +285,40 @@ class JdbcCongratulationDaoITest {
         Congratulation congratulationAfter = jdbcCongratulationDao.getCongratulationById(1);
         assertEquals(Status.ISOVER, congratulationAfter.getStatus());
     }
+
+    @Test
+    @DisplayName("Update congratulation message by congratulation id and user id")
+    void updateCongratulation() {
+        //when
+        jdbcCongratulationDao.updateCongratulation("Congratulations from updateCongratulationTest", 1, 1);
+
+        //then
+        Congratulation congratulationAfter = jdbcCongratulationDao.getCongratulationById(1);
+        assertEquals("Congratulations from updateCongratulationTest", congratulationAfter.getMessage());
+    }
+
+    @Test
+    @DisplayName("Saving links congratulation message by congratulation id and user id")
+    void saveLinks() {
+        //prepare
+        Link link = Link.builder()
+                .link("you_tube_10")
+                .congratulationId(1)
+                .type(LinkType.VIDEO)
+                .build();
+
+        List<Link> linkList = new ArrayList<>();
+        linkList.add(link);
+
+        //when
+        jdbcCongratulationDao.saveLinks(linkList, 1);
+
+        //then
+        Congratulation congratulation = jdbcCongratulationDao.getCongratulationById(1);
+        assertEquals(1, congratulation.getLinkList().get(6).getCongratulationId());
+        assertEquals("you_tube_10", congratulation.getLinkList().get(6).getLink());
+        assertEquals(LinkType.VIDEO, congratulation.getLinkList().get(6).getType());
+    }
+
 }
 

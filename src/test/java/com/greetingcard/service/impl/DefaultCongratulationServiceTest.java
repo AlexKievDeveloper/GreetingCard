@@ -1,11 +1,17 @@
 package com.greetingcard.service.impl;
 
+import com.github.database.rider.core.api.configuration.DBUnit;
+import com.github.database.rider.core.api.configuration.Orthography;
+import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.spring.api.DBRider;
 import com.greetingcard.dao.jdbc.TestConfiguration;
+import com.greetingcard.entity.Congratulation;
 import com.greetingcard.entity.Link;
 import com.greetingcard.entity.LinkType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -19,6 +25,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +35,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@DBRider
+@DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE)
+@DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardsUsers.xml",
+        "congratulations.xml", "links.xml"},
+        executeStatementsBefore = "SELECT setval('congratulations_congratulation_id_seq', 6);", cleanAfter = true)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension.class)
 @SpringJUnitWebConfig(value = TestConfiguration.class)
 class DefaultCongratulationServiceTest {
@@ -204,5 +217,26 @@ class DefaultCongratulationServiceTest {
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
                 defaultCongratulationService.saveFilesAndCreateLinks(mockImageFiles, linkList));
         assertEquals("Sorry, this format is not supported by the application: image/gif", e.getMessage());
+    }
+
+
+    @Test
+    @DisplayName("Updating congratulation")
+    void updateCongratulationById() {
+        //prepare
+        MockMultipartFile mockImageFile = new MockMultipartFile("files_image", "image.jpg", "image/jpg", bytes);
+        MockMultipartFile mockAudioFile = new MockMultipartFile("files_audio", "audio.mp3", "audio/mpeg", bytes);
+        MultipartFile[] mockImageFiles = new MultipartFile[]{mockImageFile};
+        MultipartFile[] mockAudioFiles = new MultipartFile[]{mockAudioFile};
+        Map<String, String> parametersMap = new HashMap<>();
+        parametersMap.put("message", "Congratulation from updateCongratulationById test");
+        parametersMap.put("youtube", "https://www.youtube.com/watch?v=BmBr5diz8WA");
+
+        //when
+        defaultCongratulationService.updateCongratulationById(mockImageFiles, mockAudioFiles, parametersMap, 1, 1);
+
+        //then
+        Congratulation congratulation = defaultCongratulationService.getCongratulationById(1);
+        assertEquals("Congratulation from updateCongratulationById test", congratulation.getMessage());
     }
 }

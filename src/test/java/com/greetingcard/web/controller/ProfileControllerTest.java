@@ -64,7 +64,6 @@ class ProfileControllerTest {
                 .andExpect(jsonPath("$.facebook").value(nullValue(String.class)))
                 .andExpect(jsonPath("$.pathToPhoto").value("link"))
                 .andExpect(status().isOk());
-
     }
 
     @Test

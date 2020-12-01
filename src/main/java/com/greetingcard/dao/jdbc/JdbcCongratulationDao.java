@@ -25,6 +25,7 @@ import java.util.Objects;
 public class JdbcCongratulationDao implements CongratulationDao {
     private static final String GET_CONGRATULATION = "SELECT congratulations.congratulation_id, user_id, card_id, status_id, message, link_id, link, type_id FROM congratulations LEFT JOIN links on congratulations.congratulation_id = links.congratulation_id WHERE congratulations.congratulation_id=?";
     private static final String SAVE_CONGRATULATION = "INSERT INTO congratulations (message, card_id, user_id, status_id) VALUES (?,?,?,?)";
+    private static final String UPDATE_CONGRATULATION = "UPDATE congratulations SET message = ? where (congratulation_id = ? and user_id = ?)";
     private static final String SAVE_LINK = "INSERT INTO links (link, type_id, congratulation_id) VALUES(?,?,?)";
     private static final String LEAVE_BY_CARD_ID = "DELETE FROM congratulations WHERE card_id=? and user_id=?";
     private static final String FIND_IMAGE_AND_AUDIO_LINKS_BY_CARD_ID = "SELECT link FROM links l LEFT JOIN congratulations cg ON cg.congratulation_id = l.congratulation_id where card_id=? and (type_id = 2 OR type_id = 3) and user_id =?";
@@ -38,7 +39,7 @@ public class JdbcCongratulationDao implements CongratulationDao {
     private static final CongratulationsRowMapper CONGRATULATIONS_ROW_MAPPER = new CongratulationsRowMapper();
     private JdbcTemplate jdbcTemplate;
 
-    public Congratulation getCongratulationById(int congratulationId) {
+    public Congratulation getCongratulationById(long congratulationId) {
         return jdbcTemplate.query(GET_CONGRATULATION, CONGRATULATION_ROW_MAPPER, congratulationId);
     }
 
@@ -56,22 +57,7 @@ public class JdbcCongratulationDao implements CongratulationDao {
 
         int key = Objects.requireNonNull(keyHolder.getKey()).intValue();
 
-        jdbcTemplate.update(connection -> {
-            connection.setAutoCommit(false);
-            PreparedStatement statementInLinks = connection.prepareStatement(SAVE_LINK);
-            for (Link link : congratulation.getLinkList()) {
-                log.info("Dao level. Saving link: {}", link);
-                statementInLinks.setString(1, link.getLink());
-                statementInLinks.setInt(2, link.getType().getTypeNumber());
-                statementInLinks.setInt(3, key);
-                statementInLinks.addBatch();
-            }
-
-            statementInLinks.executeBatch();
-            connection.commit();
-
-            return statementInLinks;
-        });
+        saveLinks(congratulation.getLinkList(), key);
         log.debug("Added new congratulation {} to DB", congratulation.getId());
     }
 
@@ -83,6 +69,26 @@ public class JdbcCongratulationDao implements CongratulationDao {
     @Override
     public void deleteById(long congratulationId, long userId) {
         delete(congratulationId, userId, DELETE_BY_ID, FIND_IMAGE_AND_AUDIO_LINKS_BY_CONGRATULATION_ID);
+    }
+
+    @Override
+    public void saveLinks(List<Link> linkList, long congratulationId) {
+        jdbcTemplate.update(connection -> {
+            connection.setAutoCommit(false);
+            PreparedStatement statementInLinks = connection.prepareStatement(SAVE_LINK);
+            for (Link link : linkList) {
+                log.info("Dao level. Saving link: {}", link);
+                statementInLinks.setString(1, link.getLink());
+                statementInLinks.setInt(2, link.getType().getTypeNumber());
+                statementInLinks.setLong(3, congratulationId);
+                statementInLinks.addBatch();
+            }
+
+            statementInLinks.executeBatch();
+            connection.commit();
+
+            return statementInLinks;
+        });
     }
 
     @Override
@@ -98,6 +104,11 @@ public class JdbcCongratulationDao implements CongratulationDao {
     @Override
     public void changeCongratulationStatusByCongratulationId(Status status, long congratulationId) {
         jdbcTemplate.update(CHANGE_CONGRATULATION_STATUS_BY_CONGRATULATION_ID, status.getStatusNumber(), congratulationId);
+    }
+
+    @Override
+    public void updateCongratulation(String message, long congratulationId, long userId) {
+        jdbcTemplate.update(UPDATE_CONGRATULATION, message, congratulationId, userId);
     }
 
     void delete(long id, long userId, String deleteQuery, String findQuery) {
