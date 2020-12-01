@@ -58,6 +58,13 @@ public class DefaultCardUserService implements CardUserService {
         }
     }
 
+    @Override
+    @Transactional
+    public void deleteUserFromCard(long cardId, long userId) {
+        congratulationService.deleteByCardId(cardId, userId);
+        cardUserDao.deleteUserFromCard(cardId, userId);
+    }
+
     void checkIfCardNotFinished(long cardId) {
         Optional<Status> status = cardService.getCardStatusById(cardId);
         if (status.isEmpty()) {

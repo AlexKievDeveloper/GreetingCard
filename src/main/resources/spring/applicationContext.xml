@@ -50,6 +50,7 @@
 
     <bean id="congratulationDao" class="com.greetingcard.dao.jdbc.JdbcCongratulationDao">
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
+        <property name="namedJdbcTemplate" ref="namedJdbcTemplate"/>
     </bean>
 
     <bean id="congratulationService" class="com.greetingcard.service.impl.DefaultCongratulationService">

@@ -63,21 +63,21 @@ class JdbcCongratulationDaoITest {
         assertEquals(1, actualCongratulation.getLinkList().get(1).getCongratulationId());
         assertEquals(LinkType.VIDEO, actualCongratulation.getLinkList().get(1).getType());
 
-        assertEquals("https://i.postimg.cc/kXRG5yRC/images.jpg", actualCongratulation.getLinkList().get(2).getLink());
+        assertEquals("/greeting-cards/audio/audio1.mp3", actualCongratulation.getLinkList().get(2).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(2).getCongratulationId());
-        assertEquals(LinkType.PICTURE, actualCongratulation.getLinkList().get(2).getType());
+        assertEquals(LinkType.AUDIO, actualCongratulation.getLinkList().get(2).getType());
 
-        assertEquals("https://i.postimg.cc/hvfjTLC9/images-1.jpg", actualCongratulation.getLinkList().get(3).getLink());
+        assertEquals("/greeting-cards/audio/audio2.mp3", actualCongratulation.getLinkList().get(3).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(3).getCongratulationId());
-        assertEquals(LinkType.PICTURE, actualCongratulation.getLinkList().get(3).getType());
+        assertEquals(LinkType.AUDIO, actualCongratulation.getLinkList().get(3).getType());
 
-        assertEquals("https://www.dropbox.com/s/8cg7h5gehrk7joy/dzidzo_-_kolomijka_bojkivska_%28zf.fm%29.mp3?dl=0", actualCongratulation.getLinkList().get(4).getLink());
+        assertEquals("/greeting-cards/img/img1.jpg", actualCongratulation.getLinkList().get(4).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(4).getCongratulationId());
-        assertEquals(LinkType.AUDIO, actualCongratulation.getLinkList().get(4).getType());
+        assertEquals(LinkType.PICTURE, actualCongratulation.getLinkList().get(4).getType());
 
-        assertEquals("https://www.dropbox.com/s/3u94pftverackzy/kolomijki_-_kolomijka_zastilna_%28zf.fm%29.mp3?dl=0", actualCongratulation.getLinkList().get(5).getLink());
+        assertEquals("/greeting-cards/img/img2.jpg", actualCongratulation.getLinkList().get(5).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(5).getCongratulationId());
-        assertEquals(LinkType.AUDIO, actualCongratulation.getLinkList().get(5).getType());
+        assertEquals(LinkType.PICTURE, actualCongratulation.getLinkList().get(5).getType());
     }
 
     @Test
@@ -142,37 +142,31 @@ class JdbcCongratulationDaoITest {
     }
 
     @Test
+    @ExpectedDataSet(value = {"congratulationsAfterDeleteByCardId.xml", "linksAfterDeleteByCardId.xml"})
     @DisplayName("Delete congratulations by id of card with all parameters")
     void deleteByCardId() throws IOException {
         //prepare
-        Files.createDirectories(Path.of("src/main/webapp/static"));
-        Files.createFile(Path.of("src/main/webapp/static/audio"));
-        Files.createFile(Path.of("src/main/webapp/static/img"));
-        List<Link> links = new ArrayList<>();
-        links.add(Link.builder().link("src/main/webapp/static/audio").type(LinkType.AUDIO).build());
-        links.add(Link.builder().link("src/main/webapp/static/img").type(LinkType.PICTURE).build());
+        Files.createDirectories(Path.of("/greeting-cards/audio"));
+        Files.createDirectories(Path.of("/greeting-cards/img"));
+        Files.createFile(Path.of("/greeting-cards/audio/audio1.mp3"));
+        Files.createFile(Path.of("/greeting-cards/audio/audio2.mp3"));
+        Files.createFile(Path.of("/greeting-cards/audio/audio3.mp3"));
+        Files.createFile(Path.of("/greeting-cards/img/img1.jpg"));
+        Files.createFile(Path.of("/greeting-cards/img/img2.jpg"));
+        Files.createFile(Path.of("/greeting-cards/img/img3.jpg"));
 
-        Congratulation congratulation = Congratulation.builder()
-                .cardId(1L)
-                .user(User.builder().id(1).build())
-                .message("test delete link")
-                .status(Status.STARTUP)
-                .linkList(links)
-                .build();
-        jdbcCongratulationDao.save(congratulation);
-
-        //when
         jdbcCongratulationDao.deleteByCardId(1, 1);
 
-        //then
-        List<Congratulation> congratulationList = jdbcCongratulationDao.findCongratulationsByCardId(1);
-        assertEquals(1, congratulationList.size());
-        assertEquals(3, congratulationList.get(0).getId());
-        assertFalse(Files.exists(Path.of("src/main/webapp/static/audio")));
-        assertFalse(Files.exists(Path.of("src/main/webapp/static/img")));
-        Files.deleteIfExists(Path.of("src/main/webapp/static/audio"));
-        Files.deleteIfExists(Path.of("src/main/webapp/static/img"));
-        Files.deleteIfExists(Path.of("src/main/webapp/static"));
+        assertFalse(Files.exists(Path.of("/greeting-cards/audio/audio1.mp3")));
+        assertFalse(Files.exists(Path.of("/greeting-cards/audio/audio2.mp3")));
+        assertFalse(Files.exists(Path.of("/greeting-cards/audio/audio3.mp3")));
+        assertFalse(Files.exists(Path.of("/greeting-cards/img/img1.jpg")));
+        assertFalse(Files.exists(Path.of("/greeting-cards/img/img2.jpg")));
+        assertFalse(Files.exists(Path.of("/greeting-cards/img/img3.jpg")));
+
+        Files.deleteIfExists(Path.of("/greeting-cards/audio"));
+        Files.deleteIfExists(Path.of("/greeting-cards/img/"));
+
     }
 
     @Test

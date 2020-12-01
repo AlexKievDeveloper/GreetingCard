@@ -69,7 +69,7 @@ public class CongratulationController {
     }
 
     @PutMapping(value = "/{id}/status")
-    public ResponseEntity<?> changeCongratulationStatus(@PathVariable("id") int congratulationId) {
+    public ResponseEntity<?> changeCongratulationStatus(@PathVariable("id") long congratulationId) {
         log.info("Received PUT request for congratulation with id: {}", congratulationId);
         congratulationService.changeCongratulationStatusByCongratulationId(Status.ISOVER, congratulationId);
 
@@ -78,7 +78,7 @@ public class CongratulationController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<?> deleteCongratulation(@PathVariable("id") int congratulationId, HttpSession session) {
+    public ResponseEntity<?> deleteCongratulation(@PathVariable("id") long congratulationId, HttpSession session) {
         log.info("Request for DELETE congratulation received");
         User user = (User) session.getAttribute("user");
 

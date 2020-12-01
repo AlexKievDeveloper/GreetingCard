@@ -64,4 +64,11 @@ public class DefaultCardUserServiceMockITest {
         doThrow(new RuntimeException("user can't be deleted")).when(cardUserDao).deleteListUsers(2, userInfoList);
         assertThrows(RuntimeException.class, () -> cardUserService.deleteUsers(2, userInfoList, userLoggedIn));
     }
+
+    @Test
+    @ExpectedDataSet(value = {"cardUser/cardUsers.xml", "congratulations.xml"})
+    void deleteUserWithError() {
+        doThrow(new RuntimeException("user can't be deleted")).when(cardUserDao).deleteUserFromCard(1, 1);
+        assertThrows(RuntimeException.class, () -> cardUserService.deleteUserFromCard(1, 1));
+    }
 }
