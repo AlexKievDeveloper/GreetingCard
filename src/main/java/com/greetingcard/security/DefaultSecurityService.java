@@ -129,7 +129,6 @@ public class DefaultSecurityService implements SecurityService {
         return emailSaltHash;
     }
 
-
     String getHashPassword(String saltAndPassword) {
         try {
             MessageDigest digest = MessageDigest.getInstance(algorithm);
