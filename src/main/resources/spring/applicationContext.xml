@@ -74,8 +74,8 @@
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
         <property name="host" value="smtp.gmail.com"/>
         <property name="port" value="587"/>
-        <property name="username" value="r0ma.hilel@gmail.com"/>
-        <property name="password" value="fy060310"/>
+        <property name="username" value="nomarchia2@gmail.com"/>
+        <property name="password" value="GOOGLEwork2020"/>
         <property name="javaMailProperties">
             <props>
                 <prop key="mail.transport.protocol">smtp</prop>
@@ -86,7 +86,7 @@
         </property>
     </bean>
 
-    <bean id="emailService" class="com.greetingcard.service.EmailService">
+    <bean id="emailService" class="com.greetingcard.service.impl.DefaultEmailService">
         <property name="mailSender" ref="mailSender"/>
     </bean>
 </beans>
