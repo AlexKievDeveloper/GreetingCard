@@ -14,6 +14,7 @@ VALUES ('new','new','new', '@new','new','new',2);
 --     lastName    VARCHAR(40),
 --     login       VARCHAR(50) UNIQUE NOT NULL,
 --     email       VARCHAR(50) UNIQUE NOT NULL,
+--     email_verified BOOLEAN,
 --     password    VARCHAR(200)       NOT NULL,
 --     salt        VARCHAR(200)       NOT NULL,
 --     language_id INTEGER            NOT NULL,

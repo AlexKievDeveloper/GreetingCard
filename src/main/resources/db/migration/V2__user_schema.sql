@@ -5,6 +5,7 @@ CREATE TABLE users
     lastName    VARCHAR(40),
     login       VARCHAR(50) UNIQUE NOT NULL,
     email       VARCHAR(50) UNIQUE NOT NULL,
+    email_verified BOOLEAN,
     password    VARCHAR(200)       NOT NULL,
     salt        VARCHAR(200)       NOT NULL,
     language_id INTEGER,
@@ -14,3 +15,7 @@ CREATE TABLE users
 
     FOREIGN KEY (language_id) REFERENCES languages (language_id)
 );
+
+CREATE RULE verify_email AS ON DELETE TO verify_email_hashes
+    DO UPDATE users SET email_verified = '1'
+    WHERE users.user_id = verify_email_hashes.user_id;
