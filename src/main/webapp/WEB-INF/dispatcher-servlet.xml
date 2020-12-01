@@ -12,7 +12,11 @@
         http://www.springframework.org/schema/context/spring-context.xsd">
 
     <context:component-scan base-package="com.greetingcard.web.controller"/>
+    <context:property-placeholder location="classpath:application.properties" order="1" ignore-unresolvable="true"/>
 
-    <mvc:annotation-driven/>
+    <mvc:resources mapping="/audio/**" location="file:${dir.files}/audio/"/>
+    <mvc:resources mapping="/img/**" location="file:${dir.files}/img/"/>
+    <mvc:resources mapping="/profile/**" location="file:${dir.files}/profile/"/>
 
+    <mvc:annotation-driven />
 </beans>

@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context
-        http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
-
-    <context:component-scan base-package="com.greetingcard">
-        <context:exclude-filter type="regex" expression="com\.greetingcard\.controller\..*"/>
-    </context:component-scan>
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd">
 
     <context:property-placeholder location="classpath:application.properties" order="1" ignore-unresolvable="true"/>
     <context:property-placeholder location="classpath:dev.properties" order="2"/>
@@ -20,6 +19,14 @@
         <property name="password" value="${jdbc.password}"/>
         <property name="driverClassName" value="${jdbc.driver}"/>
         <property name="initialSize" value="${connections.amount}"/>
+    </bean>
+
+    <bean id="maxInactiveInterval" class="java.lang.Integer">
+        <constructor-arg value="${max.inactive.interval}"/>
+    </bean>
+
+    <bean id="rootDirectory" class="java.lang.String">
+        <constructor-arg value="${dir.files}"/>
     </bean>
 
     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
@@ -38,19 +45,21 @@
         <property name="userDao" ref="userDao"/>
         <property name="algorithm" value="${algorithm}"/>
         <property name="iteration" value="${iteration}"/>
+        <property name="pathToFile" value="${dir.files}"/>
     </bean>
 
     <bean id="congratulationDao" class="com.greetingcard.dao.jdbc.JdbcCongratulationDao">
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
+        <property name="namedJdbcTemplate" ref="namedJdbcTemplate"/>
     </bean>
 
     <bean id="congratulationService" class="com.greetingcard.service.impl.DefaultCongratulationService">
         <property name="congratulationDao" ref="congratulationDao"/>
+        <property name="rootDirectory" ref="rootDirectory"/>
+        <constructor-arg ref="congratulationDao"/>
     </bean>
 
-    <bean id="maxInactiveInterval" class="java.lang.Integer">
-        <constructor-arg value="${max.inactive.interval}"/>
-    </bean>
+    <bean id="objMapper" class="com.fasterxml.jackson.databind.ObjectMapper"/>
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
@@ -61,14 +70,25 @@
     </bean>
 
     <bean id="cardDao" class="com.greetingcard.dao.jdbc.JdbcCardDao">
-        <property name = "congratulationDao" ref="congratulationDao"/>
+        <property name="congratulationDao" ref="congratulationDao"/>
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
-        <property name = "namedParameterJdbcTemplate" ref="namedJdbcTemplate"/>
+        <property name="namedParameterJdbcTemplate" ref="namedJdbcTemplate"/>
         <property name="transactionTemplate" ref="transactionTemplate"/>
     </bean>
 
     <bean id="cardService" class="com.greetingcard.service.impl.DefaultCardService">
-        <property name="jdbcCardDao" ref="cardDao"/>
+        <constructor-arg ref="cardDao"/>
+    </bean>
+
+    <bean id="cardUserDao" class="com.greetingcard.dao.jdbc.JdbcCardUserDao">
+        <property name="namedParameterJdbcTemplate" ref="namedJdbcTemplate"/>
+    </bean>
+
+    <bean id="cardUserService" class="com.greetingcard.service.impl.DefaultCardUserService">
+        <constructor-arg ref="cardUserDao"/>
+        <constructor-arg ref="securityService"/>
+        <constructor-arg ref="cardService"/>
+        <constructor-arg ref="congratulationService"/>
     </bean>
 
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
@@ -89,4 +109,10 @@
     <bean id="emailService" class="com.greetingcard.service.impl.DefaultEmailService">
         <property name="mailSender" ref="mailSender"/>
     </bean>
+
+    <tx:annotation-driven />
+
+    <context:component-scan base-package="com.greetingcard">
+        <context:exclude-filter type="regex" expression="com\.greetingcard\.controller\..*"/>
+    </context:component-scan>
 </beans>

@@ -8,9 +8,15 @@ import com.greetingcard.entity.Status;
 import com.greetingcard.service.CongratulationService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,6 +24,12 @@ import java.util.regex.Pattern;
 @Setter
 public class DefaultCongratulationService implements CongratulationService {
     private CongratulationDao congratulationDao;
+    private String rootDirectory;
+
+    public DefaultCongratulationService(CongratulationDao congratulationDao, String rootDirectory) {
+        this.congratulationDao = congratulationDao;
+        this.rootDirectory = rootDirectory;
+    }
 
     @Override
     public Congratulation getCongratulationById(int congratulationId) {
@@ -25,10 +37,12 @@ public class DefaultCongratulationService implements CongratulationService {
     }
 
     @Override
-    public List<Link> getLinkList(String youtubeLinks, String plainLinks) {
+    public List<Link> getLinkList(MultipartFile[] files_image, MultipartFile[] files_audio, Map<String, String> parametersMap) {
         List<Link> linkList = new ArrayList<>();
-        addYoutubeLinks(linkList, youtubeLinks);
-        addPlainLinks(linkList, plainLinks);
+        addYoutubeLinks(linkList, parametersMap.get("youtube"));
+        log.info("Service level.Created youtube links");
+        addLinksToLocalImagesAndAudioFiles(files_image, files_audio, linkList);
+        log.info("Service level.Saved image and audio files and created links");
         return linkList;
     }
 
@@ -47,23 +61,16 @@ public class DefaultCongratulationService implements CongratulationService {
         congratulationDao.deleteById(congratulationId, userId);
     }
 
+    @Override
+    public void deleteByCardId(long cardId, long userId) {
+        congratulationDao.deleteByCardId(cardId, userId);
+    }
+
     void addYoutubeLinks(List<Link> linkList, String youtubeLinks) {
 
-        String pattern = "(https?://)?([\\w-]{1,32}\\.[\\w-]{1,32})[^\\s@]*";
-
-        Pattern compiledPattern = Pattern.compile(pattern);
-        Matcher matcher = compiledPattern.matcher(youtubeLinks);
-
-        List<String> youtubeLinksCollection = new ArrayList<>();
-
-        while (matcher.find()) {
-            youtubeLinksCollection.add(matcher.group());
-        }
+        List<String> youtubeLinksCollection = getYoutubeLinksListFromText(youtubeLinks);
 
         for (String youtubeLink : youtubeLinksCollection) {
-            if (!youtubeLink.contains("youtu") || youtubeLink.length() > 500) {
-                throw new IllegalArgumentException("Wrong youtube link url!");
-            }
             Link video = Link.builder()
                     .link(getYoutubeVideoId(youtubeLink))
                     .type(LinkType.VIDEO)
@@ -83,30 +90,71 @@ public class DefaultCongratulationService implements CongratulationService {
         } else throw new IllegalArgumentException("Wrong youtube link url!");
     }
 
-    void addPlainLinks(List<Link> linkList, String plainLinks) {
-        if (plainLinks.length() > 500) {
-            throw new IllegalArgumentException("Sorry, congratulation not saved. The link is very long. " +
-                    "Please use a link up to 500 characters.");
-        }
+    void addLinksToLocalImagesAndAudioFiles(MultipartFile[] files_image, MultipartFile[] files_audio, List<Link> linkList) {
+        saveFilesAndCreateLinks(files_image, linkList);
+        saveFilesAndCreateLinks(files_audio, linkList);
+    }
 
-        if (!plainLinks.equals("")) {
-            String pattern = "(https?://)?([\\w-]{1,32}\\.[\\w-]{1,32})[^\\s@]*";
+    List<String> getYoutubeLinksListFromText(String text) {
+        String pattern = "(https?://)?([\\w-]{1,32}\\.[\\w-]{1,32})[^\\s@]*";
 
-            Pattern compiledPattern = Pattern.compile(pattern);
-            Matcher matcher = compiledPattern.matcher(plainLinks);
+        Pattern compiledPattern = Pattern.compile(pattern);
+        Matcher matcher = compiledPattern.matcher(text);
 
-            List<String> plainLinksCollection = new ArrayList<>();
+        List<String> linkList = new ArrayList<>();
 
-            while (matcher.find()) {
-                plainLinksCollection.add(matcher.group());
+        while (matcher.find()) {
+            String youtubeLink = matcher.group();
+            if (!youtubeLink.contains("youtu") || youtubeLink.length() > 500) {
+                throw new IllegalArgumentException("Wrong youtube link url!");
             }
+            linkList.add(youtubeLink);
+        }
+        return linkList;
+    }
 
-            for (String plainLink : plainLinksCollection) {
-                Link link = Link.builder()
-                        .link(plainLink)
-                        .type(LinkType.PLAIN_LINK)
-                        .build();
-                linkList.add(link);
+    void saveFilesAndCreateLinks(MultipartFile[] files, List<Link> linkList) {
+        if (files != null) {
+            for (MultipartFile multipartFile : files) {
+                log.info("saveFilesAndCreateLinks. Multipart: {}", multipartFile.getOriginalFilename());
+                if (multipartFile.getSize() > 1000 && !multipartFile.isEmpty()) {
+                    String salt = UUID.randomUUID().toString();
+                    String fileName = multipartFile.getOriginalFilename();
+                    String linkContentType = multipartFile.getContentType();
+
+                    if (linkContentType != null && fileName != null) {
+                        String uniqueFileName = salt.concat(fileName);
+                        LinkType linkType = null;
+                        String pathToStorage = null;
+
+                        for (LinkType linkTypeValue : LinkType.values()) {
+                            if (linkTypeValue.getAdditionalTypes().contains(linkContentType)) {
+                                linkType = linkTypeValue;
+                                pathToStorage = linkTypeValue.getPathToStorage();
+                            }
+                        }
+
+                        if (linkType == null) {
+                            throw new IllegalArgumentException("Sorry, this format is not supported by the application: ".concat(linkContentType));
+                        }
+
+                        Link link = Link.builder()
+                                .link("/".concat(pathToStorage).concat("/").concat(uniqueFileName))
+                                .type(linkType)
+                                .build();
+                        log.info("saveFilesAndCreateLinks.I`m going to add link to list: {}", link.getLink());
+                        linkList.add(link);
+
+                        try {
+                            Files.createDirectories(Paths.get(rootDirectory, pathToStorage));
+                            log.info("Root directory: {}, path to storage: {}, uniqueFileName: {}", rootDirectory, pathToStorage, uniqueFileName);
+                            multipartFile.transferTo(Paths.get(rootDirectory, pathToStorage, uniqueFileName));
+                        } catch (IOException e) {
+                            log.error("Exception while saving multipart file: {}", multipartFile, e);
+                            throw new RuntimeException("Exception while saving multipart file: " + multipartFile);
+                        }
+                    }
+                }
             }
         }
     }

@@ -2,7 +2,6 @@ package com.greetingcard.dao;
 
 import com.greetingcard.entity.AccessHashType;
 import com.greetingcard.entity.User;
-import org.springframework.lang.NonNull;
 
 public interface UserDao {
 
@@ -10,7 +9,7 @@ public interface UserDao {
 
     void update(User user);
 
-    void updatePassword(@NonNull User user);
+    void updatePassword(User user);
 
     User findByLogin(String login);
 

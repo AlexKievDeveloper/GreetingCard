@@ -1,0 +1,43 @@
+<dataset>
+    <CONGRATULATIONS
+                     message="from Roma"
+                     user_id="1"
+                     card_id="1"
+                     status_id="1"/>
+
+    <CONGRATULATIONS
+                     message="from Sasha"
+                     user_id="1"
+                     card_id="1"
+                     status_id="1"/>
+
+    <CONGRATULATIONS
+                     message="from Nastya"
+                     user_id="2"
+                     card_id="1"
+                     status_id="2"/>
+
+    <CONGRATULATIONS
+                     message="from Nomar"
+                     user_id="1"
+                     card_id="2"
+                     status_id="2"/>
+
+    <CONGRATULATIONS
+            message="from Sasha"
+            user_id="2"
+            card_id="2"
+            status_id="2"/>
+
+    <CONGRATULATIONS
+            message="from Tolik"
+            user_id="2"
+            card_id="2"
+            status_id="2"/>
+
+    <CONGRATULATIONS
+            message="from JdbcTest"
+            user_id="2"
+            card_id="2"
+            status_id="1"/>
+</dataset>

@@ -6,10 +6,9 @@ import com.greetingcard.entity.AccessHashType;
 import com.greetingcard.entity.User;
 import com.greetingcard.security.SecurityService;
 import com.greetingcard.service.EmailService;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,23 +18,25 @@ import javax.servlet.http.HttpSession;
 import java.util.Map;
 import java.util.Objects;
 
-
 @Slf4j
+@Setter
 @RestController
 @RequestMapping(value = "/api/v1/")
-@PropertySource(value = "classpath:application.properties")
 public class UserController {
-    @Autowired
     private SecurityService securityService;
     @Autowired
     private EmailService emailService;
-    @Value("${max.inactive.interval}")
+    @Autowired
     private int maxInactiveInterval;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    public UserController(SecurityService securityService) {
+        this.securityService = securityService;
+    }
 
     @DeleteMapping("session")
-    public ResponseEntity logout(HttpSession session) {
+    public ResponseEntity<?> logout(HttpSession session) {
         session.invalidate();
         log.info("Successfully logout");
         return ResponseEntity.status(HttpStatus.OK).build();
@@ -43,9 +44,9 @@ public class UserController {
 
     @PostMapping(value = "session", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity login(@RequestBody Map<String, String> userCredential, HttpSession session) throws JsonProcessingException {
+    public ResponseEntity<?> login(@RequestBody Map<String, String> userCredential, HttpSession session) throws JsonProcessingException {
         log.info("login request");
-        String login = userCredential.get("user");
+        String login = userCredential.get("login");
         String password = userCredential.get("password");
         log.info("login for user {}", login);
         User user = securityService.login(login, password);
@@ -63,13 +64,13 @@ public class UserController {
     }
 
     @PostMapping(value = "user", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity register(@RequestBody Map<String, String> userCredentials) {
+    public ResponseEntity<?> register(@RequestBody Map<String, String> userCredentials) {
         User user = User.builder()
                 .firstName(userCredentials.get("firstName"))
                 .lastName(userCredentials.get("lastName"))
                 .email(userCredentials.get("email"))
                 .login(userCredentials.get("login"))
-                .password(userCredentials.get("newPassword"))
+                .password(userCredentials.get("password"))
                 .build();
         log.info("Registration request for user login: {}", user.getLogin());
         securityService.save(user);

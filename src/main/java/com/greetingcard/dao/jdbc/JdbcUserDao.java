@@ -14,10 +14,11 @@ import org.springframework.lang.NonNull;
 @Setter
 public class JdbcUserDao implements UserDao {
     private static final UserRowMapper USER_ROW_MAPPER = new UserRowMapper();
+    private static final String FIND_USER_BY_LOGIN = "SELECT user_id, firstName, lastName, login, email, password, salt, language_id, facebook, google, pathToPhoto FROM users WHERE login = ?";
     private static final String SAVE_USER = "INSERT INTO users (firstName, lastName, login, email, password, salt, language_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    private static final String UPDATE_USER = "UPDATE users SET firstName=?, lastName=?, login=? WHERE user_id=?;";
+    private static final String UPDATE_USER = "UPDATE users SET firstName=?, lastName=?, login=?, pathToPhoto=COALESCE(?, pathToPhoto) WHERE user_id=?;";
     private static final String UPDATE_USER_PASSWORD = "UPDATE users SET password=? WHERE user_id=?;";
-    private static final String FIND_USER_BY_ID = "SELECT user_id, firstName, lastName, login, email, language_id FROM users WHERE user_id = ?";
+    private static final String FIND_USER_BY_ID = "SELECT user_id, firstName, lastName, login, email, language_id, facebook, google, pathToPhoto FROM users WHERE user_id = ?";
     private static final String FIND_USER_BY_LOGIN = "SELECT user_id, firstName, lastName, login, email, password, salt, language_id FROM users WHERE login = ?";
     private static final String FIND_USER_BY_EMAIL = "SELECT user_id, firstName, lastName, login, email, password, salt, language_id FROM users WHERE email = ?";
     private static final String FIND_ACCESS_HASH = "SELECT user_id, firstName, lastName, login, email, language_id FROM users LEFT JOIN ? AS hashes ON(users.user_id = hashes.user_id) WHERE hash = ?";

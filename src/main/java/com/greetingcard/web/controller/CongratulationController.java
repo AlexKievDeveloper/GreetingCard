@@ -1,6 +1,11 @@
 package com.greetingcard.web.controller;
 
-import com.greetingcard.entity.*;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.greetingcard.entity.Congratulation;
+import com.greetingcard.entity.Link;
+import com.greetingcard.entity.Status;
+import com.greetingcard.entity.User;
 import com.greetingcard.service.CongratulationService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -8,10 +13,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Setter
@@ -24,13 +31,28 @@ public class CongratulationController {
         this.congratulationService = congratulationService;
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createCongratulation(@RequestBody Map<String, String> parametersMap, HttpSession session) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> createCongratulation(@RequestParam(required = false) MultipartFile[] files_image,
+                                                  @RequestParam(required = false) MultipartFile[] files_audio,
+                                                  @RequestParam String json,
+                                                  HttpSession session) throws IOException {
+
+        log.info("Received request for saving congratulation");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        TypeReference<HashMap<String, String>> typeRef = new TypeReference<>() {
+        };
+
+        String jsonString = new String(json.getBytes());
+
+        HashMap<String, String> parametersMap = objectMapper.readValue(jsonString, typeRef);
+        log.info("Got Map from json");
         User user = (User) session.getAttribute("user");
         long userId = user.getId();
-        log.info("Received POST request for adding congratulation from user: {}", user.getLogin());
+        log.info("Request for adding congratulation from user: {}", user.getLogin());
 
-        List<Link> linkList = congratulationService.getLinkList(parametersMap.get("youtube"), parametersMap.get("plain_link"));
+        List<Link> linkList = congratulationService.getLinkList(files_image, files_audio, parametersMap);
+        log.info("Got linkList: {} and saved files", linkList);
 
         Congratulation congratulation = Congratulation.builder()
                 .message(parametersMap.get("message"))
@@ -47,7 +69,7 @@ public class CongratulationController {
     }
 
     @PutMapping(value = "/{id}/status")
-    public ResponseEntity<?> changeCongratulationStatus(@PathVariable("id") int congratulationId) {
+    public ResponseEntity<?> changeCongratulationStatus(@PathVariable("id") long congratulationId) {
         log.info("Received PUT request for congratulation with id: {}", congratulationId);
         congratulationService.changeCongratulationStatusByCongratulationId(Status.ISOVER, congratulationId);
 
@@ -56,7 +78,7 @@ public class CongratulationController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<?> deleteCongratulation(@PathVariable("id") int congratulationId, HttpSession session) {
+    public ResponseEntity<?> deleteCongratulation(@PathVariable("id") long congratulationId, HttpSession session) {
         log.info("Request for DELETE congratulation received");
         User user = (User) session.getAttribute("user");
 

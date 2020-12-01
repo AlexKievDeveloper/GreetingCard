@@ -1,17 +1,15 @@
 package com.greetingcard.web.controller;
 
-import com.greetingcard.dao.jdbc.FlywayConfig;
-import com.greetingcard.entity.Card;
-import com.greetingcard.entity.Status;
+import com.github.database.rider.core.api.configuration.DBUnit;
+import com.github.database.rider.core.api.configuration.Orthography;
+import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.spring.api.DBRider;
+import com.greetingcard.dao.jdbc.TestConfiguration;
+
 import com.greetingcard.entity.User;
-import com.greetingcard.service.CardService;
 import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,28 +19,37 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfigurer.sharedHttpSession;
 
+
+@DBRider
+@DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE)
+@DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardsUsers.xml",
+        "congratulations.xml", "links.xml"},
+        executeStatementsBefore = "SELECT setval('cards_card_id_seq', 3); SELECT setval(' users_cards_users_cards_id_seq', 6);",
+        cleanAfter = true)
 @ExtendWith(MockitoExtension.class)
-@SpringJUnitWebConfig(value = FlywayConfig.class)
+@SpringJUnitWebConfig(value = TestConfiguration.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CardControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private WebApplicationContext context;
+
     @Autowired
     private Flyway flyway;
-    @BeforeEach
-    void setUp() {
-        flyway.clean();
+
+    @BeforeAll
+    void dbSetUp() {
         flyway.migrate();
+    }
+
+    @BeforeEach
+    void setMockMvc() {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(sharedHttpSession()).build();
     }
@@ -57,7 +64,6 @@ class CardControllerTest {
                 .andExpect(jsonPath("$.id").value("1"))
                 .andExpect(jsonPath("$.name").value("greeting Nomar"))
                 .andExpect(status().isOk());
-
     }
 
     @Test
@@ -69,7 +75,6 @@ class CardControllerTest {
                 .andDo(print())
                 .andExpect(jsonPath("$.message").value("Sorry, you are not a member of this card"))
                 .andExpect(status().isForbidden());
-
     }
 
     @Test
@@ -86,7 +91,6 @@ class CardControllerTest {
                 .andDo(print())
                 .andExpect(jsonPath("$.id").value("4"))
                 .andExpect(status().isCreated());
-
     }
 
     @Test
@@ -125,17 +129,6 @@ class CardControllerTest {
                 .andExpect(jsonPath("$[2].id").value("3"))
                 .andExpect(jsonPath("$[2].name").value("no_congratulation"))
                 .andExpect(jsonPath("$[2].status").value("STARTUP"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("Return message id user does not have cards")
-    void getCardsAllHaveNotCards() throws Exception {
-        User user = User.builder().id(100).build();
-        mockMvc.perform(get("/api/v1/cards?type=all")
-                .sessionAttr("user", user))
-                .andDo(print())
-                .andExpect(jsonPath("$.message").value("Sorry, you do not have cards"))
                 .andExpect(status().isOk());
     }
 }

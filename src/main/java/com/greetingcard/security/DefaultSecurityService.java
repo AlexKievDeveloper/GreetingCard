@@ -6,7 +6,12 @@ import com.greetingcard.entity.Language;
 import com.greetingcard.entity.User;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -21,6 +26,8 @@ public class DefaultSecurityService implements SecurityService {
     private String algorithm;
 
     private int iteration;
+
+    private String pathToFile;
 
     @Override
     public User login(String login, String password) {
@@ -37,7 +44,6 @@ public class DefaultSecurityService implements SecurityService {
                 return user;
             }
         }
-        log.debug("Password or login value is not matching the DB entity");
         return null;
     }
 
@@ -62,7 +68,26 @@ public class DefaultSecurityService implements SecurityService {
     }
 
     @Override
-    public void update(User user) {
+    public void update(User user, MultipartFile file) {
+        String profileFile = "profile";
+        if (!file.isEmpty()) {
+            String uuidFile = UUID.randomUUID().toString();
+            String fileName = uuidFile + "." + file.getOriginalFilename();
+            try {
+                Files.createDirectories(Path.of(pathToFile,profileFile));
+                file.transferTo(Path.of(pathToFile,profileFile,fileName));
+            } catch (IOException e) {
+                log.error("Can not save new photo: {}", fileName);
+                throw new RuntimeException("Can not save new photo",e);
+            }
+
+            try {
+                Files.deleteIfExists(Path.of(user.getPathToPhoto()));
+            } catch (IOException e) {
+                log.error("Can not delete old photo: {}", user.getPathToPhoto());
+            }
+            user.setPathToPhoto("/"+profileFile+"/"+fileName);
+        }
         userDao.update(user);
     }
 
@@ -76,6 +101,11 @@ public class DefaultSecurityService implements SecurityService {
     @Override
     public User findById(long id) {
         return userDao.findById(id);
+    }
+
+    @Override
+    public User findByLogin(String login) {
+        return userDao.findByLogin(login);
     }
 
     @Override

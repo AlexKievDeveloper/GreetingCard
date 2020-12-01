@@ -1,12 +1,14 @@
 package com.greetingcard.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.greetingcard.dao.jdbc.FlywayConfig;
+import com.github.database.rider.core.api.configuration.DBUnit;
+import com.github.database.rider.core.api.configuration.Orthography;
+import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.spring.api.DBRider;
+import com.greetingcard.dao.jdbc.TestConfiguration;
 import com.greetingcard.entity.User;
 import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +23,21 @@ import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-@SpringJUnitWebConfig(value = FlywayConfig.class)
+@DBRider
+@DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE)
+@DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardsUsers.xml",
+        "congratulations.xml", "links.xml"},
+        executeStatementsBefore = "SELECT setval('users_user_id_seq', 10);",
+        cleanAfter = true)
+@SpringJUnitWebConfig(value = TestConfiguration.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UserControllerSystemTest {
     @Autowired
     private UserController userController;
@@ -41,10 +50,13 @@ class UserControllerSystemTest {
     @Autowired
     private Flyway flyway;
 
-    @BeforeEach
-    void init() {
-        flyway.clean();
+    @BeforeAll
+    void dbSetUp() {
         flyway.migrate();
+    }
+
+    @BeforeEach
+    void setMockMvc() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
     }
 
@@ -71,7 +83,7 @@ class UserControllerSystemTest {
     void testLoginIfUserExist() throws Exception {
         //prepare
         Map<String, String> userCredential = new HashMap<>();
-        userCredential.put("user", "user");
+        userCredential.put("login", "user");
         userCredential.put("password", "user");
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(userCredential);
@@ -100,7 +112,7 @@ class UserControllerSystemTest {
     void testLoginIfUserIsNotExist() throws Exception {
         //prepare
         Map<String, String> userCredential = new HashMap<>();
-        userCredential.put("user", "user_don't_create");
+        userCredential.put("login", "user_don't_create");
         userCredential.put("password", "user");
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(userCredential);
