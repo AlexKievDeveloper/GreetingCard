@@ -2,8 +2,10 @@ package com.greetingcard.web.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.greetingcard.entity.AccessHashType;
 import com.greetingcard.entity.User;
 import com.greetingcard.security.SecurityService;
+import com.greetingcard.service.EmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.Map;
+import java.util.Objects;
 
 
 @Slf4j
@@ -24,6 +27,8 @@ import java.util.Map;
 public class UserController {
     @Autowired
     private SecurityService securityService;
+    @Autowired
+    private EmailService emailService;
     @Value("${max.inactive.interval}")
     private int maxInactiveInterval;
 
@@ -64,11 +69,59 @@ public class UserController {
                 .lastName(userCredentials.get("lastName"))
                 .email(userCredentials.get("email"))
                 .login(userCredentials.get("login"))
-                .password(userCredentials.get("password"))
+                .password(userCredentials.get("newPassword"))
                 .build();
         log.info("Registration request for user login: {}", user.getLogin());
         securityService.save(user);
         log.info("Successfully registered: {}", user);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping(value = "user/password", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void changePassword(@RequestParam String login, @RequestParam String oldPassword, @RequestParam String newPassword, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+
+        user = securityService.login(login, oldPassword);
+
+        log.debug("Request to change password for user with login: {}", user.getLogin());
+        if (Objects.isNull(user)) {
+            log.debug("User check failed for login: {}. REASON: Login or password is incorrect", login);
+            throw new RuntimeException("User check failed. Login or password is incorrect.");
+        }
+        user.setPassword(newPassword);
+        securityService.updatePassword(user);
+    }
+
+    @PostMapping(value = "user/forgot_password", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void sendLetterToRestorePassword(@RequestParam String email) {
+        log.debug("Request to restore forgotten password for user with email: {}", email);
+        User user = securityService.findByEmail(email);
+
+        log.debug("Sending letter with forgotten password to user with email address: {}", user.getEmail());
+        String emailMessageBody = "Your password is: " + user.getPassword();
+        emailService.sendMail(user.getEmail(), "Greeting Card: Restore password", emailMessageBody);
+    }
+
+    @PostMapping(value = "user/forgot_password/{access-token}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void restoreAccessToProfile(@PathVariable String accessToken) {
+        securityService.verifyAccessHash(accessToken, AccessHashType.FORGOT_PASSWORD);
+    }
+
+    @PostMapping(value = "user/email/verify/", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void sendLetterToVerifyEmail(@RequestParam String email, @Value("${web.app.url}") String siteUrl) {
+        User user = securityService.findByEmail(email);
+
+        if (Objects.nonNull(user)) {
+            String emailRandomHash = securityService.generateAccessHash(email, AccessHashType.VERIFY_EMAIL);
+            log.debug("Sending letter to verify user's email address: {}", email);
+            String emailMessageBody = "Please confirm your email address by opening this link: " +
+                    siteUrl + "/email/verify/" + emailRandomHash;
+            emailService.sendMail(email, "Greeting Card: Verify email", emailMessageBody);
+        }
+    }
+
+    @PostMapping(value = "user/email/verify/{access-token}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void verifyEmail(@PathVariable String accessToken) {
+        securityService.verifyAccessHash(accessToken, AccessHashType.VERIFY_EMAIL);
     }
 }

@@ -1,6 +1,7 @@
 package com.greetingcard.security;
 
 import com.greetingcard.dao.UserDao;
+import com.greetingcard.entity.AccessHashType;
 import com.greetingcard.entity.Language;
 import com.greetingcard.entity.User;
 import lombok.Setter;
@@ -36,6 +37,7 @@ public class DefaultSecurityService implements SecurityService {
                 return user;
             }
         }
+        log.debug("Password or login value is not matching the DB entity");
         return null;
     }
 
@@ -65,8 +67,36 @@ public class DefaultSecurityService implements SecurityService {
     }
 
     @Override
+    public void updatePassword(User user) {
+        String newPasswordHash = getHashPassword(user.getSalt().concat(user.getPassword()));
+        user.setPassword(newPasswordHash);
+        userDao.updatePassword(user);
+    }
+
+    @Override
     public User findById(long id) {
         return userDao.findById(id);
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        return userDao.findByEmail(email);
+    }
+
+    @Override
+    public void verifyAccessHash(String hash, AccessHashType hashType) {
+        userDao.checkAccessHash(hash, hashType);
+    }
+
+    @Override
+    public String generateAccessHash(String email, AccessHashType hashType) {
+        String salt = UUID.randomUUID().toString();
+        String emailAndSalt = salt.concat(email);
+        String emailSaltHash = getHashPassword(emailAndSalt);
+
+        userDao.saveAccessHash(email, emailSaltHash, hashType);
+
+        return emailSaltHash;
     }
 
 
