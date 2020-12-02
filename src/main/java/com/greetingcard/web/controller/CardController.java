@@ -6,6 +6,7 @@ import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Status;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,16 +22,10 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping(value = "api/v1/", produces = MediaType.APPLICATION_JSON_VALUE)
+@AllArgsConstructor
 public class CardController {
-
     private CardService cardService;
-
-    @Autowired
     private ObjectMapper objectMapper;
-
-    public CardController(CardService cardService) {
-        this.cardService = cardService;
-    }
 
     @GetMapping(value = "cards")
     public ResponseEntity<Object> getCards(HttpSession session, @RequestParam String type) {
@@ -85,9 +80,16 @@ public class CardController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @PutMapping(value = "card/{id}")
+    @PutMapping(value = "card/{id}/name")
     public ResponseEntity<Object> changeName(@RequestBody Card card, @PathVariable long id, HttpSession session) {
-       cardService.changeCardName(card);
+        int length = card.getName().length();
+        if (length == 0 || length > 250) {
+            throw new IllegalArgumentException("Name is short or too long");
+        }
+        User user = (User) session.getAttribute("user");
+        card.setId(id);
+        card.setUser(user);
+        cardService.changeCardName(card);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

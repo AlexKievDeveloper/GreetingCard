@@ -8,7 +8,9 @@ import com.github.database.rider.spring.api.DBRider;
 import com.greetingcard.entity.Role;
 import com.greetingcard.entity.UserInfo;
 import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
@@ -16,7 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DBRider
 @DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE)
@@ -95,7 +98,6 @@ class JdbcCardUserDaoITest {
 
         assertEquals("(:user_id0,:user_id1)", parameters);
     }
-
 
     @Test
     @ExpectedDataSet("cardUser/cardUsersListDeleted.xml")

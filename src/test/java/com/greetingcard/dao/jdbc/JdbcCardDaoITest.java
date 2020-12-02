@@ -229,4 +229,15 @@ public class JdbcCardDaoITest {
         Card card = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
         assertEquals(Status.ISOVER, card.getStatus());
     }
+
+    @Test
+    @DisplayName("Change name of card")
+    void changeCardName() {
+        User user = User.builder().id(1).build();
+        Card actual = Card.builder().id(1).user(user).name("newName").build();
+        jdbcCardDao.changeCardName(actual);
+        Card expected = jdbcCardDao.getCardAndCongratulationByCardId(1,1);
+
+        assertEquals(actual.getName(),expected.getName());
+     }
 }

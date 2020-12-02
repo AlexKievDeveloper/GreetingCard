@@ -5,7 +5,6 @@ import com.github.database.rider.core.api.configuration.Orthography;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.greetingcard.dao.jdbc.TestConfiguration;
-
 import com.greetingcard.entity.User;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.*;
@@ -132,4 +131,53 @@ class CardControllerTest {
                 .andExpect(jsonPath("$[2].status").value("STARTUP"))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    @DisplayName("Change the name of the card")
+    void changeName() throws Exception {
+        User user = User.builder().id(1).build();
+        String json = "{\"name\":\"newName\"}";
+
+        mockMvc.perform(put("/api/v1/card/{id}/name", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+                .characterEncoding("utf-8")
+                .sessionAttr("user", user))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Change the name of the card to long")
+    void changeNameToLong() throws Exception {
+        User user = User.builder().id(1).build();
+        String json = "{\"name\":\"NewnamecarNewnamecarNewnamecarNewnamecarNewnamecar" +
+                "NewnamecarNewnamecarNewnamecarNewnamecarNewnamecarNewnamecarNewnamecar" +
+                "NewnamecarNewnamecarNewnamecarNewnamecarNewnamecarNewnamecarNewnamecar" +
+                "NewnamecarNewnamecarNewnamecarNewnamecarNewnamecarNewnamecarNewnamecar\"}";
+
+        mockMvc.perform(put("/api/v1/card/{id}/name", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+                .characterEncoding("utf-8")
+                .sessionAttr("user", user))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Change the name of the card to short")
+    void changeNameToShort() throws Exception {
+        User user = User.builder().id(1).build();
+        String json = "{\"name\":\"\"}";
+
+        mockMvc.perform(put("/api/v1/card/{id}/name", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+                .characterEncoding("utf-8")
+                .sessionAttr("user", user))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
 }

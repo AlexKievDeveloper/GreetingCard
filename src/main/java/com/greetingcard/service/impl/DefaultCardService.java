@@ -1,12 +1,10 @@
 package com.greetingcard.service.impl;
 
 import com.greetingcard.dao.CardDao;
-import com.greetingcard.dao.CongratulationDao;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Status;
 import com.greetingcard.service.CardService;
 import lombok.RequiredArgsConstructor;
-
 
 import java.util.List;
 import java.util.Optional;
