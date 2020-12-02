@@ -205,6 +205,14 @@ class UserControllerSystemTest {
                 .andExpect(status().isOk());
     }
 
+    /**
+     * This method sends a real letter to the mailbox, so please be careful while running it :)
+     * Otherwise my mailbox will be spammed hardly!
+     * You can change the email in request to your own address (but in that case you also need to
+     * change it in userWithRealEmail.xml dataset. Peace!
+     *
+     * @author Nomarch (nomarchia2@gmail.com)
+     */
     @Test
     @DisplayName("Request to restore forgotten password ")
     @DataSet(value = {"languages.xml", "userWithRealEmail.xml"})
