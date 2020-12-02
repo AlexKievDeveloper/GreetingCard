@@ -20,7 +20,7 @@ public interface SecurityService {
 
     User findByEmail(String email);
 
-    void verifyAccessHash(String hash, AccessHashType hashType);
+    Boolean verifyAccessHash(String hash, AccessHashType hashType);
 
     String generateAccessHash(String email, AccessHashType hashType);
 }

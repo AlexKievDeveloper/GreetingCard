@@ -29,6 +29,10 @@
         <constructor-arg value="${dir.files}"/>
     </bean>
 
+    <bean id="siteUrl" class="java.lang.String">
+        <constructor-arg value="${webapp.url}"/>
+    </bean>
+
     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
         <constructor-arg ref="dataSource"/>
     </bean>

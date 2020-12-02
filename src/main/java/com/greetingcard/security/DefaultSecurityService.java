@@ -113,8 +113,8 @@ public class DefaultSecurityService implements SecurityService {
     }
 
     @Override
-    public void verifyAccessHash(String hash, AccessHashType hashType) {
-        userDao.verifyAccessHash(hash, hashType);
+    public Boolean verifyAccessHash(String hash, AccessHashType hashType) {
+        return userDao.verifyAccessHash(hash, hashType);
     }
 
     @Override
@@ -149,6 +149,4 @@ public class DefaultSecurityService implements SecurityService {
                     "Please put " + fieldName + " up to " + maxCharacters + " characters.");
         }
     }
-
-
 }

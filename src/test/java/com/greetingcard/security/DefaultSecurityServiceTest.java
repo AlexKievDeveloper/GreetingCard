@@ -3,6 +3,7 @@ package com.greetingcard.security;
 import com.github.database.rider.core.api.configuration.DBUnit;
 import com.github.database.rider.core.api.configuration.Orthography;
 import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.greetingcard.dao.UserDao;
 import com.greetingcard.dao.jdbc.TestConfiguration;
@@ -18,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
+import static com.greetingcard.entity.AccessHashType.FORGOT_PASSWORD;
+import static com.greetingcard.entity.AccessHashType.VERIFY_EMAIL;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 
@@ -109,5 +112,54 @@ class DefaultSecurityServiceTest {
         securityService.update(user, file);
         //then
         assertNotEquals("testFile", user.getPathToPhoto());
+    }
+
+    @Test
+    @DisplayName("Update user's password")
+    @ExpectedDataSet("usersAfterChangePassword.xml")
+    void testUpdatePassword() {
+        //prepare
+        User user = User.builder()
+                .id(2L)
+                .password("newPassword")
+                .salt("salt")
+                .build();
+        //when
+        securityService.updatePassword(user);
+    }
+
+    @Test
+    @DisplayName("Find user by login")
+    void testFindByLogin() {
+        //when
+        mockSecurityService.findByLogin("login");
+        //then
+        verify(userDao).findByLogin("login");
+    }
+
+    @Test
+    @DisplayName("Find user by email address")
+    void testFindByEmail() {
+        //when
+        mockSecurityService.findByLogin("@email");
+        //then
+        verify(userDao).findByLogin("@email");
+    }
+
+    @Test
+    @DisplayName("Verify the access hash")
+    @ExpectedDataSet("forgot_password_hashesAfterCheckingHash.xml")
+    void testVerifyAccessHash() {
+        securityService.verifyAccessHash("accessHash", FORGOT_PASSWORD);
+    }
+
+    @Test
+    @DisplayName("Generate an access hash, based on user's email + random salt")
+    void testGenerateAccessHash() {
+        //when
+        String newHash = securityService.generateAccessHash("@user", VERIFY_EMAIL);
+        //then
+        assertNotNull(newHash);
+        assertTrue(securityService.verifyAccessHash(newHash, VERIFY_EMAIL));
     }
 }

@@ -51,7 +51,7 @@ public class JdbcUserDao implements UserDao {
     @Override
     public void updatePassword(@NonNull User user) {
         log.info("Edit user's (user_id:{}) password", user.getId());
-        jdbcTemplate.update(UPDATE_USER_PASSWORD, user.getId(), user.getPassword());
+        jdbcTemplate.update(UPDATE_USER_PASSWORD, user.getPassword(), user.getId());
     }
 
     @Override
