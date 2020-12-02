@@ -27,7 +27,7 @@ public class CardController {
     private CardService cardService;
     private ObjectMapper objectMapper;
 
-    @GetMapping(value = "cards")
+    @GetMapping("cards")
     public ResponseEntity<Object> getCards(HttpSession session, @RequestParam String type) {
         log.info("getCards");
         User user = (User) session.getAttribute("user");
@@ -36,7 +36,7 @@ public class CardController {
         return ResponseEntity.status(HttpStatus.OK).body(cardList);
     }
 
-    @GetMapping(value = "card/{id}")
+    @GetMapping("card/{id}")
     public ResponseEntity<Object> getCard(HttpSession session, @PathVariable long id) throws JsonProcessingException {
         log.info("Get card request");
         User user = (User) session.getAttribute("user");
@@ -64,24 +64,22 @@ public class CardController {
         return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(json);
     }
 
-    @PutMapping(value = "card/{id}/status")
-    public ResponseEntity<Object> changeStatus(@PathVariable long id) {
+    @PutMapping("card/{id}/status")
+    public void changeStatus(@PathVariable long id) {
         log.info("Received PUT request");
         cardService.changeCardStatus(Status.ISOVER, id);
         log.info("Successfully changed card status for card id: {}", id);
-        return ResponseEntity.status(HttpServletResponse.SC_OK).build();
     }
 
-    @DeleteMapping(value = "card/{id}")
-    public ResponseEntity<Object> delete(@PathVariable long id, HttpSession session) {
+    @DeleteMapping("card/{id}")
+    public void delete(@PathVariable long id, HttpSession session) {
         log.info("Request for DELETE card");
         User user = (User) session.getAttribute("user");
         cardService.deleteCardById(id, user.getId());
-        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @PutMapping(value = "card/{id}/name")
-    public ResponseEntity<Object> changeName(@RequestBody Card card, @PathVariable long id, HttpSession session) {
+    @PutMapping("card/{id}/name")
+    public void changeName(@RequestBody Card card, @PathVariable long id, HttpSession session) {
         int length = card.getName().length();
         if (length == 0 || length > 250) {
             throw new IllegalArgumentException("Name is short or too long");
@@ -90,6 +88,5 @@ public class CardController {
         card.setId(id);
         card.setUser(user);
         cardService.changeCardName(card);
-        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
