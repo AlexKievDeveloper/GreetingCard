@@ -84,4 +84,10 @@ public class CardController {
         cardService.deleteCardById(id, user.getId());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    @PutMapping(value = "card/{id}")
+    public ResponseEntity<Object> changeName(@RequestBody Card card, @PathVariable long id, HttpSession session) {
+       cardService.changeCardName(card);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }

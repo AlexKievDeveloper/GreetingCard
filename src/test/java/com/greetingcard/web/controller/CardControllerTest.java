@@ -62,6 +62,7 @@ class CardControllerTest {
                 .sessionAttr("user", user))
                 .andDo(print())
                 .andExpect(jsonPath("$.id").value("1"))
+                .andExpect(jsonPath("$.user.id").value("1"))
                 .andExpect(jsonPath("$.name").value("greeting Nomar"))
                 .andExpect(status().isOk());
     }

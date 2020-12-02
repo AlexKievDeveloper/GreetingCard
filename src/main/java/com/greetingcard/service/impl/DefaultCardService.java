@@ -50,6 +50,11 @@ public class DefaultCardService implements CardService {
         jdbcCardDao.changeCardStatusById(status, cardId);
     }
 
+    @Override
+    public void changeCardName(Card card) {
+        jdbcCardDao.changeCardName(card);
+    }
+
     public Optional<Status> getCardStatusById(long cardId) {
         return jdbcCardDao.getCardStatusById(cardId);
     }

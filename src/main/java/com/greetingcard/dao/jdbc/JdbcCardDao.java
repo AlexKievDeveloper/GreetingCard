@@ -26,21 +26,6 @@ import java.util.Optional;
 @Slf4j
 @Setter
 public class JdbcCardDao implements CardDao {
-    private static final String GET_ALL_CARDS_BY_USER_ID =
-            "SELECT cards.card_id, " +
-                    "name, " +
-                    "background_image, " +
-                    "card_link, status_id, " +
-                    "users.user_id, " +
-                    "firstName, " +
-                    "lastName, " +
-                    "login, " +
-                    "email " +
-                    "FROM cards " +
-                    "LEFT JOIN users_cards ON (cards.card_id=users_cards.card_id) " +
-                    "LEFT JOIN users ON (users_cards.user_id=users.user_id) " +
-                    "WHERE users.user_id = :id " +
-                    "ORDER BY cards.card_id";
     private static final String GET_CARDS_BY_USER_ID_AND_ROLE_ID =
             "SELECT cards.card_id, " +
                     "name, " +
@@ -167,4 +152,8 @@ public class JdbcCardDao implements CardDao {
         return (statusIds.size() != 0 ? Optional.of(Status.getByNumber(statusIds.get(0))) : Optional.empty());
     }
 
+    @Override
+    public void changeCardName(Card card) {
+
+    }
 }

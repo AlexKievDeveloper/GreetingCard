@@ -122,7 +122,38 @@ public class JdbcCardDaoITest {
 
     @Test
     @DisplayName("Return card with all congratulations")
-    public void getCardAndCongratulation() {
+    public void getCardAndCongratulationAdmin() {
+        //when
+        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
+        List<Congratulation> actualCongratulationList = actualCard.getCongratulationList();
+
+        //then
+        List<Link> fromRoma = actualCongratulationList.get(0).getLinkList();
+        List<Link> fromSasha = actualCongratulationList.get(1).getLinkList();
+        List<Link> fromNastya = actualCongratulationList.get(2).getLinkList();
+
+        assertEquals(3, actualCongratulationList.size());
+        assertEquals(1, actualCard.getId());
+        assertEquals("greeting Nomar", actualCard.getName());
+        assertEquals("path_to_image", actualCard.getBackgroundImage());
+        assertEquals("link_to_greeting", actualCard.getCardLink());
+        assertEquals(Status.STARTUP, actualCard.getStatus());
+
+        assertEquals("from Roma", actualCongratulationList.get(0).getMessage());
+        assertEquals("from Sasha", actualCongratulationList.get(1).getMessage());
+        assertEquals("from Nastya", actualCongratulationList.get(2).getMessage());
+        assertEquals(1, actualCongratulationList.get(0).getUser().getId());
+        assertEquals(1, actualCongratulationList.get(1).getUser().getId());
+        assertEquals(2, actualCongratulationList.get(2).getUser().getId());
+
+        assertEquals(6, fromRoma.size());
+        assertEquals(3, fromSasha.size());
+        assertEquals(0, fromNastya.size());
+    }
+
+    @Test
+    @DisplayName("Return card with all congratulations")
+    public void getCardAndCongratulationMember() {
         //when
         Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
         List<Congratulation> actualCongratulationList = actualCard.getCongratulationList();
