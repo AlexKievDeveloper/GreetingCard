@@ -3,6 +3,7 @@ package com.greetingcard.dao.jdbc;
 import com.github.database.rider.core.api.configuration.DBUnit;
 import com.github.database.rider.core.api.configuration.Orthography;
 import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.greetingcard.dao.UserDao;
 import com.greetingcard.entity.AccessHashType;
@@ -143,24 +144,39 @@ class JdbcUserDaoITest {
     }
 
     @Test
-    @DisplayName("Save accessHash to the table")
+    @DisplayName("Save access hash to the table")
     void testSaveAccessHash() {
         //prepare
-        String generatedRandomHash = "randomAccessHash";
+        String generatedRandomHash = "accessHash";
         //when
         userDao.saveAccessHash("@new", generatedRandomHash, AccessHashType.FORGOT_PASSWORD);
 
         assertTrue(userDao.verifyAccessHash(generatedRandomHash, AccessHashType.FORGOT_PASSWORD));
+        assertFalse(userDao.verifyAccessHash(generatedRandomHash, AccessHashType.FORGOT_PASSWORD));
     }
 
     @Test
-    @DisplayName("Check hash tables for needed hash")
-    void testVerifyAccessHash() {
+    @DisplayName("Check hash tables for forgot password access hash")
+    @ExpectedDataSet("forgot_password_hashesAfterCheckingHash.xml")
+    void testVerifyForgotPasswordAccessHash() {
         //prepare
-        String generatedRandomHash = "randomAccessHash";
+        String generatedRandomHash = "accessHash";
         //when
         boolean result = userDao.verifyAccessHash(generatedRandomHash, AccessHashType.FORGOT_PASSWORD);
+        //then
         assertTrue(result);
         assertFalse(userDao.verifyAccessHash(generatedRandomHash, AccessHashType.FORGOT_PASSWORD));
+    }
+
+    @Test
+    @DisplayName("Search hash tables for verify email access hash and change email_verified column to 'true' in users table")
+    @ExpectedDataSet(value = {"usersAfterVerifyEmail.xml", "verify_email_hashesAfterCheckingHash.xml"})
+    void testVerifyEmailAccessHash() {
+        //prepare
+        String generatedRandomHash = "accessHash";
+        //when
+        boolean result = userDao.verifyAccessHash(generatedRandomHash, AccessHashType.VERIFY_EMAIL);
+        //then
+        assertTrue(result);
     }
 }
