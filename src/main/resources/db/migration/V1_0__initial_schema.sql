@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS users
     lastName    VARCHAR(40),
     login       VARCHAR(50) UNIQUE NOT NULL,
     email       VARCHAR(50) UNIQUE NOT NULL,
+    email_verified BOOLEAN,
     password    VARCHAR(200)       NOT NULL,
     salt        VARCHAR(200)       NOT NULL,
     language_id INTEGER,
@@ -83,4 +84,18 @@ CREATE TABLE IF NOT EXISTS links
     congratulation_id INTEGER,
     FOREIGN KEY (type_id) REFERENCES types (type_id),
     FOREIGN KEY (congratulation_id) REFERENCES congratulations (congratulation_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS verify_email_hashes
+(
+    user_id INTEGER NOT NULL,
+    hash VARCHAR(200) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (user_id)
+);
+
+CREATE TABLE IF NOT EXISTS forgot_password_hashes
+(
+    user_id INTEGER NOT NULL,
+    hash VARCHAR(200) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (user_id)
 );

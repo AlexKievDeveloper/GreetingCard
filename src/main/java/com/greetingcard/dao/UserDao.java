@@ -19,5 +19,5 @@ public interface UserDao {
 
     void saveAccessHash(String email, String hash, AccessHashType hashType);
 
-    void checkAccessHash(String hash, AccessHashType hashType);
+    Boolean verifyAccessHash(String hash, AccessHashType hashType);
 }

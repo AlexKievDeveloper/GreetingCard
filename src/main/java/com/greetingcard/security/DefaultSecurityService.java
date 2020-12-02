@@ -8,7 +8,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -115,18 +114,18 @@ public class DefaultSecurityService implements SecurityService {
 
     @Override
     public void verifyAccessHash(String hash, AccessHashType hashType) {
-        userDao.checkAccessHash(hash, hashType);
+        userDao.verifyAccessHash(hash, hashType);
     }
 
     @Override
     public String generateAccessHash(String email, AccessHashType hashType) {
         String salt = UUID.randomUUID().toString();
         String emailAndSalt = salt.concat(email);
-        String emailSaltHash = getHashPassword(emailAndSalt);
+        String newAccessHash = getHashPassword(emailAndSalt);
 
-        userDao.saveAccessHash(email, emailSaltHash, hashType);
+        userDao.saveAccessHash(email, newAccessHash, hashType);
 
-        return emailSaltHash;
+        return newAccessHash;
     }
 
     String getHashPassword(String saltAndPassword) {

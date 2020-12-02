@@ -5,6 +5,7 @@ import com.github.database.rider.core.api.configuration.Orthography;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.greetingcard.dao.UserDao;
+import com.greetingcard.entity.AccessHashType;
 import com.greetingcard.entity.Language;
 import com.greetingcard.entity.User;
 import org.flywaydb.core.Flyway;
@@ -17,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DBRider
 @DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE)
 @DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardsUsers.xml",
-        "congratulations.xml", "links.xml"},
+        "congratulations.xml", "links.xml", "forgot_password_hashes.xml", "verify_email_hashes.xml"},
         executeStatementsBefore = "SELECT setval('users_user_id_seq', 10);",
         cleanAfter = true)
 @SpringJUnitWebConfig(value = TestConfiguration.class)
@@ -117,4 +118,49 @@ class JdbcUserDaoITest {
         assertEquals("@user", actualUser.getEmail());
     }
 
+    @Test
+    @DisplayName("Find user by email")
+    void testFindUserByEmail() {
+        //when
+        User actualUser = userDao.findByEmail("@user");
+        //then
+        assertNotNull(actualUser);
+        assertEquals(2, actualUser.getId());
+        assertEquals("user", actualUser.getFirstName());
+        assertEquals("user", actualUser.getLastName());
+        assertEquals("user", actualUser.getLogin());
+        assertEquals("@user", actualUser.getEmail());
+    }
+
+
+    @Test
+    @DisplayName("Find user by email if there is no user with such email in DB")
+    void testFindUserByEmailIfEmailAddressNotFound() {
+        //when
+        User actualUser = userDao.findByEmail("non-existing@email.address");
+        //then
+        assertNull(actualUser);
+    }
+
+    @Test
+    @DisplayName("Save accessHash to the table")
+    void testSaveAccessHash() {
+        //prepare
+        String generatedRandomHash = "randomAccessHash";
+        //when
+        userDao.saveAccessHash("@new", generatedRandomHash, AccessHashType.FORGOT_PASSWORD);
+
+        assertTrue(userDao.verifyAccessHash(generatedRandomHash, AccessHashType.FORGOT_PASSWORD));
+    }
+
+    @Test
+    @DisplayName("Check hash tables for needed hash")
+    void testVerifyAccessHash() {
+        //prepare
+        String generatedRandomHash = "randomAccessHash";
+        //when
+        boolean result = userDao.verifyAccessHash(generatedRandomHash, AccessHashType.FORGOT_PASSWORD);
+        assertTrue(result);
+        assertFalse(userDao.verifyAccessHash(generatedRandomHash, AccessHashType.FORGOT_PASSWORD));
+    }
 }

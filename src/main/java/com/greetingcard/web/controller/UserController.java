@@ -82,47 +82,49 @@ public class UserController {
     @PostMapping(value = "user/password", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void changePassword(@RequestParam String login, @RequestParam String oldPassword, @RequestParam String newPassword, HttpSession session) {
         User user = (User) session.getAttribute("user");
-
-        user = securityService.login(login, oldPassword);
+        user.setPassword(newPassword);
 
         log.debug("Request to change password for user with login: {}", user.getLogin());
-        if (Objects.isNull(user)) {
-            log.debug("User check failed for login: {}. REASON: Login or password is incorrect", login);
-            throw new RuntimeException("User check failed. Login or password is incorrect.");
-        }
-        user.setPassword(newPassword);
         securityService.updatePassword(user);
     }
 
     @PostMapping(value = "user/forgot_password", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void sendLetterToRestorePassword(@RequestParam String email) {
+    public void sendLetterToRestorePassword(@RequestParam String email, @Value("${web.app.url}") String siteUrl) {
         log.debug("Request to restore forgotten password for user with email: {}", email);
         User user = securityService.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("Cannot find a user with email: " + email);
+        }
 
         log.debug("Sending letter with forgotten password to user with email address: {}", user.getEmail());
-        String emailMessageBody = "Your password is: " + user.getPassword();
-        emailService.sendMail(user.getEmail(), "Greeting Card: Restore password", emailMessageBody);
+
+        String accessHash = securityService.generateAccessHash(email, AccessHashType.VERIFY_EMAIL);
+        log.debug("Sending letter to restore user's forgotten password: {}", email);
+        String emailMessageBody = "To restore the access to your account, please, open this link and follow the instructions:\n " +
+                siteUrl + "/user/forgot_password/" + accessHash;
+        emailService.sendMail(email, "Greeting Card: Restore password", emailMessageBody);
+
     }
 
-    @PostMapping(value = "user/forgot_password/{access-token}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "user/forgot_password/{access-token}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void restoreAccessToProfile(@PathVariable String accessToken) {
         securityService.verifyAccessHash(accessToken, AccessHashType.FORGOT_PASSWORD);
     }
 
-    @PostMapping(value = "user/email/verify/", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "user/verification/", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void sendLetterToVerifyEmail(@RequestParam String email, @Value("${web.app.url}") String siteUrl) {
         User user = securityService.findByEmail(email);
 
         if (Objects.nonNull(user)) {
-            String emailRandomHash = securityService.generateAccessHash(email, AccessHashType.VERIFY_EMAIL);
+            String accessHash = securityService.generateAccessHash(email, AccessHashType.VERIFY_EMAIL);
             log.debug("Sending letter to verify user's email address: {}", email);
             String emailMessageBody = "Please confirm your email address by opening this link: " +
-                    siteUrl + "/email/verify/" + emailRandomHash;
+                    siteUrl + "/email/verify/" + accessHash;
             emailService.sendMail(email, "Greeting Card: Verify email", emailMessageBody);
         }
     }
 
-    @PostMapping(value = "user/email/verify/{access-token}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "user/verification/{access-token}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void verifyEmail(@PathVariable String accessToken) {
         securityService.verifyAccessHash(accessToken, AccessHashType.VERIFY_EMAIL);
     }

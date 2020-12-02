@@ -2,27 +2,36 @@ package com.greetingcard.dao.jdbc;
 
 import com.greetingcard.dao.UserDao;
 import com.greetingcard.dao.jdbc.mapper.UserFindByIdRowMapper;
+import com.greetingcard.dao.jdbc.mapper.UserIdRowMapper;
 import com.greetingcard.dao.jdbc.mapper.UserRowMapper;
 import com.greetingcard.entity.AccessHashType;
 import com.greetingcard.entity.User;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapperResultSetExtractor;
 import org.springframework.lang.NonNull;
+import org.springframework.transaction.annotation.Transactional;
+
+import static com.greetingcard.entity.AccessHashType.*;
 
 @Slf4j
 @Setter
 public class JdbcUserDao implements UserDao {
     private static final UserRowMapper USER_ROW_MAPPER = new UserRowMapper();
-    private static final String FIND_USER_BY_LOGIN = "SELECT user_id, firstName, lastName, login, email, password, salt, language_id, facebook, google, pathToPhoto FROM users WHERE login = ?";
     private static final String SAVE_USER = "INSERT INTO users (firstName, lastName, login, email, password, salt, language_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
     private static final String UPDATE_USER = "UPDATE users SET firstName=?, lastName=?, login=?, pathToPhoto=COALESCE(?, pathToPhoto) WHERE user_id=?;";
     private static final String UPDATE_USER_PASSWORD = "UPDATE users SET password=? WHERE user_id=?;";
     private static final String FIND_USER_BY_ID = "SELECT user_id, firstName, lastName, login, email, language_id, facebook, google, pathToPhoto FROM users WHERE user_id = ?";
-    private static final String FIND_USER_BY_LOGIN = "SELECT user_id, firstName, lastName, login, email, password, salt, language_id FROM users WHERE login = ?";
-    private static final String FIND_USER_BY_EMAIL = "SELECT user_id, firstName, lastName, login, email, password, salt, language_id FROM users WHERE email = ?";
-    private static final String FIND_ACCESS_HASH = "SELECT user_id, firstName, lastName, login, email, language_id FROM users LEFT JOIN ? AS hashes ON(users.user_id = hashes.user_id) WHERE hash = ?";
-    private static final String INSERT_ACCESS_HASH = "INSERT INTO ? (user_id, hash) VALUES (?, ?)";
+    private static final String FIND_USER_BY_LOGIN = "SELECT user_id, firstName, lastName, login, email, password, salt, language_id, facebook, google, pathToPhoto FROM users WHERE login = ?";
+    private static final String FIND_USER_BY_EMAIL = "SELECT user_id, firstName, lastName, login, email, password, salt, language_id, facebook, google, pathToPhoto FROM users WHERE email = ?";
+    private static final String SAVE_FORGOT_PASS_ACCESS_HASH = "INSERT INTO forgot_password_hashes (user_id, hash) VALUES (?, ?)";
+    private static final String SAVE_VERIFY_EMAIL_ACCESS_HASH = "INSERT INTO verify_email_hashes (user_id, hash) VALUES (?, ?)";
+    private static final String FIND_FORGOT_PASS_ACCESS_HASH = "SELECT user_id FROM forgot_password_hashes WHERE hash = ?";
+    private static final String FIND_VERIFY_EMAIL_ACCESS_HASH = "SELECT user_id FROM verify_email_hashes WHERE hash = ?";
+    private static final String DELETE_FORGOT_PASS_ACCESS_HASH = "DELETE FROM forgot_password_hashes WHERE hash = ?";
+    private static final String DELETE_VERIFY_EMAIL_ACCESS_HASH = "DELETE FROM verify_email_hashes WHERE hash = ?";
+    private static final String UPDATE_USER_VERIFY_EMAIL = "UPDATE users SET email_verified='1' WHERE user_id=?;";
 
     private JdbcTemplate jdbcTemplate;
 
@@ -36,7 +45,7 @@ public class JdbcUserDao implements UserDao {
     @Override
     public void update(@NonNull User user) {
         log.info("Edit user's (user_id:{}) personal information", user.getId());
-        jdbcTemplate.update(UPDATE_USER, user.getFirstName(), user.getLastName(), user.getLogin(), user.getId());
+        jdbcTemplate.update(UPDATE_USER, user.getFirstName(), user.getLastName(), user.getLogin(), user.getPathToPhoto(), user.getId());
     }
 
     @Override
@@ -66,11 +75,32 @@ public class JdbcUserDao implements UserDao {
     @Override
     public void saveAccessHash(String email, String hash, AccessHashType hashType) {
         User user = findByEmail(email);
-        jdbcTemplate.update(INSERT_ACCESS_HASH, hashType.getTableName(), user.getId(), hash);
+        if (hashType == FORGOT_PASSWORD) {
+            jdbcTemplate.update(SAVE_FORGOT_PASS_ACCESS_HASH, user.getId(), hash);
+        }
+        if (hashType == VERIFY_EMAIL) {
+            jdbcTemplate.update(SAVE_VERIFY_EMAIL_ACCESS_HASH, user.getId(), hash);
+        }
     }
 
     @Override
-    public void checkAccessHash(String hash, AccessHashType hashType) {
-        jdbcTemplate.query(FIND_ACCESS_HASH, USER_ROW_MAPPER, hashType.getTableName(), hash);
+    @Transactional
+    public Boolean verifyAccessHash(String hash, AccessHashType hashType) {
+        if (hashType == FORGOT_PASSWORD) {
+            User user = jdbcTemplate.query(FIND_FORGOT_PASS_ACCESS_HASH, new UserIdRowMapper(), hash);
+            if (user != null) {
+                jdbcTemplate.update(DELETE_FORGOT_PASS_ACCESS_HASH, hash);
+                return true;
+            }
+        }
+        if (hashType == VERIFY_EMAIL) {
+            User user = jdbcTemplate.query(FIND_VERIFY_EMAIL_ACCESS_HASH, new UserIdRowMapper(), hash);
+            if (user != null) {
+                jdbcTemplate.update(DELETE_VERIFY_EMAIL_ACCESS_HASH, hash);
+                jdbcTemplate.update(UPDATE_USER_VERIFY_EMAIL, user.getId());
+                return true;
+            }
+        }
+        return false;
     }
 }

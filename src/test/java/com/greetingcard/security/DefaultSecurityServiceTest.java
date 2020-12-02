@@ -25,7 +25,7 @@ import static org.mockito.Mockito.verify;
 @DBRider
 @DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE)
 @DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardsUsers.xml",
-        "congratulations.xml", "links.xml"},
+        "congratulations.xml", "links.xml", "forgot_password_hashes.xml", "verify_email_hashes.xml"},
         executeStatementsBefore = "SELECT setval('users_user_id_seq', 3);",
         cleanAfter = true)
 @SpringJUnitWebConfig(value = TestConfiguration.class)
