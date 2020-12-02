@@ -26,6 +26,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -173,5 +174,53 @@ class UserControllerSystemTest {
                 .andExpect(jsonPath("$.message")
                         .value("Sorry, login is too long. " +
                                 "Please put login up to 50 characters."));
+    }
+
+    @Test
+    @DisplayName("Open email verification link")
+    void testEmailVerification() throws Exception {
+        mockMvc.perform(post("/api/v1/user/verification/accessHash")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Request to change password ")
+    void testChangePassword() throws Exception {
+        //prepare
+        User user = User.builder()
+                .login("user")
+                .password("user")
+                .salt("salt")
+                .build();
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("user", user);
+        assertNotNull(session.getAttribute("user"));
+        //when
+        mockMvc.perform(post("/api/v1/user/password?oldPassword=pass&newPassword=newpass")
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Request to restore forgotten password ")
+    @DataSet(value = {"languages.xml", "userWithRealEmail.xml"})
+    void testRestorePassword() throws Exception {
+        mockMvc.perform(post("/api/v1/user/forgot_password?email=nomarchia2@gmail.com")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Open restore password page")
+    void testRestoreAccessToProfile() throws Exception {
+        mockMvc.perform(put("/api/v1/user/forgot_password/accessHash")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
     }
 }
