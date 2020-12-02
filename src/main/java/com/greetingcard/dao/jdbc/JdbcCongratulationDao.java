@@ -24,6 +24,7 @@ import java.util.Objects;
 @Setter
 public class JdbcCongratulationDao implements CongratulationDao {
     private static final String GET_CONGRATULATION = "SELECT congratulations.congratulation_id, user_id, card_id, status_id, message, link_id, link, type_id FROM congratulations LEFT JOIN links on congratulations.congratulation_id = links.congratulation_id WHERE congratulations.congratulation_id=?";
+    private static final String GET_LINKS = "SELECT link_id, link, type_id, congratulation_id FROM links where link_id = ? and congratulation_id = ? and (type_id = 2 OR type_id = 3)";
     private static final String SAVE_CONGRATULATION = "INSERT INTO congratulations (message, card_id, user_id, status_id) VALUES (?,?,?,?)";
     private static final String UPDATE_CONGRATULATION = "UPDATE congratulations SET message = ? where (congratulation_id = ? and user_id = ?)";
     private static final String SAVE_LINK = "INSERT INTO links (link, type_id, congratulation_id) VALUES(?,?,?)";
@@ -34,6 +35,7 @@ public class JdbcCongratulationDao implements CongratulationDao {
     private static final String CHANGE_CONGRATULATION_STATUS_BY_CONGRATULATION_ID = "UPDATE congratulations SET status_id = ? where congratulation_id = ?";
     private static final String DELETE_BY_ID = "DELETE FROM congratulations WHERE congratulation_id=? and user_id=?";
     private static final String FIND_IMAGE_AND_AUDIO_LINKS_BY_CONGRATULATION_ID = "SELECT link FROM links l LEFT JOIN congratulations cg ON cg.congratulation_id = l.congratulation_id where cg.congratulation_id=? and (type_id = 2 OR type_id = 3) and user_id =?";
+    private static final String DELETE_LINK_BY_ID = "DELETE FROM links WHERE link_id=? and congratulation_id=?";
 
     private static final CongratulationRowMapper CONGRATULATION_ROW_MAPPER = new CongratulationRowMapper();
     private static final CongratulationsRowMapper CONGRATULATIONS_ROW_MAPPER = new CongratulationsRowMapper();
@@ -81,6 +83,26 @@ public class JdbcCongratulationDao implements CongratulationDao {
                 statementInLinks.setString(1, link.getLink());
                 statementInLinks.setInt(2, link.getType().getTypeNumber());
                 statementInLinks.setLong(3, congratulationId);
+                statementInLinks.addBatch();
+            }
+
+            statementInLinks.executeBatch();
+            connection.commit();
+
+            return statementInLinks;
+        });
+    }
+
+    @Override
+    public void deleteLinksById(List<Link> linkIdToDelete, long congratulationId) {
+        jdbcTemplate.update(connection -> {
+            connection.setAutoCommit(false);
+            PreparedStatement statementInLinks = connection.prepareStatement(DELETE_LINK_BY_ID);
+
+            for (Link link : linkIdToDelete) {
+                log.info("Dao level. Removing link: {}", link);
+                statementInLinks.setLong(1, link.getId());
+                statementInLinks.setLong(2, congratulationId);
                 statementInLinks.addBatch();
             }
 

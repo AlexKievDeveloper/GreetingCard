@@ -37,12 +37,11 @@ public class CongratulationController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getCongratulation(@PathVariable("id") int congratulationId) throws JsonProcessingException {
+    public ResponseEntity<?> getCongratulation(@PathVariable("id") long congratulationId) throws JsonProcessingException {
         log.info("Received request for getting congratulation");
         Congratulation congratulation = congratulationService.getCongratulationById(congratulationId);
-        String json = objectMapper.writeValueAsString(congratulation);
         log.info("Successfully returned json with Congratulation entity");
-        return ResponseEntity.status(HttpStatus.OK).body(json);
+        return ResponseEntity.status(HttpStatus.OK).body(congratulation);
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -82,7 +81,7 @@ public class CongratulationController {
     }
 
     @PutMapping("/{id}/status")
-    public ResponseEntity<?> changeCongratulationStatus(@PathVariable("id") int congratulationId) {
+    public ResponseEntity<?> changeCongratulationStatus(@PathVariable("id") long congratulationId) {
         log.info("Received PUT request for congratulation with id: {}", congratulationId);
         congratulationService.changeCongratulationStatusByCongratulationId(Status.ISOVER, congratulationId);
 
@@ -111,7 +110,7 @@ public class CongratulationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCongratulation(@PathVariable("id") int congratulationId, HttpSession session) {
+    public ResponseEntity<?> deleteCongratulation(@PathVariable("id") long congratulationId, HttpSession session) {
         log.info("Request for DELETE congratulation received");
         User user = (User) session.getAttribute("user");
 
@@ -119,6 +118,19 @@ public class CongratulationController {
         congratulationService.deleteById(congratulationId, user.getId());
 
         log.info("Successfully deleted congratulation with id: {}, user login: {}", congratulationId, user.getLogin());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @DeleteMapping("/{id}/links")
+    public ResponseEntity<?> deleteLinksById(@PathVariable("id") long congratulationId, HttpSession session,
+                                             @RequestBody List<Link> linkIdToDeleteFromCongratulation) {
+        log.info("Request for DELETE links received");
+        User user = (User) session.getAttribute("user");
+
+        log.info("Request DELETE links in congratulation with id {}, user: {}", congratulationId, user.getLogin());
+        congratulationService.deleteLinksById(linkIdToDeleteFromCongratulation, congratulationId);
+
+        log.info("Successfully deleted links in congratulation with id: {}, user login: {}", congratulationId, user.getLogin());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

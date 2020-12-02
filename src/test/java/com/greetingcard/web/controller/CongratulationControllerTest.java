@@ -1,29 +1,30 @@
 package com.greetingcard.web.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.database.rider.core.api.configuration.DBUnit;
 import com.github.database.rider.core.api.configuration.Orthography;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.greetingcard.dao.jdbc.TestConfiguration;
+import com.greetingcard.entity.Congratulation;
+import com.greetingcard.entity.Status;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.impl.DefaultCongratulationService;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.*;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.HashMap;
-
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -42,14 +43,8 @@ class CongratulationControllerTest {
 
     private final byte[] bytes = new byte[1024 * 1024 * 10];
 
-    @Mock
+    @MockBean
     private DefaultCongratulationService defaultCongratulationService;
-    @Mock
-    private ObjectMapper objectMapper;
-    @Mock
-    private HashMap<String, String> mockHashMap;
-    @InjectMocks
-    private CongratulationController mockCongratulationController;
 
     @Autowired
     private WebApplicationContext context;
@@ -68,17 +63,15 @@ class CongratulationControllerTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(sharedHttpSession()).build();
     }
 
-/*    @Test
+    @Test
     @DisplayName("Creating new congratulation from json which we get from request body")
     void createCongratulation() throws Exception {
-        MockMvc mockMvcForCreateCongratulation = MockMvcBuilders.standaloneSetup(mockCongratulationController, objectMapper).apply(sharedHttpSession()).build();
         User user = User.builder().id(1).build();
         MockMultipartFile mockImageFile = new MockMultipartFile("files_image", "image.jpg", "image/jpg", bytes);
         MockMultipartFile mockAudioFile = new MockMultipartFile("files_audio", "audio.mp3", "audio/mpeg", bytes);
         String parametersJson = "{\"message\":\"Happy new year!\", \"card_id\":\"1\", \"youtube\":\"https://www.youtube.com/watch?v=BmBr5diz8WA\"}";
-        when(objectMapper.readValue(any(String.class), any(TypeReference.class))).thenReturn(mockHashMap);
 
-        mockMvcForCreateCongratulation.perform(MockMvcRequestBuilders.multipart("/api/v1/congratulation")
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/congratulation")
                 .file(mockImageFile)
                 .file(mockAudioFile)
                 .param("json", parametersJson)
@@ -87,12 +80,11 @@ class CongratulationControllerTest {
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andDo(print())
                 .andExpect(status().isCreated());
-    }*/
+    }
 
     @Test
     @DisplayName("Return bad request while creating congratulation in case to long value of youtube link")
     void createCongratulationExceptionOfToLongYoutubeLinkValue() throws Exception {
-
         User user = User.builder().id(1).build();
         MockMultipartFile mockImageFile = new MockMultipartFile("files_image", "image.jpg", "image/jpg", bytes);
         MockMultipartFile mockAudioFile = new MockMultipartFile("files_audio", "audio.mp3", "audio/mpeg", bytes);
@@ -104,6 +96,8 @@ class CongratulationControllerTest {
                 "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
                 "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
                 "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"}";
+
+        when(defaultCongratulationService.getLinkList(any(), any(), any())).thenThrow(new IllegalArgumentException("Wrong youtube link url!"));
 
         mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/congratulation")
                 .file(mockImageFile)
@@ -119,7 +113,15 @@ class CongratulationControllerTest {
     @Test
     @DisplayName("Returns congratulation by id")
     void getCongratulation() throws Exception {
+        Congratulation congratulation = Congratulation.builder()
+                .id(1)
+                .message("from Roma")
+                .cardId(1)
+                .status(Status.STARTUP)
+                .build();
         User user = User.builder().id(1).login("user").build();
+        when(defaultCongratulationService.getCongratulationById(1)).thenReturn(congratulation);
+
         mockMvc.perform(get("/api/v1/congratulation/{id}", 1)
                 .sessionAttr("user", user))
                 .andDo(print())
@@ -130,15 +132,13 @@ class CongratulationControllerTest {
                 .andExpect(status().isOk());
     }
 
-/*    @Test
+    @Test
     @DisplayName("Creating new congratulation from json which we get from request body")
     void editCongratulation() throws Exception {
-        MockMvc mockMvcForCreateCongratulation = MockMvcBuilders.standaloneSetup(mockCongratulationController).apply(sharedHttpSession()).build();
         User user = User.builder().id(1).build();
         MockMultipartFile mockImageFile = new MockMultipartFile("files_image", "image.jpg", "image/jpg", bytes);
         MockMultipartFile mockAudioFile = new MockMultipartFile("files_audio", "audio.mp3", "audio/mpeg", bytes);
         String parametersJson = "{\"message\":\"Happy new year!\", \"card_id\":\"1\", \"youtube\":\"https://www.youtube.com/watch?v=BmBr5diz8WA\"}";
-        when(objectMapper.readValue(any(String.class), any(TypeReference.class))).thenReturn(mockHashMap);
 
         MockMultipartHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart("/api/v1/congratulation/{id}", 1);
         builder.with(request -> {
@@ -146,7 +146,7 @@ class CongratulationControllerTest {
             return request;
         });
 
-        mockMvcForCreateCongratulation.perform(builder
+        mockMvc.perform(builder
                 .file(mockImageFile)
                 .file(mockAudioFile)
                 .param("json", parametersJson)
@@ -155,7 +155,7 @@ class CongratulationControllerTest {
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andDo(print())
                 .andExpect(status().isCreated());
-    }*/
+    }
 
     @Test
     @DisplayName("Changing congratulation status")
@@ -170,6 +170,20 @@ class CongratulationControllerTest {
         User user = User.builder().id(1).login("user").build();
         mockMvc.perform(delete("/api/v1/congratulation/{id}", 1)
                 .sessionAttr("user", user))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("Deleting links from congratulation")
+    void deleteLinksById() throws Exception {
+        User user = User.builder().id(1).login("user").build();
+        String idsJson = "[{\"id\":\"1\", \"id\":\"2\"}]";
+        mockMvc.perform(delete("/api/v1/congratulation/{id}/links", 1)
+                .sessionAttr("user", user)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(idsJson)
+                .characterEncoding("utf-8"))
+                .andDo(print())
                 .andExpect(status().isNoContent());
     }
 }

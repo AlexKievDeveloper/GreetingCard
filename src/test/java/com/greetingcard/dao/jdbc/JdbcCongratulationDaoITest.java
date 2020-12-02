@@ -27,7 +27,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE)
 @DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardsUsers.xml",
         "congratulations.xml", "links.xml"},
-        executeStatementsBefore = "SELECT setval('congratulations_congratulation_id_seq', 6);", cleanAfter = true)
+        executeStatementsBefore = "SELECT setval('links_link_id_seq', 1); SELECT setval('congratulations_congratulation_id_seq', 6);", cleanAfter = true)
+
 @SpringJUnitWebConfig(value = TestConfiguration.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JdbcCongratulationDaoITest {
@@ -320,5 +321,33 @@ class JdbcCongratulationDaoITest {
         assertEquals(LinkType.VIDEO, congratulation.getLinkList().get(6).getType());
     }
 
+    @Test
+    @DisplayName("Deleting links by ids")
+    void deleteLinksByIds() {
+        //prepare
+        Link link = Link.builder()
+                .id(2)
+                .build();
+
+        Link link2 = Link.builder()
+                .id(3)
+                .build();
+
+        List<Link> linkList = List.of(link, link2);
+        Congratulation beforeCongratulation = jdbcCongratulationDao.getCongratulationById(1);
+        assertEquals(6, beforeCongratulation.getLinkList().size());
+
+        //when
+        jdbcCongratulationDao.deleteLinksById(linkList, 1);
+
+        //then
+        Congratulation afterCongratulation = jdbcCongratulationDao.getCongratulationById(1);
+        assertEquals(4, afterCongratulation.getLinkList().size());
+
+        for (Link linkAfter : afterCongratulation.getLinkList()) {
+            assertNotEquals(linkAfter.getId(), 2);
+            assertNotEquals(linkAfter.getId(), 3);
+        }
+    }
 }
 

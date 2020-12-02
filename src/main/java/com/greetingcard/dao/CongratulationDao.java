@@ -25,4 +25,6 @@ public interface CongratulationDao {
     void deleteById(long congratulationId, long userId);
 
     void saveLinks(List<Link> linkList, long congratulationId);
+
+    void deleteLinksById(List<Link> linkIdToDelete, long congratulationId);
 }
