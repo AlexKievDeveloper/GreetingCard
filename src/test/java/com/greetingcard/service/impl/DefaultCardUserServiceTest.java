@@ -36,21 +36,21 @@ class DefaultCardUserServiceTest {
     @DisplayName("check - admin adds user")
     void checkIfUserAdminForCard() {
         Mockito.when(cardUserDao.getUserRole(1, 1)).thenReturn(Optional.of(Role.ADMIN));
-        assertDoesNotThrow(() -> cardUserService.checkIfUserAdminForCard(1, 1));
+        assertDoesNotThrow(() -> cardUserService.checkIfUserAdminForCard(1, 1, "add"));
     }
 
     @Test
     @DisplayName("check - not admin adds user")
     void checkIfUserAdminForCardUserMember() {
         Mockito.when(cardUserDao.getUserRole(2, 1)).thenReturn(Optional.of(Role.MEMBER));
-        assertThrows(IllegalArgumentException.class, () -> cardUserService.checkIfUserAdminForCard(2, 1));
+        assertThrows(IllegalArgumentException.class, () -> cardUserService.checkIfUserAdminForCard(2, 1, "add"));
     }
 
     @Test
     @DisplayName("check - not correct adds user")
     void checkIfUserAdminForCardWrongUser() {
         Mockito.when(cardUserDao.getUserRole(1, 3)).thenReturn(Optional.empty());
-        assertThrows(IllegalArgumentException.class, () -> cardUserService.checkIfUserAdminForCard(1, 3));
+        assertThrows(IllegalArgumentException.class, () -> cardUserService.checkIfUserAdminForCard(1, 3, "add"));
     }
 
     @Test

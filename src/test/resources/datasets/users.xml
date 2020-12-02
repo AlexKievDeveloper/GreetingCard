@@ -4,15 +4,16 @@
            lastName = "admin"
            login = "admin"
            email = "@admin"
+           pathToPhoto = "testPathToPhoto1"
            password = "password"
            salt = "salt"
            language_id = "1"/>
-
     <USERS user_id ="2"
            firstName = "user"
            lastName = "user"
            login = "user"
            email = "@user"
+           pathToPhoto = "testPathToPhoto2"
            password = "gDE3fEwV4WEZhgiURMj/WMlTWP/cldaSptEMe2M+md8="
            salt = "salt"
            language_id = "1"/>
@@ -21,7 +22,18 @@
            lastName = "new"
            login = "new"
            email = "@new"
+           pathToPhoto = "testPathToPhoto3"
            password = "password"
            salt = "salt"
            language_id = "2"/>
+    <USERS user_id ="4"
+           firstName = "testName"
+           lastName = "testLastName"
+           login = "testLogin"
+           email = "testEmail"
+           pathToPhoto = "testPathToPhoto"
+           password = "password"
+           salt = "salt"
+           language_id = "2"
+    />
 </dataset>

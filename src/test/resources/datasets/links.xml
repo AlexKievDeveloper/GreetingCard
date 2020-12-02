@@ -11,28 +11,28 @@
            type_id="1"
            congratulation_id="2"/>
 
-    <LINKS link="https://i.postimg.cc/kXRG5yRC/images.jpg"
-           type_id="2"
+    <LINKS link="/greeting-cards/audio/audio1.mp3"
+           type_id="3"
            congratulation_id="1"/>
 
-    <LINKS link="https://i.postimg.cc/hvfjTLC9/images-1.jpg"
-           type_id="2"
+    <LINKS link="/greeting-cards/audio/audio2.mp3"
+           type_id="3"
            congratulation_id="1"/>
 
-    <LINKS link="https://i.postimg.cc/2yM5w1Jg/images-2.jpg"
-           type_id="2"
+    <LINKS link="/greeting-cards/audio/audio3.mp3"
+           type_id="3"
            congratulation_id="2"/>
 
-    <LINKS link="https://www.dropbox.com/s/8cg7h5gehrk7joy/dzidzo_-_kolomijka_bojkivska_%28zf.fm%29.mp3?dl=0"
-           type_id="3"
+    <LINKS link="/greeting-cards/img/img1.jpg"
+           type_id="2"
            congratulation_id="1"/>
 
-    <LINKS link="https://www.dropbox.com/s/3u94pftverackzy/kolomijki_-_kolomijka_zastilna_%28zf.fm%29.mp3?dl=0"
-           type_id="3"
+    <LINKS link="/greeting-cards/img/img2.jpg"
+           type_id="2"
            congratulation_id="1"/>
 
-    <LINKS link="https://www.dropbox.com/s/vdzkstsod372dn7/kolomijki_-_narodna_%28zf.fm%29.mp3?dl=0"
-           type_id="3"
+    <LINKS link="/greeting-cards/img/img3.jpg"
+           type_id="2"
            congratulation_id="2"/>
 </dataset>
 

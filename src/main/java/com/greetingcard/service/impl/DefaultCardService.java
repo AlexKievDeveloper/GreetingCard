@@ -1,6 +1,7 @@
 package com.greetingcard.service.impl;
 
 import com.greetingcard.dao.CardDao;
+import com.greetingcard.dao.CongratulationDao;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Status;
 import com.greetingcard.service.CardService;
@@ -52,4 +53,5 @@ public class DefaultCardService implements CardService {
     public Optional<Status> getCardStatusById(long cardId) {
         return jdbcCardDao.getCardStatusById(cardId);
     }
+
 }

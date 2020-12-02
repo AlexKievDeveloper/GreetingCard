@@ -16,7 +16,7 @@
 
     <mvc:resources mapping="/audio/**" location="file:${dir.files}/audio/"/>
     <mvc:resources mapping="/img/**" location="file:${dir.files}/img/"/>
-    <mvc:resources mapping="/profile/**" location="file:${dir.files}/profile/, classpath:/greeting-card/"/>
+    <mvc:resources mapping="/profile/**" location="file:${dir.files}/profile/"/>
 
     <mvc:annotation-driven />
 </beans>

@@ -8,7 +8,6 @@ import com.greetingcard.entity.Status;
 import com.greetingcard.service.CongratulationService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -61,6 +60,11 @@ public class DefaultCongratulationService implements CongratulationService {
     @Override
     public void deleteById(long congratulationId, long userId) {
         congratulationDao.deleteById(congratulationId, userId);
+    }
+
+    @Override
+    public void deleteByCardId(long cardId, long userId) {
+        congratulationDao.deleteByCardId(cardId, userId);
     }
 
     @Override
@@ -165,7 +169,6 @@ public class DefaultCongratulationService implements CongratulationService {
     }
 
     @Override
-    @Transactional
     public void updateCongratulationById(MultipartFile[] files_image, MultipartFile[] files_audio, Map<String,
             String> parametersMap, long congratulationId, long userId) {
 

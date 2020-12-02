@@ -23,4 +23,6 @@ public interface CongratulationService {
     void deleteById(long congratulationId, long userId);
 
     void deleteLinksById(List<Link> linkIdToDelete, long congratulationId);
+
+    void deleteByCardId(long cardId, long userId);
 }

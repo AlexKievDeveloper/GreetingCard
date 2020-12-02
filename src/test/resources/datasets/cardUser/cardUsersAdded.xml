@@ -1,0 +1,30 @@
+<dataset>
+    <USERS_CARDS users_cards_id="1"
+                 user_id="1"
+                 card_id="1"
+                 role_id="1"/>
+    <USERS_CARDS users_cards_id="2"
+                 user_id="2"
+                 card_id="1"
+                 role_id="2"/>
+    <USERS_CARDS users_cards_id="3"
+                 user_id="2"
+                 card_id="2"
+                 role_id="1"/>
+    <USERS_CARDS users_cards_id="4"
+                 user_id="1"
+                 card_id="2"
+                 role_id="2"/>
+    <USERS_CARDS users_cards_id="5"
+                 user_id="2"
+                 card_id="3"
+                 role_id="1"/>
+    <USERS_CARDS users_cards_id="6"
+                 user_id="4"
+                 card_id="2"
+                 role_id="2"/>
+    <USERS_CARDS users_cards_id="regex:\d+"
+                 user_id="3"
+                 card_id="1"
+                 role_id="2"/>
+</dataset>

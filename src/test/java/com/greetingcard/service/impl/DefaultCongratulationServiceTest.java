@@ -48,7 +48,7 @@ class DefaultCongratulationServiceTest {
     private Map<String, String> parametersMap;
 
     @Autowired
-    private DefaultCongratulationService defaultCongratulationService;
+    private DefaultCongratulationService congratulationService;
     private List<Link> linkList;
     private final byte[] bytes = new byte[1024 * 1024 * 10];
 
@@ -69,7 +69,7 @@ class DefaultCongratulationServiceTest {
         when(parametersMap.get("youtube")).thenReturn(youtubeLinks);
 
         //when
-        List<Link> actualList = defaultCongratulationService.getLinkList(mockImageFiles, mockAudioFiles, parametersMap);
+        List<Link> actualList = congratulationService.getLinkList(mockImageFiles, mockAudioFiles, parametersMap);
 
         //then
         verify(parametersMap).get("youtube");
@@ -91,7 +91,7 @@ class DefaultCongratulationServiceTest {
         //prepare
         String youtubeLinks = "https://www.youtube.com/watch?v=JcDy3ny-H0k\r\nhttps://www.youtube.com/watch?v=JcDy3ny-H0k";
         //when
-        defaultCongratulationService.addYoutubeLinks(linkList, youtubeLinks);
+        congratulationService.addYoutubeLinks(linkList, youtubeLinks);
         //then
         assertEquals(2, linkList.size());
         assertEquals("JcDy3ny-H0k", linkList.get(0).getLink());
@@ -107,7 +107,7 @@ class DefaultCongratulationServiceTest {
         String youtubeLinks = "https://www.yoube.com/watch?v=JcDy3ny-H0k\r\nhttps://www.youtube.com/watch?v=JcDy3ny-H0k";
         //when + then
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
-                defaultCongratulationService.addYoutubeLinks(linkList, youtubeLinks));
+                congratulationService.addYoutubeLinks(linkList, youtubeLinks));
         assertEquals("Wrong youtube link url!", e.getMessage());
     }
 
@@ -117,7 +117,7 @@ class DefaultCongratulationServiceTest {
         //prepare
         String expectedYoutubeVideoId = "JcDy3ny-H0k";
         //when
-        String actualYoutubeVideoId = defaultCongratulationService.getYoutubeVideoId("https://www.youtube.com/watch?v=JcDy3ny-H0k");
+        String actualYoutubeVideoId = congratulationService.getYoutubeVideoId("https://www.youtube.com/watch?v=JcDy3ny-H0k");
         //then
         assertEquals(expectedYoutubeVideoId, actualYoutubeVideoId);
     }
@@ -127,7 +127,7 @@ class DefaultCongratulationServiceTest {
     void getYoutubeVideoIdExceptionTest() {
         //when + then
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
-                defaultCongratulationService.getYoutubeVideoId("https://www.youtube.com"));
+                congratulationService.getYoutubeVideoId("https://www.youtube.com"));
         assertEquals("Wrong youtube link url!", e.getMessage());
     }
 
@@ -137,7 +137,7 @@ class DefaultCongratulationServiceTest {
         //prepare
         String text = "https://www.youtube.com/watch?v=JcDy3ny-H0k\r\nhttps://www.youtube.com\r\n";
         //when
-        List<String> actualLinkList = defaultCongratulationService.getYoutubeLinksListFromText(text);
+        List<String> actualLinkList = congratulationService.getYoutubeLinksListFromText(text);
         //then
         assertNotNull(actualLinkList);
         assertEquals(2, actualLinkList.size());
@@ -152,7 +152,7 @@ class DefaultCongratulationServiceTest {
         String text = "https://www.youtube.com/watch?v=JcDy3ny-H0k\r\nhttps://www.youtube.com\r\nhttps://www.studytonight.com/servlet/httpsession.php#";
         //when + then
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
-                defaultCongratulationService.getYoutubeLinksListFromText(text));
+                congratulationService.getYoutubeLinksListFromText(text));
         assertEquals("Wrong youtube link url!", e.getMessage());
     }
 
@@ -169,7 +169,7 @@ class DefaultCongratulationServiceTest {
                 "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm";
         //when + then
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
-                defaultCongratulationService.getYoutubeLinksListFromText(text));
+                congratulationService.getYoutubeLinksListFromText(text));
         assertEquals("Wrong youtube link url!", e.getMessage());
     }
 
@@ -181,7 +181,7 @@ class DefaultCongratulationServiceTest {
 
         MultipartFile[] mockImageFiles = new MultipartFile[]{mockImageFile};
         //when
-        defaultCongratulationService.saveFilesAndCreateLinks(mockImageFiles, linkList);
+        congratulationService.saveFilesAndCreateLinks(mockImageFiles, linkList);
         //then
         assertEquals(1, linkList.size());
         assertEquals(LinkType.PICTURE, linkList.get(0).getType());
@@ -198,7 +198,7 @@ class DefaultCongratulationServiceTest {
 
         MultipartFile[] mockImageFiles = new MultipartFile[]{mockImageFile};
         //when
-        defaultCongratulationService.saveFilesAndCreateLinks(mockImageFiles, linkList);
+        congratulationService.saveFilesAndCreateLinks(mockImageFiles, linkList);
         //then
         assertEquals(1, linkList.size());
         assertEquals(LinkType.AUDIO, linkList.get(0).getType());
@@ -215,7 +215,7 @@ class DefaultCongratulationServiceTest {
 
         //when + then
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
-                defaultCongratulationService.saveFilesAndCreateLinks(mockImageFiles, linkList));
+                congratulationService.saveFilesAndCreateLinks(mockImageFiles, linkList));
         assertEquals("Sorry, this format is not supported by the application: image/gif", e.getMessage());
     }
 
@@ -233,10 +233,10 @@ class DefaultCongratulationServiceTest {
         parametersMap.put("youtube", "https://www.youtube.com/watch?v=BmBr5diz8WA");
 
         //when
-        defaultCongratulationService.updateCongratulationById(mockImageFiles, mockAudioFiles, parametersMap, 1, 1);
+        congratulationService.updateCongratulationById(mockImageFiles, mockAudioFiles, parametersMap, 1, 1);
 
         //then
-        Congratulation congratulation = defaultCongratulationService.getCongratulationById(1);
+        Congratulation congratulation = congratulationService.getCongratulationById(1);
         assertEquals("Congratulation from updateCongratulationById test", congratulation.getMessage());
     }
 }

@@ -37,7 +37,7 @@ public class CongratulationController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getCongratulation(@PathVariable("id") long congratulationId) throws JsonProcessingException {
+    public ResponseEntity<?> getCongratulation(@PathVariable("id") long congratulationId) {
         log.info("Received request for getting congratulation");
         Congratulation congratulation = congratulationService.getCongratulationById(congratulationId);
         log.info("Successfully returned json with Congratulation entity");
