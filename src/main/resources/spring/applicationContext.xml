@@ -51,6 +51,7 @@
     <bean id="congratulationDao" class="com.greetingcard.dao.jdbc.JdbcCongratulationDao">
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
         <property name="namedJdbcTemplate" ref="namedJdbcTemplate"/>
+        <property name="rootDirectory" ref="rootDirectory"/>
     </bean>
 
     <bean id="congratulationService" class="com.greetingcard.service.impl.DefaultCongratulationService">
@@ -91,7 +92,7 @@
         <constructor-arg ref="congratulationService"/>
     </bean>
 
-    <tx:annotation-driven />
+    <tx:annotation-driven/>
 
     <context:component-scan base-package="com.greetingcard">
         <context:exclude-filter type="regex" expression="com\.greetingcard\.controller\..*"/>

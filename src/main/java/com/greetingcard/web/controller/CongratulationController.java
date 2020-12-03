@@ -28,20 +28,17 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/congratulation")
 public class CongratulationController {
+    @Autowired
     private CongratulationService congratulationService;
     @Autowired
     private ObjectMapper objectMapper;
 
-    public CongratulationController(CongratulationService congratulationService) {
-        this.congratulationService = congratulationService;
-    }
-
     @GetMapping("/{id}")
-    public ResponseEntity<?> getCongratulation(@PathVariable("id") long congratulationId) {
+    public Congratulation getCongratulation(@PathVariable("id") long congratulationId) throws JsonProcessingException {
         log.info("Received request for getting congratulation");
         Congratulation congratulation = congratulationService.getCongratulationById(congratulationId);
         log.info("Successfully returned json with Congratulation entity");
-        return ResponseEntity.status(HttpStatus.OK).body(congratulation);
+        return congratulation;
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -101,8 +98,7 @@ public class CongratulationController {
         };
 
         User user = (User) session.getAttribute("user");
-        String jsonString = new String(json.getBytes());
-        Map<String, String> parametersMap = objectMapper.readValue(jsonString, typeRef);
+        Map<String, String> parametersMap = objectMapper.readValue(json, typeRef);
         log.info("Got Map from json");
         congratulationService.updateCongratulationById(files_image, files_audio, parametersMap, congratulationId, user.getId());
         log.info("Successfully edit congratulation with id: {}", congratulationId);

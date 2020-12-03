@@ -3,12 +3,14 @@ package com.greetingcard.dao.jdbc;
 import com.greetingcard.dao.CongratulationDao;
 import com.greetingcard.dao.jdbc.mapper.CongratulationRowMapper;
 import com.greetingcard.dao.jdbc.mapper.CongratulationsRowMapper;
+import com.greetingcard.dao.jdbc.mapper.LinksRowMapper;
 import com.greetingcard.entity.Congratulation;
 import com.greetingcard.entity.Link;
 import com.greetingcard.entity.Status;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -18,10 +20,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.PreparedStatement;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 @Setter
@@ -36,7 +35,8 @@ public class JdbcCongratulationDao implements CongratulationDao {
                     "FROM congratulations " +
                     "LEFT JOIN links ON (congratulations.congratulation_id = links.congratulation_id) " +
                     "WHERE congratulations.congratulation_id=?";
-    private static final String GET_LINKS = "SELECT link_id, link, type_id, congratulation_id FROM links where link_id = ? and congratulation_id = ? and (type_id = 2 OR type_id = 3)";
+
+    private static final String GET_LINKS = "SELECT link_id, link, type_id, congratulation_id FROM links WHERE link_id IN ";
     private static final String SAVE_CONGRATULATION = "INSERT INTO congratulations (message, card_id, user_id, status_id) VALUES (?,?,?,?)";
     private static final String UPDATE_CONGRATULATION = "UPDATE congratulations SET message = ? where (congratulation_id = ? and user_id = ?)";
     private static final String SAVE_LINK = "INSERT INTO links (link, type_id, congratulation_id) VALUES(?,?,?)";
@@ -78,8 +78,10 @@ public class JdbcCongratulationDao implements CongratulationDao {
 
     private static final CongratulationRowMapper CONGRATULATION_ROW_MAPPER = new CongratulationRowMapper();
     private static final CongratulationsRowMapper CONGRATULATIONS_ROW_MAPPER = new CongratulationsRowMapper();
+    private static final LinksRowMapper LINKS_ROW_MAPPER = new LinksRowMapper();
     private JdbcTemplate jdbcTemplate;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
+    private String rootDirectory;
 
     public Congratulation getCongratulationById(long congratulationId) {
         return jdbcTemplate.query(GET_CONGRATULATION, CONGRATULATION_ROW_MAPPER, congratulationId);
@@ -110,7 +112,6 @@ public class JdbcCongratulationDao implements CongratulationDao {
         params.put("user_id", userId);
         params.put("card_id", cardId);
         namedJdbcTemplate.update(LEAVE_BY_CARD_ID, params);
-
     }
 
     @Override
@@ -120,11 +121,12 @@ public class JdbcCongratulationDao implements CongratulationDao {
         params.put("user_id", userId);
         params.put("congratulation_id", congratulationId);
         namedJdbcTemplate.update(DELETE_BY_ID, params);
-
     }
 
     @Override
     public void deleteLinksById(List<Link> linkIdToDelete, long congratulationId) {
+        deleteFilesFromLinks(linkIdToDelete, congratulationId);
+
         jdbcTemplate.update(connection -> {
             connection.setAutoCommit(false);
             PreparedStatement statementInLinks = connection.prepareStatement(DELETE_LINK_BY_ID);
@@ -141,6 +143,49 @@ public class JdbcCongratulationDao implements CongratulationDao {
 
             return statementInLinks;
         });
+    }
+
+    void deleteFilesFromLinks(List<Link> linkIdToDelete, long congratulationId) {
+        List<Link> linkList = getLinksList(linkIdToDelete, congratulationId);
+
+        for (Link link : linkList) {
+            try {
+                Files.deleteIfExists(Paths.get(rootDirectory.concat(link.getLink())));
+            } catch (IOException e) {
+                log.error("Exception while deleting file - {}", link, e);
+                throw new RuntimeException("Exception while deleting file", e);
+            }
+        }
+    }
+
+    List<Link> getLinksList(List<Link> linkList, long congratulationId) {
+
+        if (linkList.size() > 0) {
+            MapSqlParameterSource params = getMapSqlParameterSourceForList(linkList);
+            String sql = GET_LINKS + getNamesOfParams(params.getParameterNames()) + "and congratulation_id = congratulation_id and (type_id = 2 OR type_id = 3)";
+            params.addValue("congratulation_id", congratulationId);
+            return namedJdbcTemplate.query(sql, params, LINKS_ROW_MAPPER);
+        }
+
+        return List.of();
+    }
+
+    String getNamesOfParams(String[] listParams) {
+        StringJoiner stringJoiner = new StringJoiner(",", "(", ")");
+        for (String listParam : listParams) {
+            stringJoiner.add(":" + listParam);
+        }
+        return stringJoiner.toString();
+    }
+
+    MapSqlParameterSource getMapSqlParameterSourceForList(List<Link> listLinkIds) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        for (int i = 0; i < listLinkIds.size(); i++) {
+            long userId = listLinkIds.get(i).getId();
+            String paramName = "link_id" + i;
+            params.addValue(paramName, userId);
+        }
+        return params;
     }
 
     @Override
@@ -165,7 +210,7 @@ public class JdbcCongratulationDao implements CongratulationDao {
         for (String link : linkList) {
 
             try {
-                Files.deleteIfExists(Paths.get(link));
+                Files.deleteIfExists(Paths.get(rootDirectory.concat(link)));
             } catch (IOException e) {
                 log.error("Exception while deleting file - {}", link, e);
                 throw new RuntimeException("Exception while deleting file", e);
@@ -174,28 +219,21 @@ public class JdbcCongratulationDao implements CongratulationDao {
     }
 
     @Override
-    public void updateCongratulation(String message, long congratulationId, long userId) {
+    public void updateCongratulationMessage(String message, long congratulationId, long userId) {
         jdbcTemplate.update(UPDATE_CONGRATULATION, message, congratulationId, userId);
     }
 
     @Override
     public void saveLinks(List<Link> linkList, long congratulationId) {
-        jdbcTemplate.update(connection -> {
-            connection.setAutoCommit(false);
-            PreparedStatement statementInLinks = connection.prepareStatement(SAVE_LINK);
-            for (Link link : linkList) {
-                log.info("Dao level. Saving link: {}", link);
-                statementInLinks.setString(1, link.getLink());
-                statementInLinks.setInt(2, link.getType().getTypeNumber());
-                statementInLinks.setLong(3, congratulationId);
-                statementInLinks.addBatch();
-            }
 
-            statementInLinks.executeBatch();
-            connection.commit();
-
-            return statementInLinks;
-        });
+        jdbcTemplate.batchUpdate(
+                SAVE_LINK,
+                linkList,
+                linkList.size(),
+                (statementInLinks, link) -> {
+                    statementInLinks.setString(1, link.getLink());
+                    statementInLinks.setInt(2, link.getType().getTypeNumber());
+                    statementInLinks.setLong(3, congratulationId);
+                });
     }
-
 }

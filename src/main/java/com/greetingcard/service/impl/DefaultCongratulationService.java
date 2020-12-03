@@ -8,6 +8,7 @@ import com.greetingcard.entity.Status;
 import com.greetingcard.service.CongratulationService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -169,10 +170,11 @@ public class DefaultCongratulationService implements CongratulationService {
     }
 
     @Override
+    @Transactional
     public void updateCongratulationById(MultipartFile[] files_image, MultipartFile[] files_audio, Map<String,
             String> parametersMap, long congratulationId, long userId) {
 
-        congratulationDao.updateCongratulation(parametersMap.get("message"), congratulationId, userId);
+        congratulationDao.updateCongratulationMessage(parametersMap.get("message"), congratulationId, userId);
         List<Link> linkList = getLinkList(files_image, files_audio, parametersMap);
         congratulationDao.saveLinks(linkList, congratulationId);
     }

@@ -7,7 +7,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,7 +38,7 @@ public class DefaultSecurityService implements SecurityService {
             String hashPassword = getHashPassword(salt.concat(password));
 
             if (user.getPassword().equals(hashPassword)) {
-                log.info("RETURN USER!");
+                log.info("Credentials is ok");
                 return user;
             }
         }
@@ -121,6 +120,5 @@ public class DefaultSecurityService implements SecurityService {
                     "Please put " + fieldName + " up to " + maxCharacters + " characters.");
         }
     }
-
 
 }

@@ -20,7 +20,7 @@ public interface CongratulationDao {
 
     void changeCongratulationStatusByCongratulationId(Status status, long congratulationId);
 
-    void updateCongratulation(String message, long congratulationId, long userId);
+    void updateCongratulationMessage(String message, long congratulationId, long userId);
 
     void deleteById(long congratulationId, long userId);
 

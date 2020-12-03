@@ -26,6 +26,7 @@ public class LinksRowMapper implements ResultSetExtractor<List<Link>> {
                 Link link = Link.builder()
                         .id(linkId)
                         .link(resultSet.getString("link"))
+                        .congratulationId(resultSet.getInt("congratulation_id"))
                         .type(LinkType.getByNumber(resultSet.getInt("type_id")))
                         .build();
 
