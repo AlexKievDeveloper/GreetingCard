@@ -40,9 +40,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UserControllerSystemTest {
     @Autowired
-    private UserController userController;
-
-    @Autowired
     private WebApplicationContext context;
 
     private MockMvc mockMvc;

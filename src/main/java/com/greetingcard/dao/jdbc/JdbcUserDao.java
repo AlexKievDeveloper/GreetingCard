@@ -36,7 +36,7 @@ public class JdbcUserDao implements UserDao {
     @Override
     public void update(@NonNull User user) {
         log.info("Edit user's (user_id:{}) personal information", user.getId());
-        jdbcTemplate.update(UPDATE_USER, user.getFirstName(), user.getLastName(), user.getLogin(),user.getPathToPhoto(), user.getId());
+        jdbcTemplate.update(UPDATE_USER, user.getFirstName(), user.getLastName(), user.getLogin(), user.getPathToPhoto(), user.getId());
     }
 
     @Override

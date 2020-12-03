@@ -2,6 +2,7 @@ package com.greetingcard.web.controller;
 
 import com.greetingcard.entity.User;
 import com.greetingcard.security.SecurityService;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,12 +17,9 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 @Slf4j
 @RestController
 @RequestMapping(value = "/api/v1/user")
+@AllArgsConstructor
 public class ProfileController {
     private SecurityService service;
-
-    public ProfileController(SecurityService service) {
-        this.service = service;
-    }
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getUser(HttpSession session) {

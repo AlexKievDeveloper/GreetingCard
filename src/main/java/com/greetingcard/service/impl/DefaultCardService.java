@@ -6,7 +6,6 @@ import com.greetingcard.entity.Status;
 import com.greetingcard.service.CardService;
 import lombok.RequiredArgsConstructor;
 
-
 import java.util.List;
 import java.util.Optional;
 
@@ -47,6 +46,15 @@ public class DefaultCardService implements CardService {
     @Override
     public void changeCardStatus(Status status, long cardId) {
         jdbcCardDao.changeCardStatusById(status, cardId);
+    }
+
+    @Override
+    public void changeCardName(Card card) {
+        int length = card.getName().length();
+        if (length == 0 || length > 250) {
+            throw new IllegalArgumentException("Name is short or too long");
+        }
+        jdbcCardDao.changeCardName(card);
     }
 
     public Optional<Status> getCardStatusById(long cardId) {
