@@ -73,11 +73,11 @@ public class DefaultSecurityService implements SecurityService {
             String uuidFile = UUID.randomUUID().toString();
             String fileName = uuidFile + "." + file.getOriginalFilename();
             try {
-                Files.createDirectories(Path.of(pathToFile,profileFile));
-                file.transferTo(Path.of(pathToFile,profileFile,fileName));
+                Files.createDirectories(Path.of(pathToFile, profileFile));
+                file.transferTo(Path.of(pathToFile, profileFile, fileName));
             } catch (IOException e) {
                 log.error("Can not save new photo: {}", fileName);
-                throw new RuntimeException("Can not save new photo",e);
+                throw new RuntimeException("Can not save new photo", e);
             }
 
             try {
@@ -85,7 +85,7 @@ public class DefaultSecurityService implements SecurityService {
             } catch (IOException e) {
                 log.error("Can not delete old photo: {}", user.getPathToPhoto());
             }
-            user.setPathToPhoto("/"+profileFile+"/"+fileName);
+            user.setPathToPhoto("/" + profileFile + "/" + fileName);
         }
         userDao.update(user);
     }
@@ -121,6 +121,5 @@ public class DefaultSecurityService implements SecurityService {
                     "Please put " + fieldName + " up to " + maxCharacters + " characters.");
         }
     }
-
 
 }

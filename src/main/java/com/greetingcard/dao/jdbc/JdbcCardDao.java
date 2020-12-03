@@ -7,6 +7,7 @@ import com.greetingcard.dao.jdbc.mapper.CardRowMapper;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Role;
 import com.greetingcard.entity.Status;
+import lombok.AllArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -25,22 +26,8 @@ import java.util.Optional;
 
 @Slf4j
 @Setter
+@AllArgsConstructor
 public class JdbcCardDao implements CardDao {
-    private static final String GET_ALL_CARDS_BY_USER_ID =
-            "SELECT cards.card_id, " +
-                    "name, " +
-                    "background_image, " +
-                    "card_link, status_id, " +
-                    "users.user_id, " +
-                    "firstName, " +
-                    "lastName, " +
-                    "login, " +
-                    "email " +
-                    "FROM cards " +
-                    "LEFT JOIN users_cards ON (cards.card_id=users_cards.card_id) " +
-                    "LEFT JOIN users ON (users_cards.user_id=users.user_id) " +
-                    "WHERE users.user_id = :id " +
-                    "ORDER BY cards.card_id";
     private static final String GET_CARDS_BY_USER_ID_AND_ROLE_ID =
             "SELECT cards.card_id, " +
                     "name, " +
@@ -89,19 +76,12 @@ public class JdbcCardDao implements CardDao {
             "FROM users_cards uc JOIN cards c ON (uc.card_id = c.card_id) " +
             "JOIN users u ON (c.user_id = u.user_id) " +
             "WHERE uc.user_id = :id ORDER BY c.card_id";
+    private static final String CHANGE_NAME = "UPDATE cards SET name = ? where card_id = ? and user_id = ?";
 
     private CongratulationDao congratulationDao;
     private JdbcTemplate jdbcTemplate;
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private TransactionTemplate transactionTemplate;
-
-    public JdbcCardDao(CongratulationDao congratulationDao, JdbcTemplate jdbcTemplate,
-                       NamedParameterJdbcTemplate namedParameterJdbcTemplate, TransactionTemplate transactionTemplate) {
-        this.congratulationDao = congratulationDao;
-        this.jdbcTemplate = jdbcTemplate;
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-        this.transactionTemplate = transactionTemplate;
-    }
 
     @Override
     public List<Card> getAllCardsByUserId(long id) {
@@ -167,4 +147,9 @@ public class JdbcCardDao implements CardDao {
         return (statusIds.size() != 0 ? Optional.of(Status.getByNumber(statusIds.get(0))) : Optional.empty());
     }
 
+    @Override
+    public void changeCardName(Card card) {
+        jdbcTemplate.update(CHANGE_NAME, card.getName(), card.getId(), card.getUser().getId());
+        log.info("Changed name of card to {} by id - {}", card.getName(), card.getId());
+    }
 }
