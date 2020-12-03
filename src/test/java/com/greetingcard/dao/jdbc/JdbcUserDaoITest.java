@@ -162,10 +162,10 @@ class JdbcUserDaoITest {
         //prepare
         String testHash = "accessHash";
         //when
-        userDao.saveAccessHash("@new", testHash, AccessHashType.FORGOT_PASSWORD);
+        userDao.saveAccessHash("new@new", testHash, AccessHashType.FORGOT_PASSWORD);
 
-        assertTrue(userDao.verifyAccessHash(testHash, AccessHashType.FORGOT_PASSWORD));
-        assertFalse(userDao.verifyAccessHash(testHash, AccessHashType.FORGOT_PASSWORD));
+        assertTrue(userDao.verifyForgotPasswordAccessHash(testHash, "newPassword"));
+        assertFalse(userDao.verifyForgotPasswordAccessHash(testHash, "newPassword"));
     }
 
     @Test
@@ -175,10 +175,10 @@ class JdbcUserDaoITest {
         //prepare
         String testHash = "accessHash";
         //when
-        boolean result = userDao.verifyAccessHash(testHash, AccessHashType.FORGOT_PASSWORD);
+        boolean result = userDao.verifyForgotPasswordAccessHash(testHash, "newPassword");
         //then
         assertTrue(result);
-        assertFalse(userDao.verifyAccessHash(testHash, AccessHashType.FORGOT_PASSWORD));
+        assertFalse(userDao.verifyForgotPasswordAccessHash(testHash, "newPassword"));
     }
 
     @Test
@@ -188,7 +188,7 @@ class JdbcUserDaoITest {
         //prepare
         String testHash = "accessHash";
         //when
-        boolean result = userDao.verifyAccessHash(testHash, AccessHashType.VERIFY_EMAIL);
+        boolean result = userDao.verifyEmailAccessHash(testHash);
         //then
         assertTrue(result);
     }

@@ -4,18 +4,18 @@ import lombok.Getter;
 
 @Getter
 public enum AccessHashType {
-    VERIFY_EMAIL("verify_email_hashes"), FORGOT_PASSWORD("forgot_password_hashes");
+    VERIFY_EMAIL("emailVerification"), FORGOT_PASSWORD("forgotPassword");
 
-    private final String tableName;
+    private final String type;
 
-    AccessHashType(String tableName) {
-        this.tableName = tableName;
+    AccessHashType(String type) {
+        this.type = type;
     }
 
     @Override
     public String toString() {
         return "AccessHashType{" +
-                "tableName='" + tableName + '\'' +
+                "type='" + type + '\'' +
                 '}';
     }
 }

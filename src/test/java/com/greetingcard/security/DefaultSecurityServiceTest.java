@@ -9,6 +9,7 @@ import com.greetingcard.dao.UserDao;
 import com.greetingcard.dao.jdbc.TestConfiguration;
 import com.greetingcard.entity.Language;
 import com.greetingcard.entity.User;
+import com.greetingcard.service.EmailService;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,12 +17,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import static com.greetingcard.entity.AccessHashType.FORGOT_PASSWORD;
 import static com.greetingcard.entity.AccessHashType.VERIFY_EMAIL;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 
 
@@ -41,8 +44,14 @@ class DefaultSecurityServiceTest {
     @InjectMocks
     private DefaultSecurityService mockSecurityService;
 
-    @Mock
+    @Autowired
     private UserDao userDao;
+
+    @Mock
+    private UserDao mockUserDao;
+
+    @MockBean
+    private EmailService emailService;
 
     @Autowired
     private Flyway flyway;
@@ -94,7 +103,7 @@ class DefaultSecurityServiceTest {
         //when
         mockSecurityService.findById(1);
         //then
-        verify(userDao).findById(1);
+        verify(mockUserDao).findById(1);
     }
 
     @Test
@@ -134,32 +143,49 @@ class DefaultSecurityServiceTest {
         //when
         mockSecurityService.findByLogin("login");
         //then
-        verify(userDao).findByLogin("login");
+        verify(mockUserDao).findByLogin("login");
     }
 
     @Test
-    @DisplayName("Find user by email address")
-    void testFindByEmail() {
+    @DisplayName("Restore password")
+    void testRestorePassword() {
         //when
-        mockSecurityService.findByLogin("@email");
+        securityService.restorePassword("testEmail");
         //then
-        verify(userDao).findByLogin("@email");
+        verify(emailService).sendMail(anyString(), anyString(), anyString());
     }
 
     @Test
     @DisplayName("Verify the access hash")
-    @ExpectedDataSet("forgot_password_hashesAfterCheckingHash.xml")
-    void testVerifyAccessHash() {
-        securityService.verifyAccessHash("accessHash", FORGOT_PASSWORD);
+    @ExpectedDataSet(value= {"usersAfterVerifyEmail.xml", "verify_email_hashesAfterCheckingHash.xml"})
+    void testVerifyEmailAccessHash() {
+        securityService.verifyEmailAccessHash("accessHash");
+    }
+
+    @Test
+    @DisplayName("Verify the access hash")
+    @ExpectedDataSet("verify_email_hashesAfterCheckingHash.xml")
+    void testVerifyForgotPasswordAccessHash() {
+        securityService.verifyForgotPasswordAccessHash("accessHash", "newPassword");
     }
 
     @Test
     @DisplayName("Generate an access hash, based on user's email + random salt")
-    void testGenerateAccessHash() {
+    void testGenerateVerifyEmailAccessHash() {
         //when
         String newHash = securityService.generateAccessHash("@user", VERIFY_EMAIL);
         //then
         assertNotNull(newHash);
-        assertTrue(securityService.verifyAccessHash(newHash, VERIFY_EMAIL));
+        assertTrue(securityService.verifyEmailAccessHash(newHash));
+    }
+
+    @Test
+    @DisplayName("Generate an access hash, based on user's email + random salt")
+    void testGenerateForgotPasswordAccessHash() {
+        //when
+        String newHash = securityService.generateAccessHash("@user", FORGOT_PASSWORD);
+        //then
+        assertNotNull(newHash);
+        assertTrue(securityService.verifyForgotPasswordAccessHash(newHash, "newPassword"));
     }
 }

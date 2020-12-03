@@ -8,7 +8,7 @@ public interface SecurityService {
 
     User login(String login, String password);
 
-    void save(User user);
+    void register(User user);
 
     void update(User user, MultipartFile file);
 
@@ -18,9 +18,12 @@ public interface SecurityService {
 
     User findByLogin(String login);
 
-    User findByEmail(String email);
+    void restorePassword(String email);
 
-    Boolean verifyAccessHash(String hash, AccessHashType hashType);
+    Boolean verifyEmailAccessHash(String hash);
+
+    Boolean verifyForgotPasswordAccessHash(String hash, String password);
+
 
     String generateAccessHash(String email, AccessHashType hashType);
 }

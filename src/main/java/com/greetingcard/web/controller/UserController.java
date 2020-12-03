@@ -2,7 +2,6 @@ package com.greetingcard.web.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.greetingcard.entity.AccessHashType;
 import com.greetingcard.entity.User;
 import com.greetingcard.security.SecurityService;
 import com.greetingcard.service.EmailService;
@@ -24,13 +23,10 @@ import java.util.Map;
 public class UserController {
     private SecurityService securityService;
     @Autowired
-    private EmailService emailService;
-    @Autowired
     private Integer maxInactiveInterval;
     @Autowired
     private ObjectMapper objectMapper;
-    @Autowired
-    private String siteUrl;
+
 
     public UserController(SecurityService securityService) {
         this.securityService = securityService;
@@ -45,10 +41,10 @@ public class UserController {
 
     @PostMapping(value = "session", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> login(@RequestBody Map<String, String> userCredential, HttpSession session) throws JsonProcessingException {
+    public ResponseEntity<?> login(@RequestBody Map<String, String> userCredentials, HttpSession session) throws JsonProcessingException {
         log.info("login request");
-        String login = userCredential.get("login");
-        String password = userCredential.get("password");
+        String login = userCredentials.get("login");
+        String password = userCredentials.get("password");
         log.info("login for user {}", login);
         User user = securityService.login(login, password);
         if (user == null) {
@@ -75,26 +71,29 @@ public class UserController {
                 .password(userCredentials.get("password"))
                 .build();
         log.info("Registration request for user login: {}", user.getLogin());
-        securityService.save(user);
-
-        String accessHash = securityService.generateAccessHash(email, AccessHashType.VERIFY_EMAIL);
-        log.debug("Sending letter to verify user's email address: {}", email);
-        String emailMessageBody = "Please confirm your email address by opening this link:\n " +
-                siteUrl + "/email/verify/" + accessHash;
-        emailService.sendMail(email, "Greeting Card: Verify email", emailMessageBody);
+        securityService.register(user);
 
         log.info("Successfully registered: {}", user);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping(value = "user/verification/{accessHash}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping("user/verification/{accessHash}")
     public void verifyEmail(@PathVariable String accessHash) {
-        securityService.verifyAccessHash(accessHash, AccessHashType.VERIFY_EMAIL);
+        securityService.verifyEmailAccessHash(accessHash);
     }
 
-    @PostMapping(value = "user/password", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void changePassword(@RequestParam String oldPassword, @RequestParam String newPassword, HttpSession session) {
-        User user = (User) session.getAttribute("user");
+    @PutMapping(value = "user/password", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void changePassword(@RequestBody Map<String, String> userCredentials) {
+        String login = userCredentials.get("login");
+        String oldPassword = userCredentials.get("oldPassword");
+        User user = securityService.login(login, oldPassword);
+
+        if (user == null) {
+            log.debug("Login or or old password value is incorrect.");
+            throw new IllegalArgumentException("Login or or old password value is incorrect.");
+        }
+
+        String newPassword = userCredentials.get("newPassword");
         user.setPassword(newPassword);
 
         log.debug("Request to change password for user with login: {}", user.getLogin());
@@ -102,23 +101,15 @@ public class UserController {
     }
 
     @PostMapping(value = "user/forgot_password", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void sendLetterToRestorePassword(@RequestParam String email) {
+    public void restorePassword(@RequestBody Map<String, String> userCredentials) {
+        String email = userCredentials.get("email");
         log.debug("Request to restore forgotten password for user with email: {}", email);
-        User user = securityService.findByEmail(email);
-        if (user == null) {
-            throw new RuntimeException("Cannot find a user with email: " + email);
-        }
-
-        log.debug("Sending letter with forgotten password to user with email address: {}", user.getEmail());
-
-        String accessHash = securityService.generateAccessHash(email, AccessHashType.FORGOT_PASSWORD);
-        String emailMessageBody = "To restore the access to your account, please, open this link and follow the instructions:\n " +
-                siteUrl + "/user/forgot_password/" + accessHash;
-        emailService.sendMail(email, "Greeting Card: Restore password", emailMessageBody);
+        securityService.restorePassword(email);
     }
 
-    @PutMapping(value = "user/forgot_password/{accessHash}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void restoreAccessToProfile(@PathVariable String accessHash) {
-        securityService.verifyAccessHash(accessHash, AccessHashType.FORGOT_PASSWORD);
+    @PutMapping("user/recover_password/{accessHash}")
+    public void restoreAccessToProfile(@RequestBody Map<String, String> userCredentials, @PathVariable String accessHash) {
+        String password = userCredentials.get("password");
+        securityService.verifyForgotPasswordAccessHash(accessHash, password);
     }
 }

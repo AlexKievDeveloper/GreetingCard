@@ -9,11 +9,12 @@ import com.greetingcard.entity.User;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapperResultSetExtractor;
 import org.springframework.lang.NonNull;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.greetingcard.entity.AccessHashType.*;
+import static com.greetingcard.entity.AccessHashType.FORGOT_PASSWORD;
+import static com.greetingcard.entity.AccessHashType.VERIFY_EMAIL;
+
 
 @Slf4j
 @Setter
@@ -69,6 +70,7 @@ public class JdbcUserDao implements UserDao {
     @Override
     public User findByEmail(@NonNull String email) {
         log.info("Getting user by email {}", email);
+
         return jdbcTemplate.query(FIND_USER_BY_EMAIL, USER_ROW_MAPPER, email);
     }
 
@@ -85,22 +87,27 @@ public class JdbcUserDao implements UserDao {
 
     @Override
     @Transactional
-    public Boolean verifyAccessHash(String hash, AccessHashType hashType) {
-        if (hashType == FORGOT_PASSWORD) {
-            User user = jdbcTemplate.query(FIND_FORGOT_PASS_ACCESS_HASH, new UserIdRowMapper(), hash);
-            if (user != null) {
-                jdbcTemplate.update(DELETE_FORGOT_PASS_ACCESS_HASH, hash);
-                return true;
-            }
+    public Boolean verifyEmailAccessHash(String hash) {
+        User user = jdbcTemplate.query(FIND_VERIFY_EMAIL_ACCESS_HASH, new UserIdRowMapper(), hash);
+        if (user != null) {
+            jdbcTemplate.update(DELETE_VERIFY_EMAIL_ACCESS_HASH, hash);
+            jdbcTemplate.update(UPDATE_USER_VERIFY_EMAIL, user.getId());
+            return true;
         }
-        if (hashType == VERIFY_EMAIL) {
-            User user = jdbcTemplate.query(FIND_VERIFY_EMAIL_ACCESS_HASH, new UserIdRowMapper(), hash);
-            if (user != null) {
-                jdbcTemplate.update(DELETE_VERIFY_EMAIL_ACCESS_HASH, hash);
-                jdbcTemplate.update(UPDATE_USER_VERIFY_EMAIL, user.getId());
-                return true;
-            }
+
+        return false;
+    }
+
+    @Override
+    @Transactional
+    public Boolean verifyForgotPasswordAccessHash(String hash, String password) {
+        User user = jdbcTemplate.query(FIND_FORGOT_PASS_ACCESS_HASH, new UserIdRowMapper(), hash);
+        if (user != null) {
+            jdbcTemplate.update(DELETE_FORGOT_PASS_ACCESS_HASH, hash);
+            jdbcTemplate.update(UPDATE_USER_PASSWORD, password, user.getId());
+            return true;
         }
+
         return false;
     }
 }
