@@ -68,13 +68,13 @@ public class JdbcCongratulationDao implements CongratulationDao {
                     "WHERE congratulation_id = ?";
     private static final String DELETE_BY_ID =
             "DELETE FROM congratulations " +
-                    "WHERE congratulation_id= :congratulation_id and user_id= :user_id";
+                    "WHERE congratulation_id= :congratulation_id AND user_id= :user_id";
     private static final String FIND_IMAGE_AND_AUDIO_LINKS_BY_CONGRATULATION_ID =
             "SELECT link " +
                     "FROM links l " +
                     "LEFT JOIN congratulations cg ON (cg.congratulation_id = l.congratulation_id) " +
                     "WHERE cg.congratulation_id=? and (type_id = 2 OR type_id = 3) and user_id =?";
-    private static final String DELETE_LINK_BY_ID = "DELETE FROM links WHERE link_id=? and congratulation_id=?";
+    private static final String DELETE_LINK_BY_ID = "DELETE FROM links WHERE link_id IN ";
 
     private static final CongratulationRowMapper CONGRATULATION_ROW_MAPPER = new CongratulationRowMapper();
     private static final CongratulationsRowMapper CONGRATULATIONS_ROW_MAPPER = new CongratulationsRowMapper();
@@ -127,22 +127,12 @@ public class JdbcCongratulationDao implements CongratulationDao {
     public void deleteLinksById(List<Link> linkIdToDelete, long congratulationId) {
         deleteFilesFromLinks(linkIdToDelete, congratulationId);
 
-        jdbcTemplate.update(connection -> {
-            connection.setAutoCommit(false);
-            PreparedStatement statementInLinks = connection.prepareStatement(DELETE_LINK_BY_ID);
-
-            for (Link link : linkIdToDelete) {
-                log.info("Dao level. Removing link: {}", link);
-                statementInLinks.setLong(1, link.getId());
-                statementInLinks.setLong(2, congratulationId);
-                statementInLinks.addBatch();
-            }
-
-            statementInLinks.executeBatch();
-            connection.commit();
-
-            return statementInLinks;
-        });
+        if (linkIdToDelete.size() > 0) {
+            MapSqlParameterSource params = getMapSqlParameterSourceForList(linkIdToDelete);
+            String sql = DELETE_LINK_BY_ID + getNamesOfParams(params.getParameterNames()) + " and congratulation_id = congratulation_id";
+            params.addValue("congratulation_id", congratulationId);
+            namedJdbcTemplate.update(sql, params);
+        }
     }
 
     void deleteFilesFromLinks(List<Link> linkIdToDelete, long congratulationId) {
@@ -204,7 +194,6 @@ public class JdbcCongratulationDao implements CongratulationDao {
     }
 
     void deleteCongratulationFiles(long id, long userId, String findQuery) {
-
         List<String> linkList = jdbcTemplate.queryForList(findQuery, String.class, id, userId);
 
         for (String link : linkList) {

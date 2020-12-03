@@ -16,11 +16,7 @@ public class LinksRowMapper implements ResultSetExtractor<List<Link>> {
     public List<Link> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
         List<Link> linkList = new ArrayList<>();
 
-        if (!resultSet.next()) {
-            return linkList;
-        }
-
-        do {
+        while (resultSet.next()) {
             int linkId = resultSet.getInt("link_id");
             if (linkId != 0) {
                 Link link = Link.builder()
@@ -32,7 +28,8 @@ public class LinksRowMapper implements ResultSetExtractor<List<Link>> {
 
                 linkList.add(link);
             }
-        } while (resultSet.next());
+        }
         return linkList;
     }
 }
+
