@@ -8,7 +8,6 @@ import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -61,6 +60,7 @@ public class CardController {
         User user = (User) session.getAttribute("user");
         card.setUser(user);
         String json = objectMapper.writeValueAsString(Map.of("id", cardService.createCard(card)));
+        log.info("Сard successefully created");
         return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(json);
     }
 

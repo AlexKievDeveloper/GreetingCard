@@ -8,6 +8,7 @@ import com.greetingcard.entity.Status;
 import com.greetingcard.service.CongratulationService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -32,12 +33,13 @@ public class DefaultCongratulationService implements CongratulationService {
     }
 
     @Override
-    public Congratulation getCongratulationById(int congratulationId) {
+    public Congratulation getCongratulationById(long congratulationId) {
         return congratulationDao.getCongratulationById(congratulationId);
     }
 
     @Override
-    public List<Link> getLinkList(MultipartFile[] files_image, MultipartFile[] files_audio, Map<String, String> parametersMap) {
+    public List<Link> getLinkList(MultipartFile[] files_image, MultipartFile[] files_audio,
+                                  Map<String, String> parametersMap) {
         List<Link> linkList = new ArrayList<>();
         addYoutubeLinks(linkList, parametersMap.get("youtube"));
         log.info("Service level.Created youtube links");
@@ -66,6 +68,11 @@ public class DefaultCongratulationService implements CongratulationService {
         congratulationDao.deleteByCardId(cardId, userId);
     }
 
+    @Override
+    public void deleteLinksById(List<Link> linkIdToDelete, long congratulationId) {
+        congratulationDao.deleteLinksById(linkIdToDelete, congratulationId);
+    }
+
     void addYoutubeLinks(List<Link> linkList, String youtubeLinks) {
 
         List<String> youtubeLinksCollection = getYoutubeLinksListFromText(youtubeLinks);
@@ -90,7 +97,8 @@ public class DefaultCongratulationService implements CongratulationService {
         } else throw new IllegalArgumentException("Wrong youtube link url!");
     }
 
-    void addLinksToLocalImagesAndAudioFiles(MultipartFile[] files_image, MultipartFile[] files_audio, List<Link> linkList) {
+    void addLinksToLocalImagesAndAudioFiles(MultipartFile[] files_image, MultipartFile[] files_audio,
+                                            List<Link> linkList) {
         saveFilesAndCreateLinks(files_image, linkList);
         saveFilesAndCreateLinks(files_audio, linkList);
     }
@@ -135,7 +143,8 @@ public class DefaultCongratulationService implements CongratulationService {
                         }
 
                         if (linkType == null) {
-                            throw new IllegalArgumentException("Sorry, this format is not supported by the application: ".concat(linkContentType));
+                            throw new IllegalArgumentException("Sorry, this format is not supported by the application: "
+                                    .concat(linkContentType));
                         }
 
                         Link link = Link.builder()
@@ -147,7 +156,8 @@ public class DefaultCongratulationService implements CongratulationService {
 
                         try {
                             Files.createDirectories(Paths.get(rootDirectory, pathToStorage));
-                            log.info("Root directory: {}, path to storage: {}, uniqueFileName: {}", rootDirectory, pathToStorage, uniqueFileName);
+                            log.info("Root directory: {}, path to storage: {}, uniqueFileName: {}", rootDirectory,
+                                    pathToStorage, uniqueFileName);
                             multipartFile.transferTo(Paths.get(rootDirectory, pathToStorage, uniqueFileName));
                         } catch (IOException e) {
                             log.error("Exception while saving multipart file: {}", multipartFile, e);
@@ -157,5 +167,15 @@ public class DefaultCongratulationService implements CongratulationService {
                 }
             }
         }
+    }
+
+    @Override
+    @Transactional
+    public void updateCongratulationById(MultipartFile[] files_image, MultipartFile[] files_audio, Map<String,
+            String> parametersMap, long congratulationId, long userId) {
+
+        congratulationDao.updateCongratulationMessage(parametersMap.get("message"), congratulationId, userId);
+        List<Link> linkList = getLinkList(files_image, files_audio, parametersMap);
+        congratulationDao.saveLinks(linkList, congratulationId);
     }
 }

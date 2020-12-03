@@ -1,5 +1,6 @@
 package com.greetingcard.web.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greetingcard.entity.Congratulation;
@@ -9,6 +10,7 @@ import com.greetingcard.entity.User;
 import com.greetingcard.service.CongratulationService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,16 +21,24 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Setter
 @RestController
-@RequestMapping(value = "/api/v1/congratulation")
+@RequestMapping("/api/v1/congratulation")
 public class CongratulationController {
+    @Autowired
     private CongratulationService congratulationService;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    public CongratulationController(CongratulationService congratulationService) {
-        this.congratulationService = congratulationService;
+    @GetMapping("/{id}")
+    public Congratulation getCongratulation(@PathVariable("id") long congratulationId) throws JsonProcessingException {
+        log.info("Received request for getting congratulation");
+        Congratulation congratulation = congratulationService.getCongratulationById(congratulationId);
+        log.info("Successfully returned json with Congratulation entity");
+        return congratulation;
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -39,13 +49,12 @@ public class CongratulationController {
 
         log.info("Received request for saving congratulation");
 
-        ObjectMapper objectMapper = new ObjectMapper();
         TypeReference<HashMap<String, String>> typeRef = new TypeReference<>() {
         };
 
         String jsonString = new String(json.getBytes());
 
-        HashMap<String, String> parametersMap = objectMapper.readValue(jsonString, typeRef);
+        Map<String, String> parametersMap = objectMapper.readValue(jsonString, typeRef);
         log.info("Got Map from json");
         User user = (User) session.getAttribute("user");
         long userId = user.getId();
@@ -68,7 +77,7 @@ public class CongratulationController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PutMapping(value = "/{id}/status")
+    @PutMapping("/{id}/status")
     public ResponseEntity<?> changeCongratulationStatus(@PathVariable("id") long congratulationId) {
         log.info("Received PUT request for congratulation with id: {}", congratulationId);
         congratulationService.changeCongratulationStatusByCongratulationId(Status.ISOVER, congratulationId);
@@ -77,7 +86,26 @@ public class CongratulationController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @DeleteMapping(value = "/{id}")
+    @PutMapping("/{id}")
+    public ResponseEntity<?> editCongratulation(@RequestParam(required = false) MultipartFile[] files_image,
+                                                @RequestParam(required = false) MultipartFile[] files_audio,
+                                                @RequestParam String json,
+                                                @PathVariable("id") int congratulationId,
+                                                HttpSession session) throws JsonProcessingException {
+
+        log.info("Received PUT request for edit congratulation with id: {}", congratulationId);
+        TypeReference<HashMap<String, String>> typeRef = new TypeReference<>() {
+        };
+
+        User user = (User) session.getAttribute("user");
+        Map<String, String> parametersMap = objectMapper.readValue(json, typeRef);
+        log.info("Got Map from json");
+        congratulationService.updateCongratulationById(files_image, files_audio, parametersMap, congratulationId, user.getId());
+        log.info("Successfully edit congratulation with id: {}", congratulationId);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCongratulation(@PathVariable("id") long congratulationId, HttpSession session) {
         log.info("Request for DELETE congratulation received");
         User user = (User) session.getAttribute("user");
@@ -86,6 +114,19 @@ public class CongratulationController {
         congratulationService.deleteById(congratulationId, user.getId());
 
         log.info("Successfully deleted congratulation with id: {}, user login: {}", congratulationId, user.getLogin());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @DeleteMapping("/{id}/links")
+    public ResponseEntity<?> deleteLinksById(@PathVariable("id") long congratulationId, HttpSession session,
+                                             @RequestBody List<Link> linkIdToDeleteFromCongratulation) {
+        log.info("Request for DELETE links received");
+        User user = (User) session.getAttribute("user");
+
+        log.info("Request DELETE links in congratulation with id {}, user: {}", congratulationId, user.getLogin());
+        congratulationService.deleteLinksById(linkIdToDeleteFromCongratulation, congratulationId);
+
+        log.info("Successfully deleted links in congratulation with id: {}, user login: {}", congratulationId, user.getLogin());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
