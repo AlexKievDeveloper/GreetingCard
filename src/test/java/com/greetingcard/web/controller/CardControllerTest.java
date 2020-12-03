@@ -177,6 +177,7 @@ class CardControllerTest {
                 .characterEncoding("utf-8")
                 .sessionAttr("user", user))
                 .andDo(print())
+                .andExpect(jsonPath("$.message").value("Name is short or too long"))
                 .andExpect(status().isBadRequest());
     }
 

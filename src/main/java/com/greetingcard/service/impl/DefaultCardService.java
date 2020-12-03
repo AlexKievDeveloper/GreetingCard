@@ -50,6 +50,10 @@ public class DefaultCardService implements CardService {
 
     @Override
     public void changeCardName(Card card) {
+        int length = card.getName().length();
+        if (length == 0 || length > 250) {
+            throw new IllegalArgumentException("Name is short or too long");
+        }
         jdbcCardDao.changeCardName(card);
     }
 

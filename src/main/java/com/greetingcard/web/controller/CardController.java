@@ -80,10 +80,6 @@ public class CardController {
 
     @PutMapping("card/{id}/name")
     public void changeName(@RequestBody Card card, @PathVariable long id, HttpSession session) {
-        int length = card.getName().length();
-        if (length == 0 || length > 250) {
-            throw new IllegalArgumentException("Name is short or too long");
-        }
         User user = (User) session.getAttribute("user");
         card.setId(id);
         card.setUser(user);

@@ -3,6 +3,7 @@ package com.greetingcard.dao.jdbc;
 import com.github.database.rider.core.api.configuration.DBUnit;
 import com.github.database.rider.core.api.configuration.Orthography;
 import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.greetingcard.entity.*;
 import org.flywaydb.core.Flyway;
@@ -232,12 +233,10 @@ public class JdbcCardDaoITest {
 
     @Test
     @DisplayName("Change name of card")
+    @ExpectedDataSet("changeName.xml")
     void changeCardName() {
         User user = User.builder().id(1).build();
         Card actual = Card.builder().id(1).user(user).name("newName").build();
         jdbcCardDao.changeCardName(actual);
-        Card expected = jdbcCardDao.getCardAndCongratulationByCardId(1,1);
-
-        assertEquals(actual.getName(),expected.getName());
      }
 }
