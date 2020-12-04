@@ -171,8 +171,12 @@ class JdbcCongratulationDaoITest {
         assertFalse(Files.exists(Path.of("/greeting-cards/img/img2.jpg")));
         assertFalse(Files.exists(Path.of("/greeting-cards/img/img3.jpg")));
 
-        Files.deleteIfExists(Path.of("/greeting-cards/audio"));
-        Files.deleteIfExists(Path.of("/greeting-cards/img/"));
+        Files.deleteIfExists(Path.of("/greeting-cards/audio/audio1.mp3"));
+        Files.deleteIfExists(Path.of("/greeting-cards/audio/audio2.mp3"));
+        Files.deleteIfExists(Path.of("/greeting-cards/audio/audio3.mp3"));
+        Files.deleteIfExists(Path.of("/greeting-cards/img/img1.jpg"));
+        Files.deleteIfExists(Path.of("/greeting-cards/img/img2.jpg"));
+        Files.deleteIfExists(Path.of("/greeting-cards/img/img3.jpg"));
     }
 
 
@@ -336,8 +340,8 @@ class JdbcCongratulationDaoITest {
         //then
         assertFalse(pathAudioFile.toFile().exists());
         assertFalse(pathImageFile.toFile().exists());
-        Files.deleteIfExists(Path.of("/greeting-cards/audio"));
-        Files.deleteIfExists(Path.of("/greeting-cards/img/"));
+        Files.deleteIfExists(Path.of("/greeting-cards/audio/audio2.mp3"));
+        Files.deleteIfExists(Path.of("/greeting-cards/img/img1.jpg"));
     }
 
     @Test
