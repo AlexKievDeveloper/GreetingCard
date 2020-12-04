@@ -1,0 +1,15 @@
+.filter-button {
+    text-decoration: none;
+    color: black;
+    background-color: #FEE600;
+    padding: 12px 16px;
+    font-family: 'Merriweather';
+    font-size: 16px;
+}
+
+.chosen {
+    background-color: #FCC000;
+    cursor: default;
+    pointer-events: none;
+    border: none;
+}

@@ -1,0 +1,20 @@
+.container-cards {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    min-width: 100vw;
+    max-width: 100vh;
+    min-height: 100vh;
+    flex: 0 1 auto;
+}
+
+.list-of-cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    min-width: 100vw;
+    max-width: 100vh;
+    flex: 0 1 auto;
+    padding: 65px 400px 100px;
+}

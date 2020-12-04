@@ -33,7 +33,6 @@
     </filter>
     <filter-mapping>
         <filter-name>AuthorizationFilter</filter-name>
-        <url-pattern>/</url-pattern>
         <url-pattern>/api/v1/cards</url-pattern>
         <url-pattern>/api/v1/card</url-pattern>
         <url-pattern>/api/v1/card/*</url-pattern>

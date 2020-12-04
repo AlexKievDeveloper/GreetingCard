@@ -1,0 +1,154 @@
+{
+  "congratulationList": [
+    {
+      "card": {
+        "$ref": "$"
+      },
+      "id": 1,
+      "linkList": [
+        {
+          "congratulationId": 0,
+          "id": 1,
+          "link": "iywaBOMvYLI",
+          "type": "VIDEO"
+        },
+        {
+          "congratulationId": 0,
+          "id": 2,
+          "link": "L-iepu3EtyE",
+          "type": "VIDEO"
+        },
+        {
+          "congratulationId": 0,
+          "id": 4,
+          "link": "https://i.postimg.cc/kXRG5yRC/images.jpg",
+          "type": "PICTURE"
+        },
+        {
+          "congratulationId": 0,
+          "id": 5,
+          "link": "https://i.postimg.cc/hvfjTLC9/images-1.jpg",
+          "type": "PICTURE"
+        },
+        {
+          "congratulationId": 0,
+          "id": 7,
+          "link": "https://www.dropbox.com/s/8cg7h5gehrk7joy/dzidzo_-_kolomijka_bojkivska_(zf.fm).mp3?dl=0",
+          "type": "AUDIO"
+        },
+        {
+          "congratulationId": 0,
+          "id": 8,
+          "link": "https://www.dropbox.com/s/3u94pftverackzy/kolomijki_-_kolomijka_zastilna_(zf.fm).mp3?dl=0",
+          "type": "AUDIO"
+        },
+        {
+          "congratulationId": 0,
+          "id": 10,
+          "link": "https://www.dropbox.com/s/o7i5as1axjmg9if/kolomijki_-_oj__marichko__chicheri_(zv.fm).mp3?dl=0",
+          "type": "PLAIN_LINK"
+        },
+        {
+          "congratulationId": 0,
+          "id": 11,
+          "link": "https://www.youtube.com/watch?v=YlUKcNNmywk",
+          "type": "PLAIN_LINK"
+        }
+      ],
+      "message": "from Roma",
+      "status": "STARTUP",
+      "user": {
+        "firstName": "admin",
+        "id": 1,
+        "lastName": "admin",
+        "login": "admin"
+      }
+    },
+    {
+      "card": {
+        "$ref": "$"
+      },
+      "id": 2,
+      "linkList": [
+        {
+          "congratulationId": 0,
+          "id": 3,
+          "link": "eVTXPUF4Oz4",
+          "type": "VIDEO"
+        },
+        {
+          "congratulationId": 0,
+          "id": 6,
+          "link": "https://i.postimg.cc/2yM5w1Jg/images-2.jpg",
+          "type": "PICTURE"
+        },
+        {
+          "congratulationId": 0,
+          "id": 9,
+          "link": "https://www.dropbox.com/s/vdzkstsod372dn7/kolomijki_-_narodna_(zf.fm).mp3?dl=0",
+          "type": "AUDIO"
+        },
+        {
+          "congratulationId": 0,
+          "id": 12,
+          "link": "https://i.postimg.cc/yNqjTr6n/image.jpg",
+          "type": "PLAIN_LINK"
+        }
+      ],
+      "message": "from Sasha",
+      "status": "STARTUP",
+      "user": {
+        "firstName": "admin",
+        "id": 1,
+        "lastName": "admin",
+        "login": "admin"
+      }
+    },
+    {
+      "card": {
+        "$ref": "$"
+      },
+      "id": 3,
+      "linkList": [
+        {
+          "congratulationId": 0,
+          "id": 13,
+          "link": "https://www.dropbox.com/s/lfw9ubltvfgohw4/kolomijki_-_zhartivlivi_kolomijkimp3_(zf.fm).mp3?dl=0",
+          "type": "PLAIN_LINK"
+        },
+        {
+          "congratulationId": 0,
+          "id": 14,
+          "link": "https://www.dropbox.com/s/l1xgai6hvdpogl1/skrjabin_kolomijki_-_bandershtat_(zf.fm).mp3?dl=0",
+          "type": "PLAIN_LINK"
+        },
+        {
+          "congratulationId": 0,
+          "id": 15,
+          "link": "https://i.postimg.cc/ydsTMgZZ/1.jpg",
+          "type": "PLAIN_LINK"
+        },
+        {
+          "congratulationId": 0,
+          "id": 16,
+          "link": "https://i.postimg.cc/v8NDMKBX/images-3.jpg",
+          "type": "PLAIN_LINK"
+        }
+      ],
+      "message": "from Nastya",
+      "status": "ISOVER",
+      "user": {
+        "firstName": "user",
+        "id": 2,
+        "lastName": "user",
+        "login": "user"
+      }
+    }
+  ],
+  "id": 1,
+  "name": "greeting Nomar",
+  "status": "STARTUP",
+  "user": {
+    "id": 1
+  }
+}

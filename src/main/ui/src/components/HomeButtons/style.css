@@ -1,0 +1,29 @@
+.call-to-action__row {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	padding-left: 80px;
+	height: 100%;
+	flex: 1 0 auto;
+}
+.call-to-action {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-width: 570px;
+	height: 150px;
+	margin-right: 115px;
+	padding: 0px 20px;
+	font-family: 'Merriweather';
+	font-size: 86px;
+	text-decoration: none;
+	background-color: #fee600;
+	color: black;
+	border-radius: 1px;
+}
+
+.white {
+	background-color: white;
+	border: 6px solid #FEE600;
+	border-radius: 5px;
+}

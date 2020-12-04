@@ -19,5 +19,9 @@
     <mvc:resources mapping="/img/**" location="file:${dir.files}/img/"/>
     <mvc:resources mapping="/profile/**" location="file:${dir.files}/profile/"/>
 
+    <mvc:resources mapping="/index.html" location="classpath:/index.html"/>
+    <mvc:resources mapping="/manifest.json" location="classpath:/manifest.json"/>
+    <mvc:resources mapping="/static/**" location="/static/" />
+
     <mvc:annotation-driven />
 </beans>

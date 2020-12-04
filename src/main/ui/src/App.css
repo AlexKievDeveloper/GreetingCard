@@ -1,0 +1,46 @@
+button:disabled {
+    border: none;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: #C1CF7A;
+    min-width: 100vw;
+    max-width: 100vh;
+    min-height: 100vh;
+}
+
+.main-functions {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    flex: 1 0 auto;
+}
+
+.command__row {
+    height: 58px;
+    width: 100%;
+    background-color: #A46578;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.actions__row {
+    display: flex;
+    height: 40px;
+}
+
+.no-border {
+	border: none;
+}
+
+.no-margin-left {
+	margin-left: 0;
+}

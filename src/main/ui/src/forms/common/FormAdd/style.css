@@ -1,0 +1,16 @@
+#add-form {
+    display: flex;
+    justify-content: center;
+    margin-right: 100px;
+}
+
+#add-form input[type="text"] {
+    border: none;
+    height: 41px;
+    padding: 7px;
+    vertical-align: middle;
+}
+
+::placeholder {
+   font-size: 16px; 
+}

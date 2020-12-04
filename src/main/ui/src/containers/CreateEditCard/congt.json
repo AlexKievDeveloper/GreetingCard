@@ -1,0 +1,105 @@
+{
+  "congratulationList": [
+    {
+      "card": {
+        "$ref": "$"
+      },
+      "id": 1,
+      "linkList": [
+        {
+          "congratulationId": 0,
+          "id": 1,
+          "link": "PyuftLknbWM",
+          "type": "VIDEO"
+        },
+        {
+          "congratulationId": 0,
+          "id": 2,
+          "link": "FbmkXLyy0lE",
+          "type": "VIDEO"
+        },
+        {
+          "congratulationId": 0,
+          "id": 10,
+          "link": "https://www.google.com/imgres?imgurl=https%3A%2F%2Fi.pinimg.com%2Foriginals%2Fc2%2Fb8%2Ff9%2Fc2b8f94edccf9c7ab7a70468d6230c40.png&imgrefurl=https%3A%2F%2Fwww.pinterest.com%2Fpin%2F526639750178634806%2F&tbnid=SFnJRDb3WZrvcM&vet=12ahUKEwj0zuvg6OXsAhVVO-wKHV71AHIQMygAegUIARDMAQ..i&docid=J6b1KCUojFB69M&w=1000&h=1500&q=%D0%BF%D0%BE%D0%B7%D0%B4%D1%80%D0%B0%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F%20%D1%81%20%D0%B4%D0%BD%D0%B5%D0%BC%20%D1%80%D0%BE%D0%B6%D0%B4%D0%B5%D0%BD%D0%B8%D1%8F&ved=2ahUKEwj0zuvg6OXsAhVVO-wKHV71AHIQMygAegUIARDMAQ",
+          "type": "PLAIN_LINK"
+        },
+        {
+          "congratulationId": 0,
+          "id": 11,
+          "link": "https://www.google.com/imgres?imgurl=https%3A%2F%2Ftelegraf.com.ua%2Ffiles%2F2019%2F04%2Fizo10_1.jpg&imgrefurl=https%3A%2F%2Ftelegraf.com.ua%2Fpozdravleniya%2F4958709-milyie-pozdravleniya-s-dnem-rozhdeniya-v-stihah-i-otkryitkah-na-14-aprelya.html&tbnid=t0LBsqYQ7kE_oM&vet=12ahUKEwj0zuvg6OXsAhVVO-wKHV71AHIQMygRegUIARDxAQ..i&docid=Z-DfjnafwTsOyM&w=550&h=550&q=%D0%BF%D0%BE%D0%B7%D0%B4%D1%80%D0%B0%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F%20%D1%81%20%D0%B4%D0%BD%D0%B5%D0%BC%20%D1%80%D0%BE%D0%B6%D0%B4%D0%B5%D0%BD%D0%B8%D1%8F&ved=2ahUKEwj0zuvg6OXsAhVVO-wKHV71AHIQMygRegUIARDxAQ",
+          "type": "PLAIN_LINK"
+        }
+      ],
+      "message": "from Roma",
+      "status": "STARTUP",
+      "user": {
+        "firstName": "admin",
+        "id": 1,
+        "lastName": "admin",
+        "login": "admin"
+      }
+    },
+    {
+      "card": {
+        "$ref": "$"
+      },
+      "id": 2,
+      "linkList": [
+        {
+          "congratulationId": 0,
+          "id": 3,
+          "link": "you_tube_3",
+          "type": "VIDEO"
+        },
+        {
+          "congratulationId": 0,
+          "id": 6,
+          "link": "audio_3",
+          "type": "PICTURE"
+        },
+        {
+          "congratulationId": 0,
+          "id": 9,
+          "link": "image_3",
+          "type": "AUDIO"
+        },
+        {
+          "congratulationId": 0,
+          "id": 12,
+          "link": "link_1",
+          "type": "PLAIN_LINK"
+        }
+      ],
+      "message": "from Sasha",
+      "status": "STARTUP",
+      "user": {
+        "firstName": "admin",
+        "id": 1,
+        "lastName": "admin",
+        "login": "admin"
+      }
+    },
+    {
+      "card": {
+        "$ref": "$"
+      },
+      "id": 3,
+      "linkList": [],
+      "message": "from Nastya",
+      "status": "ISOVER",
+      "user": {
+        "firstName": "user",
+        "id": 2,
+        "lastName": "user",
+        "login": "user"
+      }
+    }
+  ],
+  "id": 1,
+  "name": "greeting Nomar",
+  "status": "STARTUP",
+  "user": {
+    "id": 1
+  }
+}

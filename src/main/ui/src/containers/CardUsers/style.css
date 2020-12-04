@@ -1,0 +1,15 @@
+.form__column {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	width: 100%;
+	border-bottom: 2px solid black;
+}
+
+.users__column {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+}

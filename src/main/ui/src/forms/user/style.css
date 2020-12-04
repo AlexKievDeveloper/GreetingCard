@@ -1,0 +1,104 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 100%;
+	max-width: 100%;
+    flex: 1 0 auto;
+    padding: 65px 0px 100px;
+}
+
+#profile-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    padding: 60px 0px;
+    width: 482px;
+    background: #FFFFFF;
+    border: 2px solid #151515;
+    border-radius: 20px 20px 20px 20px;
+    font-size: 18px;
+}
+
+#profile-text input[type="text"] {
+    font-family: 'Teen';
+    margin-right: 0;
+    margin-left: 0;
+}
+
+#profile-text input[type="email"] {
+    font-family: 'Teen';
+    margin-right: 0;
+    margin-left: 0;
+}
+
+#profile-text ::placeholder {
+    font-family: 'Teen';
+    font-size: 18px;
+    color: rgba(0, 0, 0, 1);
+}
+
+#profile-text input[type="submit"] {
+    border: 1px solid black;
+    background-color: #FEE600;
+    margin-top: 5px;
+}
+
+.styled-as-input {
+    width: 200px;
+    height: 30px;
+
+    padding: 5px 15px 5px;
+    background: none;
+    border-left: none;
+    border-top: none;
+    border-right: none;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.8);
+}
+
+.profile-text-change__column {
+	display: flex;
+	flex-direction: column;
+	height: 460px;
+	align-self: center;
+	align-items: flex-end;
+	justify-content: center;
+	padding: 0 68px;
+	margin-left: 142px;
+	background-color: white;
+	border: 3px solid black;
+	border-radius: 39px;
+}
+
+.profile-details-changeable {
+	display: flex;
+	margin: auto;
+}
+
+.error {
+    margin-bottom:10px;
+    color:red;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+#password-changeable {
+	display: flex;
+	margin-top: 60px;
+}
+
+.profile-password-change__column {
+	display: flex;
+	flex-direction: column;
+	align-self: center;
+	align-items: flex-end;
+	justify-content: center;
+	padding: 60px 60px;
+	background-color: white;
+	border: 1px solid black;
+	border-radius: 20px;
+}

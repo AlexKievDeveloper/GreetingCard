@@ -1,0 +1,49 @@
+.card__row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.card-link {
+    width: 100px;
+    height: auto;
+    background-color: white;
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-link img {
+    width: auto;
+    height: 90%;
+}
+
+.card-details__column {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 0px 30px;
+}
+
+.card-name {
+    font-size: 18px;
+}
+
+.card-styled-as-input {
+    width: 200px;
+    height: 30px;
+    margin-bottom: 18px;
+    overflow: hidden;
+    text-overflow: '..';
+    white-space: nowrap;
+    padding: 5px 15px 5px;
+    background: none;
+    border-left: none;
+    border-top: none;
+    border-right: none;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.8);
+}
+
+.card-author {
+    font-size: 16px;
+}

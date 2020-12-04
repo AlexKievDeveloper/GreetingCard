@@ -1,0 +1,49 @@
+.navigation-row {
+    display: flex;
+    justify-content: space-between;
+    width: 419px;
+    margin-right: 96px;
+
+}
+
+.navigation-row-before-login {
+    display: flex;
+    justify-content: space-between;
+    width: 65px;
+    margin-right: 32px;
+}
+
+.navigation-link {
+    width: 65px;
+    height: 65px;
+    clip-path: circle(50% at 50% 50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.navigation-link img {
+    width: 50px;
+    height: auto;
+}
+
+.home {
+    background-color: #FCF6BD;
+}
+
+.profile {
+    background-color: #A9DEF9;
+}
+
+.profile img {
+    width: 38px;
+    height: 38px;
+}
+
+.my-cards {
+    background-color: #E4C1F9;
+}
+
+.log-out {
+    background-color: #C1FBA4;
+}
