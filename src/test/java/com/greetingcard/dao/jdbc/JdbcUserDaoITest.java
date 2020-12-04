@@ -3,8 +3,10 @@ package com.greetingcard.dao.jdbc;
 import com.github.database.rider.core.api.configuration.DBUnit;
 import com.github.database.rider.core.api.configuration.Orthography;
 import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.greetingcard.dao.UserDao;
+import com.greetingcard.entity.AccessHashType;
 import com.greetingcard.entity.Language;
 import com.greetingcard.entity.User;
 import org.flywaydb.core.Flyway;
@@ -20,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DBRider
 @DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE)
 @DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardsUsers.xml",
-        "congratulations.xml", "links.xml"},
+        "congratulations.xml", "links.xml", "forgot_password_hashes.xml", "verify_email_hashes.xml"},
         executeStatementsBefore = "SELECT setval('users_user_id_seq', 10);",
         cleanAfter = true)
 @SpringJUnitWebConfig(value = TestConfiguration.class)
@@ -107,6 +109,19 @@ class JdbcUserDaoITest {
     }
 
     @Test
+    @DisplayName("Update user's password")
+    @ExpectedDataSet("usersAfterChangePassword.xml")
+    void testUpdatePassword() {
+        //prepare
+        User user = User.builder()
+                .id(2L)
+                .password("jW+C6KmMPN2LnNLUlyBFDA7cvbkvog1Z27A3Y4HEk9A=")
+                .build();
+        //when
+        userDao.updatePassword(user);
+    }
+
+    @Test
     @DisplayName("Find user by id")
     void testFindUserById() {
         //when
@@ -120,4 +135,64 @@ class JdbcUserDaoITest {
         assertEquals("@user", actualUser.getEmail());
     }
 
+    @Test
+    @DisplayName("Find user by email")
+    void testFindUserByEmail() {
+        //when
+        User actualUser = userDao.findByEmail("@user");
+        //then
+        assertNotNull(actualUser);
+        assertEquals(2, actualUser.getId());
+        assertEquals("user", actualUser.getFirstName());
+        assertEquals("user", actualUser.getLastName());
+        assertEquals("user", actualUser.getLogin());
+        assertEquals("@user", actualUser.getEmail());
+    }
+
+
+    @Test
+    @DisplayName("Find user by email if there is no user with such email in DB")
+    void testFindUserByEmailIfEmailAddressNotFound() {
+        //when
+        User actualUser = userDao.findByEmail("non-existing@email.address");
+        //then
+        assertNull(actualUser);
+    }
+
+    @Test
+    @DisplayName("Save access hash to the table")
+    void testSaveAccessHash() {
+        //prepare
+        String testHash = "accessHash";
+        //when
+        userDao.saveAccessHash("new@new", testHash, AccessHashType.FORGOT_PASSWORD);
+
+        assertTrue(userDao.verifyForgotPasswordAccessHash(testHash, "newPassword"));
+        assertFalse(userDao.verifyForgotPasswordAccessHash(testHash, "newPassword"));
+    }
+
+    @Test
+    @DisplayName("Check hash tables for forgot password access hash")
+    @ExpectedDataSet("forgot_password_hashesAfterCheckingHash.xml")
+    void testVerifyForgotPasswordAccessHash() {
+        //prepare
+        String testHash = "accessHash";
+        //when
+        boolean result = userDao.verifyForgotPasswordAccessHash(testHash, "newPassword");
+        //then
+        assertTrue(result);
+        assertFalse(userDao.verifyForgotPasswordAccessHash(testHash, "newPassword"));
+    }
+
+    @Test
+    @DisplayName("Search hash tables for verify email access hash and change email_verified column to 'true' in users table")
+    @ExpectedDataSet(value = {"usersAfterVerifyEmail.xml", "verify_email_hashesAfterCheckingHash.xml"})
+    void testVerifyEmailAccessHash() {
+        //prepare
+        String testHash = "accessHash";
+        //when
+        boolean result = userDao.verifyEmailAccessHash(testHash);
+        //then
+        assertTrue(result);
+    }
 }

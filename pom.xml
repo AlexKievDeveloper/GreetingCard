@@ -19,7 +19,7 @@
         <commons-dbcp2.version>2.8.0</commons-dbcp2.version>
         <commons-codec.version>1.11</commons-codec.version>
         <logback.version>1.2.3</logback.version>
-        <lombok.version>1.18.12</lombok.version>
+        <lombok.version>1.18.16</lombok.version>
         <thymeleaf.version>3.0.11.RELEASE</thymeleaf.version>
         <flyway.version>6.5.5</flyway.version>
         <mockito.version>3.5.10</mockito.version>
@@ -30,6 +30,7 @@
         <hamcrest-library.version>2.2</hamcrest-library.version>
         <json-path.version>2.4.0</json-path.version>
         <jackson-databind.version>2.11.3</jackson-databind.version>
+        <email.version>1.6.2</email.version>
     </properties>
 
     <build>
@@ -127,6 +128,17 @@
             <artifactId>jackson-databind</artifactId>
             <version>${jackson-databind.version}</version>
         </dependency>
+        <!--Mail-->
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>${email.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
         <!--Test-->
         <dependency>
             <groupId>org.flywaydb</groupId>
@@ -134,7 +146,7 @@
             <version>${flyway.version}</version>
             <scope>test</scope>
         </dependency>
-      <dependency>
+        <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
             <version>${mockito.version}</version>
@@ -176,7 +188,6 @@
             <version>${spring-boot-test}</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
 </project>

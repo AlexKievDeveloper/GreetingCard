@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greetingcard.entity.User;
 import com.greetingcard.security.SecurityService;
+import com.greetingcard.service.EmailService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +23,10 @@ import java.util.Map;
 public class UserController {
     private SecurityService securityService;
     @Autowired
-    private int maxInactiveInterval;
+    private Integer maxInactiveInterval;
     @Autowired
     private ObjectMapper objectMapper;
+
 
     public UserController(SecurityService securityService) {
         this.securityService = securityService;
@@ -39,10 +41,10 @@ public class UserController {
 
     @PostMapping(value = "session", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> login(@RequestBody Map<String, String> userCredential, HttpSession session) throws JsonProcessingException {
+    public ResponseEntity<?> login(@RequestBody Map<String, String> userCredentials, HttpSession session) throws JsonProcessingException {
         log.info("login request");
-        String login = userCredential.get("login");
-        String password = userCredential.get("password");
+        String login = userCredentials.get("login");
+        String password = userCredentials.get("password");
         log.info("login for user {}", login);
         User user = securityService.login(login, password);
         if (user == null) {
@@ -60,16 +62,54 @@ public class UserController {
 
     @PostMapping(value = "user", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> register(@RequestBody Map<String, String> userCredentials) {
+        String email = userCredentials.get("email");
         User user = User.builder()
                 .firstName(userCredentials.get("firstName"))
                 .lastName(userCredentials.get("lastName"))
-                .email(userCredentials.get("email"))
+                .email(email)
                 .login(userCredentials.get("login"))
                 .password(userCredentials.get("password"))
                 .build();
         log.info("Registration request for user login: {}", user.getLogin());
-        securityService.save(user);
+        securityService.register(user);
+
         log.info("Successfully registered: {}", user);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PutMapping("user/verification/{accessHash}")
+    public void verifyEmail(@PathVariable String accessHash) {
+        securityService.verifyEmailAccessHash(accessHash);
+    }
+
+    @PutMapping(value = "user/password", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void changePassword(@RequestBody Map<String, String> userCredentials) {
+        String login = userCredentials.get("login");
+        String oldPassword = userCredentials.get("oldPassword");
+        User user = securityService.login(login, oldPassword);
+
+        if (user == null) {
+            log.debug("Login or or old password value is incorrect.");
+            throw new IllegalArgumentException("Login or or old password value is incorrect.");
+        }
+
+        String newPassword = userCredentials.get("newPassword");
+        user.setPassword(newPassword);
+
+        log.debug("Request to change password for user with login: {}", user.getLogin());
+        securityService.updatePassword(user);
+    }
+
+    @PostMapping(value = "user/forgot_password", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void restorePassword(@RequestBody Map<String, String> userCredentials) {
+        String email = userCredentials.get("email");
+        log.debug("Request to restore forgotten password for user with email: {}", email);
+        securityService.restorePassword(email);
+    }
+
+    @PutMapping("user/recover_password/{accessHash}")
+    public void restoreAccessToProfile(@RequestBody Map<String, String> userCredentials, @PathVariable String accessHash) {
+        String password = userCredentials.get("password");
+        securityService.verifyForgotPasswordAccessHash(accessHash, password);
     }
 }

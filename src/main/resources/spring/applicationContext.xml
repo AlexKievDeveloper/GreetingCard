@@ -29,6 +29,10 @@
         <constructor-arg value="${dir.files}"/>
     </bean>
 
+    <bean id="siteUrl" class="java.lang.String">
+        <constructor-arg value="${webapp.url}"/>
+    </bean>
+
     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
         <constructor-arg ref="dataSource"/>
     </bean>
@@ -90,6 +94,25 @@
         <constructor-arg ref="securityService"/>
         <constructor-arg ref="cardService"/>
         <constructor-arg ref="congratulationService"/>
+    </bean>
+
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host" value="smtp.gmail.com"/>
+        <property name="port" value="587"/>
+        <property name="username" value="${sender.email.address}"/>
+        <property name="password" value="${sender.password}"/>
+        <property name="javaMailProperties">
+            <props>
+                <prop key="mail.transport.protocol">smtp</prop>
+                <prop key="mail.smtp.auth">true</prop>
+                <prop key="mail.smtp.starttls.enable">true</prop>
+                <prop key="mail.debug">true</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="emailService" class="com.greetingcard.service.impl.DefaultEmailService">
+        <property name="mailSender" ref="mailSender"/>
     </bean>
 
     <tx:annotation-driven/>
