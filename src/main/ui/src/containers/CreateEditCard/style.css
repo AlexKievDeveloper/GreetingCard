@@ -4,7 +4,6 @@
     align-items: center;
     min-width: 100vw;
     max-width: 100vh;
-    min-height: 100vh;
     flex: 1 0 auto;
     padding: 65px 0px 100px;
 }

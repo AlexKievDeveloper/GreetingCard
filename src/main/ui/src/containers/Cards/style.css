@@ -4,7 +4,6 @@
     align-items: flex-start;
     min-width: 100vw;
     max-width: 100vh;
-    min-height: 100vh;
     flex: 0 1 auto;
 }
 

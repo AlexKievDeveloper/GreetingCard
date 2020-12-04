@@ -40,13 +40,17 @@ export class CreateEditBlock extends Component {
 
   componentDidMount() {
     if (this.state.block_id !== 0) {
-      blockService.getBlock(this.state.block_id).then((block) =>
+      blockService.getBlock(this.state.block_id).then((block) => {
+        let links = block.linkList;
+        if (links[0] == null) {
+          links = [];
+        }
         this.setState({
           message: block.message,
-          links: block.linkList,
+          links: links,
           card_id: block.cardId,
-        })
-      );
+        });
+      });
     }
   }
 
@@ -78,7 +82,9 @@ export class CreateEditBlock extends Component {
   };
 
   deleteLinks = (listToDelete) => {
-    let newLinks = this.state.links.filter((link) => !listToDelete.includes(link.id));
+    let newLinks = this.state.links.filter(
+      (link) => !listToDelete.includes(link.id)
+    );
     this.setState({ links: newLinks });
   };
 

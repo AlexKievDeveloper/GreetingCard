@@ -8,6 +8,7 @@ import com.greetingcard.service.EmailService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -129,7 +130,7 @@ public class DefaultSecurityService implements SecurityService {
         String accessHash = generateAccessHash(email, FORGOT_PASSWORD);
 
         String emailMessageBody = "To restore the access to your account, please, open this link and follow the instructions:\n " +
-                siteUrl + "/user/forgot_password/" + accessHash;
+                siteUrl + "/recover_password/" + accessHash;
         emailService.sendMail(email, "Greeting Card: Restore password", emailMessageBody);
     }
 
@@ -139,8 +140,15 @@ public class DefaultSecurityService implements SecurityService {
     }
 
     @Override
+    @Transactional
     public Boolean verifyForgotPasswordAccessHash(String hash, String password) {
-        return userDao.verifyForgotPasswordAccessHash(hash, password);
+        User user = userDao.verifyForgotPasswordAccessHash(hash, password);
+        User userWithSalt = userDao.getUserWithSalt(user.getId());
+        userWithSalt.setPassword(password);
+        String newPasswordHash = getHashPassword(userWithSalt.getSalt().concat(password));
+        user.setPassword(newPasswordHash);
+        userDao.updatePassword(user);
+        return true;
     }
 
     @Override
@@ -176,7 +184,7 @@ public class DefaultSecurityService implements SecurityService {
         String emailMessageBody = "Welcome to the Greeting Card!" +
                 "To finish the registration process, we need to verify your email." +
                 "Please confirm your address by opening this link:\n " +
-                siteUrl + "/email/verify/" + accessHash;
+                siteUrl + "/api/v1/user/verification/" + accessHash;
         emailService.sendMail(email, "Greeting Card: Verify email", emailMessageBody);
 
         log.debug("Sent letter for email verification to: {}", email);

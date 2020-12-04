@@ -19,7 +19,11 @@ export default class FormAdd extends Component {
 
   doAction = (event) => {
     event.preventDefault();
-    this.props.onSubmit(this.state.valueToAdd, this.props.history);
+    if (this.state.valueToAdd === "") {
+      alert("Value is empty!");
+    } else {
+      this.props.onSubmit(this.state.valueToAdd, this.props.history);
+    }
   };
 
   render() {

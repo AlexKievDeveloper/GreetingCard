@@ -50,16 +50,16 @@ export default class DeleteLinks extends Component {
   }
 
   showLinks = () => {
-    return this.props.links.map((linkItem) => (
-      <ElementLink
-        key={linkItem.id}
-        isPreview={false}
-        src={linkItem.link}
-        linkType={linkItem.type}
-        linkId={linkItem.id}
-        onClickDeleteCheckBox={this.onClickDeleteCheckBox}
-      />
-    ));
+      return this.props.links.map((linkItem) => (
+        <ElementLink
+          key={linkItem.id}
+          isPreview={false}
+          src={linkItem.link}
+          linkType={linkItem.type}
+          linkId={linkItem.id}
+          onClickDeleteCheckBox={this.onClickDeleteCheckBox}
+        />
+      ));
   };
 
   render() {
