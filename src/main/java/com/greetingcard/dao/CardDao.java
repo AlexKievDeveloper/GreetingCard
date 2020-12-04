@@ -20,4 +20,6 @@ public interface CardDao {
     void changeCardStatusById(Status status, long cardId);
 
     Optional<Status> getCardStatusById(long cardId);
+
+    void changeCardName(Card card);
 }

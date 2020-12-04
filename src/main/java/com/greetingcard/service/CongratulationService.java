@@ -10,7 +10,7 @@ import java.util.Map;
 
 public interface CongratulationService {
 
-    Congratulation getCongratulationById(int congratulationId);
+    Congratulation getCongratulationById(long congratulationId);
 
     List<Link> getLinkList(MultipartFile[] files_image, MultipartFile[] files_audio, Map<String, String> parametersMap);
 
@@ -18,7 +18,11 @@ public interface CongratulationService {
 
     void changeCongratulationStatusByCongratulationId(Status status, long congratulationId);
 
+    void updateCongratulationById(MultipartFile[] files_image, MultipartFile[] files_audio, Map<String, String> parametersMap, long congratulationId, long userId);
+
     void deleteById(long congratulationId, long userId);
+
+    void deleteLinksById(List<Link> linkIdToDelete, long congratulationId);
 
     void deleteByCardId(long cardId, long userId);
 }

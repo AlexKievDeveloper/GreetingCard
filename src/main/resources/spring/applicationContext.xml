@@ -55,6 +55,7 @@
     <bean id="congratulationDao" class="com.greetingcard.dao.jdbc.JdbcCongratulationDao">
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
         <property name="namedJdbcTemplate" ref="namedJdbcTemplate"/>
+        <property name="rootDirectory" ref="rootDirectory"/>
     </bean>
 
     <bean id="congratulationService" class="com.greetingcard.service.impl.DefaultCongratulationService">
@@ -63,7 +64,7 @@
         <constructor-arg ref="congratulationDao"/>
     </bean>
 
-    <bean id="objMapper" class="com.fasterxml.jackson.databind.ObjectMapper"/>
+    <bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper"/>
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
@@ -114,7 +115,7 @@
         <property name="mailSender" ref="mailSender"/>
     </bean>
 
-    <tx:annotation-driven />
+    <tx:annotation-driven/>
 
     <context:component-scan base-package="com.greetingcard">
         <context:exclude-filter type="regex" expression="com\.greetingcard\.controller\..*"/>

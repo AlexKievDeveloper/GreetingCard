@@ -5,7 +5,6 @@ import com.github.database.rider.core.api.configuration.Orthography;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
-import com.greetingcard.dao.CardUserDao;
 import com.greetingcard.dao.jdbc.TestConfiguration;
 import com.greetingcard.entity.User;
 import com.greetingcard.entity.UserInfo;
@@ -32,9 +31,6 @@ public class DefaultCardUserServiceITest {
 
     @Autowired
     private CardUserService cardUserService;
-
-    @Autowired
-    private CardUserDao cardUserDao;
 
     @Autowired
     private Flyway flyway;

@@ -70,7 +70,6 @@ class CardUserControllerSystemTest {
                 .andExpect(status().isBadRequest());
     }
 
-
     @Test
     @DisplayName("Add member to card - login does not exist")
     void addUserMemberIfNotExistingLogin() throws Exception {
@@ -198,7 +197,6 @@ class CardUserControllerSystemTest {
                 .andExpect(jsonPath("$[1].login").value(expectedUser4.getLogin()))
                 .andExpect(jsonPath("$[1].pathToPhoto").value(expectedUser4.getPathToPhoto()));
     }
-
 
     @Test
     @DisplayName("Delete some users - success")
