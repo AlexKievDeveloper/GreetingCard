@@ -167,7 +167,7 @@ class DefaultSecurityServiceTest {
 
     @Test
     @DisplayName("Verify the access hash")
-    @ExpectedDataSet("verify_email_hashesAfterCheckingHash.xml")
+    @ExpectedDataSet(value = {"usersAfterChangePassword.xml", "forgot_password_hashesAfterCheckingHash.xml"})
     void testVerifyForgotPasswordAccessHash() {
         securityService.verifyForgotPasswordAccessHash("accessHash", "newPassword");
     }
@@ -179,8 +179,7 @@ class DefaultSecurityServiceTest {
         String newHash = securityService.generateAccessHash("@user", VERIFY_EMAIL);
         //then
         assertNotNull(newHash);
-        assertTrue(securityService.verifyEmailAccessHash(newHash));
-    }
+        assertEquals(44, newHash.length()); }
 
     @Test
     @DisplayName("Generate an access hash, based on user's email + random salt")
@@ -189,6 +188,6 @@ class DefaultSecurityServiceTest {
         String newHash = securityService.generateAccessHash("@user", FORGOT_PASSWORD);
         //then
         assertNotNull(newHash);
-        assertTrue(securityService.verifyForgotPasswordAccessHash(newHash, "newPassword"));
+        assertEquals(44, newHash.length());
     }
 }

@@ -113,10 +113,7 @@ class JdbcUserDaoITest {
     @ExpectedDataSet("usersAfterChangePassword.xml")
     void testUpdatePassword() {
         //prepare
-        User user = User.builder()
-                .id(2L)
-                .password("jW+C6KmMPN2LnNLUlyBFDA7cvbkvog1Z27A3Y4HEk9A=")
-                .build();
+        User user = User.builder().id(2L).password("jW+C6KmMPN2LnNLUlyBFDA7cvbkvog1Z27A3Y4HEk9A=").build();
         //when
         userDao.updatePassword(user);
     }
@@ -142,7 +139,7 @@ class JdbcUserDaoITest {
         User actualUser = userDao.findByEmail("@user");
         //then
         assertNotNull(actualUser);
-        assertEquals(2, actualUser.getId());
+        assertEquals(2L, actualUser.getId());
         assertEquals("user", actualUser.getFirstName());
         assertEquals("user", actualUser.getLastName());
         assertEquals("user", actualUser.getLogin());
@@ -166,22 +163,17 @@ class JdbcUserDaoITest {
         String testHash = "accessHash";
         //when
         userDao.saveAccessHash("new@new", testHash, AccessHashType.FORGOT_PASSWORD);
-
-        assertTrue(userDao.verifyForgotPasswordAccessHash(testHash, "newPassword"));
-        assertFalse(userDao.verifyForgotPasswordAccessHash(testHash, "newPassword"));
     }
 
     @Test
     @DisplayName("Check hash tables for forgot password access hash")
-    @ExpectedDataSet("forgot_password_hashesAfterCheckingHash.xml")
+    @ExpectedDataSet(value = {"usersAfterChangePassword.xml", "forgot_password_hashesAfterCheckingHash.xml"})
     void testVerifyForgotPasswordAccessHash() {
         //prepare
-        String testHash = "accessHash";
+        String newPasswordHash = "jW+C6KmMPN2LnNLUlyBFDA7cvbkvog1Z27A3Y4HEk9A=";
+        User user = User.builder().id(2L).password(newPasswordHash).build();
         //when
-        boolean result = userDao.verifyForgotPasswordAccessHash(testHash, "newPassword");
-        //then
-        assertTrue(result);
-        assertFalse(userDao.verifyForgotPasswordAccessHash(testHash, "newPassword"));
+        userDao.verifyForgotPasswordAccessHash("accessHash", user);
     }
 
     @Test
@@ -191,8 +183,20 @@ class JdbcUserDaoITest {
         //prepare
         String testHash = "accessHash";
         //when
-        boolean result = userDao.verifyEmailAccessHash(testHash);
+        userDao.verifyEmailAccessHash(testHash);
+    }
+
+    @Test
+    @DisplayName("Search forgot_password_hashes table for access hash and get user by ID")
+    void testFindUserByForgotPasswordAccessHash() {
+        //prepare
+        String testHash = "accessHash";
+        //when
+        User user = userDao.findByForgotPasswordAccessHash(testHash);
         //then
-        assertTrue(result);
+        assertNotNull(user);
+        assertEquals(2, user.getId());
+        assertEquals("gDE3fEwV4WEZhgiURMj/WMlTWP/cldaSptEMe2M+md8=", user.getPassword());
+        assertEquals("salt", user.getSalt());
     }
 }
