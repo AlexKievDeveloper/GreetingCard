@@ -126,7 +126,6 @@ public class DefaultSecurityService implements SecurityService {
             throw new RuntimeException("Cannot find a user with email: " + email);
         }
 
-//        String accessHash = generateAccessHash(email, FORGOT_PASSWORD);
         log.info("Generating new password for user with email {}", email);
         String newPassword = UUID.randomUUID().toString().substring(0, 15);
         user.setPassword(newPassword);
