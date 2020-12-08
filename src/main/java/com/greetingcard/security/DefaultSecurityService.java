@@ -126,11 +126,9 @@ public class DefaultSecurityService implements SecurityService {
         }
 
         log.info("Sending letter with link to restore access to account, to user with email address: {}", user.getEmail());
-
         String accessHash = generateAccessHash(email, FORGOT_PASSWORD);
-
         String emailMessageBody = "To restore the access to your account, please, open this link and follow the instructions:\n " +
-                siteUrl + "/recover_password/" + accessHash;
+                siteUrl + "api/v1/user/recover_password/" + accessHash;
         emailService.sendMail(email, "Greeting Card: Restore password", emailMessageBody);
     }
 
