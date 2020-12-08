@@ -27,7 +27,7 @@ import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import static com.greetingcard.entity.AccessHashType.FORGOT_PASSWORD;
 import static com.greetingcard.entity.AccessHashType.VERIFY_EMAIL;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 
 
@@ -156,6 +156,8 @@ class DefaultSecurityServiceTest {
         securityService.restorePassword("testEmail");
         //then
         verify(emailService).sendMail(anyString(), anyString(), anyString());
+        User user = userDao.findByEmail("testEmail");
+        assertEquals(44, user.getPassword().length());
     }
 
     @Test
