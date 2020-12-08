@@ -17,7 +17,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.UUID;
 
-import static com.greetingcard.entity.AccessHashType.FORGOT_PASSWORD;
 import static com.greetingcard.entity.AccessHashType.VERIFY_EMAIL;
 
 @Slf4j
@@ -83,7 +82,10 @@ public class DefaultSecurityService implements SecurityService {
             String fileName = uuidFile + "." + file.getOriginalFilename();
 
             defaultAmazonService.uploadFile(file, profileFile + "/" + fileName);
-            defaultAmazonService.deleteFileFromS3Bucket(user.getPathToPhoto());
+
+            if (user.getPathToPhoto() != null) {
+                defaultAmazonService.deleteFileFromS3Bucket(user.getPathToPhoto());
+            }
 
             user.setPathToPhoto("/" + profileFile + "/" + fileName);
         }

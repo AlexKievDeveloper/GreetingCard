@@ -25,6 +25,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -178,7 +179,7 @@ class UserControllerSystemTest {
     @DisplayName("Open email verification link")
     @ExpectedDataSet("verify_email_hashesAfterCheckingHash.xml")
     void testEmailVerification() throws Exception {
-        mockMvc.perform(put("/api/v1/user/verification/accessHash"))
+        mockMvc.perform(get("/api/v1/user/verification/accessHash"))
                 .andExpect(status().isOk());
     }
 
@@ -228,7 +229,7 @@ class UserControllerSystemTest {
         String json = "{\n" +
                 "  \"password\" : \"newPass\"\n" +
                 "}";
-        mockMvc.perform(put("/api/v1/recover_password/accessHash")
+        mockMvc.perform(put("/api/v1/user/recover_password/accessHash")
                 .contentType(APPLICATION_JSON_VALUE)
                 .accept(APPLICATION_JSON_VALUE)
                 .content(json))
