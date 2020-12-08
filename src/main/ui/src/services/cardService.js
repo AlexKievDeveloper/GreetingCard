@@ -7,6 +7,7 @@ export const cardService = {
     deleteCard,
     leaveCard,
     finishCard,
+    updateName,
     deleteUsers,
     addUser,
     getUsers
@@ -34,6 +35,10 @@ function leaveCard(id) {
 
 function finishCard(id) {
     serverService.sendRequest(`/card/${id}/status`, 'PUT');
+}
+
+function updateName(id, newName) {
+    return serverService.sendRequest(`/card/${id}/name`, 'PUT', {name: newName});
 }
 
 function deleteUsers(cardId, listUserId) {

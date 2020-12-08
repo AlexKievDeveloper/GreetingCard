@@ -7,10 +7,8 @@ import { formValidator } from "../../../forms/user/formValidator";
 class InputTextWithLabel extends React.Component {
   constructor(props){
     super(props);
-    //console.log('InputTextWithLabel')
-    //console.log(this.props)
     this.state = {
-        value: props.valueOfColumn !=="" ? props.valueOfColumn : "",
+        value: props.valueOfColumn ? props.valueOfColumn : "",
         errorMessage: ''
     }
   }
@@ -46,7 +44,6 @@ class InputTextWithLabel extends React.Component {
   }
  
  render() {
-  console.log(this.props.valueOfColumn)
   let inputType = "text";
   if (this.props.columnName.indexOf("password") > 0) {
     inputType = "password";
@@ -62,7 +59,7 @@ class InputTextWithLabel extends React.Component {
           id={this.props.columnName}
           className="styled-as-input margin-bottom"
           name={this.props.columnName}
-          value={this.state.value ? this.state.value : this.props.valueOfColumn}
+          value={this.state.value}
           onChange={this.inputChange}
         />
       </div>    
