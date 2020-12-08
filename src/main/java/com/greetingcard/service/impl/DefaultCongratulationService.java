@@ -8,12 +8,10 @@ import com.greetingcard.entity.Status;
 import com.greetingcard.service.CongratulationService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,11 +23,12 @@ import java.util.regex.Pattern;
 @Setter
 public class DefaultCongratulationService implements CongratulationService {
     private CongratulationDao congratulationDao;
-    private String rootDirectory;
 
-    public DefaultCongratulationService(CongratulationDao congratulationDao, String rootDirectory) {
+    @Autowired
+    private DefaultAmazonService defaultAmazonService;
+
+    public DefaultCongratulationService(CongratulationDao congratulationDao) {
         this.congratulationDao = congratulationDao;
-        this.rootDirectory = rootDirectory;
     }
 
     @Override
@@ -154,15 +153,8 @@ public class DefaultCongratulationService implements CongratulationService {
                         log.info("saveFilesAndCreateLinks.I`m going to add link to list: {}", link.getLink());
                         linkList.add(link);
 
-                        try {
-                            Files.createDirectories(Paths.get(rootDirectory, pathToStorage));
-                            log.info("Root directory: {}, path to storage: {}, uniqueFileName: {}", rootDirectory,
-                                    pathToStorage, uniqueFileName);
-                            multipartFile.transferTo(Paths.get(rootDirectory, pathToStorage, uniqueFileName));
-                        } catch (IOException e) {
-                            log.error("Exception while saving multipart file: {}", multipartFile, e);
-                            throw new RuntimeException("Exception while saving multipart file: " + multipartFile);
-                        }
+                        log.info("Path to storage: {}, uniqueFileName: {}", pathToStorage, uniqueFileName);
+                        defaultAmazonService.uploadFile(multipartFile, pathToStorage + "/" + uniqueFileName);
                     }
                 }
             }

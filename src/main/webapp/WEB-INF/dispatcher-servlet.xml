@@ -15,13 +15,14 @@
     <context:component-scan base-package="com.greetingcard.web.controller"/>
     <context:property-placeholder location="classpath:application.properties" order="1" ignore-unresolvable="true"/>
 
-    <mvc:resources mapping="/audio/**" location="file:${dir.files}/audio/"/>
-    <mvc:resources mapping="/img/**" location="file:${dir.files}/img/"/>
-    <mvc:resources mapping="/profile/**" location="file:${dir.files}/profile/"/>
+    <mvc:resources mapping="/audio/**" location="https://${bucketName}.s3.${region}.amazonaws.com/audio/"/>
+    <mvc:resources mapping="/img/**" location="https://${bucketName}.s3.${region}.amazonaws.com/img/"/>
+    <mvc:resources mapping="/profile/**" location="https://${bucketName}.s3.${region}.amazonaws.com/profile/"/>
 
+    <mvc:resources mapping="/" location="/build/index.html"/>
     <mvc:resources mapping="/index.html" location="/build/index.html"/>
     <mvc:resources mapping="/manifest.json" location="/build/manifest.json"/>
-    <mvc:resources mapping="/static/**" location="/build/static/" />
+    <mvc:resources mapping="/static/**" location="/build/static/"/>
 
     <mvc:annotation-driven />
 </beans>

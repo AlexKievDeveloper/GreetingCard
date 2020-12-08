@@ -7,8 +7,10 @@ import com.greetingcard.dao.jdbc.mapper.LinksRowMapper;
 import com.greetingcard.entity.Congratulation;
 import com.greetingcard.entity.Link;
 import com.greetingcard.entity.Status;
+import com.greetingcard.service.impl.DefaultAmazonService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -16,9 +18,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.lang.NonNull;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.PreparedStatement;
 import java.util.*;
 
@@ -81,7 +80,9 @@ public class JdbcCongratulationDao implements CongratulationDao {
     private static final LinksRowMapper LINKS_ROW_MAPPER = new LinksRowMapper();
     private JdbcTemplate jdbcTemplate;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
-    private String rootDirectory;
+
+    @Autowired
+    private DefaultAmazonService defaultAmazonService;
 
     public Congratulation getCongratulationById(long congratulationId) {
         return jdbcTemplate.query(GET_CONGRATULATION, CONGRATULATION_ROW_MAPPER, congratulationId);
@@ -139,12 +140,7 @@ public class JdbcCongratulationDao implements CongratulationDao {
         List<Link> linkList = getLinksList(linkIdToDelete, congratulationId);
 
         for (Link link : linkList) {
-            try {
-                Files.deleteIfExists(Paths.get(rootDirectory.concat(link.getLink())));
-            } catch (IOException e) {
-                log.error("Exception while deleting file - {}", link, e);
-                throw new RuntimeException("Exception while deleting file", e);
-            }
+            defaultAmazonService.deleteFileFromS3Bucket(link.getLink());
         }
     }
 
@@ -197,13 +193,7 @@ public class JdbcCongratulationDao implements CongratulationDao {
         List<String> linkList = jdbcTemplate.queryForList(findQuery, String.class, id, userId);
 
         for (String link : linkList) {
-
-            try {
-                Files.deleteIfExists(Paths.get(rootDirectory.concat(link)));
-            } catch (IOException e) {
-                log.error("Exception while deleting file - {}", link, e);
-                throw new RuntimeException("Exception while deleting file", e);
-            }
+            defaultAmazonService.deleteFileFromS3Bucket(link);
         }
     }
 

@@ -25,10 +25,6 @@
         <constructor-arg value="${max.inactive.interval}"/>
     </bean>
 
-    <bean id="rootDirectory" class="java.lang.String">
-        <constructor-arg value="${dir.files}"/>
-    </bean>
-
     <bean id="siteUrl" class="java.lang.String">
         <constructor-arg value="${webapp.url}"/>
     </bean>
@@ -49,18 +45,15 @@
         <property name="userDao" ref="userDao"/>
         <property name="algorithm" value="${algorithm}"/>
         <property name="iteration" value="${iteration}"/>
-        <property name="pathToFile" value="${dir.files}"/>
     </bean>
 
     <bean id="congratulationDao" class="com.greetingcard.dao.jdbc.JdbcCongratulationDao">
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
         <property name="namedJdbcTemplate" ref="namedJdbcTemplate"/>
-        <property name="rootDirectory" ref="rootDirectory"/>
     </bean>
 
     <bean id="congratulationService" class="com.greetingcard.service.impl.DefaultCongratulationService">
         <property name="congratulationDao" ref="congratulationDao"/>
-        <property name="rootDirectory" ref="rootDirectory"/>
         <constructor-arg ref="congratulationDao"/>
     </bean>
 

@@ -31,7 +31,7 @@ public class DefaultCongratulationServiceITest {
 
     private final JdbcCongratulationDao jdbcCongratulationDao = new JdbcCongratulationDao();
     private final DefaultCongratulationService congratulationService =
-            new DefaultCongratulationService(jdbcCongratulationDao, "/greeting-cards");
+            new DefaultCongratulationService(jdbcCongratulationDao);
 
     private List<Link> linkList;
     private final byte[] bytes = new byte[1024 * 1024 * 10];

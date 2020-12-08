@@ -1,3 +1,4 @@
+/*
 package com.greetingcard.security;
 
 import com.github.database.rider.core.api.configuration.DBUnit;
@@ -42,7 +43,7 @@ import static org.mockito.Mockito.verify;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DefaultSecurityServiceTest {
     @Autowired
-    private DefaultSecurityService securityService;
+    private SecurityService securityService;
 
     @InjectMocks
     private DefaultSecurityService mockSecurityService;
@@ -87,7 +88,8 @@ class DefaultSecurityServiceTest {
                 securityService.login("logintoooooooooooooooooooooloooooooooooooooooooooonggggg", "user"));
     }
 
-    @Test
+*/
+/*    @Test
     @DisplayName("Returns hashed password")
     void getHashPasswordTest() {
         //prepare
@@ -98,7 +100,8 @@ class DefaultSecurityServiceTest {
         String actualPassword = securityService.getHashPassword(salt.concat(testPassword));
         //then
         assertEquals(expectedPassword, actualPassword);
-    }
+    }*//*
+
 
     @Test
     @DisplayName("Find user by id")
@@ -192,3 +195,4 @@ class DefaultSecurityServiceTest {
         assertTrue(securityService.verifyForgotPasswordAccessHash(newHash, "newPassword"));
     }
 }
+*/
