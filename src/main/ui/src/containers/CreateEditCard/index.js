@@ -10,7 +10,8 @@ export class CreateEditCard extends Component {
         super(props);
         this.state = {
             blocks: [],
-            userIdCardAdmin:0
+            userIdCardAdmin:0,
+            name:""
         }
 
         this.deleteBlock = this.deleteBlock.bind(this);
@@ -19,7 +20,9 @@ export class CreateEditCard extends Component {
     componentDidMount() {
         const id = this.getIdFromPath();
         cardService.getCard(id)
-            .then((cardsData) => {this.setState({blocks : cardsData.congratulationList, userIdCardAdmin: cardsData.user.id});
+            .then((cardsData) => {this.setState({blocks : cardsData.congratulationList, 
+                                                userIdCardAdmin: cardsData.user.id,
+                                                name:cardsData.name});
                                  }     
             );
     }
@@ -30,6 +33,16 @@ export class CreateEditCard extends Component {
         const newBlocks = this.state.blocks.filter(block => block.id !== idBlock);
         this.setState({blocks:newBlocks});
     } 
+
+    saveName = (newName) => {
+        const idCard = this.getIdFromPath();
+        if (newName !== this.state.name) {
+           cardService.updateName(idCard, newName)
+                       .then(()=> this.setState({name:newName}));
+        } else {
+           alert("Enter new name for card"); 
+        }
+    }
 
     render() {
 
@@ -43,6 +56,8 @@ export class CreateEditCard extends Component {
                   {({ userId }) => (
                         <CardCommandRow {...this.props} 
                                 idCard={idCard}
+                                cardName={this.state.name}
+                                saveNameFunction = {this.saveName}
                                 isMyCard={userId === this.state.userIdCardAdmin}/>
                    )}
                 </userContext.Consumer>
