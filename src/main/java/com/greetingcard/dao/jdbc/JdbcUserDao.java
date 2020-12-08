@@ -28,7 +28,9 @@ public class JdbcUserDao implements UserDao {
     private static final String FIND_USER_BY_EMAIL = "SELECT user_id, firstName, lastName, login, email, password, salt, language_id, facebook, google, pathToPhoto FROM users WHERE email = ?";
     private static final String SAVE_FORGOT_PASS_ACCESS_HASH = "INSERT INTO forgot_password_hashes (user_id, hash) VALUES (?, ?)";
     private static final String SAVE_VERIFY_EMAIL_ACCESS_HASH = "INSERT INTO verify_email_hashes (user_id, hash) VALUES (?, ?)";
-    private static final String FIND_FORGOT_PASS_ACCESS_HASH = "SELECT user_id FROM forgot_password_hashes WHERE hash = ?";
+    private static final String FIND_USER_BY_FORGOT_PASS_ACCESS_HASH = "SELECT users.user_id, firstName, lastName, login, email, " +
+            "password, salt, language_id, facebook, google, pathToPhoto FROM users " +
+            "LEFT JOIN forgot_password_hashes ON (users.user_id = forgot_password_hashes.user_id) WHERE forgot_password_hashes.hash = ?";
     private static final String FIND_VERIFY_EMAIL_ACCESS_HASH = "SELECT user_id FROM verify_email_hashes WHERE hash = ?";
     private static final String DELETE_FORGOT_PASS_ACCESS_HASH = "DELETE FROM forgot_password_hashes WHERE hash = ?";
     private static final String DELETE_VERIFY_EMAIL_ACCESS_HASH = "DELETE FROM verify_email_hashes WHERE hash = ?";
@@ -75,7 +77,7 @@ public class JdbcUserDao implements UserDao {
     }
 
     @Override
-    public void saveAccessHash(String email, String hash, AccessHashType hashType) {
+    public void saveAccessHash(@NonNull String email, @NonNull String hash, AccessHashType hashType) {
         User user = findByEmail(email);
         if (hashType == FORGOT_PASSWORD) {
             jdbcTemplate.update(SAVE_FORGOT_PASS_ACCESS_HASH, user.getId(), hash);
@@ -87,27 +89,25 @@ public class JdbcUserDao implements UserDao {
 
     @Override
     @Transactional
-    public Boolean verifyEmailAccessHash(String hash) {
-        User user = jdbcTemplate.query(FIND_VERIFY_EMAIL_ACCESS_HASH, new UserIdRowMapper(), hash);
-        if (user != null) {
+    public void verifyEmailAccessHash(@NonNull String hash) {
+        Long user_id = jdbcTemplate.query(FIND_VERIFY_EMAIL_ACCESS_HASH, new UserIdRowMapper(), hash);
+        if (user_id != null) {
             jdbcTemplate.update(DELETE_VERIFY_EMAIL_ACCESS_HASH, hash);
-            jdbcTemplate.update(UPDATE_USER_VERIFY_EMAIL, user.getId());
-            return true;
+            jdbcTemplate.update(UPDATE_USER_VERIFY_EMAIL, user_id);
         }
+    }
 
-        return false;
+    @Override
+    public User findByForgotPasswordAccessHash(String hash) {
+        log.debug("Getting user by access hash");
+        return jdbcTemplate.query(FIND_USER_BY_FORGOT_PASS_ACCESS_HASH, USER_ROW_MAPPER, hash);
     }
 
     @Override
     @Transactional
-    public Boolean verifyForgotPasswordAccessHash(String hash, String password) {
-        User user = jdbcTemplate.query(FIND_FORGOT_PASS_ACCESS_HASH, new UserIdRowMapper(), hash);
-        if (user != null) {
-            jdbcTemplate.update(DELETE_FORGOT_PASS_ACCESS_HASH, hash);
-            jdbcTemplate.update(UPDATE_USER_PASSWORD, password, user.getId());
-            return true;
-        }
+    public void verifyForgotPasswordAccessHash(@NonNull String hash, @NonNull User user) {
+        jdbcTemplate.update(DELETE_FORGOT_PASS_ACCESS_HASH, hash);
+        jdbcTemplate.update(UPDATE_USER_PASSWORD, user.getPassword(), user.getId());
 
-        return false;
     }
 }

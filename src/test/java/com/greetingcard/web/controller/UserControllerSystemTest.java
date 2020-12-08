@@ -228,7 +228,7 @@ class UserControllerSystemTest {
         String json = "{\n" +
                 "  \"password\" : \"newPass\"\n" +
                 "}";
-        mockMvc.perform(put("/api/v1/user/recover_password/accessHash")
+        mockMvc.perform(put("/api/v1/recover_password/accessHash")
                 .contentType(APPLICATION_JSON_VALUE)
                 .accept(APPLICATION_JSON_VALUE)
                 .content(json))

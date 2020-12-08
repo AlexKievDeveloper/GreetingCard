@@ -2,7 +2,6 @@ package com.greetingcard.dao;
 
 import com.greetingcard.entity.AccessHashType;
 import com.greetingcard.entity.User;
-import org.springframework.transaction.annotation.Transactional;
 
 public interface UserDao {
 
@@ -18,11 +17,11 @@ public interface UserDao {
 
     User findByEmail(String email);
 
+    User findByForgotPasswordAccessHash(String hash);
+
     void saveAccessHash(String email, String hash, AccessHashType hashType);
 
-    @Transactional
-    Boolean verifyEmailAccessHash(String hash);
+    void verifyEmailAccessHash(String hash);
 
-    @Transactional
-    Boolean verifyForgotPasswordAccessHash(String hash, String password);
+    void verifyForgotPasswordAccessHash(String hash, User user);
 }

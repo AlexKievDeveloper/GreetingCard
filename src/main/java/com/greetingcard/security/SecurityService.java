@@ -20,10 +20,9 @@ public interface SecurityService {
 
     void restorePassword(String email);
 
-    Boolean verifyEmailAccessHash(String hash);
+    void verifyEmailAccessHash(String hash);
 
-    Boolean verifyForgotPasswordAccessHash(String hash, String password);
-
+    void verifyForgotPasswordAccessHash(String hash, String password);
 
     String generateAccessHash(String email, AccessHashType hashType);
 }

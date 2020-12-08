@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greetingcard.entity.User;
 import com.greetingcard.security.SecurityService;
-import com.greetingcard.service.EmailService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,7 +106,7 @@ public class UserController {
         securityService.restorePassword(email);
     }
 
-    @PutMapping("user/recover_password/{accessHash}")
+    @PutMapping("/recover_password/{accessHash}")
     public void restoreAccessToProfile(@RequestBody Map<String, String> userCredentials, @PathVariable String accessHash) {
         String password = userCredentials.get("password");
         securityService.verifyForgotPasswordAccessHash(accessHash, password);

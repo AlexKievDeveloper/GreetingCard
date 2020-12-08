@@ -1,24 +1,19 @@
 package com.greetingcard.dao.jdbc.mapper;
 
-import com.greetingcard.entity.Language;
-import com.greetingcard.entity.User;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class UserIdRowMapper implements ResultSetExtractor<User> {
+public class UserIdRowMapper implements ResultSetExtractor<Long> {
 
     @Override
-    public User extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-
+    public Long extractData(ResultSet resultSet) throws SQLException, DataAccessException {
         if (!resultSet.next()) {
             return null;
         }
 
-        return User.builder()
-                .id(resultSet.getInt("user_id"))
-                .build();
+        return resultSet.getLong("user_id");
     }
 }

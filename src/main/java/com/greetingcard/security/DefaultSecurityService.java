@@ -124,23 +124,29 @@ public class DefaultSecurityService implements SecurityService {
             throw new RuntimeException("Cannot find a user with email: " + email);
         }
 
-        log.info("Sending letter with forgotten password to user with email address: {}", user.getEmail());
+        log.info("Sending letter with link to restore access to account, to user with email address: {}", user.getEmail());
 
         String accessHash = generateAccessHash(email, FORGOT_PASSWORD);
 
         String emailMessageBody = "To restore the access to your account, please, open this link and follow the instructions:\n " +
-                siteUrl + "/user/forgot_password/" + accessHash;
+                siteUrl + "/recover_password/" + accessHash;
         emailService.sendMail(email, "Greeting Card: Restore password", emailMessageBody);
     }
 
     @Override
-    public Boolean verifyEmailAccessHash(String hash) {
-        return userDao.verifyEmailAccessHash(hash);
+    public void verifyEmailAccessHash(String hash) {
+        userDao.verifyEmailAccessHash(hash);
     }
 
     @Override
-    public Boolean verifyForgotPasswordAccessHash(String hash, String password) {
-        return userDao.verifyForgotPasswordAccessHash(hash, password);
+    public void verifyForgotPasswordAccessHash(String hash, String password) {
+        log.info("Getting user by forgot password access hash");
+        User user = userDao.findByForgotPasswordAccessHash(hash);
+        String newPasswordHash = getHashPassword(user.getSalt().concat(password));
+        user.setPassword(newPasswordHash);
+
+        log.info("Updating user's password");
+        userDao.verifyForgotPasswordAccessHash(hash, user);
     }
 
     @Override
@@ -176,7 +182,7 @@ public class DefaultSecurityService implements SecurityService {
         String emailMessageBody = "Welcome to the Greeting Card!" +
                 "To finish the registration process, we need to verify your email." +
                 "Please confirm your address by opening this link:\n " +
-                siteUrl + "/email/verify/" + accessHash;
+                siteUrl + "api/v1/user/verification/" + accessHash;
         emailService.sendMail(email, "Greeting Card: Verify email", emailMessageBody);
 
         log.debug("Sent letter for email verification to: {}", email);
