@@ -119,17 +119,23 @@ public class DefaultSecurityService implements SecurityService {
     }
 
     @Override
+    @Transactional
     public void restorePassword(String email) {
         User user = userDao.findByEmail(email);
         if (user == null) {
             throw new RuntimeException("Cannot find a user with email: " + email);
         }
 
-        log.info("Sending letter with link to restore access to account, to user with email address: {}", user.getEmail());
-        String accessHash = generateAccessHash(email, FORGOT_PASSWORD);
-        String emailMessageBody = "To restore the access to your account, please, open this link and follow the instructions:\n " +
-                siteUrl + "api/v1/user/recover_password/" + accessHash;
-        emailService.sendMail(email, "Greeting Card: Restore password", emailMessageBody);
+        log.info("Generating new password for user with email {}", email);
+        String newPassword = UUID.randomUUID().toString().substring(0, 15);
+        user.setPassword(newPassword);
+        updatePassword(user);
+
+        log.info("Sending letter with new password to user with email address: {}", email);
+        String emailMessageBody = "We received your request to restore access to your account with forgotten password. \n" +
+                "Here is a new generated password for you: " + newPassword +
+                "\n You can now access your account with that password. Later you can change it in your profile. ";
+        emailService.sendMail(email, "Greeting Card: Restore access", emailMessageBody);
     }
 
     @Override
