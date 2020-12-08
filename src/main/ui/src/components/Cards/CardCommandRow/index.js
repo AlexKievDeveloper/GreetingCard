@@ -2,6 +2,7 @@ import React from "react";
 import CommandButton from "../../UI/CommandButton";
 import CommandButtonLink from "../../UI/CommandButton/CommandButtonLink";
 import { cardService } from "../../../services/cardService";
+import FormAdd from "../../../forms/common/FormAdd";
 
 export default function CardCommandRow(props) {
   const id = props.idCard;
@@ -32,6 +33,13 @@ export default function CardCommandRow(props) {
           className="command-button--yellow"
           caption="+ Add block"
         />
+        {props.isMyCard && (props.cardName.length > 0)  &&(
+          <FormAdd onSubmit={props.saveNameFunction}
+                   inputPlaceholder=""
+                   buttonCaption = "Save name"
+                   value = {props.cardName}
+          />
+        )}
         {props.isMyCard && (
           <CommandButtonLink
             to={"/card_users/" + id}

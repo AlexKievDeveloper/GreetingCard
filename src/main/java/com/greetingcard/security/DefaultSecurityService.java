@@ -108,36 +108,40 @@ public class DefaultSecurityService implements SecurityService {
     }
 
     @Override
+    @Transactional
     public void restorePassword(String email) {
         User user = userDao.findByEmail(email);
         if (user == null) {
             throw new RuntimeException("Cannot find a user with email: " + email);
         }
 
-        log.info("Sending letter with forgotten password to user with email address: {}", user.getEmail());
+        log.info("Generating new password for user with email {}", email);
+        String newPassword = UUID.randomUUID().toString().substring(0, 15);
+        user.setPassword(newPassword);
+        updatePassword(user);
 
-        String accessHash = generateAccessHash(email, FORGOT_PASSWORD);
-
-        String emailMessageBody = "To restore the access to your account, please, open this link and follow the instructions:\n " +
-                siteUrl + "/recover_password/" + accessHash;
-        emailService.sendMail(email, "Greeting Card: Restore password", emailMessageBody);
+        log.info("Sending letter with new password to user with email address: {}", email);
+        String emailMessageBody = "We received your request to restore access to your account with forgotten password. \n" +
+                "Here is a new generated password for you: " + newPassword +
+                "\n You can now access your account with that password. Later you can change it in your profile. ";
+        emailService.sendMail(email, "Greeting Card: Restore access", emailMessageBody);
     }
 
     @Override
-    public Boolean verifyEmailAccessHash(String hash) {
-        return userDao.verifyEmailAccessHash(hash);
+    public void verifyEmailAccessHash(String hash) {
+        userDao.verifyEmailAccessHash(hash);
     }
 
     @Override
     @Transactional
-    public Boolean verifyForgotPasswordAccessHash(String hash, String password) {
-        User user = userDao.verifyForgotPasswordAccessHash(hash, password);
-        User userWithSalt = userDao.getUserWithSalt(user.getId());
-        userWithSalt.setPassword(password);
-        String newPasswordHash = getHashPassword(userWithSalt.getSalt().concat(password));
+    public void verifyForgotPasswordAccessHash(String hash, String password) {
+        log.info("Getting user by forgot password access hash");
+        User user = userDao.findByForgotPasswordAccessHash(hash);
+        String newPasswordHash = getHashPassword(user.getSalt().concat(password));
         user.setPassword(newPasswordHash);
-        userDao.updatePassword(user);
-        return true;
+
+        log.info("Updating user's password");
+        userDao.verifyForgotPasswordAccessHash(hash, user);
     }
 
     @Override
@@ -173,7 +177,7 @@ public class DefaultSecurityService implements SecurityService {
         String emailMessageBody = "Welcome to the Greeting Card!" +
                 "To finish the registration process, we need to verify your email." +
                 "Please confirm your address by opening this link:\n " +
-                siteUrl + "/api/v1/user/verification/" + accessHash;
+                siteUrl + "api/v1/user/verification/" + accessHash;
         emailService.sendMail(email, "Greeting Card: Verify email", emailMessageBody);
 
         log.debug("Sent letter for email verification to: {}", email);

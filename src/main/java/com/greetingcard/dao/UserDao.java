@@ -17,13 +17,11 @@ public interface UserDao {
 
     User findByEmail(String email);
 
+    User findByForgotPasswordAccessHash(String hash);
+
     void saveAccessHash(String email, String hash, AccessHashType hashType);
 
-    Boolean verifyEmailAccessHash(String hash);
+    void verifyEmailAccessHash(String hash);
 
-    User verifyForgotPasswordAccessHash(String hash, String password);
-
-    void updatePassword(User user, String password);
-
-    User getUserWithSalt(long id);
+    void verifyForgotPasswordAccessHash(String hash, User user);
 }

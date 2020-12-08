@@ -7,7 +7,7 @@ export default class FormAdd extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      valueToAdd: "",
+      valueToAdd: this.props.value ? this.props.value : "",
     };
   }
 
@@ -34,6 +34,7 @@ export default class FormAdd extends Component {
           name="valueToAdd"
           placeholder={this.props.inputPlaceholder}
           onChange={this.handleChange}
+          value={this.state.valueToAdd}
         />
         <CommandButton
           action={this.doAction}
@@ -49,4 +50,5 @@ FormAdd.propTypes = {
   onSubmit: PropTypes.func,
   inputPlaceholder: PropTypes.string,
   buttonCaption: PropTypes.string,
+  value:PropTypes.string
 };
