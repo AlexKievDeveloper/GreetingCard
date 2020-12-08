@@ -54,7 +54,7 @@ export class CreateEditBlock extends Component {
     }
   }
 
-  hanleChange = (event) => {
+  handleChange = (event) => {
     let nameInput = event.target.name;
     let valueInput = event.target.value;
     this.setState({ [nameInput]: valueInput });
@@ -211,7 +211,7 @@ export class CreateEditBlock extends Component {
                   name="youtube"
                   className="links"
                   placeholder="Youtube links"
-                  onChange={this.hanleChange}
+                  onChange={this.handleChange}
                 />
               </label>
             </form>

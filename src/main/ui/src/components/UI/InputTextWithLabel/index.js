@@ -16,7 +16,6 @@ class InputTextWithLabel extends React.Component {
   componentDidMount() {
     const v = this.props.valueOfColumn !=="" ? this.props.valueOfColumn : "";
     this.setState({value: v});
-    console.log(this.state);
   }
 
   inputChange = (event) => {
