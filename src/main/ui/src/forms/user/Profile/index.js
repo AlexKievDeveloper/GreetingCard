@@ -57,7 +57,7 @@ class Profile extends Component {
   }
 
   render() {
-    console.log(this.state);
+    if (this.state.login.length > 0) {
     return (
       <div className="main-functions">
         <ProfileCommandRow onSubmit={this.save} />
@@ -90,6 +90,9 @@ class Profile extends Component {
         </main>
       </div>
     );
+          } else {
+            return null;
+          }
   }
 }
 

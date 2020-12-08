@@ -25,8 +25,7 @@ class ProfilePicture extends React.Component {
     
   }
 
-  showPicture() { 
-    console.log(this.props);
+  showPicture() {
     if (this.state.file != null) {
       return <img src={this.state.file} alt="" />;
     } else if (this.props.imageProfile && this.props.imageProfile.length > 0) {
