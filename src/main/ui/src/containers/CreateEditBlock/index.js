@@ -81,6 +81,13 @@ export class CreateEditBlock extends Component {
     }
   };
 
+  deleteBlock = () => {
+     if (this.state.block_id !== 0) {
+           blockService.deleteBlock(this.state.block_id)
+                       .then(()=> this.props.history.push("/edit_card/" + this.state.card_id));
+     }
+  }
+
   deleteLinks = (listToDelete) => {
     let newLinks = this.state.links.filter(
       (link) => !listToDelete.includes(link.id)
@@ -138,7 +145,7 @@ export class CreateEditBlock extends Component {
     return (
       <div className="wrapper">
         <div className="main-functions">
-          <BlockCommandRow id="1" save={this.saveBlock} />
+          <BlockCommandRow saveFunction={this.saveBlock} deleteFunction={this.deleteBlock} />
           <main className="container_block no-bottom-padding">
             <div className="text-editor">
               <Editor

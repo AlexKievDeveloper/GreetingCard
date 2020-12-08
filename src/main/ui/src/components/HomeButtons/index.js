@@ -12,8 +12,7 @@ export default function HomeButtons(props) {
             console.log('Failed to copy!');
           }
     }
-    
-    console.log(props.user);
+
     if (props.user !== '' && props.user != null) {
     return (
         <div className="call-to-action__row">
