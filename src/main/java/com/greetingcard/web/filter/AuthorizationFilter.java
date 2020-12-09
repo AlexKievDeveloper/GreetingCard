@@ -10,7 +10,6 @@ import java.io.IOException;
 
 @Slf4j
 public class AuthorizationFilter implements Filter {
-
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
             ServletException {
@@ -28,12 +27,7 @@ public class AuthorizationFilter implements Filter {
     }
 
     @Override
-    public void destroy() {
-
-    }
-
-    @Override
-    public void init(FilterConfig filterConfig) {
+    public void init(FilterConfig filterConfig) throws ServletException{
 
     }
 }
