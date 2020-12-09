@@ -82,10 +82,11 @@ public class UserController {
     }
 
     @PutMapping(value = "user/password", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void changePassword(@RequestBody Map<String, String> userCredentials) {
-        String login = userCredentials.get("login");
+    public void changePassword(@RequestBody Map<String, String> userCredentials, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        String login = user.getLogin();
         String oldPassword = userCredentials.get("oldPassword");
-        User user = securityService.login(login, oldPassword);
+        user = securityService.login(login, oldPassword);
 
         if (user == null) {
             log.debug("Login or or old password value is incorrect.");

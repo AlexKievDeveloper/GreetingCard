@@ -150,7 +150,7 @@ public class DefaultSecurityService implements SecurityService {
     public String generateAccessHash(String email, AccessHashType hashType) {
         String salt = UUID.randomUUID().toString();
         String emailAndSalt = salt.concat(email);
-        String newAccessHash = getHashPassword(emailAndSalt);
+        String newAccessHash = getHashPassword(emailAndSalt).replaceAll("/", "");
 
         userDao.saveAccessHash(email, newAccessHash, hashType);
 
