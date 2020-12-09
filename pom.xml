@@ -113,12 +113,7 @@
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.4.28.v20200408</version>
-                <configuration>
-                    <httpConnector>
-                        <port>9998</port>
-                    </httpConnector>
-                </configuration>
+                <version>9.4.35.v20201120</version>
             </plugin>
 
             <plugin>
@@ -208,7 +203,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk</artifactId>
-            <version>1.11.913</version>
+            <version>1.11.914</version>
         </dependency>
         <!--Javax annotation(@PostConstruct in AmazonService)-->
         <dependency> <groupId>javax.annotation</groupId>
