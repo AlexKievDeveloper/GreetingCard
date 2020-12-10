@@ -26,9 +26,6 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -187,8 +184,10 @@ class UserControllerSystemTest {
     @DisplayName("Request to change password ")
     @ExpectedDataSet("usersAfterChangePassword.xml")
     void testChangePassword() throws Exception {
-
         //prepare
+        User user = User.builder()
+                .login("user")
+                .build();
         Map<String, String> userCredential = new HashMap<>();
         userCredential.put("login", "user");
         userCredential.put("oldPassword", "user");
@@ -198,6 +197,7 @@ class UserControllerSystemTest {
 
         //when
         mockMvc.perform(put("/api/v1/user/password")
+                .sessionAttr("user", user)
                 .contentType(APPLICATION_JSON_VALUE)
                 .accept(APPLICATION_JSON_VALUE)
                 .content(json))

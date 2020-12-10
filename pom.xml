@@ -11,26 +11,35 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!--Plugins-->
+        <maven.war.plugin.version>3.3.1</maven.war.plugin.version>
+        <frontend.maven.plugin.version>1.10.3</frontend.maven.plugin.version>
+        <node.vesion>v12.16.1</node.vesion>
+        <npm.version>6.13.4</npm.version>
+        <maven.comiler.plugin.version>3.8.1</maven.comiler.plugin.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <maven.surefire.plugin>3.0.0-M5</maven.surefire.plugin>
+        <jetty.maven.plugin.version>9.4.35.v20201120</jetty.maven.plugin.version>
+        <flyway.version>6.5.5</flyway.version>
+        <!--Dependencies-->
+        <spring.version>5.3.0</spring.version>
         <postgres.version>42.2.17</postgres.version>
         <javax.servlet.version>4.0.1</javax.servlet.version>
         <commons-dbcp2.version>2.8.0</commons-dbcp2.version>
         <commons-codec.version>1.11</commons-codec.version>
         <logback.version>1.2.3</logback.version>
         <lombok.version>1.18.16</lombok.version>
-        <thymeleaf.version>3.0.11.RELEASE</thymeleaf.version>
-        <flyway.version>6.5.5</flyway.version>
-        <mockito.version>3.5.10</mockito.version>
-        <systemlambda.version>1.1.0</systemlambda.version>
-        <spring.version>5.3.0</spring.version>
-        <rider-spring-version>1.16.1</rider-spring-version>
-        <spring-boot-test>2.3.5.RELEASE</spring-boot-test>
-        <hamcrest-library.version>2.2</hamcrest-library.version>
-        <json-path.version>2.4.0</json-path.version>
         <jackson-databind.version>2.11.3</jackson-databind.version>
         <email.version>1.6.2</email.version>
+        <aws.java.sdk.version>1.11.914</aws.java.sdk.version>
+        <javax.annotation.api.version>1.3.2</javax.annotation.api.version>
+        <mockito.version>3.5.10</mockito.version>
+        <hamcrest-library.version>2.2</hamcrest-library.version>
+        <json-path.version>2.4.0</json-path.version>
+        <rider-spring-version>1.16.1</rider-spring-version>
+        <spring-boot-test>2.3.5.RELEASE</spring-boot-test>
+        <commons.io.version>2.8.0</commons.io.version>
     </properties>
 
     <build>
@@ -38,6 +47,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
+                <version>${maven.war.plugin.version}</version>
                 <configuration>
                     <warSourceExcludes>src/,node/,node_modules/,package.json</warSourceExcludes>
                     <webResources>
@@ -58,7 +68,7 @@
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.10.3</version>
+                <version>${frontend.maven.plugin.version}</version>
                 <configuration>
                     <workingDirectory>src/main/ui</workingDirectory>
                 </configuration>
@@ -69,8 +79,8 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v12.16.1</nodeVersion>
-                            <npmVersion>6.13.4</npmVersion>
+                            <nodeVersion>${node.vesion}</nodeVersion>
+                            <npmVersion>${npm.version}</npmVersion>
                         </configuration>
                     </execution>
                     <execution>
@@ -97,7 +107,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>${maven.comiler.plugin.version}</version>
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
@@ -113,12 +123,7 @@
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.4.28.v20200408</version>
-                <configuration>
-                    <httpConnector>
-                        <port>9998</port>
-                    </httpConnector>
-                </configuration>
+                <version>${jetty.maven.plugin.version}</version>
             </plugin>
 
             <plugin>
@@ -134,7 +139,6 @@
                 </configuration>
             </plugin>
         </plugins>
-
     </build>
 
     <dependencies>
@@ -208,12 +212,12 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk</artifactId>
-            <version>1.11.913</version>
+            <version>${aws.java.sdk.version}</version>
         </dependency>
         <!--Javax annotation(@PostConstruct in AmazonService)-->
         <dependency> <groupId>javax.annotation</groupId>
             <artifactId>javax.annotation-api</artifactId>
-            <version>1.3.2</version>
+            <version>${javax.annotation.api.version}</version>
         </dependency>
         <!--Test-->
         <dependency>
@@ -264,6 +268,14 @@
             <version>${spring-boot-test}</version>
             <scope>test</scope>
         </dependency>
+        <!--For copy files from s3 buckets to local storage while testing-->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons.io.version}</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
 </project>
