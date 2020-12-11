@@ -11,8 +11,12 @@ import javax.servlet.*;
 
 @PropertySource("classpath:application.properties")
 public class GreetingCardAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
-    @Value("${max.upload.size}")
-    private int maxUploadSizeInMb;
+    @Value("${max.upload.file.size}")
+    private int maxUploadFileSizeInMb;
+
+    @Value("${max.upload.request.size}")
+    private int maxUploadRequestSizeInMb;
+
 
     @Override
     protected Class<?>[] getRootConfigClasses() {
@@ -39,7 +43,7 @@ public class GreetingCardAppInitializer extends AbstractAnnotationConfigDispatch
     private MultipartConfigElement getMultipartConfigElement() {
         MultipartConfigElement multipartConfigElement = new
                 MultipartConfigElement("",
-                maxUploadSizeInMb, maxUploadSizeInMb * 2, maxUploadSizeInMb / 2);
+                maxUploadFileSizeInMb, maxUploadRequestSizeInMb, 0);
         return multipartConfigElement;
     }
 

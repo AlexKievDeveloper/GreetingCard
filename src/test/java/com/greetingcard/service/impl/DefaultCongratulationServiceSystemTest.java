@@ -10,6 +10,7 @@ import com.greetingcard.entity.Congratulation;
 import com.greetingcard.entity.Link;
 import com.greetingcard.entity.LinkType;
 import com.greetingcard.service.CongratulationService;
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -18,12 +19,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -41,8 +45,15 @@ import static org.mockito.Mockito.when;
         executeStatementsBefore = "SELECT setval('congratulations_congratulation_id_seq', 6);", cleanAfter = true)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension.class)
-@SpringJUnitWebConfig(value = {TestConfiguration.class,  RootApplicationContext.class})
+@SpringJUnitWebConfig(value = {TestConfiguration.class, RootApplicationContext.class})
+@PropertySource("classpath:application.properties")
 class DefaultCongratulationServiceSystemTest {
+    @Value("${bucketName}")
+    private String bucketName;
+    @Value("${region}")
+    private String region;
+    @Autowired
+    private DefaultAmazonService defaultAmazonService;
     @Mock
     private Map<String, String> parametersMap;
 
@@ -74,10 +85,25 @@ class DefaultCongratulationServiceSystemTest {
         assertEquals("JcDy3ny-H0k", actualList.get(1).getLink());
         assertEquals(LinkType.PICTURE, actualList.get(2).getType());
         assertEquals(LinkType.AUDIO, actualList.get(3).getType());
-        assertTrue(new File("/greeting-cards".concat(actualList.get(2).getLink())).exists());
-        assertTrue(new File("/greeting-cards".concat(actualList.get(3).getLink())).exists());
-        Files.deleteIfExists(Path.of("/greeting-cards".concat(actualList.get(2).getLink())));
-        Files.deleteIfExists(Path.of("/greeting-cards".concat(actualList.get(3).getLink())));
+
+        FileUtils.copyURLToFile(
+                new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                        .concat(actualList.get(2).getLink())),
+                new File("image.jpg"));
+
+        FileUtils.copyURLToFile(
+                new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                        .concat(actualList.get(3).getLink())),
+                new File("audio.mp3"));
+
+        assertTrue(new File("image.jpg").exists());
+        assertTrue(new File("audio.mp3").exists());
+
+        Files.deleteIfExists(Path.of("image.jpg"));
+        Files.deleteIfExists(Path.of("audio.mp3"));
+
+        defaultAmazonService.deleteFileFromS3Bucket(actualList.get(2).getLink());
+        defaultAmazonService.deleteFileFromS3Bucket(actualList.get(3).getLink());
     }
 
     @Test
@@ -90,7 +116,7 @@ class DefaultCongratulationServiceSystemTest {
         MultipartFile[] mockAudioFiles = new MultipartFile[]{mockAudioFile};
         Map<String, String> parametersMap = new HashMap<>();
         parametersMap.put("message", "Congratulation from updateCongratulationById test");
-        parametersMap.put("youtube", "https://www.youtube.com/watch?v=BmBr5diz8WAБЛАБЛАБЛА");
+        parametersMap.put("youtube", "https://www.youtube.com/watch?v=BmBr5diz8WA");
 
         //when
         congratulationService.updateCongratulationById(mockImageFiles, mockAudioFiles, parametersMap, 1, 1);
@@ -101,14 +127,32 @@ class DefaultCongratulationServiceSystemTest {
         assertEquals("Congratulation from updateCongratulationById test", congratulation.getMessage());
         assertEquals(9, congratulation.getLinkList().size());
 
-        assertEquals(LinkType.VIDEO, congratulation.getLinkList().get(6).getType());
-        assertEquals(LinkType.PICTURE, congratulation.getLinkList().get(7).getType());
-        assertEquals(LinkType.AUDIO, congratulation.getLinkList().get(8).getType());
+        FileUtils.copyURLToFile(
+                new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                        .concat(congratulation.getLinkList().get(7).getLink())),
+                new File("image.jpg"));
 
-        assertTrue(new File("/greeting-cards".concat(congratulation.getLinkList().get(7).getLink())).exists());
-        assertTrue(new File("/greeting-cards".concat(congratulation.getLinkList().get(8).getLink())).exists());
+        FileUtils.copyURLToFile(
+                new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                        .concat(congratulation.getLinkList().get(8).getLink())),
+                new File("audio.mp3"));
 
-        Files.deleteIfExists(Path.of("/greeting-cards".concat(congratulation.getLinkList().get(7).getLink())));
-        Files.deleteIfExists(Path.of("/greeting-cards".concat(congratulation.getLinkList().get(8).getLink())));
+        assertTrue(new File("image.jpg").exists());
+        assertTrue(new File("audio.mp3").exists());
+
+        Files.deleteIfExists(Path.of("image.jpg"));
+        Files.deleteIfExists(Path.of("audio.mp3"));
+
+        defaultAmazonService.deleteFileFromS3Bucket(congratulation.getLinkList().get(7).getLink());
+        defaultAmazonService.deleteFileFromS3Bucket(congratulation.getLinkList().get(8).getLink());
+
+        List<Link> linkList = congratulation.getLinkList();
+
+        linkList.removeIf(x -> x.getType() == LinkType.VIDEO);
+        linkList.removeIf(x -> x.getType() == LinkType.AUDIO);
+        linkList.removeIf(x -> x.getType() == LinkType.PICTURE);
+
+        assertEquals(0, linkList.size());
+
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.sql.DataSource;
@@ -20,6 +21,7 @@ import java.util.Properties;
 @ComponentScan(value = "com.greetingcard", excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX,
         pattern = "com.greetingcard.web.controller.*"))
 @EnableScheduling
+@EnableTransactionManagement
 public class RootApplicationContext {
 
     @Bean
