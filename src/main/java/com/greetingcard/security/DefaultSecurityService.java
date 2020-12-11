@@ -9,6 +9,9 @@ import com.greetingcard.service.impl.DefaultAmazonService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,20 +23,28 @@ import java.util.UUID;
 import static com.greetingcard.entity.AccessHashType.VERIFY_EMAIL;
 
 @Slf4j
+@Service
 @Setter
+@PropertySource(value = "classpath:application.properties")
 public class DefaultSecurityService implements SecurityService {
-    private UserDao userDao;
-
+    @Value("${algorithm:SHA-256}")
     private String algorithm;
 
+    @Value("${iteration:1}")
     private int iteration;
+
+    @Value("${webapp.url:https://greeting-team.herokuapp.com/}")
+    private String siteUrl;
+
+    @Autowired
+    private UserDao userDao;
 
     @Autowired
     private DefaultAmazonService defaultAmazonService;
+
     @Autowired
     private EmailService emailService;
-    @Autowired
-    private String siteUrl;
+
 
     @Override
     public User login(String login, String password) {

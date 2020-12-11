@@ -7,15 +7,23 @@ import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.greetingcard.dao.CardDao;
 import com.greetingcard.dao.CongratulationDao;
+import com.greetingcard.RootApplicationContext;
 import com.greetingcard.entity.*;
+import com.greetingcard.service.impl.DefaultAmazonService;
+import org.apache.commons.io.FileUtils;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -29,16 +37,25 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardsUsers.xml",
         "congratulations.xml", "links.xml"},
         executeStatementsBefore = "SELECT setval('links_link_id_seq', 1); SELECT setval('congratulations_congratulation_id_seq', 6);", cleanAfter = true)
-
-@SpringJUnitWebConfig(value = TestConfiguration.class)
+@SpringJUnitWebConfig(value = {TestConfiguration.class,  RootApplicationContext.class})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JdbcCongratulationDaoITest {
+    @Autowired
+    private DefaultAmazonService defaultAmazonService;
 
     @Autowired
     private JdbcCongratulationDao jdbcCongratulationDao;
 
     @Autowired
     private Flyway flyway;
+
+    @Value("${bucketName}")
+    private String bucketName;
+
+    @Value("${region}")
+    private String region;
+
+    private final byte[] bytes = new byte[1024 * 1024 * 10];
 
     @BeforeAll
     void dbSetUp() {
@@ -176,25 +193,100 @@ class JdbcCongratulationDaoITest {
     @DisplayName("Delete congratulations by id of card with all parameters")
     void deleteByCardId() throws IOException {
         //prepare
-        Files.createDirectories(Path.of("/greeting-cards/audio"));
-        Files.createDirectories(Path.of("/greeting-cards/img"));
-        Files.createFile(Path.of("/greeting-cards/audio/audio1.mp3"));
-        Files.createFile(Path.of("/greeting-cards/audio/audio2.mp3"));
-        Files.createFile(Path.of("/greeting-cards/audio/audio3.mp3"));
-        Files.createFile(Path.of("/greeting-cards/img/img1.jpg"));
-        Files.createFile(Path.of("/greeting-cards/img/img2.jpg"));
-        Files.createFile(Path.of("/greeting-cards/img/img3.jpg"));
+        MockMultipartFile mockImageFile1 = new MockMultipartFile("files_image", "img1.jpg", "image/jpg", bytes);
+        MockMultipartFile mockImageFile2 = new MockMultipartFile("files_image", "img2.jpg", "image/jpg", bytes);
+        MockMultipartFile mockImageFile3 = new MockMultipartFile("files_image", "img3.jpg", "image/jpg", bytes);
+        MockMultipartFile mockAudioFile1 = new MockMultipartFile("files_audio", "audio1.mp3", "audio/mpeg", bytes);
+        MockMultipartFile mockAudioFile2 = new MockMultipartFile("files_audio", "audio2.mp3", "audio/mpeg", bytes);
+        MockMultipartFile mockAudioFile3 = new MockMultipartFile("files_audio", "audio3.mp3", "audio/mpeg", bytes);
 
+        defaultAmazonService.uploadFile(mockImageFile1, "img/img1.jpg");
+        defaultAmazonService.uploadFile(mockImageFile2, "img/img2.jpg");
+        defaultAmazonService.uploadFile(mockImageFile3, "img/img3.jpg");
+        defaultAmazonService.uploadFile(mockAudioFile1, "audio/audio1.mp3");
+        defaultAmazonService.uploadFile(mockAudioFile2, "audio/audio2.mp3");
+        defaultAmazonService.uploadFile(mockAudioFile3, "audio/audio3.mp3");
+
+        FileUtils.copyURLToFile(
+                new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                        .concat("/img/img1.jpg")),
+                new File("img1.jpg"));
+        FileUtils.copyURLToFile(
+                new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                        .concat("/img/img2.jpg")),
+                new File("img2.jpg"));
+        FileUtils.copyURLToFile(
+                new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                        .concat("/img/img3.jpg")),
+                new File("img3.jpg"));
+        FileUtils.copyURLToFile(
+                new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                        .concat("/audio/audio1.mp3")),
+                new File("audio1.mp3"));
+        FileUtils.copyURLToFile(
+                new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                        .concat("/audio/audio2.mp3")),
+                new File("audio2.mp3"));
+        FileUtils.copyURLToFile(
+                new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                        .concat("/audio/audio3.mp3")),
+                new File("audio3.mp3"));
+
+        assertTrue(new File("img1.jpg").exists());
+        assertTrue(new File("img2.jpg").exists());
+        assertTrue(new File("img3.jpg").exists());
+        assertTrue(new File("audio1.mp3").exists());
+        assertTrue(new File("audio2.mp3").exists());
+        assertTrue(new File("audio3.mp3").exists());
+
+        Files.deleteIfExists(Path.of("img1.jpg"));
+        Files.deleteIfExists(Path.of("img2.jpg"));
+        Files.deleteIfExists(Path.of("img3.jpg"));
+        Files.deleteIfExists(Path.of("audio1.mp3"));
+        Files.deleteIfExists(Path.of("audio2.mp3"));
+        Files.deleteIfExists(Path.of("audio3.mp3"));
+
+        //when
         jdbcCongratulationDao.deleteByCardId(1, 1);
 
-        assertFalse(Files.exists(Path.of("/greeting-cards/audio/audio1.mp3")));
-        assertFalse(Files.exists(Path.of("/greeting-cards/audio/audio2.mp3")));
-        assertFalse(Files.exists(Path.of("/greeting-cards/audio/audio3.mp3")));
-        assertFalse(Files.exists(Path.of("/greeting-cards/img/img1.jpg")));
-        assertFalse(Files.exists(Path.of("/greeting-cards/img/img2.jpg")));
-        assertFalse(Files.exists(Path.of("/greeting-cards/img/img3.jpg")));
+        //then
+        Assertions.assertThrows(FileNotFoundException.class, () -> {
+            FileUtils.copyURLToFile(
+                    new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                            .concat("/img/img1.jpg")),
+                    new File("img1.jpg"));
+        });
+        Assertions.assertThrows(FileNotFoundException.class, () -> {
+            FileUtils.copyURLToFile(
+                    new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                            .concat("/img/img2.jpg")),
+                    new File("img2.jpg"));
+        });
+        Assertions.assertThrows(FileNotFoundException.class, () -> {
+            FileUtils.copyURLToFile(
+                    new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                            .concat("/img/img3.jpg")),
+                    new File("img3.jpg"));
+        });
+        Assertions.assertThrows(FileNotFoundException.class, () -> {
+            FileUtils.copyURLToFile(
+                    new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                            .concat("/audio/audio1.mp3")),
+                    new File("audio1.mp3"));
+        });
+        Assertions.assertThrows(FileNotFoundException.class, () -> {
+            FileUtils.copyURLToFile(
+                    new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                            .concat("/audio/audio2.mp3")),
+                    new File("audio2.mp3"));
+        });
+        Assertions.assertThrows(FileNotFoundException.class, () -> {
+            FileUtils.copyURLToFile(
+                    new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                            .concat("/audio/audio3.mp3")),
+                    new File("audio3.mp3"));
+        });
     }
-
 
     @Test
     @DisplayName("Delete congratulations by id with all parameters")
@@ -331,33 +423,60 @@ class JdbcCongratulationDaoITest {
     }
 
     @Test
-    @DisplayName("Deleting links by ids")
+    @DisplayName("Deleting files by links ids")
     void deleteFilesFromLinks() throws IOException {
         //prepare
+        MockMultipartFile mockImageFile1 = new MockMultipartFile("files_image", "img1.jpg", "image/jpg", bytes);
+        MockMultipartFile mockAudioFile1 = new MockMultipartFile("files_audio", "audio1.mp3", "audio/mpeg", bytes);
+
+        defaultAmazonService.uploadFile(mockImageFile1, "img/img1.jpg");
+        defaultAmazonService.uploadFile(mockAudioFile1, "audio/audio1.mp3");
+
+        FileUtils.copyURLToFile(
+                new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                        .concat("/img/img1.jpg")),
+                new File("img1.jpg"));
+
+        FileUtils.copyURLToFile(
+                new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                        .concat("/audio/audio1.mp3")),
+                new File("audio1.mp3"));
+
+        assertTrue(new File("img1.jpg").exists());
+        assertTrue(new File("audio1.mp3").exists());
+
+        Files.deleteIfExists(Path.of("img1.jpg"));
+        Files.deleteIfExists(Path.of("audio1.mp3"));
+
         Link link = Link.builder()
-                .id(6)
+                .id(5)
+                .link("/audio/audio1.mp3")
                 .build();
 
         Link link2 = Link.builder()
                 .id(8)
+                .link("/img/img1.jpg")
                 .build();
 
         List<Link> linkList = List.of(link, link2);
-
-        Files.createDirectories(Path.of("/greeting-cards/audio"));
-        Files.createDirectories(Path.of("/greeting-cards/img"));
-        Path pathAudioFile = Files.createFile(Path.of("/greeting-cards/audio/audio2.mp3"));
-        Path pathImageFile = Files.createFile(Path.of("/greeting-cards/img/img1.jpg"));
-
-        assertTrue(pathAudioFile.toFile().exists());
-        assertTrue(pathImageFile.toFile().exists());
 
         //when
         jdbcCongratulationDao.deleteFilesFromLinks(linkList, 1);
 
         //then
-        assertFalse(pathAudioFile.toFile().exists());
-        assertFalse(pathImageFile.toFile().exists());
+        Assertions.assertThrows(FileNotFoundException.class, () -> {
+            FileUtils.copyURLToFile(
+                    new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                            .concat("/img/img1.jpg")),
+                    new File("img1.jpg"));
+        });
+        Assertions.assertThrows(FileNotFoundException.class, () -> {
+            FileUtils.copyURLToFile(
+                    new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                            .concat("/audio/audio1.mp3")),
+                    new File("audio1.mp3"));
+        });
+
     }
 
     @Test

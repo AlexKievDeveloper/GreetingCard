@@ -7,6 +7,8 @@ import com.greetingcard.security.SecurityService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,19 +18,18 @@ import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 @Slf4j
-@Setter
+@PropertySource("classpath:application.properties")
 @RestController
 @RequestMapping(value = "/api/v1/")
 public class UserController {
-    private SecurityService securityService;
     @Autowired
+    private SecurityService securityService;
+
+    @Value("${max.inactive.interval:3600}")
     private Integer maxInactiveInterval;
+
     @Autowired
     private ObjectMapper objectMapper;
-
-    public UserController(SecurityService securityService) {
-        this.securityService = securityService;
-    }
 
     @DeleteMapping("session")
     public ResponseEntity<?> logout(HttpSession session) {

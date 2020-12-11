@@ -4,6 +4,7 @@ import com.github.database.rider.core.api.configuration.DBUnit;
 import com.github.database.rider.core.api.configuration.Orthography;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.spring.api.DBRider;
+import com.greetingcard.RootApplicationContext;
 import com.greetingcard.dao.jdbc.TestConfiguration;
 import com.greetingcard.entity.User;
 import org.flywaydb.core.Flyway;
@@ -32,7 +33,7 @@ import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfig
         executeStatementsBefore = "SELECT setval('cards_card_id_seq', 3); SELECT setval(' users_cards_users_cards_id_seq', 6);",
         cleanAfter = true)
 @ExtendWith(MockitoExtension.class)
-@SpringJUnitWebConfig(value = TestConfiguration.class)
+@SpringJUnitWebConfig(value = {TestConfiguration.class,  RootApplicationContext.class})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CardControllerTest {
     private MockMvc mockMvc;

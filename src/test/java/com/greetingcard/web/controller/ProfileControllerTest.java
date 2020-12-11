@@ -1,5 +1,6 @@
 package com.greetingcard.web.controller;
 
+import com.greetingcard.RootApplicationContext;
 import com.greetingcard.dao.jdbc.TestConfiguration;
 import com.greetingcard.entity.User;
 import org.flywaydb.core.Flyway;
@@ -21,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringJUnitWebConfig(value = TestConfiguration.class)
+@SpringJUnitWebConfig(value = {TestConfiguration.class,  RootApplicationContext.class})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ProfileControllerTest {
     private MockMvc mockMvc;

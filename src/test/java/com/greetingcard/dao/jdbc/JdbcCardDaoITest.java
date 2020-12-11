@@ -5,6 +5,7 @@ import com.github.database.rider.core.api.configuration.Orthography;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
+import com.greetingcard.RootApplicationContext;
 import com.greetingcard.dao.CardDao;
 import com.greetingcard.entity.*;
 import org.flywaydb.core.Flyway;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,11 +27,11 @@ import static org.junit.jupiter.api.Assertions.*;
         "congratulations.xml", "links.xml"},
         executeStatementsBefore = "SELECT setval('cards_card_id_seq', 3); SELECT setval(' users_cards_users_cards_id_seq', 6);",
         cleanAfter = true)
-@SpringJUnitWebConfig(value = TestConfiguration.class)
+@SpringJUnitWebConfig(value = {TestConfiguration.class,  RootApplicationContext.class})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class JdbcCardDaoITest {
     @Autowired
-    private JdbcCardDao jdbcCardDao;
+    private CardDao jdbcCardDao;
 
     @Autowired
     private Flyway flyway;
@@ -139,10 +141,11 @@ public class JdbcCardDaoITest {
     }
 
     @Test
-    @DisplayName("Return card with all congratulations")
+    @DisplayName("Return card of admin with all congratulations")
     public void getCardAndCongratulationAdmin() {
         //when
-        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
+        Optional<Card> optionalCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
+        Card actualCard = optionalCard.get();
         List<Congratulation> actualCongratulationList = actualCard.getCongratulationList();
 
         //then
@@ -170,10 +173,11 @@ public class JdbcCardDaoITest {
     }
 
     @Test
-    @DisplayName("Return card with all congratulations")
+    @DisplayName("Return card of member with all congratulations")
     public void getCardAndCongratulationMember() {
         //when
-        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
+        Optional<Card> optionalCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
+        Card actualCard = optionalCard.get();
         List<Congratulation> actualCongratulationList = actualCard.getCongratulationList();
 
         //then
@@ -204,18 +208,18 @@ public class JdbcCardDaoITest {
     @DisplayName("Return null when user does not has cards or access")
     public void getCardAndCongratulationNoAccess() {
         //when
-        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1, -1);
+        Optional<Card> optionalCard = jdbcCardDao.getCardAndCongratulationByCardId(1, -1);
         //then
-        assertNull(actualCard);
+        assertFalse(optionalCard.isPresent());
     }
 
     @Test
     @DisplayName("Return null if card does not exist")
     public void getCardAndCongratulationNotExist() {
         //when
-        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(-1000, 1);
+        Optional<Card> optionalCard = jdbcCardDao.getCardAndCongratulationByCardId(-1000, 1);
         //then
-        assertNull(actualCard);
+        assertFalse(optionalCard.isPresent());
     }
 
     @Test
@@ -224,16 +228,18 @@ public class JdbcCardDaoITest {
         //when
         jdbcCardDao.deleteCardById(1, 1);
         //then
+        Optional<Card> optionalCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
+        assertFalse(optionalCard.isPresent());
     }
 
     @Test
-    @DisplayName("Remove card if user does not have access")
+    @DisplayName("Does not remove card if user does not have access")
     void deleteCardByIdNoAccess() {
         //when
         jdbcCardDao.deleteCardById(1, 10000);
         //then
-        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
-        assertNotNull(actualCard);
+        Optional<Card> optionalCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
+        assertTrue(optionalCard.isPresent());
     }
 
     @Test
@@ -242,8 +248,9 @@ public class JdbcCardDaoITest {
         //when
         jdbcCardDao.changeCardStatusById(Status.ISOVER, 1);
         //then
-        Card card = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
-        assertEquals(Status.ISOVER, card.getStatus());
+        Optional<Card> optionalCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
+        Card actualCard = optionalCard.get();
+        assertEquals(Status.ISOVER, actualCard.getStatus());
     }
 
     @Test

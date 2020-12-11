@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
-@Setter
 @RestController
 @RequestMapping("/api/v1/congratulation")
 @AllArgsConstructor

@@ -9,6 +9,7 @@ import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +19,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @RestController
 @RequestMapping(value = "api/v1/", produces = MediaType.APPLICATION_JSON_VALUE)
-@AllArgsConstructor
 public class CardController {
+    @Autowired
     private CardService cardService;
+    @Autowired
     private ObjectMapper objectMapper;
 
     @GetMapping("cards")
@@ -40,14 +43,14 @@ public class CardController {
     public ResponseEntity<Object> getCard(HttpSession session, @PathVariable long id) throws JsonProcessingException {
         log.info("Get card request");
         User user = (User) session.getAttribute("user");
-        Card card = cardService.getCardAndCongratulationByCardId(id, user.getId());
-        if (card == null) {
+        Optional<Card> optionalCard = cardService.getCardAndCongratulationByCardId(id, user.getId());
+        if (optionalCard.isPresent()) {
+            log.info("Successfully writing card to response, id: {}", id);
+            return ResponseEntity.status(HttpServletResponse.SC_OK).body(optionalCard.get());
+        } else {
             log.info("User has no access : {}", id);
             String json = objectMapper.writeValueAsString(Map.of("message", "Sorry, you are not a member of this card"));
             return ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body(json);
-        } else {
-            log.info("Successfully writing card to response, id: {}", id);
-            return ResponseEntity.status(HttpServletResponse.SC_OK).body(card);
         }
     }
 

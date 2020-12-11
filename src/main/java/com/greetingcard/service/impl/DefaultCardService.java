@@ -5,6 +5,8 @@ import com.greetingcard.entity.Card;
 import com.greetingcard.entity.CardsType;
 import com.greetingcard.entity.Status;
 import com.greetingcard.service.CardService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import com.greetingcard.service.CongratulationService;
 import lombok.AllArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,45 +14,46 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 @AllArgsConstructor
 public class DefaultCardService implements CardService {
-    private final CardDao jdbcCardDao;
+    private final CardDao cardDao;
     private final CongratulationService congratulationService;
 
     @Override
     public List<Card> getCards(long userId, CardsType cardsType) {
         switch (cardsType) {
             case All:
-                return jdbcCardDao.getAllCardsByUserId(userId);
+                return cardDao.getAllCardsByUserId(userId);
             case MY:
-                return jdbcCardDao.getCardsByUserIdAndRoleId(userId, 1);
+                return cardDao.getCardsByUserIdAndRoleId(userId, 1);
             case OTHER:
-                return jdbcCardDao.getCardsByUserIdAndRoleId(userId, 2);
+                return cardDao.getCardsByUserIdAndRoleId(userId, 2);
         }
         return List.of();
     }
 
     @Override
     public Long createCard(Card card) {
-        return jdbcCardDao.createCard(card);
+        return cardDao.createCard(card);
     }
 
     @Override
-    public Card getCardAndCongratulationByCardId(long cardId, long userId) {
-        return jdbcCardDao.getCardAndCongratulationByCardId(cardId, userId);
+    public Optional<Card> getCardAndCongratulationByCardId(long cardId, long userId) {
+        return cardDao.getCardAndCongratulationByCardId(cardId, userId);
     }
 
     @Override
     @Transactional
     public void deleteCardById(long cardId, long userId) {
-        jdbcCardDao.deleteCardById(cardId, userId);
+        cardDao.deleteCardById(cardId, userId);
         congratulationService.deleteByCardId(cardId, userId);
     }
 
     @Override
     @Transactional
     public void changeCardStatus(Status status, long cardId) {
-        jdbcCardDao.changeCardStatusById(status, cardId);
+        cardDao.changeCardStatusById(status, cardId);
         congratulationService.changeCongratulationStatusByCardId(status, cardId);
     }
 
@@ -60,12 +63,12 @@ public class DefaultCardService implements CardService {
         if (length == 0 || length > 250) {
             throw new IllegalArgumentException("Name is short or too long");
         }
-        jdbcCardDao.changeCardName(card);
+        cardDao.changeCardName(card);
     }
 
     @Override
     public Optional<Status> getCardStatusById(long cardId) {
-        return jdbcCardDao.getCardStatusById(cardId);
+        return cardDao.getCardStatusById(cardId);
     }
 
 }

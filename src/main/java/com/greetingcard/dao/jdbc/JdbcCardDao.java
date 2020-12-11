@@ -6,10 +6,9 @@ import com.greetingcard.dao.jdbc.mapper.CardRowMapper;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Role;
 import com.greetingcard.entity.Status;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -25,73 +24,47 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
-@AllArgsConstructor
 @Repository
+@PropertySource("classpath:queries.properties")
 public class JdbcCardDao implements CardDao {
-    private static final String GET_CARDS_BY_USER_ID_AND_ROLE_ID =
-            "SELECT cards.card_id, " +
-                    "name, " +
-                    "background_image, " +
-                    "card_link, " +
-                    "status_id, " +
-                    "users.user_id, " +
-                    "firstName, " +
-                    "lastName, " +
-                    "login, " +
-                    "email " +
-                    "FROM cards " +
-                    "LEFT JOIN users_cards ON (cards.card_id=users_cards.card_id) " +
-                    "LEFT JOIN users ON (users_cards.user_id=users.user_id) " +
-                    "WHERE (users.user_id = :userId AND role_id = :roleId) " +
-                    "ORDER BY cards.card_id";
-    private static final String GET_CARD_STATUS = "SELECT status_id FROM cards WHERE card_id = :card_id";
-    private static final String SAVE_NEW_CARD = "INSERT INTO cards (user_id, name, status_id) VALUES (?,?,?)";
-    private static final String ADD_TO_USERS_CARDS = "INSERT INTO users_cards (card_id, user_id, role_id) VALUES (?,?,?)";
-    private static final String CARD_AND_CONGRATULATION =
-            "SELECT c.card_id, " +
-                    "c.user_id as card_user, " +
-                    "name, " +
-                    "background_image, " +
-                    "card_link, " +
-                    "c.status_id, " +
-                    "cg.congratulation_id, " +
-                    "cg.status_id as con_status, " +
-                    "message, " +
-                    "cg.user_id, " +
-                    "firstName, " +
-                    "lastName, " +
-                    "login, " +
-                    "link_id, " +
-                    "link,type_id " +
-                    "FROM users_cards uc " +
-                    "JOIN cards c ON (uc.card_id = c.card_id) " +
-                    "LEFT JOIN congratulations cg ON (c.card_id=cg.card_id) " +
-                    "LEFT JOIN users u ON (cg.user_id=u.user_id) " +
-                    "LEFT JOIN links l ON (cg.congratulation_id=l.congratulation_id) " +
-                    "WHERE uc.card_id = :cardId AND uc.user_id = :userId";
-    private static final String DELETE_BY_CARD_ID = "DELETE FROM cards WHERE card_id=? and user_id=?";
-    private static final String CHANGE_STATUS_OF_CARD_BY_ID = "UPDATE cards SET status_id = ? where card_id = ?";
-    private static final String GET_ALL_CARDS_BY_USER_ID = "SELECT c.card_id ,c.name, c.background_image, c.card_link, c.status_id," +
-            " u.user_id, u.firstName, u.lastName, u.login, u.email " +
-            "FROM users_cards uc JOIN cards c ON (uc.card_id = c.card_id) " +
-            "JOIN users u ON (c.user_id = u.user_id) " +
-            "WHERE uc.user_id = :id ORDER BY c.card_id";
-    private static final String CHANGE_NAME = "UPDATE cards SET name = ? where card_id = ? and user_id = ?";
+    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    private JdbcTemplate jdbcTemplate;
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    @Value("${get.cards.by.user.id.and.role.id}")
+    private String getCardsByUserIdAndRoleId;
+    @Value("${card.and.congratulation}")
+    private String cardAndCongratulation;
+    @Value("${get.card.status}")
+    private String getCardStatus;
+    @Value("${save.new.card}")
+    private String saveNewCard;
+    @Value("${add.to.users.cards}")
+    private String addToUsersCards;
+    @Value("${delete.by.card.id}")
+    private String deleteByCardId;
+    @Value("${change.status.of.card.by.id}")
+    private String changeStatusOfCardById;
+    @Value("${get.all.cards.by.user.id}")
+    private String getAllCardsByUserId;
+    @Value("${change.name}")
+    private String changeName;
+
+    public JdbcCardDao(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    }
 
     @Override
     public List<Card> getAllCardsByUserId(long id) {
         SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
-        return namedParameterJdbcTemplate.query(GET_ALL_CARDS_BY_USER_ID, namedParameters, new CardRowMapper());
+        return namedParameterJdbcTemplate.query(getAllCardsByUserId, namedParameters, new CardRowMapper());
     }
 
     @Override
     public List<Card> getCardsByUserIdAndRoleId(long userId, long roleId) {
         MapSqlParameterSource namedParameters = new MapSqlParameterSource("userId", userId);
         namedParameters.addValue("roleId", roleId);
-        return namedParameterJdbcTemplate.query(GET_CARDS_BY_USER_ID_AND_ROLE_ID, namedParameters, new CardRowMapper());
+        return namedParameterJdbcTemplate.query(getCardsByUserIdAndRoleId, namedParameters, new CardRowMapper());
     }
 
     @Override
@@ -99,42 +72,43 @@ public class JdbcCardDao implements CardDao {
     public Long createCard(Card card) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement preparedStatement = connection.prepareStatement(SAVE_NEW_CARD, new String[]{"card_id"});
+            PreparedStatement preparedStatement = connection.prepareStatement(saveNewCard, new String[]{"card_id"});
             preparedStatement.setLong(1, card.getUser().getId());
             preparedStatement.setString(2, card.getName());
             preparedStatement.setInt(3, Status.STARTUP.getStatusNumber());
             return preparedStatement;
         }, keyHolder);
         long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        jdbcTemplate.update(ADD_TO_USERS_CARDS, id, card.getUser().getId(), Role.ADMIN.getRoleNumber());
+        jdbcTemplate.update(addToUsersCards, id, card.getUser().getId(), Role.ADMIN.getRoleNumber());
         return id;
     }
 
     @Override
-    public Card getCardAndCongratulationByCardId(long cardId, long userId) {
+    public Optional<Card> getCardAndCongratulationByCardId(long cardId, long userId) {
         MapSqlParameterSource namedParameters = new MapSqlParameterSource("cardId", cardId).addValue("userId", userId);
-        return namedParameterJdbcTemplate.query(CARD_AND_CONGRATULATION, namedParameters, new CardAndCongratulationExtractor());
+        return Optional.ofNullable(namedParameterJdbcTemplate.query(cardAndCongratulation, namedParameters, new CardAndCongratulationExtractor()));
     }
 
     @Override
     public void deleteCardById(long cardId, long userId) {
-        jdbcTemplate.update(DELETE_BY_CARD_ID, cardId, userId);
+        jdbcTemplate.update(deleteByCardId, cardId, userId);
     }
 
     @Override
     public void changeCardStatusById(Status newStatus, long cardId) {
-        jdbcTemplate.update(CHANGE_STATUS_OF_CARD_BY_ID, newStatus.getStatusNumber(), cardId);
+        jdbcTemplate.update(changeStatusOfCardById, newStatus.getStatusNumber(), cardId);
     }
 
+    @Override
     public Optional<Status> getCardStatusById(long cardId) {
         SqlParameterSource parameterSource = new MapSqlParameterSource("card_id", cardId);
-        List<Integer> statusIds = namedParameterJdbcTemplate.queryForList(GET_CARD_STATUS, parameterSource, Integer.class);
+        List<Integer> statusIds = namedParameterJdbcTemplate.queryForList(getCardStatus, parameterSource, Integer.class);
         return (statusIds.size() != 0 ? Optional.of(Status.getByNumber(statusIds.get(0))) : Optional.empty());
     }
 
     @Override
     public void changeCardName(Card card) {
-        jdbcTemplate.update(CHANGE_NAME, card.getName(), card.getId(), card.getUser().getId());
+        jdbcTemplate.update(changeName, card.getName(), card.getId(), card.getUser().getId());
         log.info("Changed name of card to {} by id - {}", card.getName(), card.getId());
     }
 }

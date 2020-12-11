@@ -6,6 +6,7 @@ import com.github.database.rider.core.api.configuration.Orthography;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
+import com.greetingcard.RootApplicationContext;
 import com.greetingcard.dao.jdbc.TestConfiguration;
 import com.greetingcard.entity.User;
 import org.flywaydb.core.Flyway;
@@ -26,9 +27,6 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -39,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "congratulations.xml", "links.xml", "forgot_password_hashes.xml", "verify_email_hashes.xml"},
         executeStatementsBefore = "SELECT setval('users_user_id_seq', 10);",
         cleanAfter = true)
-@SpringJUnitWebConfig(value = TestConfiguration.class)
+@SpringJUnitWebConfig(value = {TestConfiguration.class,  RootApplicationContext.class})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UserControllerSystemTest {
     @Autowired
@@ -187,8 +185,10 @@ class UserControllerSystemTest {
     @DisplayName("Request to change password ")
     @ExpectedDataSet("usersAfterChangePassword.xml")
     void testChangePassword() throws Exception {
-
         //prepare
+        User user = User.builder()
+                .login("user")
+                .build();
         Map<String, String> userCredential = new HashMap<>();
         userCredential.put("login", "user");
         userCredential.put("oldPassword", "user");
@@ -198,6 +198,7 @@ class UserControllerSystemTest {
 
         //when
         mockMvc.perform(put("/api/v1/user/password")
+                .sessionAttr("user", user)
                 .contentType(APPLICATION_JSON_VALUE)
                 .accept(APPLICATION_JSON_VALUE)
                 .content(json))

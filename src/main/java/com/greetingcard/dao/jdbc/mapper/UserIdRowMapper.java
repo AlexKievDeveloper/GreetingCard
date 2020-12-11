@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserIdRowMapper implements ResultSetExtractor<Long> {
-
     @Override
     public Long extractData(ResultSet resultSet) throws SQLException, DataAccessException {
         if (!resultSet.next()) {

@@ -13,7 +13,7 @@ public interface CardService {
 
     Long createCard(Card card);
 
-    Card getCardAndCongratulationByCardId(long cardId, long userId);
+    Optional<Card> getCardAndCongratulationByCardId(long cardId, long userId);
 
     Optional<Status> getCardStatusById(long cardId);
 

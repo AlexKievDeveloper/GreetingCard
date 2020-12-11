@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AuthorizationFilterTest {
-    private final AuthorizationFilter authorizationFilter;
+    private AuthorizationFilter authorizationFilter;
     @Mock
     private HttpServletRequest servletRequest;
     @Mock
@@ -41,6 +41,7 @@ class AuthorizationFilterTest {
         //prepare
         when(servletRequest.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
+        when(servletRequest.getRequestURI()).thenReturn("/edit_card");
         //when
         authorizationFilter.doFilter(servletRequest, servletResponse, filterChain);
         //then
@@ -55,6 +56,7 @@ class AuthorizationFilterTest {
         //prepare
         when(servletRequest.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(null);
+        when(servletRequest.getRequestURI()).thenReturn("/edit_card");
         //when
         authorizationFilter.doFilter(servletRequest, servletResponse, filterChain);
         //then

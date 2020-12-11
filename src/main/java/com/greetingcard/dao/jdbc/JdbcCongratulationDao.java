@@ -9,7 +9,6 @@ import com.greetingcard.entity.Link;
 import com.greetingcard.entity.Status;
 import com.greetingcard.service.impl.DefaultAmazonService;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -141,39 +140,6 @@ public class JdbcCongratulationDao implements CongratulationDao {
         }
     }
 
-    @Override
-    public List<Congratulation> findCongratulationsByCardId(long cardId) {
-        return jdbcTemplate.query(FIND_CONGRATULATIONS_BY_CARD_ID, CONGRATULATIONS_EXTRACTOR, cardId);
-    }
-
-    @Override
-    public void changeCongratulationsStatusByCardId(Status status, long cardId) {
-        jdbcTemplate.update(CHANGE_STATUS_CONGRATULATION_BY_CARD_ID, status.getStatusNumber(), cardId);
-    }
-
-    @Override
-    public void changeCongratulationStatusByCongratulationId(Status status, long congratulationId) {
-        jdbcTemplate.update(CHANGE_CONGRATULATION_STATUS_BY_CONGRATULATION_ID, status.getStatusNumber(), congratulationId);
-    }
-
-    @Override
-    public void updateCongratulationMessage(String message, long congratulationId, long userId) {
-        jdbcTemplate.update(UPDATE_CONGRATULATION, message, congratulationId, userId);
-    }
-
-    @Override
-    public void saveLinks(List<Link> linkList, long congratulationId) {
-        jdbcTemplate.batchUpdate(
-                SAVE_LINK,
-                linkList,
-                linkList.size(),
-                (statementInLinks, link) -> {
-                    statementInLinks.setString(1, link.getLink());
-                    statementInLinks.setInt(2, link.getType().getTypeNumber());
-                    statementInLinks.setLong(3, congratulationId);
-                });
-    }
-
     void deleteFilesFromLinks(List<Link> linkIdToDelete, long congratulationId) {
         List<Link> linkList = getLinksList(linkIdToDelete, congratulationId);
         for (Link link : linkList) {
@@ -207,6 +173,39 @@ public class JdbcCongratulationDao implements CongratulationDao {
             params.addValue(paramName, userId);
         }
         return params;
+    }
+
+    @Override
+    public List<Congratulation> findCongratulationsByCardId(long cardId) {
+        return jdbcTemplate.query(FIND_CONGRATULATIONS_BY_CARD_ID, CONGRATULATIONS_EXTRACTOR, cardId);
+    }
+
+    @Override
+    public void changeCongratulationsStatusByCardId(Status status, long cardId) {
+        jdbcTemplate.update(CHANGE_STATUS_CONGRATULATION_BY_CARD_ID, status.getStatusNumber(), cardId);
+    }
+
+    @Override
+    public void changeCongratulationStatusByCongratulationId(Status status, long congratulationId) {
+        jdbcTemplate.update(CHANGE_CONGRATULATION_STATUS_BY_CONGRATULATION_ID, status.getStatusNumber(), congratulationId);
+    }
+
+    @Override
+    public void updateCongratulationMessage(String message, long congratulationId, long userId) {
+        jdbcTemplate.update(UPDATE_CONGRATULATION, message, congratulationId, userId);
+    }
+
+    @Override
+    public void saveLinks(List<Link> linkList, long congratulationId) {
+        jdbcTemplate.batchUpdate(
+                SAVE_LINK,
+                linkList,
+                linkList.size(),
+                (statementInLinks, link) -> {
+                    statementInLinks.setString(1, link.getLink());
+                    statementInLinks.setInt(2, link.getType().getTypeNumber());
+                    statementInLinks.setLong(3, congratulationId);
+                });
     }
 
     void deleteCongratulationFiles(long id, long userId, String findQuery) {
