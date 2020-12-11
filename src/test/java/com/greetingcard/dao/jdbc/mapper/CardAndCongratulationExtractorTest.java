@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,8 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
-class CardAndCongratulationRowMapperTest {
+class CardAndCongratulationExtractorTest {
     @Mock
     private ResultSet mockResultSet;
 
@@ -24,9 +21,10 @@ class CardAndCongratulationRowMapperTest {
     @DisplayName("Returns an object of class Card with all congratulations from result set")
     void extractData() throws SQLException {
         //prepare
-        CardAndCongratulationRowMapper rowMapper = new CardAndCongratulationRowMapper();
+        CardAndCongratulationExtractor rowMapper = new CardAndCongratulationExtractor();
 
         when(mockResultSet.next()).thenReturn(true).thenReturn(false);
+        when(mockResultSet.getLong("card_user")).thenReturn(1L);
         when(mockResultSet.getLong("card_id")).thenReturn(1L);
         when(mockResultSet.getString("name")).thenReturn("Card");
         when(mockResultSet.getString("background_image")).thenReturn("/link");
@@ -40,8 +38,6 @@ class CardAndCongratulationRowMapperTest {
 
         when(mockResultSet.getLong("congratulation_id")).thenReturn(1L);
         when(mockResultSet.getString("message")).thenReturn("from Roma");
-        when(mockResultSet.getInt("card_id")).thenReturn(1);
-        when(mockResultSet.getInt("user_id")).thenReturn(1);
         when(mockResultSet.getInt("con_status")).thenReturn(1);
 
         when(mockResultSet.getInt("link_id")).thenReturn(1);
@@ -52,6 +48,7 @@ class CardAndCongratulationRowMapperTest {
         rowMapper.extractData(mockResultSet);
 
         //then
+        verify(mockResultSet).getLong("card_user");
         verify(mockResultSet).getLong("card_id");
         verify(mockResultSet).getString("name");
         verify(mockResultSet).getString("background_image");
@@ -65,8 +62,6 @@ class CardAndCongratulationRowMapperTest {
 
         verify(mockResultSet).getLong("congratulation_id");
         verify(mockResultSet).getString("message");
-        verify(mockResultSet).getLong("card_id");
-        verify(mockResultSet).getLong("user_id");
         verify(mockResultSet).getInt("con_status");
 
         verify(mockResultSet).getInt("link_id");

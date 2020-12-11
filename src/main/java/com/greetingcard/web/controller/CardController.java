@@ -3,6 +3,7 @@ package com.greetingcard.web.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greetingcard.entity.Card;
+import com.greetingcard.entity.CardsType;
 import com.greetingcard.entity.Status;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
@@ -27,7 +28,7 @@ public class CardController {
     private ObjectMapper objectMapper;
 
     @GetMapping("cards")
-    public ResponseEntity<Object> getCards(HttpSession session, @RequestParam String type) {
+    public ResponseEntity<Object> getCards(HttpSession session, @RequestBody CardsType type) {
         log.info("getCards");
         User user = (User) session.getAttribute("user");
         long userId = user.getId();

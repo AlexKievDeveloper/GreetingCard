@@ -9,30 +9,29 @@ import com.greetingcard.service.CongratulationService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
 @Setter
+@Service
 public class DefaultCongratulationService implements CongratulationService {
     private CongratulationDao congratulationDao;
-
-    @Autowired
     private DefaultAmazonService defaultAmazonService;
 
-    public DefaultCongratulationService(CongratulationDao congratulationDao) {
+    public DefaultCongratulationService(CongratulationDao congratulationDao, DefaultAmazonService defaultAmazonService) {
         this.congratulationDao = congratulationDao;
+        this.defaultAmazonService = defaultAmazonService;
     }
 
     @Override
-    public Congratulation getCongratulationById(long congratulationId) {
+    public Optional<Congratulation> getCongratulationById(long congratulationId) {
+
         return congratulationDao.getCongratulationById(congratulationId);
     }
 
@@ -55,6 +54,11 @@ public class DefaultCongratulationService implements CongratulationService {
     @Override
     public void changeCongratulationStatusByCongratulationId(Status status, long congratulationId) {
         congratulationDao.changeCongratulationStatusByCongratulationId(status, congratulationId);
+    }
+
+    @Override
+    public void changeCongratulationStatusByCardId(Status status, long cardId) {
+        congratulationDao.changeCongratulationsStatusByCardId(status,cardId);
     }
 
     @Override

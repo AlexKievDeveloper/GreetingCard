@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class JdbcUserDaoITest {
 
     @Autowired
-    private UserDao userDao;
+    private JdbcUserDao userDao;
 
     @Autowired
     private Flyway flyway;

@@ -5,12 +5,11 @@ import com.github.database.rider.core.api.configuration.Orthography;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
+import com.greetingcard.dao.CardDao;
+import com.greetingcard.dao.CongratulationDao;
 import com.greetingcard.entity.*;
 import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -21,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -45,13 +45,26 @@ class JdbcCongratulationDaoITest {
         flyway.migrate();
     }
 
+    @AfterEach
+    void clear() throws IOException {
+        Files.deleteIfExists(Path.of("/greeting-cards/audio/audio1.mp3"));
+        Files.deleteIfExists(Path.of("/greeting-cards/audio/audio2.mp3"));
+        Files.deleteIfExists(Path.of("/greeting-cards/audio/audio3.mp3"));
+        Files.deleteIfExists(Path.of("/greeting-cards/img/img1.jpg"));
+        Files.deleteIfExists(Path.of("/greeting-cards/img/img2.jpg"));
+        Files.deleteIfExists(Path.of("/greeting-cards/img/img3.jpg"));
+    }
+
     @Test
     @DisplayName("Returns an object of class Congratulation from result set")
     void getCongratulationByIdTest() {
         //when
-        Congratulation actualCongratulation = jdbcCongratulationDao.getCongratulationById(1);
+        Optional<Congratulation> optionalCongratulation = jdbcCongratulationDao.getCongratulationById(1);
+        Congratulation actualCongratulation = optionalCongratulation.get();
 
         //then
+        assertTrue(optionalCongratulation.isPresent());
+
         assertEquals(1, actualCongratulation.getId());
         assertEquals("from Roma", actualCongratulation.getMessage());
         assertEquals(1, actualCongratulation.getCardId());
@@ -85,6 +98,16 @@ class JdbcCongratulationDaoITest {
         assertEquals("/img/img2.jpg", actualCongratulation.getLinkList().get(5).getLink());
         assertEquals(1, actualCongratulation.getLinkList().get(5).getCongratulationId());
         assertEquals(LinkType.PICTURE, actualCongratulation.getLinkList().get(5).getType());
+    }
+
+    @Test
+    @DisplayName("Returns an object of class Congratulation from result set")
+    void getCongratulationById_IfNotExistTest() {
+        //when
+        Optional<Congratulation> optionalCongratulation = jdbcCongratulationDao.getCongratulationById(1000);
+
+        //then
+        assertFalse(optionalCongratulation.isPresent());
     }
 
     @Test
@@ -170,13 +193,6 @@ class JdbcCongratulationDaoITest {
         assertFalse(Files.exists(Path.of("/greeting-cards/img/img1.jpg")));
         assertFalse(Files.exists(Path.of("/greeting-cards/img/img2.jpg")));
         assertFalse(Files.exists(Path.of("/greeting-cards/img/img3.jpg")));
-
-        Files.deleteIfExists(Path.of("/greeting-cards/audio/audio1.mp3"));
-        Files.deleteIfExists(Path.of("/greeting-cards/audio/audio2.mp3"));
-        Files.deleteIfExists(Path.of("/greeting-cards/audio/audio3.mp3"));
-        Files.deleteIfExists(Path.of("/greeting-cards/img/img1.jpg"));
-        Files.deleteIfExists(Path.of("/greeting-cards/img/img2.jpg"));
-        Files.deleteIfExists(Path.of("/greeting-cards/img/img3.jpg"));
     }
 
 
@@ -201,8 +217,8 @@ class JdbcCongratulationDaoITest {
         jdbcCongratulationDao.deleteById(7, 1);
 
         //then
-        Congratulation actual = jdbcCongratulationDao.getCongratulationById(7);
-        assertNull(actual);
+        Optional<Congratulation> actual = jdbcCongratulationDao.getCongratulationById(7);
+        assertFalse(actual.isPresent());
     }
 
     @Test
@@ -234,7 +250,7 @@ class JdbcCongratulationDaoITest {
     @DisplayName("Change status to ISOVER congratulations by id of card")
     void changeStatusCongratulationsByCardIdToIsOver() {
         //when
-        jdbcCongratulationDao.changeStatusCongratulationsByCardId(Status.ISOVER, 1);
+        jdbcCongratulationDao.changeCongratulationsStatusByCardId(Status.ISOVER, 1);
         List<Congratulation> congratulationList = jdbcCongratulationDao.findCongratulationsByCardId(1);
         Congratulation actualCongratulation1 = congratulationList.get(0);
         Congratulation actualCongratulation2 = congratulationList.get(1);
@@ -250,7 +266,7 @@ class JdbcCongratulationDaoITest {
     @DisplayName("Change status to STARTUP congratulations by id of card")
     void changeStatusCongratulationsByCardIdToStartUp() {
         //when
-        jdbcCongratulationDao.changeStatusCongratulationsByCardId(Status.STARTUP, 1);
+        jdbcCongratulationDao.changeCongratulationsStatusByCardId(Status.STARTUP, 1);
 
         List<Congratulation> congratulationList = jdbcCongratulationDao.findCongratulationsByCardId(1);
         Congratulation actualCongratulation1 = congratulationList.get(0);
@@ -267,15 +283,15 @@ class JdbcCongratulationDaoITest {
     @DisplayName("Change status to STARTUP congratulations by id of card")
     void changeCongratulationStatusByCongratulationId() {
         //prepare
-        Congratulation congratulationBefore = jdbcCongratulationDao.getCongratulationById(1);
-        assertEquals(Status.STARTUP, congratulationBefore.getStatus());
+        Optional<Congratulation> optionalCongratulation = jdbcCongratulationDao.getCongratulationById(1);
+        assertEquals(Status.STARTUP, optionalCongratulation.get().getStatus());
 
         //when
         jdbcCongratulationDao.changeCongratulationStatusByCongratulationId(Status.ISOVER, 1);
 
         //then
-        Congratulation congratulationAfter = jdbcCongratulationDao.getCongratulationById(1);
-        assertEquals(Status.ISOVER, congratulationAfter.getStatus());
+        Optional<Congratulation> optionalCongratulationAfter = jdbcCongratulationDao.getCongratulationById(1);
+        assertEquals(Status.ISOVER, optionalCongratulationAfter.get().getStatus());
     }
 
     @Test
@@ -285,8 +301,8 @@ class JdbcCongratulationDaoITest {
         jdbcCongratulationDao.updateCongratulationMessage("Congratulations from updateCongratulationTest", 1, 1);
 
         //then
-        Congratulation congratulationAfter = jdbcCongratulationDao.getCongratulationById(1);
-        assertEquals("Congratulations from updateCongratulationTest", congratulationAfter.getMessage());
+        Optional<Congratulation> optionalCongratulationAfter = jdbcCongratulationDao.getCongratulationById(1);
+        assertEquals("Congratulations from updateCongratulationTest", optionalCongratulationAfter.get().getMessage());
     }
 
     @Test
@@ -306,7 +322,9 @@ class JdbcCongratulationDaoITest {
         jdbcCongratulationDao.saveLinks(linkList, 1);
 
         //then
-        Congratulation congratulation = jdbcCongratulationDao.getCongratulationById(1);
+        Optional<Congratulation> optionalCongratulation = jdbcCongratulationDao.getCongratulationById(1);
+        Congratulation congratulation = optionalCongratulation.get();
+
         assertEquals(1, congratulation.getLinkList().get(6).getCongratulationId());
         assertEquals("you_tube_10", congratulation.getLinkList().get(6).getLink());
         assertEquals(LinkType.VIDEO, congratulation.getLinkList().get(6).getType());
@@ -340,8 +358,6 @@ class JdbcCongratulationDaoITest {
         //then
         assertFalse(pathAudioFile.toFile().exists());
         assertFalse(pathImageFile.toFile().exists());
-        Files.deleteIfExists(Path.of("/greeting-cards/audio/audio2.mp3"));
-        Files.deleteIfExists(Path.of("/greeting-cards/img/img1.jpg"));
     }
 
     @Test
@@ -357,17 +373,17 @@ class JdbcCongratulationDaoITest {
                 .build();
 
         List<Link> linkList = List.of(link, link2);
-        Congratulation beforeCongratulation = jdbcCongratulationDao.getCongratulationById(1);
-        assertEquals(6, beforeCongratulation.getLinkList().size());
+        Optional<Congratulation> beforeCongratulation = jdbcCongratulationDao.getCongratulationById(1);
+        assertEquals(6, beforeCongratulation.get().getLinkList().size());
 
         //when
         jdbcCongratulationDao.deleteLinksById(linkList, 1);
 
         //then
-        Congratulation afterCongratulation = jdbcCongratulationDao.getCongratulationById(1);
-        assertEquals(4, afterCongratulation.getLinkList().size());
+        Optional<Congratulation> afterCongratulation = jdbcCongratulationDao.getCongratulationById(1);
+        assertEquals(4, afterCongratulation.get().getLinkList().size());
 
-        for (Link linkAfter : afterCongratulation.getLinkList()) {
+        for (Link linkAfter : afterCongratulation.get().getLinkList()) {
             assertNotEquals(linkAfter.getId(), 2);
             assertNotEquals(linkAfter.getId(), 3);
         }

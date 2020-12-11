@@ -11,29 +11,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CongratulationsRowMapper implements ResultSetExtractor<List<Congratulation>> {
+public class CongratulationsExtractor implements ResultSetExtractor<List<Congratulation>> {
     @Override
     public List<Congratulation> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-
-        if (!resultSet.next()) {
-            return null;
-        }
-
         Map<Long, Congratulation> congratulationMap = new HashMap<>();
-
-        do {
-            long congratulation_id = resultSet.getLong("congratulation_id");
-            if (congratulation_id != 0 && !congratulationMap.containsKey(congratulation_id)) {
+        while (resultSet.next()) {
+            long congratulationId = resultSet.getLong("congratulation_id");
+            if (congratulationId != 0 && !congratulationMap.containsKey(congratulationId)) {
                 User user = User.builder().id(resultSet.getLong("user_id")).build();
                 Congratulation congratulation = Congratulation.builder()
-                        .id(congratulation_id)
+                        .id(congratulationId)
                         .user(user)
                         .cardId(resultSet.getLong("card_id"))
                         .message(resultSet.getString("message"))
                         .status(Status.getByNumber(resultSet.getInt("status_id")))
                         .linkList(new ArrayList<>())
                         .build();
-                congratulationMap.put(congratulation_id, congratulation);
+                congratulationMap.put(congratulationId, congratulation);
             }
 
             int linkId = resultSet.getInt("link_id");
@@ -43,9 +37,9 @@ public class CongratulationsRowMapper implements ResultSetExtractor<List<Congrat
                         .link(resultSet.getString("link"))
                         .type(LinkType.getByNumber(resultSet.getInt("type_id")))
                         .build();
-                congratulationMap.get(congratulation_id).getLinkList().add(link);
+                congratulationMap.get(congratulationId).getLinkList().add(link);
             }
-        } while (resultSet.next());
+        }
         return new ArrayList<>(congratulationMap.values());
     }
 }

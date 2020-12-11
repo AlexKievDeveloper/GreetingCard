@@ -9,11 +9,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CongratulationRowMapper implements ResultSetExtractor<Congratulation> {
+public class CongratulationExtractor implements ResultSetExtractor<Congratulation> {
 
     @Override
     public Congratulation extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-
         if (!resultSet.next()) {
             return null;
         }

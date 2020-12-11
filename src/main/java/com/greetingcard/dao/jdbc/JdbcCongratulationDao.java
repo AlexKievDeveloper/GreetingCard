@@ -1,28 +1,31 @@
 package com.greetingcard.dao.jdbc;
 
 import com.greetingcard.dao.CongratulationDao;
-import com.greetingcard.dao.jdbc.mapper.CongratulationRowMapper;
-import com.greetingcard.dao.jdbc.mapper.CongratulationsRowMapper;
+import com.greetingcard.dao.jdbc.mapper.CongratulationExtractor;
+import com.greetingcard.dao.jdbc.mapper.CongratulationsExtractor;
 import com.greetingcard.dao.jdbc.mapper.LinksRowMapper;
 import com.greetingcard.entity.Congratulation;
 import com.greetingcard.entity.Link;
 import com.greetingcard.entity.Status;
 import com.greetingcard.service.impl.DefaultAmazonService;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.PreparedStatement;
 import java.util.*;
 
 @Slf4j
-@Setter
+@AllArgsConstructor
+@Repository
 public class JdbcCongratulationDao implements CongratulationDao {
     private static final String GET_CONGRATULATION =
             "SELECT congratulations.congratulation_id, " +
@@ -75,20 +78,20 @@ public class JdbcCongratulationDao implements CongratulationDao {
                     "WHERE cg.congratulation_id=? and (type_id = 2 OR type_id = 3) and user_id =?";
     private static final String DELETE_LINK_BY_ID = "DELETE FROM links WHERE link_id IN ";
 
-    private static final CongratulationRowMapper CONGRATULATION_ROW_MAPPER = new CongratulationRowMapper();
-    private static final CongratulationsRowMapper CONGRATULATIONS_ROW_MAPPER = new CongratulationsRowMapper();
+    private static final CongratulationExtractor CONGRATULATION_EXTRACTOR = new CongratulationExtractor();
+    private static final CongratulationsExtractor CONGRATULATIONS_EXTRACTOR = new CongratulationsExtractor();
     private static final LinksRowMapper LINKS_ROW_MAPPER = new LinksRowMapper();
+
     private JdbcTemplate jdbcTemplate;
     private NamedParameterJdbcTemplate namedJdbcTemplate;
-
-    @Autowired
     private DefaultAmazonService defaultAmazonService;
 
-    public Congratulation getCongratulationById(long congratulationId) {
-        return jdbcTemplate.query(GET_CONGRATULATION, CONGRATULATION_ROW_MAPPER, congratulationId);
+    public Optional<Congratulation> getCongratulationById(long congratulationId) {
+        return Optional.ofNullable(jdbcTemplate.query(GET_CONGRATULATION, CONGRATULATION_EXTRACTOR, congratulationId));
     }
 
     @Override
+    @Transactional
     public void save(@NonNull Congratulation congratulation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -107,6 +110,7 @@ public class JdbcCongratulationDao implements CongratulationDao {
     }
 
     @Override
+    @Transactional
     public void deleteByCardId(long cardId, long userId) {
         deleteCongratulationFiles(cardId, userId, FIND_IMAGE_AND_AUDIO_LINKS_BY_CARD_ID);
         Map<String, Long> params = new HashMap<>();
@@ -116,6 +120,7 @@ public class JdbcCongratulationDao implements CongratulationDao {
     }
 
     @Override
+    @Transactional
     public void deleteById(long congratulationId, long userId) {
         deleteCongratulationFiles(congratulationId, userId, FIND_IMAGE_AND_AUDIO_LINKS_BY_CONGRATULATION_ID);
         Map<String, Long> params = new HashMap<>();
@@ -125,9 +130,9 @@ public class JdbcCongratulationDao implements CongratulationDao {
     }
 
     @Override
+    @Transactional
     public void deleteLinksById(List<Link> linkIdToDelete, long congratulationId) {
         deleteFilesFromLinks(linkIdToDelete, congratulationId);
-
         if (linkIdToDelete.size() > 0) {
             MapSqlParameterSource params = getMapSqlParameterSourceForList(linkIdToDelete);
             String sql = DELETE_LINK_BY_ID + getNamesOfParams(params.getParameterNames()) + " and congratulation_id = congratulation_id";
@@ -136,23 +141,53 @@ public class JdbcCongratulationDao implements CongratulationDao {
         }
     }
 
+    @Override
+    public List<Congratulation> findCongratulationsByCardId(long cardId) {
+        return jdbcTemplate.query(FIND_CONGRATULATIONS_BY_CARD_ID, CONGRATULATIONS_EXTRACTOR, cardId);
+    }
+
+    @Override
+    public void changeCongratulationsStatusByCardId(Status status, long cardId) {
+        jdbcTemplate.update(CHANGE_STATUS_CONGRATULATION_BY_CARD_ID, status.getStatusNumber(), cardId);
+    }
+
+    @Override
+    public void changeCongratulationStatusByCongratulationId(Status status, long congratulationId) {
+        jdbcTemplate.update(CHANGE_CONGRATULATION_STATUS_BY_CONGRATULATION_ID, status.getStatusNumber(), congratulationId);
+    }
+
+    @Override
+    public void updateCongratulationMessage(String message, long congratulationId, long userId) {
+        jdbcTemplate.update(UPDATE_CONGRATULATION, message, congratulationId, userId);
+    }
+
+    @Override
+    public void saveLinks(List<Link> linkList, long congratulationId) {
+        jdbcTemplate.batchUpdate(
+                SAVE_LINK,
+                linkList,
+                linkList.size(),
+                (statementInLinks, link) -> {
+                    statementInLinks.setString(1, link.getLink());
+                    statementInLinks.setInt(2, link.getType().getTypeNumber());
+                    statementInLinks.setLong(3, congratulationId);
+                });
+    }
+
     void deleteFilesFromLinks(List<Link> linkIdToDelete, long congratulationId) {
         List<Link> linkList = getLinksList(linkIdToDelete, congratulationId);
-
         for (Link link : linkList) {
             defaultAmazonService.deleteFileFromS3Bucket(link.getLink());
         }
     }
 
     List<Link> getLinksList(List<Link> linkList, long congratulationId) {
-
         if (linkList.size() > 0) {
             MapSqlParameterSource params = getMapSqlParameterSourceForList(linkList);
             String sql = GET_LINKS + getNamesOfParams(params.getParameterNames()) + "and congratulation_id = congratulation_id and (type_id = 2 OR type_id = 3)";
             params.addValue("congratulation_id", congratulationId);
             return namedJdbcTemplate.query(sql, params, LINKS_ROW_MAPPER);
         }
-
         return List.of();
     }
 
@@ -174,45 +209,10 @@ public class JdbcCongratulationDao implements CongratulationDao {
         return params;
     }
 
-    @Override
-    public List<Congratulation> findCongratulationsByCardId(long cardId) {
-        return jdbcTemplate.query(FIND_CONGRATULATIONS_BY_CARD_ID, CONGRATULATIONS_ROW_MAPPER, cardId);
-    }
-
-    @Override
-    public void changeStatusCongratulationsByCardId(Status status, long cardId) {
-        jdbcTemplate.update(CHANGE_STATUS_CONGRATULATION_BY_CARD_ID, status.getStatusNumber(), cardId);
-    }
-
-    @Override
-    public void changeCongratulationStatusByCongratulationId(Status status, long congratulationId) {
-        jdbcTemplate.update(CHANGE_CONGRATULATION_STATUS_BY_CONGRATULATION_ID, status.getStatusNumber(), congratulationId);
-    }
-
     void deleteCongratulationFiles(long id, long userId, String findQuery) {
         List<String> linkList = jdbcTemplate.queryForList(findQuery, String.class, id, userId);
-
         for (String link : linkList) {
             defaultAmazonService.deleteFileFromS3Bucket(link);
         }
-    }
-
-    @Override
-    public void updateCongratulationMessage(String message, long congratulationId, long userId) {
-        jdbcTemplate.update(UPDATE_CONGRATULATION, message, congratulationId, userId);
-    }
-
-    @Override
-    public void saveLinks(List<Link> linkList, long congratulationId) {
-
-        jdbcTemplate.batchUpdate(
-                SAVE_LINK,
-                linkList,
-                linkList.size(),
-                (statementInLinks, link) -> {
-                    statementInLinks.setString(1, link.getLink());
-                    statementInLinks.setInt(2, link.getType().getTypeNumber());
-                    statementInLinks.setLong(3, congratulationId);
-                });
     }
 }

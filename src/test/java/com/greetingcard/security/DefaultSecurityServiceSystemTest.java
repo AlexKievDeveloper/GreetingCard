@@ -16,8 +16,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -144,7 +142,7 @@ class DefaultSecurityServiceSystemTest {
         String newHash = securityService.generateAccessHash("@user", VERIFY_EMAIL);
         //then
         assertNotNull(newHash);
-        assertEquals(44, newHash.length()); }
+    }
 
     @Test
     @DisplayName("Generate an access hash, based on user's email + random salt")
@@ -153,6 +151,5 @@ class DefaultSecurityServiceSystemTest {
         String newHash = securityService.generateAccessHash("@user", FORGOT_PASSWORD);
         //then
         assertNotNull(newHash);
-        assertEquals(44, newHash.length());
     }
 }

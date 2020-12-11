@@ -7,16 +7,19 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface CongratulationService {
 
-    Congratulation getCongratulationById(long congratulationId);
+    Optional<Congratulation> getCongratulationById(long congratulationId);
 
     List<Link> getLinkList(MultipartFile[] files_image, MultipartFile[] files_audio, Map<String, String> parametersMap);
 
     void save(Congratulation congratulation);
 
     void changeCongratulationStatusByCongratulationId(Status status, long congratulationId);
+
+    void changeCongratulationStatusByCardId(Status status, long cardId);
 
     void updateCongratulationById(MultipartFile[] files_image, MultipartFile[] files_audio, Map<String, String> parametersMap, long congratulationId, long userId);
 

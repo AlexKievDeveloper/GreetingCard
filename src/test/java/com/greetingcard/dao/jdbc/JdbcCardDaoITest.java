@@ -5,9 +5,13 @@ import com.github.database.rider.core.api.configuration.Orthography;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
+import com.greetingcard.dao.CardDao;
 import com.greetingcard.entity.*;
 import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
@@ -57,13 +61,18 @@ public class JdbcCardDaoITest {
         //when
         List<Card> actualList = jdbcCardDao.getAllCardsByUserId(1);
         //then
-        assertTrue(actualList.contains(expectedCard1));
-        assertTrue(actualList.contains(expectedCard2));
+        assertEquals(3, actualList.size());
         assertEquals(actualList.get(0), expectedCard1);
         assertEquals(actualList.get(1), expectedCard2);
-        for (Card card : actualList) {
-            assertNotNull(card.getUser());
-        }
+    }
+
+    @Test
+    @DisplayName("Returns empty List<Cards> from DB")
+    void getAllCardsByUserId_UserNotExist() {
+        //when
+        List<Card> actualList = jdbcCardDao.getAllCardsByUserId(1000);
+        //then
+        assertEquals(0, actualList.size());
     }
 
     @Test
@@ -89,19 +98,26 @@ public class JdbcCardDaoITest {
     @DisplayName("Returns List<Cards> from DB with cards where user role is Member")
     void getAllMyCardsByUserIdTestRoleMember() {
         //prepare
-        Card expectedCard2 = Card.builder()
+        Card expectedCard1 = Card.builder()
                 .id(2)
                 .name("greeting Oleksandr")
                 .backgroundImage("path_to_image")
                 .cardLink("link_to_greeting")
                 .status(Status.ISOVER)
                 .build();
+        Card expectedCard2 = Card.builder()
+                .id(3)
+                .name("no_congratulation")
+                .backgroundImage("path_to_image")
+                .cardLink("link_to_greeting")
+                .status(Status.STARTUP)
+                .build();
         //when
         List<Card> actualList = jdbcCardDao.getCardsByUserIdAndRoleId(1, 2);
         //then
         assertEquals(2, actualList.size());
-        assertTrue(actualList.contains(expectedCard2));
-        assertEquals(actualList.get(0), expectedCard2);
+        assertEquals(actualList.get(0), expectedCard1);
+        assertEquals(actualList.get(1), expectedCard2);
     }
 
     @Test
@@ -115,8 +131,9 @@ public class JdbcCardDaoITest {
         List<Card> actualList = jdbcCardDao.getAllCardsByUserId(1);
         Card actualCard = actualList.get(3);
         //then
-        assertEquals(4, id);
         assertEquals(4, actualList.size());
+
+        assertEquals(4, id);
         assertEquals(actualCard.getUser().getId(), card.getUser().getId());
         assertEquals(actualCard.getName(), card.getName());
     }
@@ -207,8 +224,6 @@ public class JdbcCardDaoITest {
         //when
         jdbcCardDao.deleteCardById(1, 1);
         //then
-        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
-        assertNull(actualCard);
     }
 
     @Test
@@ -238,5 +253,5 @@ public class JdbcCardDaoITest {
         User user = User.builder().id(1).build();
         Card actual = Card.builder().id(1).user(user).name("newName").build();
         jdbcCardDao.changeCardName(actual);
-     }
+    }
 }

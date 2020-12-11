@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CardAndCongratulationRowMapper implements ResultSetExtractor<Card> {
+public class CardAndCongratulationExtractor implements ResultSetExtractor<Card> {
     @Override
     public Card extractData(ResultSet resultSet) throws SQLException, DataAccessException {
         Card card = null;
@@ -33,8 +33,8 @@ public class CardAndCongratulationRowMapper implements ResultSetExtractor<Card> 
                         .congratulationList(congratulationList)
                         .build();
             }
-            long congratulation_id = resultSet.getLong("congratulation_id");
-            if (congratulation_id != 0 && !congratulationMap.containsKey(congratulation_id)) {
+            long congratulationId = resultSet.getLong("congratulation_id");
+            if (congratulationId != 0 && !congratulationMap.containsKey(congratulationId)) {
                 User user = User.builder()
                         .id(resultSet.getLong("user_id"))
                         .firstName(resultSet.getString("firstName"))
@@ -42,7 +42,7 @@ public class CardAndCongratulationRowMapper implements ResultSetExtractor<Card> 
                         .login(resultSet.getString("login"))
                         .build();
                 Congratulation congratulation = Congratulation.builder()
-                        .id(congratulation_id)
+                        .id(congratulationId)
                         .user(user)
                         .cardId(card.getId())
                         .message(resultSet.getString("message"))
@@ -50,7 +50,7 @@ public class CardAndCongratulationRowMapper implements ResultSetExtractor<Card> 
                         .linkList(new ArrayList<>())
                         .build();
 
-                congratulationMap.put(congratulation_id, congratulation);
+                congratulationMap.put(congratulationId, congratulation);
             }
             int linkId = resultSet.getInt("link_id");
             if (linkId != 0) {
@@ -59,7 +59,7 @@ public class CardAndCongratulationRowMapper implements ResultSetExtractor<Card> 
                         .link(resultSet.getString("link"))
                         .type(LinkType.getByNumber(resultSet.getInt("type_id")))
                         .build();
-                congratulationMap.get(congratulation_id).getLinkList().add(link);
+                congratulationMap.get(congratulationId).getLinkList().add(link);
             }
             if (card != null) {
                 card.setCongratulationList(new ArrayList<>(congratulationMap.values()));

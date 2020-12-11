@@ -5,10 +5,11 @@ import com.greetingcard.entity.Link;
 import com.greetingcard.entity.Status;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CongratulationDao {
 
-    Congratulation getCongratulationById(long congratulationId);
+    Optional<Congratulation> getCongratulationById(long congratulationId);
 
     void save(Congratulation congratulation);
 
@@ -16,7 +17,7 @@ public interface CongratulationDao {
 
     List<Congratulation> findCongratulationsByCardId(long cardId);
 
-    void changeStatusCongratulationsByCardId(Status status, long cardId);
+    void changeCongratulationsStatusByCardId(Status status, long cardId);
 
     void changeCongratulationStatusByCongratulationId(Status status, long congratulationId);
 

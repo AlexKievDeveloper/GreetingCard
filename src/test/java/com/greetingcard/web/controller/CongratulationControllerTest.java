@@ -120,7 +120,7 @@ class CongratulationControllerTest {
                 .status(Status.STARTUP)
                 .build();
         User user = User.builder().id(1).login("user").build();
-        when(defaultCongratulationService.getCongratulationById(1)).thenReturn(congratulation);
+        //when(defaultCongratulationService.getCongratulationById(1)).thenReturn(congratulation);
 
         mockMvc.perform(get("/api/v1/congratulation/{id}", 1)
                 .sessionAttr("user", user))

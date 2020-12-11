@@ -28,6 +28,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
@@ -95,7 +96,8 @@ class DefaultCongratulationServiceSystemTest {
         congratulationService.updateCongratulationById(mockImageFiles, mockAudioFiles, parametersMap, 1, 1);
 
         //then
-        Congratulation congratulation = congratulationService.getCongratulationById(1);
+        Optional<Congratulation> optionalCongratulation = congratulationService.getCongratulationById(1);
+        Congratulation congratulation = optionalCongratulation.get();
 
         assertEquals("Congratulation from updateCongratulationById test", congratulation.getMessage());
         assertEquals(9, congratulation.getLinkList().size());

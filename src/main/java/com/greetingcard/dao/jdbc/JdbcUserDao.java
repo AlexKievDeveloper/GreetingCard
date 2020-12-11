@@ -6,10 +6,13 @@ import com.greetingcard.dao.jdbc.mapper.UserIdRowMapper;
 import com.greetingcard.dao.jdbc.mapper.UserRowMapper;
 import com.greetingcard.entity.AccessHashType;
 import com.greetingcard.entity.User;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.greetingcard.entity.AccessHashType.FORGOT_PASSWORD;
@@ -17,7 +20,8 @@ import static com.greetingcard.entity.AccessHashType.VERIFY_EMAIL;
 
 
 @Slf4j
-@Setter
+@AllArgsConstructor
+@Repository
 public class JdbcUserDao implements UserDao {
     private static final UserRowMapper USER_ROW_MAPPER = new UserRowMapper();
     private static final String SAVE_USER = "INSERT INTO users (firstName, lastName, login, email, password, salt, language_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -72,7 +76,6 @@ public class JdbcUserDao implements UserDao {
     @Override
     public User findByEmail(@NonNull String email) {
         log.info("Getting user by email {}", email);
-
         return jdbcTemplate.query(FIND_USER_BY_EMAIL, USER_ROW_MAPPER, email);
     }
 
@@ -108,6 +111,5 @@ public class JdbcUserDao implements UserDao {
     public void verifyForgotPasswordAccessHash(@NonNull String hash, @NonNull User user) {
         jdbcTemplate.update(DELETE_FORGOT_PASS_ACCESS_HASH, hash);
         jdbcTemplate.update(UPDATE_USER_PASSWORD, user.getPassword(), user.getId());
-
     }
 }

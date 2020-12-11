@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,10 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(MockitoExtension.class)
 @SpringJUnitWebConfig(value = TestConfiguration.class)
 public class DefaultCongratulationServiceITest {
-
-    private final JdbcCongratulationDao jdbcCongratulationDao = new JdbcCongratulationDao();
-    private final DefaultCongratulationService congratulationService =
-            new DefaultCongratulationService(jdbcCongratulationDao);
+    @Autowired
+    private DefaultCongratulationService congratulationService;
 
     private List<Link> linkList;
     private final byte[] bytes = new byte[1024 * 1024 * 10];

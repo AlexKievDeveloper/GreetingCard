@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class CongratulationRowMapperTest {
+class CongratulationExtractorTest {
     @Mock
     private ResultSet mockResultSet;
 
@@ -25,7 +25,7 @@ class CongratulationRowMapperTest {
     @DisplayName("Returns an object of class Congratulation from result set")
     void extractData() throws SQLException {
         //prepare
-        CongratulationRowMapper congratulationRowMapper = new CongratulationRowMapper();
+        CongratulationExtractor congratulationExtractor = new CongratulationExtractor();
         when(mockResultSet.next()).thenReturn(true).thenReturn(false);
         when(mockResultSet.getInt("congratulation_id")).thenReturn(1);
         when(mockResultSet.getString("message")).thenReturn("from Roma");
@@ -37,7 +37,7 @@ class CongratulationRowMapperTest {
         when(mockResultSet.getInt("type_id")).thenReturn(1);
 
         //when
-        Congratulation actualCongratulation = congratulationRowMapper.extractData(mockResultSet);
+        Congratulation actualCongratulation = congratulationExtractor.extractData(mockResultSet);
 
         //then
         assertNotNull(actualCongratulation);
