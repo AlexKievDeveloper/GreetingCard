@@ -5,6 +5,7 @@ import { cardService } from "../../../services/cardService";
 import FormAdd from "../../../forms/common/FormAdd";
 import LeaveCardPopup from "../Popups/LeaveCardPopup";
 import DeleteCardPopup from "../Popups/DeleteCardPopup";
+import FilterButton from "../../UI/FilterButton";
 
 export default function CardCommandRow(props) {
   const [isShowPopup, setIsShowPopup] = useState(false);
@@ -41,7 +42,18 @@ export default function CardCommandRow(props) {
 
   return (
     <div className="command__row">
-      <div className="filter__blocks"></div>
+      <div className="filter__blocks">
+        <FilterButton
+          linkTo={"/edit_card/" + id + "/all_blocks"}
+          caption="All Blocks"
+          isActive={props.page !== "all_blocks" || props.page == null}
+        />
+        <FilterButton
+          linkTo={"/edit_card/" + id + "/my_blocks"}
+          caption="My Blocks"
+          isActive={props.page !== "my_blocks"}
+        />
+      </div>
 
       <div className="actions__row">
         <CommandButtonLink

@@ -9,7 +9,7 @@ export default function BlockActions(props) {
        const id = props.id;
        blockService.deleteBlock(id)
                    .then(() => props.onDeleteBlock(id))
-                   .then(() => props.history.push('/edit_card/' + props.idCard));
+                   .then(() => props.history.push('/edit_card/' + props.idCard + '/my_blocks'));
     }
 
     return (
@@ -18,7 +18,7 @@ export default function BlockActions(props) {
                 <img src={markImg} alt=""/>
                 <div className="block-actions">
                     <Link to={"/edit_block/" + props.id} className="dropdown-link">Edit block</Link>
-                    <Link to={'/edit_card/'+ props.idCard} className="dropdown-link" onClick={deleteBlock}>Delete block</Link>
+                    <Link to={'/edit_card/'+ props.idCard + '/my_blocks'} className="dropdown-link" onClick={deleteBlock}>Delete block</Link>
                 </div>
             </div>
         </div>
