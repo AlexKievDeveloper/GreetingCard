@@ -4,6 +4,7 @@ import com.github.database.rider.core.api.configuration.DBUnit;
 import com.github.database.rider.core.api.configuration.Orthography;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.spring.api.DBRider;
+import com.greetingcard.RootApplicationContext;
 import com.greetingcard.dao.jdbc.TestConfiguration;
 import com.greetingcard.entity.Congratulation;
 import com.greetingcard.entity.Link;
@@ -40,14 +41,14 @@ import static org.mockito.Mockito.when;
         executeStatementsBefore = "SELECT setval('congratulations_congratulation_id_seq', 6);", cleanAfter = true)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension.class)
-@SpringJUnitWebConfig(value = TestConfiguration.class)
+@SpringJUnitWebConfig(value = {TestConfiguration.class,  RootApplicationContext.class})
 class DefaultCongratulationServiceSystemTest {
     @Mock
     private Map<String, String> parametersMap;
 
     @Autowired
-    @Qualifier("congratulationService")
     private CongratulationService congratulationService;
+
     private final byte[] bytes = new byte[1024 * 1024 * 10];
 
 
