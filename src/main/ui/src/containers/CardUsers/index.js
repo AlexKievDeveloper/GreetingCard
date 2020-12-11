@@ -13,9 +13,6 @@ export default class CardUsers extends Component {
       users: [],
       usersIdToDelete: [],
     };
-    this.addUser = this.addUser.bind(this);
-    this.uncheckSelected = this.uncheckSelected.bind(this);
-    this.deleteChosen = this.deleteChosen.bind(this);
     this.onClickDelete = this.onClickDelete.bind(this);
   }
 
@@ -25,12 +22,11 @@ export default class CardUsers extends Component {
     this.readUsers(cardId);
   }
 
-  uncheckSelected() {
+  uncheckSelected = () => {
     this.setState({ usersIdToDelete: [] });
   }
 
-  deleteChosen(event) {
-    event.preventDefault();
+  deleteChosen = () => {
     let usersIdToDelete = this.state.usersIdToDelete;
     if (usersIdToDelete.length > 0) {
         cardService.deleteUsers(this.state.cardId, usersIdToDelete)
@@ -61,7 +57,7 @@ export default class CardUsers extends Component {
     });
   }
 
-  addUser(login) {
+  addUser = (login) => {
     if (!formValidator.isValid("login", login)) {
       alert("login is not correct!");
       return;
