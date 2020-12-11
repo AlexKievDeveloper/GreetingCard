@@ -9,7 +9,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserRowMapper implements ResultSetExtractor<User> {
-
     @Override
     public User extractData(ResultSet resultSet) throws SQLException, DataAccessException {
 

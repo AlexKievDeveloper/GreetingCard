@@ -8,8 +8,9 @@ import com.greetingcard.entity.Congratulation;
 import com.greetingcard.entity.Link;
 import com.greetingcard.entity.Status;
 import com.greetingcard.service.impl.DefaultAmazonService;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -23,60 +24,9 @@ import java.sql.PreparedStatement;
 import java.util.*;
 
 @Slf4j
-@AllArgsConstructor
 @Repository
+@PropertySource("classpath:queries.properties")
 public class JdbcCongratulationDao implements CongratulationDao {
-    private static final String GET_CONGRATULATION =
-            "SELECT congratulations.congratulation_id, " +
-                    "user_id, " +
-                    "card_id, " +
-                    "status_id, message, " +
-                    "link_id, link, " +
-                    "type_id " +
-                    "FROM congratulations " +
-                    "LEFT JOIN links ON (congratulations.congratulation_id = links.congratulation_id) " +
-                    "WHERE congratulations.congratulation_id=?";
-
-    private static final String GET_LINKS = "SELECT link_id, link, type_id, congratulation_id FROM links WHERE link_id IN ";
-    private static final String SAVE_CONGRATULATION = "INSERT INTO congratulations (message, card_id, user_id, status_id) VALUES (?,?,?,?)";
-    private static final String UPDATE_CONGRATULATION = "UPDATE congratulations SET message = ? where (congratulation_id = ? and user_id = ?)";
-    private static final String SAVE_LINK = "INSERT INTO links (link, type_id, congratulation_id) VALUES(?,?,?)";
-    private static final String LEAVE_BY_CARD_ID =
-            "DELETE FROM congratulations " +
-                    "WHERE card_id= :card_id and user_id= :user_id";
-    private static final String FIND_IMAGE_AND_AUDIO_LINKS_BY_CARD_ID =
-            "SELECT link " +
-                    "FROM links l " +
-                    "JOIN congratulations cg ON (cg.congratulation_id = l.congratulation_id) " +
-                    "WHERE card_id=? and (type_id = 2 OR type_id = 3) and user_id =?";
-    private static final String FIND_CONGRATULATIONS_BY_CARD_ID =
-            "SELECT cg.congratulation_id, " +
-                    "user_id, card_id, " +
-                    "status_id, " +
-                    "message, " +
-                    "link_id, link, " +
-                    "type_id " +
-                    "FROM congratulations cg " +
-                    "LEFT JOIN links ON (cg.congratulation_id = links.congratulation_id) " +
-                    "WHERE card_id=?";
-    private static final String CHANGE_STATUS_CONGRATULATION_BY_CARD_ID =
-            "UPDATE congratulations " +
-                    "SET status_id = ? " +
-                    "WHERE card_id = ?";
-    private static final String CHANGE_CONGRATULATION_STATUS_BY_CONGRATULATION_ID =
-            "UPDATE congratulations " +
-                    "SET status_id = ? " +
-                    "WHERE congratulation_id = ?";
-    private static final String DELETE_BY_ID =
-            "DELETE FROM congratulations " +
-                    "WHERE congratulation_id= :congratulation_id AND user_id= :user_id";
-    private static final String FIND_IMAGE_AND_AUDIO_LINKS_BY_CONGRATULATION_ID =
-            "SELECT link " +
-                    "FROM links l " +
-                    "LEFT JOIN congratulations cg ON (cg.congratulation_id = l.congratulation_id) " +
-                    "WHERE cg.congratulation_id=? and (type_id = 2 OR type_id = 3) and user_id =?";
-    private static final String DELETE_LINK_BY_ID = "DELETE FROM links WHERE link_id IN ";
-
     private static final CongratulationExtractor CONGRATULATION_EXTRACTOR = new CongratulationExtractor();
     private static final CongratulationsExtractor CONGRATULATIONS_EXTRACTOR = new CongratulationsExtractor();
     private static final LinksRowMapper LINKS_ROW_MAPPER = new LinksRowMapper();
@@ -85,8 +35,42 @@ public class JdbcCongratulationDao implements CongratulationDao {
     private NamedParameterJdbcTemplate namedJdbcTemplate;
     private DefaultAmazonService defaultAmazonService;
 
+    @Value("${get.congratulation}")
+    private String getCongratulation;
+    @Value("${get.links}")
+    private String getLinks;
+    @Value("${save.congratulation}")
+    private String saveCongratulation;
+    @Value("${update.congratulation}")
+    private String updateCongratulation;
+    @Value("${save.link}")
+    private String saveLink;
+    @Value("${leave.by.card.id}")
+    private String leaveByCardId;
+    @Value("${find.image.and.audio.links.by.card.id}")
+    private String findImageAndAudioLinksByCardId;
+    @Value("${find.congratulations.by.card.id}")
+    private String findCongratulationsByCardId;
+    @Value("${change.status.congratulation.by.card.id}")
+    private String changeCongratulationStatusByCardId;
+    @Value("${change.congratulation.status.by.congratulation.id}")
+    private String changeCongratulationStatusByCongratulationId;
+    @Value("${delete.by.id}")
+    private String deleteById;
+    @Value("${find.image.and.audio.links.by.congratulation.id}")
+    private String findImageAndAudioLinksByCongratulationId;
+    @Value("${delete.link.by.id}")
+    private String deleteLinkById;
+
+    public JdbcCongratulationDao(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedJdbcTemplate, DefaultAmazonService defaultAmazonService) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.namedJdbcTemplate = namedJdbcTemplate;
+        this.defaultAmazonService = defaultAmazonService;
+    }
+
+    @Override
     public Optional<Congratulation> getCongratulationById(long congratulationId) {
-        return Optional.ofNullable(jdbcTemplate.query(GET_CONGRATULATION, CONGRATULATION_EXTRACTOR, congratulationId));
+        return Optional.ofNullable(jdbcTemplate.query(getCongratulation, CONGRATULATION_EXTRACTOR, congratulationId));
     }
 
     @Override
@@ -94,7 +78,7 @@ public class JdbcCongratulationDao implements CongratulationDao {
     public void save(@NonNull Congratulation congratulation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement statement = connection.prepareStatement(SAVE_CONGRATULATION, new String[]{"congratulation_id"});
+            PreparedStatement statement = connection.prepareStatement(saveCongratulation, new String[]{"congratulation_id"});
             statement.setString(1, congratulation.getMessage());
             statement.setLong(2, congratulation.getCardId());
             statement.setLong(3, congratulation.getUser().getId());
@@ -103,7 +87,6 @@ public class JdbcCongratulationDao implements CongratulationDao {
         }, keyHolder);
 
         int key = Objects.requireNonNull(keyHolder.getKey()).intValue();
-
         saveLinks(congratulation.getLinkList(), key);
         log.debug("Added new congratulation {} to DB", congratulation.getId());
     }
@@ -111,21 +94,21 @@ public class JdbcCongratulationDao implements CongratulationDao {
     @Override
     @Transactional
     public void deleteByCardId(long cardId, long userId) {
-        deleteCongratulationFiles(cardId, userId, FIND_IMAGE_AND_AUDIO_LINKS_BY_CARD_ID);
+        deleteCongratulationFiles(cardId, userId, findImageAndAudioLinksByCardId);
         Map<String, Long> params = new HashMap<>();
         params.put("user_id", userId);
         params.put("card_id", cardId);
-        namedJdbcTemplate.update(LEAVE_BY_CARD_ID, params);
+        namedJdbcTemplate.update(leaveByCardId, params);
     }
 
     @Override
     @Transactional
     public void deleteById(long congratulationId, long userId) {
-        deleteCongratulationFiles(congratulationId, userId, FIND_IMAGE_AND_AUDIO_LINKS_BY_CONGRATULATION_ID);
+        deleteCongratulationFiles(congratulationId, userId, findImageAndAudioLinksByCongratulationId);
         Map<String, Long> params = new HashMap<>();
         params.put("user_id", userId);
         params.put("congratulation_id", congratulationId);
-        namedJdbcTemplate.update(DELETE_BY_ID, params);
+        namedJdbcTemplate.update(deleteById, params);
     }
 
     @Override
@@ -134,9 +117,49 @@ public class JdbcCongratulationDao implements CongratulationDao {
         deleteFilesFromLinks(linkIdToDelete, congratulationId);
         if (linkIdToDelete.size() > 0) {
             MapSqlParameterSource params = getMapSqlParameterSourceForList(linkIdToDelete);
-            String sql = DELETE_LINK_BY_ID + getNamesOfParams(params.getParameterNames()) + " and congratulation_id = congratulation_id";
+            String sql = deleteLinkById + getNamesOfParams(params.getParameterNames()) + " and congratulation_id = congratulation_id";
             params.addValue("congratulation_id", congratulationId);
             namedJdbcTemplate.update(sql, params);
+        }
+    }
+
+    @Override
+    public List<Congratulation> findCongratulationsByCardId(long cardId) {
+        return jdbcTemplate.query(findCongratulationsByCardId, CONGRATULATIONS_EXTRACTOR, cardId);
+    }
+
+    @Override
+    public void changeCongratulationsStatusByCardId(Status status, long cardId) {
+        jdbcTemplate.update(changeCongratulationStatusByCardId, status.getStatusNumber(), cardId);
+    }
+
+    @Override
+    public void changeCongratulationStatusByCongratulationId(Status status, long congratulationId) {
+        jdbcTemplate.update(changeCongratulationStatusByCongratulationId, status.getStatusNumber(), congratulationId);
+    }
+
+    @Override
+    public void updateCongratulationMessage(String message, long congratulationId, long userId) {
+        jdbcTemplate.update(updateCongratulation, message, congratulationId, userId);
+    }
+
+    @Override
+    public void saveLinks(List<Link> linkList, long congratulationId) {
+        jdbcTemplate.batchUpdate(
+                saveLink,
+                linkList,
+                linkList.size(),
+                (statementInLinks, link) -> {
+                    statementInLinks.setString(1, link.getLink());
+                    statementInLinks.setInt(2, link.getType().getTypeNumber());
+                    statementInLinks.setLong(3, congratulationId);
+                });
+    }
+
+    void deleteCongratulationFiles(long id, long userId, String findQuery) {
+        List<String> linkList = jdbcTemplate.queryForList(findQuery, String.class, id, userId);
+        for (String link : linkList) {
+            defaultAmazonService.deleteFileFromS3Bucket(link);
         }
     }
 
@@ -150,7 +173,7 @@ public class JdbcCongratulationDao implements CongratulationDao {
     List<Link> getLinksList(List<Link> linkList, long congratulationId) {
         if (linkList.size() > 0) {
             MapSqlParameterSource params = getMapSqlParameterSourceForList(linkList);
-            String sql = GET_LINKS + getNamesOfParams(params.getParameterNames()) + "and congratulation_id = congratulation_id and (type_id = 2 OR type_id = 3)";
+            String sql = getLinks + getNamesOfParams(params.getParameterNames()) + "and congratulation_id = congratulation_id and (type_id = 2 OR type_id = 3)";
             params.addValue("congratulation_id", congratulationId);
             return namedJdbcTemplate.query(sql, params, LINKS_ROW_MAPPER);
         }
@@ -173,45 +196,5 @@ public class JdbcCongratulationDao implements CongratulationDao {
             params.addValue(paramName, userId);
         }
         return params;
-    }
-
-    @Override
-    public List<Congratulation> findCongratulationsByCardId(long cardId) {
-        return jdbcTemplate.query(FIND_CONGRATULATIONS_BY_CARD_ID, CONGRATULATIONS_EXTRACTOR, cardId);
-    }
-
-    @Override
-    public void changeCongratulationsStatusByCardId(Status status, long cardId) {
-        jdbcTemplate.update(CHANGE_STATUS_CONGRATULATION_BY_CARD_ID, status.getStatusNumber(), cardId);
-    }
-
-    @Override
-    public void changeCongratulationStatusByCongratulationId(Status status, long congratulationId) {
-        jdbcTemplate.update(CHANGE_CONGRATULATION_STATUS_BY_CONGRATULATION_ID, status.getStatusNumber(), congratulationId);
-    }
-
-    @Override
-    public void updateCongratulationMessage(String message, long congratulationId, long userId) {
-        jdbcTemplate.update(UPDATE_CONGRATULATION, message, congratulationId, userId);
-    }
-
-    @Override
-    public void saveLinks(List<Link> linkList, long congratulationId) {
-        jdbcTemplate.batchUpdate(
-                SAVE_LINK,
-                linkList,
-                linkList.size(),
-                (statementInLinks, link) -> {
-                    statementInLinks.setString(1, link.getLink());
-                    statementInLinks.setInt(2, link.getType().getTypeNumber());
-                    statementInLinks.setLong(3, congratulationId);
-                });
-    }
-
-    void deleteCongratulationFiles(long id, long userId, String findQuery) {
-        List<String> linkList = jdbcTemplate.queryForList(findQuery, String.class, id, userId);
-        for (String link : linkList) {
-            defaultAmazonService.deleteFileFromS3Bucket(link);
-        }
     }
 }
