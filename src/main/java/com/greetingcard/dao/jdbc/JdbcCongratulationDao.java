@@ -17,12 +17,14 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.PreparedStatement;
 import java.util.*;
 
 @Slf4j
-@Setter
+@Repository
 public class JdbcCongratulationDao implements CongratulationDao {
     private static final String GET_CONGRATULATION =
             "SELECT congratulations.congratulation_id, " +
@@ -78,12 +80,14 @@ public class JdbcCongratulationDao implements CongratulationDao {
     private static final CongratulationRowMapper CONGRATULATION_ROW_MAPPER = new CongratulationRowMapper();
     private static final CongratulationsRowMapper CONGRATULATIONS_ROW_MAPPER = new CongratulationsRowMapper();
     private static final LinksRowMapper LINKS_ROW_MAPPER = new LinksRowMapper();
+    @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
     private NamedParameterJdbcTemplate namedJdbcTemplate;
-
     @Autowired
     private DefaultAmazonService defaultAmazonService;
 
+    @Override
     public Congratulation getCongratulationById(long congratulationId) {
         return jdbcTemplate.query(GET_CONGRATULATION, CONGRATULATION_ROW_MAPPER, congratulationId);
     }

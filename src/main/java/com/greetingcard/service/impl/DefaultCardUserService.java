@@ -9,20 +9,25 @@ import com.greetingcard.security.SecurityService;
 import com.greetingcard.service.CardService;
 import com.greetingcard.service.CardUserService;
 import com.greetingcard.service.CongratulationService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-@RequiredArgsConstructor
+@Service
 public class DefaultCardUserService implements CardUserService {
-    private final CardUserDao cardUserDao;
-    private final SecurityService userService;
-    private final CardService cardService;
-    private final CongratulationService congratulationService;
+    @Autowired
+    private CardUserDao cardUserDao;
+    @Autowired
+    private SecurityService userService;
+    @Autowired
+    private CardService cardService;
+    @Autowired
+    private CongratulationService congratulationService;
 
     @Override
     public void addUser(long cardId, User userAdmin, User userNewLogin) {

@@ -7,15 +7,15 @@ import com.greetingcard.dao.jdbc.mapper.CardRowMapper;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Role;
 import com.greetingcard.entity.Status;
-import lombok.AllArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -25,8 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-@Setter
-@AllArgsConstructor
+@Repository
 public class JdbcCardDao implements CardDao {
     private static final String GET_CARDS_BY_USER_ID_AND_ROLE_ID =
             "SELECT cards.card_id, " +
@@ -78,9 +77,13 @@ public class JdbcCardDao implements CardDao {
             "WHERE uc.user_id = :id ORDER BY c.card_id";
     private static final String CHANGE_NAME = "UPDATE cards SET name = ? where card_id = ? and user_id = ?";
 
+    @Autowired
     private CongratulationDao congratulationDao;
+    @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    @Autowired
     private TransactionTemplate transactionTemplate;
 
     @Override
@@ -141,6 +144,7 @@ public class JdbcCardDao implements CardDao {
         });
     }
 
+    @Override
     public Optional<Status> getCardStatusById(long cardId) {
         SqlParameterSource parameterSource = new MapSqlParameterSource("card_id", cardId);
         List<Integer> statusIds = namedParameterJdbcTemplate.queryForList(GET_CARD_STATUS, parameterSource, Integer.class);

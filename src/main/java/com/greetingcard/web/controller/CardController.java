@@ -8,6 +8,7 @@ import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +22,10 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping(value = "api/v1/", produces = MediaType.APPLICATION_JSON_VALUE)
-@AllArgsConstructor
 public class CardController {
+    @Autowired
     private CardService cardService;
+    @Autowired
     private ObjectMapper objectMapper;
 
     @GetMapping("cards")

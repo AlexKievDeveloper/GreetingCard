@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Setter
 @RestController
 @RequestMapping("/api/v1/congratulation")
 public class CongratulationController {
