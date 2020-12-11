@@ -1,25 +1,41 @@
-import React from "react";
+import React, { useState } from "react";
 import CommandButton from "../../UI/CommandButton";
 import CommandButtonLink from "../../UI/CommandButton/CommandButtonLink";
 import { cardService } from "../../../services/cardService";
 import FormAdd from "../../../forms/common/FormAdd";
+import LeaveCardPopup from "../Popups/LeaveCardPopup";
+import DeleteCardPopup from "../Popups/DeleteCardPopup";
 
 export default function CardCommandRow(props) {
+  const [isShowPopup, setIsShowPopup] = useState(false);
+
+  const showPopup = () => {
+    setIsShowPopup(true);
+  };
+
+  const hidePopup = () => {
+    setIsShowPopup(false);
+  };
+
   const id = props.idCard;
 
-  const leaveCard = () => {
-    cardService.leaveCard(id).then(() => props.history.push("/cards/my"));
+  const leaveCard = (event) => {
+    event.preventDefault();
+    hidePopup();
+    cardService.leaveCard(id).then(() => props.history.push("/cards/other"));
   };
 
   const finishCard = () => {
     if (props.isMyCard) {
       cardService.finishCard(id).then(() => props.history.push("/cards/my"));
     } else {
-        props.history.push("/cards/my");  
+      props.history.push("/cards/my");
     }
   };
 
-  const deleteCard = () => {
+  const deleteCard = (event) => {
+    event.preventDefault();
+    hidePopup();
     cardService.deleteCard(id).then(() => props.history.push("/cards/my"));
   };
 
@@ -33,11 +49,12 @@ export default function CardCommandRow(props) {
           className="command-button--yellow"
           caption="+ Add block"
         />
-        {props.isMyCard && (props.cardName.length > 0)  &&(
-          <FormAdd onSubmit={props.saveNameFunction}
-                   inputPlaceholder=""
-                   buttonCaption = "Save name"
-                   value = {props.cardName}
+        {props.isMyCard && props.cardName.length > 0 && (
+          <FormAdd
+            onSubmit={props.saveNameFunction}
+            inputPlaceholder=""
+            buttonCaption="Save name"
+            value={props.cardName}
           />
         )}
         {props.isMyCard && (
@@ -48,25 +65,39 @@ export default function CardCommandRow(props) {
           />
         )}
         {props.isMyCard && (
-        <CommandButton
-          className="command-button--white"
-          caption="Finish Card"
-          action={finishCard}
-        />
+          <CommandButton
+            className="command-button--white"
+            caption="Finish Card"
+            action={finishCard}
+          />
         )}
         {props.isMyCard && (
-          <CommandButton
-            className="command-button--yellow"
-            caption="Delete Card"
-            action={deleteCard}
-          />
+          <React.Fragment>
+            <CommandButton
+              className="command-button--yellow"
+              caption="Delete Card"
+              action={showPopup}
+            />
+            <DeleteCardPopup
+              isShow={isShowPopup}
+              onCloseFunction={hidePopup}
+              onDeleteFunction={deleteCard}
+            />
+          </React.Fragment>
         )}
         {!props.isMyCard && (
-          <CommandButton
-            className="command-button--yellow"
-            caption="Leave Card"
-            action={leaveCard}
-          />
+          <React.Fragment>
+            <CommandButton
+              className="command-button--yellow"
+              caption="Leave Card"
+              action={showPopup}
+            />
+            <LeaveCardPopup
+              isShow={isShowPopup}
+              onCloseFunction={hidePopup}
+              onLeaveFunction={leaveCard}
+            />
+          </React.Fragment>
         )}
       </div>
     </div>
