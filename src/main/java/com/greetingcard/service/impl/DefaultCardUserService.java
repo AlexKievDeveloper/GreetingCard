@@ -48,6 +48,8 @@ public class DefaultCardUserService implements CardUserService {
 
     @Override
     @Transactional
+//TODO: Эта аннотация может не работать, метод работает и
+// тесты не падают с ней и без нее (имееться веду проходит тест на транзакционность). Очень не понятно почему
     public void deleteUsers(long cardId, List<UserInfo> listUserIds, User userLoggedIn) {
         checkIfUserAdminForCard(cardId, userLoggedIn.getId(), "delete");
         if (listUserIds.size() > 0) {

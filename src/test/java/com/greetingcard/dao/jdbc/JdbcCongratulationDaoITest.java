@@ -5,8 +5,6 @@ import com.github.database.rider.core.api.configuration.Orthography;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
-import com.greetingcard.dao.CardDao;
-import com.greetingcard.dao.CongratulationDao;
 import com.greetingcard.RootApplicationContext;
 import com.greetingcard.entity.*;
 import com.greetingcard.service.impl.DefaultAmazonService;
@@ -37,14 +35,14 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardsUsers.xml",
         "congratulations.xml", "links.xml"},
         executeStatementsBefore = "SELECT setval('links_link_id_seq', 1); SELECT setval('congratulations_congratulation_id_seq', 6);", cleanAfter = true)
-@SpringJUnitWebConfig(value = {TestConfiguration.class,  RootApplicationContext.class})
+@SpringJUnitWebConfig(value = {TestConfiguration.class, RootApplicationContext.class})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JdbcCongratulationDaoITest {
     @Autowired
     private DefaultAmazonService defaultAmazonService;
 
     @Autowired
-    private JdbcCongratulationDao jdbcCongratulationDao;
+    private JdbcCongratulationDao congratulationDao;
 
     @Autowired
     private Flyway flyway;
@@ -64,19 +62,19 @@ class JdbcCongratulationDaoITest {
 
     @AfterEach
     void clear() throws IOException {
-        Files.deleteIfExists(Path.of("/greeting-cards/audio/audio1.mp3"));
-        Files.deleteIfExists(Path.of("/greeting-cards/audio/audio2.mp3"));
-        Files.deleteIfExists(Path.of("/greeting-cards/audio/audio3.mp3"));
-        Files.deleteIfExists(Path.of("/greeting-cards/img/img1.jpg"));
-        Files.deleteIfExists(Path.of("/greeting-cards/img/img2.jpg"));
-        Files.deleteIfExists(Path.of("/greeting-cards/img/img3.jpg"));
+        Files.deleteIfExists(Path.of("img1.jpg"));
+        Files.deleteIfExists(Path.of("img2.jpg"));
+        Files.deleteIfExists(Path.of("img3.jpg"));
+        Files.deleteIfExists(Path.of("audio1.mp3"));
+        Files.deleteIfExists(Path.of("audio2.mp3"));
+        Files.deleteIfExists(Path.of("audio3.mp3"));
     }
 
     @Test
     @DisplayName("Returns an object of class Congratulation from result set")
     void getCongratulationByIdTest() {
         //when
-        Optional<Congratulation> optionalCongratulation = jdbcCongratulationDao.getCongratulationById(1);
+        Optional<Congratulation> optionalCongratulation = congratulationDao.getCongratulationById(1);
         Congratulation actualCongratulation = optionalCongratulation.get();
 
         //then
@@ -121,7 +119,7 @@ class JdbcCongratulationDaoITest {
     @DisplayName("Returns an object of class Congratulation from result set")
     void getCongratulationById_IfNotExistTest() {
         //when
-        Optional<Congratulation> optionalCongratulation = jdbcCongratulationDao.getCongratulationById(1000);
+        Optional<Congratulation> optionalCongratulation = congratulationDao.getCongratulationById(1000);
 
         //then
         assertFalse(optionalCongratulation.isPresent());
@@ -151,7 +149,7 @@ class JdbcCongratulationDaoITest {
         congratulation.setLinkList(linkList);
 
         //when
-        jdbcCongratulationDao.save(congratulation);
+        congratulationDao.save(congratulation);
     }
 
     @Test
@@ -185,7 +183,7 @@ class JdbcCongratulationDaoITest {
         congratulation.setLinkList(linkList);
 
         //when + then
-        assertThrows(DataIntegrityViolationException.class, () -> jdbcCongratulationDao.save(congratulation));
+        assertThrows(DataIntegrityViolationException.class, () -> congratulationDao.save(congratulation));
     }
 
     @Test
@@ -239,53 +237,34 @@ class JdbcCongratulationDaoITest {
         assertTrue(new File("audio2.mp3").exists());
         assertTrue(new File("audio3.mp3").exists());
 
-        Files.deleteIfExists(Path.of("img1.jpg"));
-        Files.deleteIfExists(Path.of("img2.jpg"));
-        Files.deleteIfExists(Path.of("img3.jpg"));
-        Files.deleteIfExists(Path.of("audio1.mp3"));
-        Files.deleteIfExists(Path.of("audio2.mp3"));
-        Files.deleteIfExists(Path.of("audio3.mp3"));
-
         //when
-        jdbcCongratulationDao.deleteByCardId(1, 1);
+        congratulationDao.deleteByCardId(1, 1);
 
         //then
-        Assertions.assertThrows(FileNotFoundException.class, () -> {
-            FileUtils.copyURLToFile(
-                    new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
-                            .concat("/img/img1.jpg")),
-                    new File("img1.jpg"));
-        });
-        Assertions.assertThrows(FileNotFoundException.class, () -> {
-            FileUtils.copyURLToFile(
-                    new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
-                            .concat("/img/img2.jpg")),
-                    new File("img2.jpg"));
-        });
-        Assertions.assertThrows(FileNotFoundException.class, () -> {
-            FileUtils.copyURLToFile(
-                    new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
-                            .concat("/img/img3.jpg")),
-                    new File("img3.jpg"));
-        });
-        Assertions.assertThrows(FileNotFoundException.class, () -> {
-            FileUtils.copyURLToFile(
-                    new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
-                            .concat("/audio/audio1.mp3")),
-                    new File("audio1.mp3"));
-        });
-        Assertions.assertThrows(FileNotFoundException.class, () -> {
-            FileUtils.copyURLToFile(
-                    new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
-                            .concat("/audio/audio2.mp3")),
-                    new File("audio2.mp3"));
-        });
-        Assertions.assertThrows(FileNotFoundException.class, () -> {
-            FileUtils.copyURLToFile(
-                    new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
-                            .concat("/audio/audio3.mp3")),
-                    new File("audio3.mp3"));
-        });
+        assertThrows(FileNotFoundException.class, () -> FileUtils.copyURLToFile(
+                new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                        .concat("/img/img1.jpg")),
+                new File("img1.jpg")));
+        assertThrows(FileNotFoundException.class, () -> FileUtils.copyURLToFile(
+                new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                        .concat("/img/img2.jpg")),
+                new File("img2.jpg")));
+        assertThrows(FileNotFoundException.class, () -> FileUtils.copyURLToFile(
+                new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                        .concat("/img/img3.jpg")),
+                new File("img3.jpg")));
+        assertThrows(FileNotFoundException.class, () -> FileUtils.copyURLToFile(
+                new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                        .concat("/audio/audio1.mp3")),
+                new File("audio1.mp3")));
+        assertThrows(FileNotFoundException.class, () -> FileUtils.copyURLToFile(
+                new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                        .concat("/audio/audio2.mp3")),
+                new File("audio2.mp3")));
+        assertThrows(FileNotFoundException.class, () -> FileUtils.copyURLToFile(
+                new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                        .concat("/audio/audio3.mp3")),
+                new File("audio3.mp3")));
     }
 
     @Test
@@ -303,13 +282,13 @@ class JdbcCongratulationDaoITest {
                 .status(Status.STARTUP)
                 .linkList(links)
                 .build();
-        jdbcCongratulationDao.save(congratulation);
+        congratulationDao.save(congratulation);
 
         //when
-        jdbcCongratulationDao.deleteById(7, 1);
+        congratulationDao.deleteById(7, 1);
 
         //then
-        Optional<Congratulation> actual = jdbcCongratulationDao.getCongratulationById(7);
+        Optional<Congratulation> actual = congratulationDao.getCongratulationById(7);
         assertFalse(actual.isPresent());
     }
 
@@ -317,7 +296,7 @@ class JdbcCongratulationDaoITest {
     @DisplayName("Find all congratulations by id of card")
     void findCongratulationsByCardId() {
         //when
-        List<Congratulation> congratulationList = jdbcCongratulationDao.findCongratulationsByCardId(1);
+        List<Congratulation> congratulationList = congratulationDao.findCongratulationsByCardId(1);
 
         Congratulation actualCongratulation1 = congratulationList.get(0);
         Congratulation actualCongratulation2 = congratulationList.get(1);
@@ -342,8 +321,8 @@ class JdbcCongratulationDaoITest {
     @DisplayName("Change status to ISOVER congratulations by id of card")
     void changeStatusCongratulationsByCardIdToIsOver() {
         //when
-        jdbcCongratulationDao.changeCongratulationsStatusByCardId(Status.ISOVER, 1);
-        List<Congratulation> congratulationList = jdbcCongratulationDao.findCongratulationsByCardId(1);
+        congratulationDao.changeCongratulationsStatusByCardId(Status.ISOVER, 1);
+        List<Congratulation> congratulationList = congratulationDao.findCongratulationsByCardId(1);
         Congratulation actualCongratulation1 = congratulationList.get(0);
         Congratulation actualCongratulation2 = congratulationList.get(1);
         Congratulation actualCongratulation3 = congratulationList.get(2);
@@ -358,9 +337,9 @@ class JdbcCongratulationDaoITest {
     @DisplayName("Change status to STARTUP congratulations by id of card")
     void changeStatusCongratulationsByCardIdToStartUp() {
         //when
-        jdbcCongratulationDao.changeCongratulationsStatusByCardId(Status.STARTUP, 1);
+        congratulationDao.changeCongratulationsStatusByCardId(Status.STARTUP, 1);
 
-        List<Congratulation> congratulationList = jdbcCongratulationDao.findCongratulationsByCardId(1);
+        List<Congratulation> congratulationList = congratulationDao.findCongratulationsByCardId(1);
         Congratulation actualCongratulation1 = congratulationList.get(0);
         Congratulation actualCongratulation2 = congratulationList.get(1);
         Congratulation actualCongratulation3 = congratulationList.get(2);
@@ -375,14 +354,14 @@ class JdbcCongratulationDaoITest {
     @DisplayName("Change status to STARTUP congratulations by id of card")
     void changeCongratulationStatusByCongratulationId() {
         //prepare
-        Optional<Congratulation> optionalCongratulation = jdbcCongratulationDao.getCongratulationById(1);
+        Optional<Congratulation> optionalCongratulation = congratulationDao.getCongratulationById(1);
         assertEquals(Status.STARTUP, optionalCongratulation.get().getStatus());
 
         //when
-        jdbcCongratulationDao.changeCongratulationStatusByCongratulationId(Status.ISOVER, 1);
+        congratulationDao.changeCongratulationStatusByCongratulationId(Status.ISOVER, 1);
 
         //then
-        Optional<Congratulation> optionalCongratulationAfter = jdbcCongratulationDao.getCongratulationById(1);
+        Optional<Congratulation> optionalCongratulationAfter = congratulationDao.getCongratulationById(1);
         assertEquals(Status.ISOVER, optionalCongratulationAfter.get().getStatus());
     }
 
@@ -390,10 +369,10 @@ class JdbcCongratulationDaoITest {
     @DisplayName("Update congratulation message by congratulation id and user id")
     void updateCongratulation() {
         //when
-        jdbcCongratulationDao.updateCongratulationMessage("Congratulations from updateCongratulationTest", 1, 1);
+        congratulationDao.updateCongratulationMessage("Congratulations from updateCongratulationTest", 1, 1);
 
         //then
-        Optional<Congratulation> optionalCongratulationAfter = jdbcCongratulationDao.getCongratulationById(1);
+        Optional<Congratulation> optionalCongratulationAfter = congratulationDao.getCongratulationById(1);
         assertEquals("Congratulations from updateCongratulationTest", optionalCongratulationAfter.get().getMessage());
     }
 
@@ -411,10 +390,10 @@ class JdbcCongratulationDaoITest {
         linkList.add(link);
 
         //when
-        jdbcCongratulationDao.saveLinks(linkList, 1);
+        congratulationDao.saveLinks(linkList, 1);
 
         //then
-        Optional<Congratulation> optionalCongratulation = jdbcCongratulationDao.getCongratulationById(1);
+        Optional<Congratulation> optionalCongratulation = congratulationDao.getCongratulationById(1);
         Congratulation congratulation = optionalCongratulation.get();
 
         assertEquals(1, congratulation.getLinkList().get(6).getCongratulationId());
@@ -445,9 +424,6 @@ class JdbcCongratulationDaoITest {
         assertTrue(new File("img1.jpg").exists());
         assertTrue(new File("audio1.mp3").exists());
 
-        Files.deleteIfExists(Path.of("img1.jpg"));
-        Files.deleteIfExists(Path.of("audio1.mp3"));
-
         Link link = Link.builder()
                 .id(5)
                 .link("/audio/audio1.mp3")
@@ -461,22 +437,17 @@ class JdbcCongratulationDaoITest {
         List<Link> linkList = List.of(link, link2);
 
         //when
-        jdbcCongratulationDao.deleteFilesFromLinks(linkList, 1);
+        congratulationDao.deleteFilesFromLinks(linkList, 1);
 
         //then
-        Assertions.assertThrows(FileNotFoundException.class, () -> {
-            FileUtils.copyURLToFile(
-                    new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
-                            .concat("/img/img1.jpg")),
-                    new File("img1.jpg"));
-        });
-        Assertions.assertThrows(FileNotFoundException.class, () -> {
-            FileUtils.copyURLToFile(
-                    new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
-                            .concat("/audio/audio1.mp3")),
-                    new File("audio1.mp3"));
-        });
-
+        Assertions.assertThrows(FileNotFoundException.class, () -> FileUtils.copyURLToFile(
+                new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                        .concat("/img/img1.jpg")),
+                new File("img1.jpg")));
+        Assertions.assertThrows(FileNotFoundException.class, () -> FileUtils.copyURLToFile(
+                new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
+                        .concat("/audio/audio1.mp3")),
+                new File("audio1.mp3")));
     }
 
     @Test
@@ -492,14 +463,14 @@ class JdbcCongratulationDaoITest {
                 .build();
 
         List<Link> linkList = List.of(link, link2);
-        Optional<Congratulation> beforeCongratulation = jdbcCongratulationDao.getCongratulationById(1);
+        Optional<Congratulation> beforeCongratulation = congratulationDao.getCongratulationById(1);
         assertEquals(6, beforeCongratulation.get().getLinkList().size());
 
         //when
-        jdbcCongratulationDao.deleteLinksById(linkList, 1);
+        congratulationDao.deleteLinksById(linkList, 1);
 
         //then
-        Optional<Congratulation> afterCongratulation = jdbcCongratulationDao.getCongratulationById(1);
+        Optional<Congratulation> afterCongratulation = congratulationDao.getCongratulationById(1);
         assertEquals(4, afterCongratulation.get().getLinkList().size());
 
         for (Link linkAfter : afterCongratulation.get().getLinkList()) {
@@ -523,7 +494,7 @@ class JdbcCongratulationDaoITest {
         List<Link> linkList = List.of(link, link2);
 
         //when
-        List<Link> actualLinksList = jdbcCongratulationDao.getLinksList(linkList, 1);
+        List<Link> actualLinksList = congratulationDao.getLinksList(linkList, 1);
 
         //then
         assertNotNull(actualLinksList);
@@ -547,7 +518,7 @@ class JdbcCongratulationDaoITest {
         String[] namesArray = new String[]{"link_id0", "link_id1"};
 
         //when
-        String namesRow = jdbcCongratulationDao.getNamesOfParams(namesArray);
+        String namesRow = congratulationDao.getNamesOfParams(namesArray);
 
         //then
         assertEquals("(:link_id0,:link_id1)", namesRow);
@@ -562,7 +533,7 @@ class JdbcCongratulationDaoITest {
         List<Link> linkList = List.of(link, link2);
 
         //when
-        MapSqlParameterSource parameterSource = jdbcCongratulationDao.getMapSqlParameterSourceForList(linkList);
+        MapSqlParameterSource parameterSource = congratulationDao.getMapSqlParameterSourceForList(linkList);
 
         //then
         assertNotNull(parameterSource);

@@ -36,7 +36,7 @@ import static org.mockito.Mockito.verify;
         "congratulations.xml", "links.xml", "forgot_password_hashes.xml", "verify_email_hashes.xml"},
         executeStatementsBefore = "SELECT setval('users_user_id_seq', 3);",
         cleanAfter = true)
-@SpringJUnitWebConfig(value = {TestConfiguration.class,  RootApplicationContext.class})
+@SpringJUnitWebConfig(value = {TestConfiguration.class, RootApplicationContext.class})
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DefaultSecurityServiceSystemTest {

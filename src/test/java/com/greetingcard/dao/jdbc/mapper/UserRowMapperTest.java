@@ -36,7 +36,7 @@ class UserRowMapperTest {
         when(mockResultSet.getString("salt")).thenReturn("salt");
         when(mockResultSet.getInt("language_id")).thenReturn(2);
         //when
-        User actualUser = userRowMapper.extractData(mockResultSet);
+        User actualUser = userRowMapper.mapRow(mockResultSet, 0);
         //then
         assertNotNull(actualUser);
         assertEquals(2, actualUser.getId());

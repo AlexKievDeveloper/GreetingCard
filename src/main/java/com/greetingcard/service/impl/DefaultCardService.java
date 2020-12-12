@@ -5,20 +5,20 @@ import com.greetingcard.entity.Card;
 import com.greetingcard.entity.CardsType;
 import com.greetingcard.entity.Status;
 import com.greetingcard.service.CardService;
+import com.greetingcard.service.CongratulationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.greetingcard.service.CongratulationService;
-import lombok.AllArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
 public class DefaultCardService implements CardService {
-    private final CardDao cardDao;
-    private final CongratulationService congratulationService;
+    @Autowired
+    private CardDao cardDao;
+    @Autowired
+    private CongratulationService congratulationService;
 
     @Override
     public List<Card> getCards(long userId, CardsType cardsType) {

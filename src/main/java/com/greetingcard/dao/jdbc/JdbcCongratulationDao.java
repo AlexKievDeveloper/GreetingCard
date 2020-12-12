@@ -9,8 +9,11 @@ import com.greetingcard.entity.Link;
 import com.greetingcard.entity.Status;
 import com.greetingcard.service.impl.DefaultAmazonService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -26,13 +29,20 @@ import java.util.*;
 @Slf4j
 @Repository
 @PropertySource("classpath:queries.properties")
+@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)//TODO:я не понимаю как это работает.
+// Эта аннотация была добавлена что бы исправить Bean named 'congratulationDao'
+// is expected to be of type 'com.greetingcard.dao.jdbc.' but was actually of type
+// 'com.sun.proxy.$Proxy63'
 public class JdbcCongratulationDao implements CongratulationDao {
     private static final CongratulationExtractor CONGRATULATION_EXTRACTOR = new CongratulationExtractor();
     private static final CongratulationsExtractor CONGRATULATIONS_EXTRACTOR = new CongratulationsExtractor();
     private static final LinksRowMapper LINKS_ROW_MAPPER = new LinksRowMapper();
 
+    @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
     private NamedParameterJdbcTemplate namedJdbcTemplate;
+    @Autowired
     private DefaultAmazonService defaultAmazonService;
 
     @Value("${get.congratulation}")
@@ -61,12 +71,6 @@ public class JdbcCongratulationDao implements CongratulationDao {
     private String findImageAndAudioLinksByCongratulationId;
     @Value("${delete.link.by.id}")
     private String deleteLinkById;
-
-    public JdbcCongratulationDao(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedJdbcTemplate, DefaultAmazonService defaultAmazonService) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.namedJdbcTemplate = namedJdbcTemplate;
-        this.defaultAmazonService = defaultAmazonService;
-    }
 
     @Override
     public Optional<Congratulation> getCongratulationById(long congratulationId) {

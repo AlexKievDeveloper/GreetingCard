@@ -26,10 +26,9 @@ import java.util.List;
         "congratulations.xml", "links.xml"},
         executeStatementsBefore = "SELECT setval(' users_cards_users_cards_id_seq', 10);",
         cleanAfter = true)
-@SpringJUnitWebConfig(value = {TestConfiguration.class,  RootApplicationContext.class})
+@SpringJUnitWebConfig(value = {TestConfiguration.class, RootApplicationContext.class})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DefaultCardUserServiceITest {
-
     @Autowired
     private CardUserService cardUserService;
 
@@ -57,5 +56,4 @@ public class DefaultCardUserServiceITest {
 
         cardUserService.deleteUsers(2, userInfoList, userDeletes);
     }
-
 }

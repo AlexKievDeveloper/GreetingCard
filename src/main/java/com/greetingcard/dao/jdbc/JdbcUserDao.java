@@ -6,11 +6,10 @@ import com.greetingcard.dao.jdbc.mapper.UserIdRowMapper;
 import com.greetingcard.dao.jdbc.mapper.UserRowMapper;
 import com.greetingcard.entity.AccessHashType;
 import com.greetingcard.entity.User;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
@@ -19,12 +18,14 @@ import org.springframework.transaction.annotation.Transactional;
 import static com.greetingcard.entity.AccessHashType.FORGOT_PASSWORD;
 import static com.greetingcard.entity.AccessHashType.VERIFY_EMAIL;
 
-
 @Slf4j
-@AllArgsConstructor
 @Repository
+@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class JdbcUserDao implements UserDao {
     private static final UserRowMapper USER_ROW_MAPPER = new UserRowMapper();
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     private static final String SAVE_USER = "INSERT INTO users (firstName, lastName, login, email, password, salt, language_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
     private static final String UPDATE_USER = "UPDATE users SET firstName=?, lastName=?, login=?, pathToPhoto=COALESCE(?, pathToPhoto) WHERE user_id=?;";
     private static final String UPDATE_USER_PASSWORD = "UPDATE users SET password=? WHERE user_id=?;";
@@ -40,8 +41,6 @@ public class JdbcUserDao implements UserDao {
     private static final String DELETE_FORGOT_PASS_ACCESS_HASH = "DELETE FROM forgot_password_hashes WHERE hash = ?";
     private static final String DELETE_VERIFY_EMAIL_ACCESS_HASH = "DELETE FROM verify_email_hashes WHERE hash = ?";
     private static final String UPDATE_USER_VERIFY_EMAIL = "UPDATE users SET email_verified='1' WHERE user_id=?;";
-
-    private JdbcTemplate jdbcTemplate;
 
     @Override
     public void save(@NonNull User user) {

@@ -23,9 +23,9 @@ public class WebApplicationContext implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(final ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/audio/**").addResourceLocations("https://"+bucketName+".s3."+region+".amazonaws.com/audio/");
-        registry.addResourceHandler("/img/**").addResourceLocations("https://"+bucketName+".s3."+region+".amazonaws.com/img/");
-        registry.addResourceHandler("/profile/**").addResourceLocations("https://"+bucketName+".s3."+region+".amazonaws.com/profile/");
+        registry.addResourceHandler("/audio/**").addResourceLocations("https://" + bucketName + ".s3." + region + ".amazonaws.com/audio/");
+        registry.addResourceHandler("/img/**").addResourceLocations("https://" + bucketName + ".s3." + region + ".amazonaws.com/img/");
+        registry.addResourceHandler("/profile/**").addResourceLocations("https://" + bucketName + ".s3." + region + ".amazonaws.com/profile/");
         registry.addResourceHandler("/index.html").addResourceLocations("/build/index.html");
         registry.addResourceHandler("/manifest.json").addResourceLocations("/build/manifest.json");
         registry.addResourceHandler("/static/**").addResourceLocations("/build/static/");

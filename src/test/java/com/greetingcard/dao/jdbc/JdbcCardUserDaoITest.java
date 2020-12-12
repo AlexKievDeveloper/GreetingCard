@@ -28,10 +28,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         "congratulations.xml", "links.xml"},
         executeStatementsBefore = "SELECT setval(' users_cards_users_cards_id_seq', 10);",
         cleanAfter = true)
-@SpringJUnitWebConfig(value = {TestConfiguration.class,  RootApplicationContext.class})
+@SpringJUnitWebConfig(value = {TestConfiguration.class, RootApplicationContext.class})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JdbcCardUserDaoITest {
-
     @Autowired
     private JdbcCardUserDao jdbcCardUserDao;
 

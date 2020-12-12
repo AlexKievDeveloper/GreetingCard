@@ -21,7 +21,9 @@ import java.util.StringJoiner;
 @Repository
 @PropertySource("classpath:queries.properties")
 public class JdbcCardUserDao implements CardUserDao {
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    @Autowired
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
     @Value("${insert.member.user}")
     private String insertMemberUser;
     @Value("${get.user.role}")
@@ -32,10 +34,6 @@ public class JdbcCardUserDao implements CardUserDao {
     private String deleteUser;
     @Value("${delete.list.users}")
     private String deleteListUsers;
-
-    public JdbcCardUserDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-    }
 
     @Override
     public void addUserMember(long cardId, long userId) {

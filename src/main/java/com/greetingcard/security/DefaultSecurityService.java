@@ -23,33 +23,33 @@ import java.util.UUID;
 import static com.greetingcard.entity.AccessHashType.VERIFY_EMAIL;
 
 @Slf4j
+@Setter//TODO:костыль - сеттер нужен только для тестов
 @Service
-@Setter
 @PropertySource(value = "classpath:application.properties")
 public class DefaultSecurityService implements SecurityService {
+    private UserDao userDao;
+    private DefaultAmazonService defaultAmazonService;
+
     @Value("${algorithm:SHA-256}")
     private String algorithm;
-
     @Value("${iteration:1}")
     private int iteration;
-
     @Value("${webapp.url:https://greeting-team.herokuapp.com/}")
     private String siteUrl;
-
-    @Autowired
-    private UserDao userDao;
-
-    @Autowired
-    private DefaultAmazonService defaultAmazonService;
+    @Value("${max.characters.name.and.last.name}")
+    private int maxCharactersNameAndLastName;
+    @Value("${max.characters.email.and.login}")
+    private int maxCharactersEmailAndLogin;
+    @Value("${max.characters.password}")
+    private int maxCharactersPassword;
 
     @Autowired
     private EmailService emailService;
 
-
     @Override
     public User login(String login, String password) {
         log.info("login: {}", login);
-        checkUserCredentials(login, 50, "login");
+        checkUserCredentials(login, maxCharactersEmailAndLogin, "login");
         User user = userDao.findByLogin(login);
 
         if (user != null) {
@@ -66,11 +66,11 @@ public class DefaultSecurityService implements SecurityService {
 
     @Override
     public void register(User user) {
-        checkUserCredentials(user.getFirstName(), 40, "first name");
-        checkUserCredentials(user.getLastName(), 40, "last name");
-        checkUserCredentials(user.getEmail(), 50, "email");
-        checkUserCredentials(user.getLogin(), 50, "login");
-        checkUserCredentials(user.getPassword(), 200, "password");
+        checkUserCredentials(user.getFirstName(), maxCharactersNameAndLastName, "first name");
+        checkUserCredentials(user.getLastName(), maxCharactersNameAndLastName, "last name");
+        checkUserCredentials(user.getEmail(), maxCharactersEmailAndLogin, "email");
+        checkUserCredentials(user.getLogin(), maxCharactersEmailAndLogin, "login");
+        checkUserCredentials(user.getPassword(), maxCharactersPassword, "password");
 
         String salt = UUID.randomUUID().toString();
         String saltAndPassword = getHashPassword(salt.concat(user.getPassword()));
@@ -164,7 +164,6 @@ public class DefaultSecurityService implements SecurityService {
         String newAccessHash = getHashPassword(emailAndSalt).replaceAll("/", "");
 
         userDao.saveAccessHash(email, newAccessHash, hashType);
-
         return newAccessHash;
     }
 
@@ -179,7 +178,7 @@ public class DefaultSecurityService implements SecurityService {
             return Base64.getEncoder().encodeToString(bytes);
         } catch (NoSuchAlgorithmException e) {
             log.error("Cannot find algorithm -", e);
-            throw new RuntimeException(e);
+            throw new RuntimeException();
         }
     }
 
@@ -202,5 +201,4 @@ public class DefaultSecurityService implements SecurityService {
                     "Please put " + fieldName + " up to " + maxCharacters + " characters.");
         }
     }
-
 }

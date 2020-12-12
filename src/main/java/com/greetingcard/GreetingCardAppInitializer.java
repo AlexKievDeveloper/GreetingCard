@@ -7,7 +7,9 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.ServletRegistration;
 
 @PropertySource("classpath:application.properties")
 public class GreetingCardAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
@@ -16,7 +18,6 @@ public class GreetingCardAppInitializer extends AbstractAnnotationConfigDispatch
 
     @Value("${max.upload.request.size}")
     private int maxUploadRequestSizeInMb;
-
 
     @Override
     protected Class<?>[] getRootConfigClasses() {
@@ -34,17 +35,14 @@ public class GreetingCardAppInitializer extends AbstractAnnotationConfigDispatch
     }
 
     @Override
-    protected Filter[]getServletFilters() {
+    protected Filter[] getServletFilters() {
         CharacterEncodingFilter encodingFilter = new CharacterEncodingFilter();
         encodingFilter.setEncoding("UTF-8");
         return new Filter[]{new AuthorizationFilter(), encodingFilter};
     }
 
     private MultipartConfigElement getMultipartConfigElement() {
-        MultipartConfigElement multipartConfigElement = new
-                MultipartConfigElement("",
-                maxUploadFileSizeInMb, maxUploadRequestSizeInMb, 0);
-        return multipartConfigElement;
+        return new MultipartConfigElement("", maxUploadFileSizeInMb, maxUploadRequestSizeInMb, 0);
     }
 
     @Override

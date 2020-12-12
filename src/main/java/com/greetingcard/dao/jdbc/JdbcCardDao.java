@@ -7,6 +7,7 @@ import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Role;
 import com.greetingcard.entity.Status;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,8 +28,10 @@ import java.util.Optional;
 @Repository
 @PropertySource("classpath:queries.properties")
 public class JdbcCardDao implements CardDao {
-    private final JdbcTemplate jdbcTemplate;
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Value("${get.cards.by.user.id.and.role.id}")
     private String getCardsByUserIdAndRoleId;
@@ -48,11 +51,6 @@ public class JdbcCardDao implements CardDao {
     private String getAllCardsByUserId;
     @Value("${change.name}")
     private String changeName;
-
-    public JdbcCardDao(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-    }
 
     @Override
     public List<Card> getAllCardsByUserId(long id) {

@@ -3,6 +3,7 @@ package com.greetingcard.service.impl;
 import com.greetingcard.dao.CardDao;
 import com.greetingcard.entity.CardsType;
 import com.greetingcard.entity.Status;
+import com.greetingcard.service.CongratulationService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +17,8 @@ import static org.mockito.Mockito.verify;
 class DefaultCardServiceTest {
     @Mock
     private CardDao jdbcCardDao;
+    @Mock
+    private CongratulationService service;
     @InjectMocks
     private DefaultCardService defaultCardService;
 
@@ -62,5 +65,6 @@ class DefaultCardServiceTest {
         defaultCardService.changeCardStatus(Status.STARTUP, 1);
         //then
         verify(jdbcCardDao).changeCardStatusById(Status.STARTUP, 1);
+        verify(service).changeCongratulationStatusByCardId(Status.STARTUP, 1);
     }
 }

@@ -7,7 +7,6 @@ import com.greetingcard.entity.CardsType;
 import com.greetingcard.entity.Status;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
