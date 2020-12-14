@@ -26,25 +26,36 @@ public class JdbcUserDao implements UserDao {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private static final String SAVE_USER = "INSERT INTO users (firstName, lastName, login, email, password, salt, language_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    private static final String UPDATE_USER = "UPDATE users SET firstName=?, lastName=?, login=?, pathToPhoto=COALESCE(?, pathToPhoto) WHERE user_id=?;";
-    private static final String UPDATE_USER_PASSWORD = "UPDATE users SET password=? WHERE user_id=?;";
-    private static final String FIND_USER_BY_ID = "SELECT user_id, firstName, lastName, login, email, language_id, facebook, google, pathToPhoto FROM users WHERE user_id = ?";
-    private static final String FIND_USER_BY_LOGIN = "SELECT user_id, firstName, lastName, login, email, password, salt, language_id, facebook, google, pathToPhoto FROM users WHERE login = ?";
-    private static final String FIND_USER_BY_EMAIL = "SELECT user_id, firstName, lastName, login, email, password, salt, language_id, facebook, google, pathToPhoto FROM users WHERE email = ?";
-    private static final String SAVE_FORGOT_PASS_ACCESS_HASH = "INSERT INTO forgot_password_hashes (user_id, hash) VALUES (?, ?)";
-    private static final String SAVE_VERIFY_EMAIL_ACCESS_HASH = "INSERT INTO verify_email_hashes (user_id, hash) VALUES (?, ?)";
-    private static final String FIND_USER_BY_FORGOT_PASS_ACCESS_HASH = "SELECT users.user_id, firstName, lastName, login, email, " +
-            "password, salt, language_id, facebook, google, pathToPhoto FROM users " +
-            "LEFT JOIN forgot_password_hashes ON (users.user_id = forgot_password_hashes.user_id) WHERE forgot_password_hashes.hash = ?";
-    private static final String FIND_VERIFY_EMAIL_ACCESS_HASH = "SELECT user_id FROM verify_email_hashes WHERE hash = ?";
-    private static final String DELETE_FORGOT_PASS_ACCESS_HASH = "DELETE FROM forgot_password_hashes WHERE hash = ?";
-    private static final String DELETE_VERIFY_EMAIL_ACCESS_HASH = "DELETE FROM verify_email_hashes WHERE hash = ?";
-    private static final String UPDATE_USER_VERIFY_EMAIL = "UPDATE users SET email_verified='1' WHERE user_id=?;";
+    @Autowired
+    private String saveUser;
+    @Autowired
+    private String updateUser;
+    @Autowired
+    private String updateUserPassword;
+    @Autowired
+    private String findUserById;
+    @Autowired
+    private String findUserByLogin;
+    @Autowired
+    private String findUserByEmail;
+    @Autowired
+    private String saveForgotPassAccessHash;
+    @Autowired
+    private String saveVerifyEmailAccessHash;
+    @Autowired
+    private String findUserByForgotPassAccessHash;
+    @Autowired
+    private String findVerifyEmailAccessHash;
+    @Autowired
+    private String deleteForgotPassAccessHash;
+    @Autowired
+    private String deleteVerifyEmailAccessHash;
+    @Autowired
+    private String updateUserVerifyEmail;
 
     @Override
     public void save(@NonNull User user) {
-        jdbcTemplate.update(SAVE_USER, user.getFirstName(), user.getLastName(), user.getLogin(),
+        jdbcTemplate.update(saveUser, user.getFirstName(), user.getLastName(), user.getLogin(),
                 user.getEmail(), user.getPassword(), user.getSalt(), user.getLanguage().getLanguageNumber());
         log.debug("Added new user {} to DB", user.getEmail());
     }
@@ -52,64 +63,64 @@ public class JdbcUserDao implements UserDao {
     @Override
     public void update(@NonNull User user) {
         log.info("Edit user's (user_id:{}) personal information", user.getId());
-        jdbcTemplate.update(UPDATE_USER, user.getFirstName(), user.getLastName(), user.getLogin(), user.getPathToPhoto(), user.getId());
+        jdbcTemplate.update(updateUser, user.getFirstName(), user.getLastName(), user.getLogin(), user.getPathToPhoto(), user.getId());
     }
 
     @Override
     public void updatePassword(@NonNull User user) {
         log.info("Edit user's (user_id:{}) password", user.getId());
-        jdbcTemplate.update(UPDATE_USER_PASSWORD, user.getPassword(), user.getId());
+        jdbcTemplate.update(updateUserPassword, user.getPassword(), user.getId());
     }
 
     @Override
     public User findById(long id) {
         log.info("Getting user by login {}", id);
-        return jdbcTemplate.queryForObject(FIND_USER_BY_ID, new UserFindByIdRowMapper(), id);
+        return jdbcTemplate.queryForObject(findUserById, new UserFindByIdRowMapper(), id);
     }
 
     @Override
     public User findByLogin(@NonNull String login) {
         log.info("Getting user by login {}", login);
-        return jdbcTemplate.query(FIND_USER_BY_LOGIN, USER_ROW_MAPPER, login);
+        return jdbcTemplate.query(findUserByLogin, USER_ROW_MAPPER, login);
     }
 
     @Override
     public User findByEmail(@NonNull String email) {
         log.info("Getting user by email {}", email);
-        return jdbcTemplate.query(FIND_USER_BY_EMAIL, USER_ROW_MAPPER, email);
+        return jdbcTemplate.query(findUserByEmail, USER_ROW_MAPPER, email);
     }
 
     @Override
     public void saveAccessHash(@NonNull String email, @NonNull String hash, AccessHashType hashType) {
         User user = findByEmail(email);
         if (hashType == FORGOT_PASSWORD) {
-            jdbcTemplate.update(SAVE_FORGOT_PASS_ACCESS_HASH, user.getId(), hash);
+            jdbcTemplate.update(saveForgotPassAccessHash, user.getId(), hash);
         }
         if (hashType == VERIFY_EMAIL) {
-            jdbcTemplate.update(SAVE_VERIFY_EMAIL_ACCESS_HASH, user.getId(), hash);
+            jdbcTemplate.update(saveVerifyEmailAccessHash, user.getId(), hash);
         }
     }
 
     @Override
     @Transactional
     public void verifyEmailAccessHash(@NonNull String hash) {
-        Long user_id = jdbcTemplate.query(FIND_VERIFY_EMAIL_ACCESS_HASH, new UserIdRowMapper(), hash);
+        Long user_id = jdbcTemplate.query(findVerifyEmailAccessHash, new UserIdRowMapper(), hash);
         if (user_id != null) {
-            jdbcTemplate.update(DELETE_VERIFY_EMAIL_ACCESS_HASH, hash);
-            jdbcTemplate.update(UPDATE_USER_VERIFY_EMAIL, user_id);
+            jdbcTemplate.update(deleteVerifyEmailAccessHash, hash);
+            jdbcTemplate.update(updateUserVerifyEmail, user_id);
         }
     }
 
     @Override
     public User findByForgotPasswordAccessHash(String hash) {
         log.debug("Getting user by access hash");
-        return jdbcTemplate.query(FIND_USER_BY_FORGOT_PASS_ACCESS_HASH, USER_ROW_MAPPER, hash);
+        return jdbcTemplate.query(findUserByForgotPassAccessHash, USER_ROW_MAPPER, hash);
     }
 
     @Override
     @Transactional
     public void verifyForgotPasswordAccessHash(@NonNull String hash, @NonNull User user) {
-        jdbcTemplate.update(DELETE_FORGOT_PASS_ACCESS_HASH, hash);
-        jdbcTemplate.update(UPDATE_USER_PASSWORD, user.getPassword(), user.getId());
+        jdbcTemplate.update(deleteForgotPassAccessHash, hash);
+        jdbcTemplate.update(updateUserPassword, user.getPassword(), user.getId());
     }
 }

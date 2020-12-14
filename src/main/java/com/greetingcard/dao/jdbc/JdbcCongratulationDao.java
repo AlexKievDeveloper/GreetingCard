@@ -45,31 +45,31 @@ public class JdbcCongratulationDao implements CongratulationDao {
     @Autowired
     private DefaultAmazonService defaultAmazonService;
 
-    @Value("${get.congratulation}")
+    @Autowired
     private String getCongratulation;
-    @Value("${get.links}")
+    @Autowired
     private String getLinks;
-    @Value("${save.congratulation}")
+    @Autowired
     private String saveCongratulation;
-    @Value("${update.congratulation}")
+    @Autowired
     private String updateCongratulation;
-    @Value("${save.link}")
+    @Autowired
     private String saveLink;
-    @Value("${leave.by.card.id}")
+    @Autowired
     private String leaveByCardId;
-    @Value("${find.image.and.audio.links.by.card.id}")
+    @Autowired
     private String findImageAndAudioLinksByCardId;
-    @Value("${find.congratulations.by.card.id}")
+    @Autowired
     private String findCongratulationsByCardId;
-    @Value("${change.status.congratulation.by.card.id}")
+    @Autowired
     private String changeCongratulationStatusByCardId;
-    @Value("${change.congratulation.status.by.congratulation.id}")
+    @Autowired
     private String changeCongratulationStatusByCongratulationId;
-    @Value("${delete.by.id}")
-    private String deleteById;
-    @Value("${find.image.and.audio.links.by.congratulation.id}")
+    @Autowired
+    private String deleteCongratulationById;
+    @Autowired
     private String findImageAndAudioLinksByCongratulationId;
-    @Value("${delete.link.by.id}")
+    @Autowired
     private String deleteLinkById;
 
     @Override
@@ -112,7 +112,7 @@ public class JdbcCongratulationDao implements CongratulationDao {
         Map<String, Long> params = new HashMap<>();
         params.put("user_id", userId);
         params.put("congratulation_id", congratulationId);
-        namedJdbcTemplate.update(deleteById, params);
+        namedJdbcTemplate.update(deleteCongratulationById, params);
     }
 
     @Override

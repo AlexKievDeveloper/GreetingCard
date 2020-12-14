@@ -24,15 +24,15 @@ public class JdbcCardUserDao implements CardUserDao {
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    @Value("${insert.member.user}")
+    @Autowired
     private String insertMemberUser;
-    @Value("${get.user.role}")
+    @Autowired
     private String getUserRole;
-    @Value("${get.users.by.card.id}")
+    @Autowired
     private String getUsersByCardId;
-    @Value("${delete.user}")
+    @Autowired
     private String deleteUser;
-    @Value("${delete.list.users}")
+    @Autowired
     private String deleteListUsers;
 
     @Override

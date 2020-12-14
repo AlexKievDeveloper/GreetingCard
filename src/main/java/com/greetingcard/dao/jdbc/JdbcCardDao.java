@@ -33,23 +33,23 @@ public class JdbcCardDao implements CardDao {
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    @Value("${get.cards.by.user.id.and.role.id}")
+    @Autowired
     private String getCardsByUserIdAndRoleId;
-    @Value("${card.and.congratulation}")
+    @Autowired
     private String cardAndCongratulation;
-    @Value("${get.card.status}")
+    @Autowired
     private String getCardStatus;
-    @Value("${save.new.card}")
+    @Autowired
     private String saveNewCard;
-    @Value("${add.to.users.cards}")
+    @Autowired
     private String addToUsersCards;
-    @Value("${delete.by.card.id}")
+    @Autowired
     private String deleteByCardId;
-    @Value("${change.status.of.card.by.id}")
+    @Autowired
     private String changeStatusOfCardById;
-    @Value("${get.all.cards.by.user.id}")
+    @Autowired
     private String getAllCardsByUserId;
-    @Value("${change.name}")
+    @Autowired
     private String changeName;
 
     @Override
