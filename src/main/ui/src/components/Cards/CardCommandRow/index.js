@@ -1,45 +1,11 @@
-import React, { useState } from "react";
-import CommandButton from "../../UI/CommandButton";
+import React from "react";
 import CommandButtonLink from "../../UI/CommandButton/CommandButtonLink";
-import { cardService } from "../../../services/cardService";
 import FormAdd from "../../../forms/common/FormAdd";
-import LeaveCardPopup from "../Popups/LeaveCardPopup";
-import DeleteCardPopup from "../Popups/DeleteCardPopup";
 import FilterButton from "../../UI/FilterButton";
+import FinishAndDeleteLeaveButtons from "../FinishAndDeleteLeaveButtons";
 
 export default function CardCommandRow(props) {
-  const [isShowPopup, setIsShowPopup] = useState(false);
-
-  const showPopup = () => {
-    setIsShowPopup(true);
-  };
-
-  const hidePopup = () => {
-    setIsShowPopup(false);
-  };
-
   const id = props.idCard;
-
-  const leaveCard = (event) => {
-    event.preventDefault();
-    hidePopup();
-    cardService.leaveCard(id).then(() => props.history.push("/cards/other"));
-  };
-
-  const finishCard = () => {
-    if (props.isMyCard) {
-      cardService.finishCard(id).then(() => props.history.push("/cards/my"));
-    } else {
-      props.history.push("/cards/my");
-    }
-  };
-
-  const deleteCard = (event) => {
-    event.preventDefault();
-    hidePopup();
-    cardService.deleteCard(id).then(() => props.history.push("/cards/my"));
-  };
-
   return (
     <div className="command__row">
       <div className="filter__blocks">
@@ -76,41 +42,9 @@ export default function CardCommandRow(props) {
             caption="List of collaborators"
           />
         )}
-        {props.isMyCard && (
-          <CommandButton
-            className="command-button--white"
-            caption="Finish Card"
-            action={finishCard}
-          />
-        )}
-        {props.isMyCard && (
-          <React.Fragment>
-            <CommandButton
-              className="command-button--yellow"
-              caption="Delete Card"
-              action={showPopup}
-            />
-            <DeleteCardPopup
-              isShow={isShowPopup}
-              onCloseFunction={hidePopup}
-              onDeleteFunction={deleteCard}
-            />
-          </React.Fragment>
-        )}
-        {!props.isMyCard && (
-          <React.Fragment>
-            <CommandButton
-              className="command-button--yellow"
-              caption="Leave Card"
-              action={showPopup}
-            />
-            <LeaveCardPopup
-              isShow={isShowPopup}
-              onCloseFunction={hidePopup}
-              onLeaveFunction={leaveCard}
-            />
-          </React.Fragment>
-        )}
+        <FinishAndDeleteLeaveButtons
+            isMyCard = {props.isMyCard}
+            idCard = {props.idCard}/>
       </div>
     </div>
   );

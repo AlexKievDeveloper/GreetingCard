@@ -1,0 +1,15 @@
+.blocks__column {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin: 0 auto 100px;
+}
+
+.paper-like {
+	border-radius: 0;
+	border: none;
+	padding: 37px;
+	background-color: #FAE7CE;
+	max-width: 1280px;
+}
+
