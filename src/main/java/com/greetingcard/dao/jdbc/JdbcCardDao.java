@@ -7,15 +7,15 @@ import com.greetingcard.dao.jdbc.mapper.CardRowMapper;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Role;
 import com.greetingcard.entity.Status;
-import lombok.AllArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -25,8 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-@Setter
-@AllArgsConstructor
+@Repository
 public class JdbcCardDao implements CardDao {
     private static final String GET_CARDS_BY_USER_ID_AND_ROLE_ID =
             "SELECT cards.card_id, " +
@@ -60,6 +59,7 @@ public class JdbcCardDao implements CardDao {
                     "cg.user_id, " +
                     "firstName, " +
                     "lastName, " +
+                    "pathToPhoto, " +
                     "login, " +
                     "link_id, " +
                     "link,type_id " +
@@ -69,8 +69,30 @@ public class JdbcCardDao implements CardDao {
                     "LEFT JOIN users u ON (cg.user_id=u.user_id) " +
                     "LEFT JOIN links l ON (cg.congratulation_id=l.congratulation_id) " +
                     "WHERE uc.card_id = :cardId AND uc.user_id = :userId";
+    private static final String FINISHED_CARD_AND_CONGRATULATION =
+            "SELECT cards.card_id, " +
+                    "cards.user_id as card_user, " +
+                    "name, " +
+                    "background_image, " +
+                    "card_link, " +
+                    "cards.status_id, " +
+                    "cg.congratulation_id, " +
+                    "cg.status_id as con_status, " +
+                    "message, " +
+                    "cg.user_id, " +
+                    "firstName, " +
+                    "lastName, " +
+                    "pathToPhoto, " +
+                    "login, " +
+                    "link_id, " +
+                    "link,type_id " +
+                    "FROM cards " +
+                    "LEFT JOIN congratulations cg ON (cards.card_id=cg.card_id) " +
+                    "LEFT JOIN users u ON (cg.user_id=u.user_id) " +
+                    "LEFT JOIN links l ON (cg.congratulation_id=l.congratulation_id) " +
+                    "WHERE cards.card_id = :cardId";
     private static final String DELETE_BY_CARD_ID = "DELETE FROM cards WHERE card_id=? and user_id=?";
-    private static final String CHANGE_STATUS_OF_CARD_BY_ID = "UPDATE cards SET status_id = ? where card_id = ?";
+    private static final String CHANGE_STATUS_OF_CARD_AND_SET_CARD_LINK_BY_ID = "UPDATE cards SET status_id = ?, card_link = ? where card_id = ?";
     private static final String GET_ALL_CARDS_BY_USER_ID = "SELECT c.card_id ,c.name, c.background_image, c.card_link, c.status_id," +
             " u.user_id, u.firstName, u.lastName, u.login, u.email " +
             "FROM users_cards uc JOIN cards c ON (uc.card_id = c.card_id) " +
@@ -78,9 +100,13 @@ public class JdbcCardDao implements CardDao {
             "WHERE uc.user_id = :id ORDER BY c.card_id";
     private static final String CHANGE_NAME = "UPDATE cards SET name = ? where card_id = ? and user_id = ?";
 
+    @Autowired
     private CongratulationDao congratulationDao;
+    @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    @Autowired
     private TransactionTemplate transactionTemplate;
 
     @Override
@@ -114,9 +140,15 @@ public class JdbcCardDao implements CardDao {
     }
 
     @Override
-    public Card getCardAndCongratulationByCardId(long cardId, long userId) {
+    public Card getCardAndCongratulationByCardIdAndUserId(long cardId, long userId) {
         MapSqlParameterSource namedParameters = new MapSqlParameterSource("cardId", cardId).addValue("userId", userId);
         return namedParameterJdbcTemplate.query(CARD_AND_CONGRATULATION, namedParameters, new CardAndCongratulationRowMapper());
+    }
+
+    @Override
+    public Card getCardAndCongratulationByCardId(long cardId) {
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource("cardId", cardId);
+        return namedParameterJdbcTemplate.query(FINISHED_CARD_AND_CONGRATULATION, namedParameters, new CardAndCongratulationRowMapper());
     }
 
     @Override
@@ -131,16 +163,17 @@ public class JdbcCardDao implements CardDao {
     }
 
     @Override
-    public void changeCardStatusById(Status newStatus, long cardId) {
+    public void changeCardStatusAndSetCardLinkById(Status newStatus, long cardId, String link) {
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                jdbcTemplate.update(CHANGE_STATUS_OF_CARD_BY_ID, newStatus.getStatusNumber(), cardId);
+                jdbcTemplate.update(CHANGE_STATUS_OF_CARD_AND_SET_CARD_LINK_BY_ID, newStatus.getStatusNumber(), link, cardId);
                 congratulationDao.changeStatusCongratulationsByCardId(newStatus, cardId);
             }
         });
     }
 
+    @Override
     public Optional<Status> getCardStatusById(long cardId) {
         SqlParameterSource parameterSource = new MapSqlParameterSource("card_id", cardId);
         List<Integer> statusIds = namedParameterJdbcTemplate.queryForList(GET_CARD_STATUS, parameterSource, Integer.class);

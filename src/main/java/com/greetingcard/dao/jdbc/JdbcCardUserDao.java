@@ -6,16 +6,18 @@ import com.greetingcard.entity.Role;
 import com.greetingcard.entity.UserInfo;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.StringJoiner;
 
-@Setter
 @Slf4j
+@Repository
 public class JdbcCardUserDao implements CardUserDao {
     private static final String INSERT_MEMBER_USER = "INSERT INTO users_cards (user_id, card_id, role_id) VALUES (:user_id, :card_id, "
             + Role.MEMBER.getRoleNumber() + ")";
@@ -37,6 +39,7 @@ public class JdbcCardUserDao implements CardUserDao {
     private static final String DELETE_USER = "DELETE from users_cards WHERE user_id = :user_id AND card_id = :card_id";
     private static final String DELETE_LIST_USERS = "DELETE from users_cards WHERE card_id = :card_id AND user_id IN ";
 
+    @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Override

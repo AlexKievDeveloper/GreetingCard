@@ -8,8 +8,10 @@ import com.greetingcard.entity.AccessHashType;
 import com.greetingcard.entity.User;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.greetingcard.entity.AccessHashType.FORGOT_PASSWORD;
@@ -17,7 +19,7 @@ import static com.greetingcard.entity.AccessHashType.VERIFY_EMAIL;
 
 
 @Slf4j
-@Setter
+@Repository
 public class JdbcUserDao implements UserDao {
     private static final UserRowMapper USER_ROW_MAPPER = new UserRowMapper();
     private static final String SAVE_USER = "INSERT INTO users (firstName, lastName, login, email, password, salt, language_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -36,6 +38,7 @@ public class JdbcUserDao implements UserDao {
     private static final String DELETE_VERIFY_EMAIL_ACCESS_HASH = "DELETE FROM verify_email_hashes WHERE hash = ?";
     private static final String UPDATE_USER_VERIFY_EMAIL = "UPDATE users SET email_verified='1' WHERE user_id=?;";
 
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Override

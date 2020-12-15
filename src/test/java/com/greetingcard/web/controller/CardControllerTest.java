@@ -4,6 +4,7 @@ import com.github.database.rider.core.api.configuration.DBUnit;
 import com.github.database.rider.core.api.configuration.Orthography;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.spring.api.DBRider;
+import com.greetingcard.RootApplicationContext;
 import com.greetingcard.dao.jdbc.TestConfiguration;
 import com.greetingcard.entity.User;
 import org.flywaydb.core.Flyway;
@@ -32,7 +33,7 @@ import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfig
         executeStatementsBefore = "SELECT setval('cards_card_id_seq', 3); SELECT setval(' users_cards_users_cards_id_seq', 6);",
         cleanAfter = true)
 @ExtendWith(MockitoExtension.class)
-@SpringJUnitWebConfig(value = TestConfiguration.class)
+@SpringJUnitWebConfig(value = {TestConfiguration.class, RootApplicationContext.class})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CardControllerTest {
     private MockMvc mockMvc;
@@ -63,6 +64,34 @@ class CardControllerTest {
                 .andExpect(jsonPath("$.id").value("1"))
                 .andExpect(jsonPath("$.user.id").value("1"))
                 .andExpect(jsonPath("$.name").value("greeting Nomar"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Return card with status ISOVER and full card_link by card_id and user_id")
+    void getISoverCard() throws Exception {
+        User user = User.builder().id(2).build();
+        mockMvc.perform(get("/api/v1/card/{id}", 2)
+                .sessionAttr("user", user))
+                .andDo(print())
+                .andExpect(jsonPath("$.id").value("2"))
+                .andExpect(jsonPath("$.user.id").value("2"))
+                .andExpect(jsonPath("$.name").value("greeting Oleksandr"))
+                .andExpect(jsonPath("$.cardLink").value("https://greeting-team.herokuapp.com/card/2/card_link/link_to_greeting"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Return finished card by card_id and user_id with hash only as link_to_greeting(only for showing to birthday boy)")
+    void getFinishedCard() throws Exception {
+        User user = User.builder().id(2).build();
+        mockMvc.perform(get("/api/v1/card/{id}/card_link/{hash}", 2, "link_to_greeting")
+                .sessionAttr("user", user))
+                .andDo(print())
+                .andExpect(jsonPath("$.id").value("2"))
+                .andExpect(jsonPath("$.user.id").value("2"))
+                .andExpect(jsonPath("$.name").value("greeting Oleksandr"))
+                .andExpect(jsonPath("$.cardLink").value("link_to_greeting"))
                 .andExpect(status().isOk());
     }
 

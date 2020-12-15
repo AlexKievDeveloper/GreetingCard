@@ -39,6 +39,7 @@ public class CardAndCongratulationRowMapper implements ResultSetExtractor<Card> 
                         .id(resultSet.getLong("user_id"))
                         .firstName(resultSet.getString("firstName"))
                         .lastName(resultSet.getString("lastName"))
+                        .pathToPhoto(resultSet.getString("pathToPhoto"))
                         .login(resultSet.getString("login"))
                         .build();
                 Congratulation congratulation = Congratulation.builder()

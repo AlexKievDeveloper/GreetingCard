@@ -8,7 +8,6 @@ import com.greetingcard.entity.Link;
 import com.greetingcard.entity.Status;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CongratulationService;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Setter
 @RestController
 @RequestMapping("/api/v1/congratulation")
 public class CongratulationController {
@@ -34,7 +32,7 @@ public class CongratulationController {
     private ObjectMapper objectMapper;
 
     @GetMapping("/{id}")
-    public Congratulation getCongratulation(@PathVariable("id") long congratulationId) throws JsonProcessingException {
+    public Congratulation getCongratulation(@PathVariable("id") long congratulationId) {
         log.info("Received request for getting congratulation");
         Congratulation congratulation = congratulationService.getCongratulationById(congratulationId);
         log.info("Successfully returned json with Congratulation entity");

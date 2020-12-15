@@ -1,5 +1,7 @@
 package com.greetingcard.service.impl;
 
+
+import com.greetingcard.RootApplicationContext;
 import com.greetingcard.dao.jdbc.TestConfiguration;
 import com.greetingcard.entity.Link;
 import com.greetingcard.entity.LinkType;
@@ -25,7 +27,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-@SpringJUnitWebConfig(value = TestConfiguration.class)
+@SpringJUnitWebConfig(value = {TestConfiguration.class,  RootApplicationContext.class})
 public class DefaultCongratulationServiceITest {
     @Mock
     private DefaultAmazonService defaultAmazonService;

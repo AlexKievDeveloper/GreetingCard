@@ -4,6 +4,7 @@ import com.github.database.rider.core.api.configuration.DBUnit;
 import com.github.database.rider.core.api.configuration.Orthography;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.spring.api.DBRider;
+import com.greetingcard.RootApplicationContext;
 import com.greetingcard.dao.jdbc.TestConfiguration;
 import com.greetingcard.entity.Congratulation;
 import com.greetingcard.entity.Link;
@@ -44,8 +45,8 @@ import static org.mockito.Mockito.when;
         executeStatementsBefore = "SELECT setval('congratulations_congratulation_id_seq', 6);", cleanAfter = true)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension.class)
+@SpringJUnitWebConfig(value = {TestConfiguration.class, RootApplicationContext.class})
 @PropertySource("classpath:application.properties")
-@SpringJUnitWebConfig(value = TestConfiguration.class)
 class DefaultCongratulationServiceSystemTest {
     @Value("${bucketName}")
     private String bucketName;
@@ -57,8 +58,8 @@ class DefaultCongratulationServiceSystemTest {
     private Map<String, String> parametersMap;
 
     @Autowired
-    @Qualifier("congratulationService")
     private CongratulationService congratulationService;
+
     private final byte[] bytes = new byte[1024 * 1024 * 10];
 
 
@@ -88,18 +89,18 @@ class DefaultCongratulationServiceSystemTest {
         FileUtils.copyURLToFile(
                 new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
                         .concat(actualList.get(2).getLink())),
-                new File("/home/alexander/MyWork/GreetingCard/src/test/resources/image.jpg"));
+                new File("image.jpg"));
 
         FileUtils.copyURLToFile(
                 new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
                         .concat(actualList.get(3).getLink())),
-                new File("/home/alexander/MyWork/GreetingCard/src/test/resources/audio.mp3"));
+                new File("audio.mp3"));
 
-        assertTrue(new File("/home/alexander/MyWork/GreetingCard/src/test/resources/image.jpg").exists());
-        assertTrue(new File("/home/alexander/MyWork/GreetingCard/src/test/resources/audio.mp3").exists());
+        assertTrue(new File("image.jpg").exists());
+        assertTrue(new File("audio.mp3").exists());
 
-        Files.deleteIfExists(Path.of("/home/alexander/MyWork/GreetingCard/src/test/resources/image.jpg"));
-        Files.deleteIfExists(Path.of("/home/alexander/MyWork/GreetingCard/src/test/resources/audio.mp3"));
+        Files.deleteIfExists(Path.of("image.jpg"));
+        Files.deleteIfExists(Path.of("audio.mp3"));
 
         defaultAmazonService.deleteFileFromS3Bucket(actualList.get(2).getLink());
         defaultAmazonService.deleteFileFromS3Bucket(actualList.get(3).getLink());
@@ -126,27 +127,32 @@ class DefaultCongratulationServiceSystemTest {
         assertEquals("Congratulation from updateCongratulationById test", congratulation.getMessage());
         assertEquals(9, congratulation.getLinkList().size());
 
-        assertEquals(LinkType.VIDEO, congratulation.getLinkList().get(6).getType());
-        assertEquals(LinkType.PICTURE, congratulation.getLinkList().get(7).getType());
-        assertEquals(LinkType.AUDIO, congratulation.getLinkList().get(8).getType());
-
         FileUtils.copyURLToFile(
                 new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
                         .concat(congratulation.getLinkList().get(7).getLink())),
-                new File("/home/alexander/MyWork/GreetingCard/src/test/resources/image.jpg"));
+                new File("image.jpg"));
 
         FileUtils.copyURLToFile(
                 new URL("https://".concat(bucketName).concat(".s3.").concat(region).concat(".amazonaws.com")
                         .concat(congratulation.getLinkList().get(8).getLink())),
-                new File("/home/alexander/MyWork/GreetingCard/src/test/resources/audio.mp3"));
+                new File("audio.mp3"));
 
-        assertTrue(new File("/home/alexander/MyWork/GreetingCard/src/test/resources/image.jpg").exists());
-        assertTrue(new File("/home/alexander/MyWork/GreetingCard/src/test/resources/audio.mp3").exists());
+        assertTrue(new File("image.jpg").exists());
+        assertTrue(new File("audio.mp3").exists());
 
-        Files.deleteIfExists(Path.of("/home/alexander/MyWork/GreetingCard/src/test/resources/image.jpg"));
-        Files.deleteIfExists(Path.of("/home/alexander/MyWork/GreetingCard/src/test/resources/audio.mp3"));
+        Files.deleteIfExists(Path.of("image.jpg"));
+        Files.deleteIfExists(Path.of("audio.mp3"));
 
         defaultAmazonService.deleteFileFromS3Bucket(congratulation.getLinkList().get(7).getLink());
         defaultAmazonService.deleteFileFromS3Bucket(congratulation.getLinkList().get(8).getLink());
+
+        List<Link> linkList = congratulation.getLinkList();
+
+        linkList.removeIf(x -> x.getType() == LinkType.VIDEO);
+        linkList.removeIf(x -> x.getType() == LinkType.AUDIO);
+        linkList.removeIf(x -> x.getType() == LinkType.PICTURE);
+
+        assertEquals(0, linkList.size());
+
     }
 }

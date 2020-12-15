@@ -9,6 +9,7 @@ import com.greetingcard.service.CongratulationService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,16 +21,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
-@Setter
+@Service
 public class DefaultCongratulationService implements CongratulationService {
+    @Autowired
     private CongratulationDao congratulationDao;
 
     @Autowired
     private DefaultAmazonService defaultAmazonService;
-
-    public DefaultCongratulationService(CongratulationDao congratulationDao) {
-        this.congratulationDao = congratulationDao;
-    }
 
     @Override
     public Congratulation getCongratulationById(long congratulationId) {

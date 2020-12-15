@@ -5,6 +5,7 @@ import com.github.database.rider.core.api.configuration.Orthography;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
+import com.greetingcard.RootApplicationContext;
 import com.greetingcard.dao.CardUserDao;
 import com.greetingcard.dao.jdbc.TestConfiguration;
 import com.greetingcard.entity.User;
@@ -30,7 +31,7 @@ import static org.mockito.Mockito.doThrow;
         "congratulations.xml", "links.xml"},
         executeStatementsBefore = "SELECT setval(' users_cards_users_cards_id_seq', 10);",
         cleanAfter = true)
-@SpringJUnitWebConfig(TestConfiguration.class)
+@SpringJUnitWebConfig(value = {TestConfiguration.class,  RootApplicationContext.class})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DefaultCardUserServiceMockITest {
 

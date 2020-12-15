@@ -5,6 +5,7 @@ import com.github.database.rider.core.api.configuration.Orthography;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
+import com.greetingcard.RootApplicationContext;
 import com.greetingcard.entity.Role;
 import com.greetingcard.entity.UserInfo;
 import org.flywaydb.core.Flyway;
@@ -27,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         "congratulations.xml", "links.xml"},
         executeStatementsBefore = "SELECT setval(' users_cards_users_cards_id_seq', 10);",
         cleanAfter = true)
-@SpringJUnitWebConfig(value = TestConfiguration.class)
+@SpringJUnitWebConfig(value = {TestConfiguration.class,  RootApplicationContext.class})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JdbcCardUserDaoITest {
 
