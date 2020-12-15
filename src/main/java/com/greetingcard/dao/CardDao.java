@@ -13,11 +13,13 @@ public interface CardDao {
 
     Long createCard(Card card);
 
-    Card getCardAndCongratulationByCardId(long cardId, long userId);
+    Card getCardAndCongratulationByCardIdAndUserId(long cardId, long userId);
+
+    Card getCardAndCongratulationByCardId(long cardId);
 
     void deleteCardById(long cardId, long userId);
 
-    void changeCardStatusById(Status status, long cardId);
+    void changeCardStatusAndSetCardLinkById(Status status, long cardId, String link);
 
     Optional<Status> getCardStatusById(long cardId);
 

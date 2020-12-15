@@ -8,11 +8,15 @@ import com.github.database.rider.spring.api.DBRider;
 import com.greetingcard.RootApplicationContext;
 import com.greetingcard.entity.*;
 import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
         "congratulations.xml", "links.xml"},
         executeStatementsBefore = "SELECT setval('cards_card_id_seq', 3); SELECT setval(' users_cards_users_cards_id_seq', 6);",
         cleanAfter = true)
-@SpringJUnitWebConfig(value = {TestConfiguration.class,  RootApplicationContext.class})
+@SpringJUnitWebConfig(value = {TestConfiguration.class, RootApplicationContext.class})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class JdbcCardDaoITest {
     @Autowired
@@ -126,7 +130,7 @@ public class JdbcCardDaoITest {
     @DisplayName("Return card with all congratulations")
     public void getCardAndCongratulationAdmin() {
         //when
-        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
+        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardIdAndUserId(1, 1);
         List<Congratulation> actualCongratulationList = actualCard.getCongratulationList();
 
         //then
@@ -157,7 +161,7 @@ public class JdbcCardDaoITest {
     @DisplayName("Return card with all congratulations")
     public void getCardAndCongratulationMember() {
         //when
-        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
+        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardIdAndUserId(1, 1);
         List<Congratulation> actualCongratulationList = actualCard.getCongratulationList();
 
         //then
@@ -185,10 +189,42 @@ public class JdbcCardDaoITest {
     }
 
     @Test
+    @DisplayName("Return card with all congratulations")
+    public void getCardAndCongratulationByCardId() {
+        //when
+        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1);
+        List<Congratulation> actualCongratulationList = actualCard.getCongratulationList();
+
+        //then
+        List<Link> fromRoma = actualCongratulationList.get(0).getLinkList();
+        List<Link> fromSasha = actualCongratulationList.get(1).getLinkList();
+        List<Link> fromNastya = actualCongratulationList.get(2).getLinkList();
+
+        assertEquals(3, actualCongratulationList.size());
+        assertEquals(1, actualCard.getId());
+        assertEquals("greeting Nomar", actualCard.getName());
+        assertEquals("path_to_image", actualCard.getBackgroundImage());
+        assertEquals("link_to_greeting", actualCard.getCardLink());
+        assertEquals(Status.STARTUP, actualCard.getStatus());
+
+        assertEquals("from Roma", actualCongratulationList.get(0).getMessage());
+        assertEquals("from Sasha", actualCongratulationList.get(1).getMessage());
+        assertEquals("from Nastya", actualCongratulationList.get(2).getMessage());
+        assertEquals(1, actualCongratulationList.get(0).getUser().getId());
+        assertEquals(1, actualCongratulationList.get(1).getUser().getId());
+        assertEquals(2, actualCongratulationList.get(2).getUser().getId());
+
+        assertEquals(6, fromRoma.size());
+        assertEquals(3, fromSasha.size());
+        assertEquals(0, fromNastya.size());
+    }
+
+
+    @Test
     @DisplayName("Return null when user does not has cards or access")
     public void getCardAndCongratulationNoAccess() {
         //when
-        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1, -1);
+        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardIdAndUserId(1, -1);
         //then
         assertNull(actualCard);
     }
@@ -197,7 +233,7 @@ public class JdbcCardDaoITest {
     @DisplayName("Return null if card does not exist")
     public void getCardAndCongratulationNotExist() {
         //when
-        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(-1000, 1);
+        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardIdAndUserId(-1000, 1);
         //then
         assertNull(actualCard);
     }
@@ -208,7 +244,7 @@ public class JdbcCardDaoITest {
         //when
         jdbcCardDao.deleteCardById(1, 1);
         //then
-        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
+        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardIdAndUserId(1, 1);
         assertNull(actualCard);
     }
 
@@ -218,7 +254,7 @@ public class JdbcCardDaoITest {
         //when
         jdbcCardDao.deleteCardById(1, 10000);
         //then
-        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
+        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardIdAndUserId(1, 1);
         assertNotNull(actualCard);
     }
 
@@ -226,10 +262,12 @@ public class JdbcCardDaoITest {
     @DisplayName("Change status of card to ISOVER")
     void changeStatusCardById() {
         //when
-        jdbcCardDao.changeCardStatusById(Status.ISOVER, 1);
+        String salt = UUID.randomUUID().toString().replaceAll("/", "");
+        jdbcCardDao.changeCardStatusAndSetCardLinkById(Status.ISOVER, 1, salt);
         //then
-        Card card = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
+        Card card = jdbcCardDao.getCardAndCongratulationByCardIdAndUserId(1, 1);
         assertEquals(Status.ISOVER, card.getStatus());
+        assertEquals(salt, card.getCardLink());
     }
 
     @Test
@@ -239,5 +277,5 @@ public class JdbcCardDaoITest {
         User user = User.builder().id(1).build();
         Card actual = Card.builder().id(1).user(user).name("newName").build();
         jdbcCardDao.changeCardName(actual);
-     }
+    }
 }

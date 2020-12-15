@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,17 +50,17 @@ class DefaultCardServiceTest {
     @DisplayName("Return List with all congratulations")
     void getCardAndCongratulationByCardId() {
         //when
-        defaultCardService.getCardAndCongratulationByCardId(1, 1);
+        defaultCardService.getCardAndCongratulationByCardIdAndUserId(1, 1);
         //then
-        verify(jdbcCardDao).getCardAndCongratulationByCardId(1, 1);
+        verify(jdbcCardDao).getCardAndCongratulationByCardIdAndUserId(1, 1);
     }
 
     @Test
-    @DisplayName("Return List with all congratulations")
-    void changeCardStatus() {
+    @DisplayName("Changing card status and creating card link(hash)")
+    void changeCardStatusAndCreateCardLink() {
         //when
-        defaultCardService.changeCardStatus(Status.STARTUP, 1);
+        defaultCardService.changeCardStatusAndCreateCardLink(Status.STARTUP, 1);
         //then
-        verify(jdbcCardDao).changeCardStatusById(Status.STARTUP, 1);
+        verify(jdbcCardDao).changeCardStatusAndSetCardLinkById(any(), anyLong(), anyString());
     }
 }
