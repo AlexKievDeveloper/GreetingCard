@@ -32,7 +32,7 @@ export class Cards extends Component {
   createCard(nameCard, history) {
     cardService.createCard(nameCard)
             .then((response) => response.json())
-            .then((data) => history.push('/edit_card/' + data.id));
+            .then((data) => history.push('/edit_card/' + data.id + '/all_blocks'));
   }
 
   render() {

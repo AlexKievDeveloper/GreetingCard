@@ -38,7 +38,7 @@ export default function CardActions(props) {
       .then(() => props.history.push("/cards/other"));
   };
 
-  const editLink = "/edit_card/" + props.id;
+  const editLink = "/edit_card/" + props.id + "/my_blocks";
 
   return (
     <div className="actions__column">
