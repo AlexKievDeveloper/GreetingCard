@@ -31,6 +31,14 @@ export default function FinishAndDeleteLeaveButtons(props) {
     }
   };
 
+  const unfinishCard = () => {
+    if (props.isMyCard) {
+      alert("This functionality is not implemented yet")
+    } else {
+      props.history.push("/cards/my");
+    }
+  };
+
   const deleteCard = (event) => {
     event.preventDefault();
     hidePopup();
@@ -39,11 +47,18 @@ export default function FinishAndDeleteLeaveButtons(props) {
 
     return (
         <React.Fragment>
-        {props.isMyCard && (
+        {props.isMyCard && !props.isFinished && (
             <CommandButton
               className="command-button--yellow"
               caption="Finish Card"
               action={finishCard}
+            />
+          )}
+          {props.isMyCard && props.isFinished && (
+            <CommandButton
+              className="command-button--yellow"
+              caption="Unfinish Card"
+              action={unfinishCard}
             />
           )}
           {props.isMyCard && (

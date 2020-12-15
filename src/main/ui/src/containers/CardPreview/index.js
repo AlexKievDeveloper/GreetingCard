@@ -10,21 +10,25 @@ export default class CardPreview extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      users: [],
+      usersWithBlocks: [],
       name: "",
       userIdCardAdmin: 0,
       cardId: 0,
+      cardStatus:"",
+      cardLink:""
     };
   }
 
   componentDidMount() {
     const id = this.props.match.params.idCard;
-    cardService.getCard(id).then((cardsData) => {
+    cardService.getCard(id).then((cardData) => {
       this.setState({
-        users: this.getBlocksGropedByUser(cardsData.congratulationList),
-        userIdCardAdmin: cardsData.user.id,
-        name: cardsData.name,
+        usersWithBlocks: this.getBlocksGropedByUser(cardData.congratulationList),
+        userIdCardAdmin: cardData.user.id,
+        name: cardData.name,
         cardId: id,
+        cardStatus:cardData.status,
+        cardLink:cardData.cardLink
       });
     });
   }
@@ -51,7 +55,7 @@ export default class CardPreview extends Component {
   };
 
   getBlocksByUser = () => {
-      return this.state.users.map((user) => (<BlockByUser blocks={user.blocks}/>))
+      return this.state.usersWithBlocks.map((user) => (<BlockByUser blocks={user.blocks}/>))
   }
 
   render() {
@@ -62,13 +66,15 @@ export default class CardPreview extends Component {
             <CardPreviewCommandRow
               cardId={this.state.cardId}
               isMyCard={userId === this.state.userIdCardAdmin}
+              cardStatus={this.state.cardStatus}
+              cardLink={this.state.cardLink}
             />
           )}
         </userContext.Consumer>
         <main className="container">
            <div className="card__title with-background margin-top_65">{this.state.name}</div>
            <div className="with-background" id="card__navigation">
-			  <FromUsers users = {this.state.users}/>			
+			  <FromUsers users = {this.state.usersWithBlocks}/>			
 		   </div>
            {this.getBlocksByUser()}
            <a className="pointer-to-navigation with-background" href="#card__navigation">To Navigation</a>					
