@@ -9,7 +9,7 @@ export default function BlockByUser(props) {
   ));
   return (
     <div
-      className="blocks__column with-background paper-like"
+      className="paper-like blocks__column"
       id={"blocks__column_Author" + user.id}
     >
       {blocks}
