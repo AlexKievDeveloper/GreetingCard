@@ -67,8 +67,8 @@ public class CardController {
             return ResponseEntity.status(HttpServletResponse.SC_OK).body(card);
         } else {
             log.info("User has no access : {}", id);
-            String json = objectMapper.writeValueAsString(Map.of("message", "Sorry, you are not a member of this card"));
-            return ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body(json);
+            String json = objectMapper.writeValueAsString(Map.of("message", "Wrong card data"));
+            return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).body(json);
         }
     }
 
