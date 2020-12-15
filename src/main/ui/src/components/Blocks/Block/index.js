@@ -9,7 +9,9 @@ export default function Block(props) {
         <BlockLink key={link.id} link={link.link} type={link.type}/>));
     return (
         <div className="congratulation-block">
-            <div className="signature">{props.block.user.firstName + " " + props.block.user.lastName}</div>
+            <div className="signature">
+                {props.block.user.firstName}&#160;{props.block.user.lastName}
+            </div>
             <div className="congratulation-body">
                 { props.isEdit && <BlockActions {...props} id={props.block.id} onDeleteBlock={props.onDeleteBlock}/>}
                 <div className="text-element">{parse(props.block.message)}</div>
