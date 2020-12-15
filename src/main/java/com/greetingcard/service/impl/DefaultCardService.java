@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class DefaultCardService implements CardService {
@@ -36,8 +37,13 @@ public class DefaultCardService implements CardService {
     }
 
     @Override
-    public Card getCardAndCongratulationByCardId(long cardId, long userId) {
-        return cardDao.getCardAndCongratulationByCardId(cardId, userId);
+    public Card getCardAndCongratulationByCardIdAndUserId(long cardId, long userId) {
+        return cardDao.getCardAndCongratulationByCardIdAndUserId(cardId, userId);
+    }
+
+    @Override
+    public Card getCardAndCongratulationByCardId(long cardId) {
+        return cardDao.getCardAndCongratulationByCardId(cardId);
     }
 
     @Override
@@ -46,8 +52,9 @@ public class DefaultCardService implements CardService {
     }
 
     @Override
-    public void changeCardStatus(Status status, long cardId) {
-        cardDao.changeCardStatusById(status, cardId);
+    public void changeCardStatusAndCreateCardLink(Status status, long cardId) {
+        String hash = UUID.randomUUID().toString().replaceAll("/", "");
+        cardDao.changeCardStatusAndSetCardLinkById(status, cardId, hash);
     }
 
     @Override
