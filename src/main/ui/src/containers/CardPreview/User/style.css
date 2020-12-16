@@ -12,6 +12,12 @@
 	margin-left: 30px;
 }
 
+.profile-picture > img {
+	object-fit: contain;
+	max-width: 46px;
+	max-height: 46px;
+}
+
 li > a {
 	font-size: 34px;
 	margin-bottom: 15px;
