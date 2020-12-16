@@ -23,6 +23,7 @@ export default function CardPreviewCommandRow(props) {
           className="command-button--yellow"
         />}
         <FinishAndDeleteLeaveButtons
+          {...props}
           idCard={props.cardId}
           isMyCard={props.isMyCard}
           isFinished={isFinished}

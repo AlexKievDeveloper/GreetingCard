@@ -43,6 +43,7 @@ export default function CardCommandRow(props) {
           />
         )}
         <FinishAndDeleteLeaveButtons
+            {...props}
             isMyCard = {props.isMyCard}
             idCard = {props.idCard}/>
       </div>
