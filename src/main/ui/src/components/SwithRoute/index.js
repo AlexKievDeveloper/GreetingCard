@@ -35,6 +35,7 @@ export default function SwitchRoute(props) {
                 <Route path="/add_block/:idCard" component={CreateEditBlock}/>
                 <Route path="/edit_block/:idBlock" component={CreateEditBlock}/>
                 <Route path="/preview/:idCard" component={CardPreview}/>
+                <Route path="/card/:idCard/card_link/:hash" component={CardPreview}/>
             </Switch>
         )
     else
@@ -54,6 +55,7 @@ export default function SwitchRoute(props) {
                 <Route path="/add_block/:idCard" component={Login}/>
                 <Route path="/edit_block/:idBlock" component={Login}/>
                 <Route path="/preview/:idCard" component={Login}/>
+                <Route path="/card/:idCard/card_link/:hash" component={CardPreview}/>
             </Switch>
         )
 }
