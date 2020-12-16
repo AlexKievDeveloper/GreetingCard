@@ -9,6 +9,7 @@ export default function Card(props) {
             <CardInfo name={props.card.name}
                       userName={props.card.user.login}
                       cardStatus={props.card.status}
+                      id={props.card.id}
             />
             <CardActions {...props} id={props.card.id} onDeleteCard={props.onDeleteCard}/>
         </div>

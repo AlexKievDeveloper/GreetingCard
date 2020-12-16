@@ -61,6 +61,7 @@ export class CreateEditCard extends Component {
         key={block.id}
         block={block}
         idCard={idCard}
+        isEdit={true}
         onDeleteBlock={this.deleteBlock}
       />
     ));
