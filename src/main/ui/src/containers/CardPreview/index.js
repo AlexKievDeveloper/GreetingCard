@@ -76,6 +76,7 @@ export default class CardPreview extends Component {
           <userContext.Consumer>
             {({ userId }) => (
               <CardPreviewCommandRow
+                {...this.props}
                 cardId={this.state.cardId}
                 isMyCard={userId === this.state.userIdCardAdmin}
                 cardStatus={this.state.cardStatus}
