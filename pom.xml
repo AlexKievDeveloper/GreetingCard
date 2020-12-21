@@ -124,6 +124,7 @@
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>${jetty.maven.plugin.version}</version>
+                <configuration><httpConnector>9998</httpConnector></configuration>
             </plugin>
 
             <plugin>

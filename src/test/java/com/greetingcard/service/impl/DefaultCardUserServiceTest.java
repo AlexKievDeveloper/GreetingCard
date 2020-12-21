@@ -54,15 +54,6 @@ class DefaultCardUserServiceTest {
     }
 
     @Test
-    @DisplayName("check - login is not existing")
-    void checkLoginExistInDB() {
-        String login = "user_not_correct";
-        Mockito.when(userService.findByLogin(login)).thenReturn(null);
-        assertThrows(IllegalArgumentException.class, () ->
-                cardUserService.checkLoginExistInDB(login));
-    }
-
-    @Test
     @DisplayName("check - login is existing")
     void checkLoginExistInDBCorrectValue() {
         String login = "user_correct";

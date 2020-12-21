@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfig
         executeStatementsBefore = "SELECT setval('cards_card_id_seq', 3); SELECT setval(' users_cards_users_cards_id_seq', 6);",
         cleanAfter = true)
 @ExtendWith(MockitoExtension.class)
-@SpringJUnitWebConfig(value = {TestConfiguration.class,  RootApplicationContext.class})
+@SpringJUnitWebConfig(value = {TestConfiguration.class, RootApplicationContext.class})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CardControllerTest {
     private MockMvc mockMvc;
@@ -75,7 +75,7 @@ class CardControllerTest {
                 .sessionAttr("user", user))
                 .andDo(print())
                 .andExpect(jsonPath("$.message").value("Sorry, you are not a member of this card"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -118,7 +118,7 @@ class CardControllerTest {
     @DisplayName("Return all card of user")
     void getCardsAll() throws Exception {
         User user = User.builder().id(1).build();
-        mockMvc.perform(get("/api/v1/cards?type=all")
+        mockMvc.perform(get("/api/v1/cards?type=ALL")
                 .sessionAttr("user", user))
                 .andDo(print())
                 .andExpect(jsonPath("$[0].id").value("1"))
@@ -178,7 +178,7 @@ class CardControllerTest {
                 .characterEncoding("utf-8")
                 .sessionAttr("user", user))
                 .andDo(print())
-                .andExpect(jsonPath("$.message").value("Name is short or too long"))
+                .andExpect(jsonPath("$.message").value("Name is empty or too long"))
                 .andExpect(status().isBadRequest());
     }
 

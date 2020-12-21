@@ -5,11 +5,10 @@ import com.greetingcard.entity.Link;
 import com.greetingcard.entity.Status;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface CongratulationDao {
 
-    Optional<Congratulation> getCongratulationById(long congratulationId);
+    Congratulation getCongratulationById(long congratulationId);
 
     void save(Congratulation congratulation);
 

@@ -13,8 +13,6 @@ public interface UserDao {
 
     User findByLogin(String login);
 
-    User findById(long id);
-
     User findByEmail(String email);
 
     User findByForgotPasswordAccessHash(String hash);

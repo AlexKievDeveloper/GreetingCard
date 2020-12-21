@@ -18,7 +18,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.mock.web.MockMultipartFile;
@@ -33,7 +32,6 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
@@ -61,8 +59,7 @@ class DefaultCongratulationServiceSystemTest {
     @Autowired
     private CongratulationService congratulationService;
 
-    private final byte[] bytes = new byte[1024 * 1024 * 10];
-
+    private final byte[] bytes = new byte[1024 * 1024];
 
     @Test
     @DisplayName("Adds links to linkList")
@@ -123,8 +120,7 @@ class DefaultCongratulationServiceSystemTest {
         congratulationService.updateCongratulationById(mockImageFiles, mockAudioFiles, parametersMap, 1, 1);
 
         //then
-        Optional<Congratulation> optionalCongratulation = congratulationService.getCongratulationById(1);
-        Congratulation congratulation = optionalCongratulation.get();
+        Congratulation congratulation = congratulationService.getCongratulationById(1);
 
         assertEquals("Congratulation from updateCongratulationById test", congratulation.getMessage());
         assertEquals(9, congratulation.getLinkList().size());
@@ -155,6 +151,5 @@ class DefaultCongratulationServiceSystemTest {
         linkList.removeIf(x -> x.getType() == LinkType.PICTURE);
 
         assertEquals(0, linkList.size());
-
     }
 }

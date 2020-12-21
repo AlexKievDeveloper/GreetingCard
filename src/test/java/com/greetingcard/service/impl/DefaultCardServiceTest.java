@@ -26,7 +26,7 @@ class DefaultCardServiceTest {
     @DisplayName("Returns list with cards")
     void getCardsWhenParameterIsAllCards() {
         //when
-        defaultCardService.getCards(1, CardsType.All);
+        defaultCardService.getCards(1, CardsType.ALL);
         //then
         verify(jdbcCardDao).getAllCardsByUserId(1);
     }

@@ -1,7 +1,7 @@
 package com.greetingcard.entity;
 
 public enum CardsType {
-    All("all"), MY("my"), OTHER("other");
+    ALL("all"), MY("my"), OTHER("other");
 
     private final String type;
 

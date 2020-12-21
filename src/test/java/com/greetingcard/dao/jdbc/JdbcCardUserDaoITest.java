@@ -75,6 +75,12 @@ class JdbcCardUserDaoITest {
     }
 
     @Test
+    void getUserMembersByCardIdEmptyListIfCardNotExist() {
+        List<UserInfo> userInfoList = jdbcCardUserDao.getUserMembersByCardId(1000);
+        assertEquals(0, userInfoList.size());
+    }
+
+    @Test
     void getUserMembersByCardIdSomeUsers() {
         List<UserInfo> userInfoList = jdbcCardUserDao.getUserMembersByCardId(2);
         assertEquals(2, userInfoList.size());

@@ -8,8 +8,6 @@ import com.greetingcard.entity.Role;
 import com.greetingcard.entity.Status;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -26,11 +24,8 @@ import java.util.Optional;
 
 @Slf4j
 @Repository
-@PropertySource("classpath:queries.properties")
 public class JdbcCardDao implements CardDao {
-    @Autowired
     private JdbcTemplate jdbcTemplate;
-    @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Autowired
@@ -51,6 +46,11 @@ public class JdbcCardDao implements CardDao {
     private String getAllCardsByUserId;
     @Autowired
     private String changeName;
+
+    public JdbcCardDao(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    }
 
     @Override
     public List<Card> getAllCardsByUserId(long id) {
@@ -82,9 +82,9 @@ public class JdbcCardDao implements CardDao {
     }
 
     @Override
-    public Optional<Card> getCardAndCongratulationByCardId(long cardId, long userId) {
+    public Card getCardAndCongratulationByCardId(long cardId, long userId) {
         MapSqlParameterSource namedParameters = new MapSqlParameterSource("cardId", cardId).addValue("userId", userId);
-        return Optional.ofNullable(namedParameterJdbcTemplate.query(cardAndCongratulation, namedParameters, new CardAndCongratulationExtractor()));
+        return namedParameterJdbcTemplate.query(cardAndCongratulation, namedParameters, new CardAndCongratulationExtractor());
     }
 
     @Override

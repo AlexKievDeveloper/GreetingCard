@@ -26,7 +26,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -53,7 +52,7 @@ class JdbcCongratulationDaoITest {
     @Value("${region}")
     private String region;
 
-    private final byte[] bytes = new byte[1024 * 1024 * 10];
+    private final byte[] bytes = new byte[1024 * 1024];
 
     @BeforeAll
     void dbSetUp() {
@@ -74,12 +73,9 @@ class JdbcCongratulationDaoITest {
     @DisplayName("Returns an object of class Congratulation from result set")
     void getCongratulationByIdTest() {
         //when
-        Optional<Congratulation> optionalCongratulation = congratulationDao.getCongratulationById(1);
-        Congratulation actualCongratulation = optionalCongratulation.get();
+        Congratulation actualCongratulation = congratulationDao.getCongratulationById(1);
 
         //then
-        assertTrue(optionalCongratulation.isPresent());
-
         assertEquals(1, actualCongratulation.getId());
         assertEquals("from Roma", actualCongratulation.getMessage());
         assertEquals(1, actualCongratulation.getCardId());
@@ -116,13 +112,10 @@ class JdbcCongratulationDaoITest {
     }
 
     @Test
-    @DisplayName("Returns an object of class Congratulation from result set")
-    void getCongratulationById_IfNotExistTest() {
-        //when
-        Optional<Congratulation> optionalCongratulation = congratulationDao.getCongratulationById(1000);
-
-        //then
-        assertFalse(optionalCongratulation.isPresent());
+    @DisplayName("Throws IllegalArgumentException")
+    void getCongratulationByIdTestCongratulationNotExist() {
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> congratulationDao.getCongratulationById(1000));
+        assertEquals("Empty result set for requested congratulation", e.getMessage());
     }
 
     @Test
@@ -188,7 +181,7 @@ class JdbcCongratulationDaoITest {
 
     @Test
     @ExpectedDataSet(value = {"congratulationsAfterDeleteByCardId.xml", "linksAfterDeleteByCardId.xml"})
-    @DisplayName("Delete congratulations by id of card with all parameters")
+    @DisplayName("Delete congratulation by id of card with all parameters")
     void deleteByCardId() throws IOException {
         //prepare
         MockMultipartFile mockImageFile1 = new MockMultipartFile("files_image", "img1.jpg", "image/jpg", bytes);
@@ -288,8 +281,8 @@ class JdbcCongratulationDaoITest {
         congratulationDao.deleteById(7, 1);
 
         //then
-        Optional<Congratulation> actual = congratulationDao.getCongratulationById(7);
-        assertFalse(actual.isPresent());
+        assertThrows(IllegalArgumentException.class, () ->
+                congratulationDao.getCongratulationById(7));
     }
 
     @Test
@@ -354,15 +347,15 @@ class JdbcCongratulationDaoITest {
     @DisplayName("Change status to STARTUP congratulations by id of card")
     void changeCongratulationStatusByCongratulationId() {
         //prepare
-        Optional<Congratulation> optionalCongratulation = congratulationDao.getCongratulationById(1);
-        assertEquals(Status.STARTUP, optionalCongratulation.get().getStatus());
+        Congratulation congratulation = congratulationDao.getCongratulationById(1);
+        assertEquals(Status.STARTUP, congratulation.getStatus());
 
         //when
         congratulationDao.changeCongratulationStatusByCongratulationId(Status.ISOVER, 1);
 
         //then
-        Optional<Congratulation> optionalCongratulationAfter = congratulationDao.getCongratulationById(1);
-        assertEquals(Status.ISOVER, optionalCongratulationAfter.get().getStatus());
+        Congratulation actualCongratulation = congratulationDao.getCongratulationById(1);
+        assertEquals(Status.ISOVER, actualCongratulation.getStatus());
     }
 
     @Test
@@ -372,8 +365,8 @@ class JdbcCongratulationDaoITest {
         congratulationDao.updateCongratulationMessage("Congratulations from updateCongratulationTest", 1, 1);
 
         //then
-        Optional<Congratulation> optionalCongratulationAfter = congratulationDao.getCongratulationById(1);
-        assertEquals("Congratulations from updateCongratulationTest", optionalCongratulationAfter.get().getMessage());
+        Congratulation actualCongratulation = congratulationDao.getCongratulationById(1);
+        assertEquals("Congratulations from updateCongratulationTest", actualCongratulation.getMessage());
     }
 
     @Test
@@ -393,12 +386,10 @@ class JdbcCongratulationDaoITest {
         congratulationDao.saveLinks(linkList, 1);
 
         //then
-        Optional<Congratulation> optionalCongratulation = congratulationDao.getCongratulationById(1);
-        Congratulation congratulation = optionalCongratulation.get();
-
-        assertEquals(1, congratulation.getLinkList().get(6).getCongratulationId());
-        assertEquals("you_tube_10", congratulation.getLinkList().get(6).getLink());
-        assertEquals(LinkType.VIDEO, congratulation.getLinkList().get(6).getType());
+        Congratulation actualCongratulation = congratulationDao.getCongratulationById(1);
+        assertEquals(1, actualCongratulation.getLinkList().get(6).getCongratulationId());
+        assertEquals("you_tube_10", actualCongratulation.getLinkList().get(6).getLink());
+        assertEquals(LinkType.VIDEO, actualCongratulation.getLinkList().get(6).getType());
     }
 
     @Test
@@ -463,17 +454,17 @@ class JdbcCongratulationDaoITest {
                 .build();
 
         List<Link> linkList = List.of(link, link2);
-        Optional<Congratulation> beforeCongratulation = congratulationDao.getCongratulationById(1);
-        assertEquals(6, beforeCongratulation.get().getLinkList().size());
+        Congratulation beforeCongratulation = congratulationDao.getCongratulationById(1);
+        assertEquals(6, beforeCongratulation.getLinkList().size());
 
         //when
         congratulationDao.deleteLinksById(linkList, 1);
 
         //then
-        Optional<Congratulation> afterCongratulation = congratulationDao.getCongratulationById(1);
-        assertEquals(4, afterCongratulation.get().getLinkList().size());
+        Congratulation afterCongratulation = congratulationDao.getCongratulationById(1);
+        assertEquals(4, afterCongratulation.getLinkList().size());
 
-        for (Link linkAfter : afterCongratulation.get().getLinkList()) {
+        for (Link linkAfter : afterCongratulation.getLinkList()) {
             assertNotEquals(linkAfter.getId(), 2);
             assertNotEquals(linkAfter.getId(), 3);
         }

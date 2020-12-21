@@ -6,8 +6,6 @@ import com.greetingcard.entity.Role;
 import com.greetingcard.entity.UserInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -19,9 +17,7 @@ import java.util.StringJoiner;
 
 @Slf4j
 @Repository
-@PropertySource("classpath:queries.properties")
 public class JdbcCardUserDao implements CardUserDao {
-    @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Autowired
@@ -34,6 +30,10 @@ public class JdbcCardUserDao implements CardUserDao {
     private String deleteUser;
     @Autowired
     private String deleteListUsers;
+
+    public JdbcCardUserDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    }
 
     @Override
     public void addUserMember(long cardId, long userId) {

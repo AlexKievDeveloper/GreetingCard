@@ -1,8 +1,7 @@
 package com.greetingcard.dao.jdbc;
 
 import com.greetingcard.dao.UserDao;
-import com.greetingcard.dao.jdbc.mapper.UserFindByIdRowMapper;
-import com.greetingcard.dao.jdbc.mapper.UserIdRowMapper;
+import com.greetingcard.dao.jdbc.mapper.UserIdExtractor;
 import com.greetingcard.dao.jdbc.mapper.UserRowMapper;
 import com.greetingcard.entity.AccessHashType;
 import com.greetingcard.entity.User;
@@ -10,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
@@ -22,8 +22,6 @@ import static com.greetingcard.entity.AccessHashType.VERIFY_EMAIL;
 @Repository
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class JdbcUserDao implements UserDao {
-    private static final UserRowMapper USER_ROW_MAPPER = new UserRowMapper();
-    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
@@ -32,8 +30,6 @@ public class JdbcUserDao implements UserDao {
     private String updateUser;
     @Autowired
     private String updateUserPassword;
-    @Autowired
-    private String findUserById;
     @Autowired
     private String findUserByLogin;
     @Autowired
@@ -52,6 +48,10 @@ public class JdbcUserDao implements UserDao {
     private String deleteVerifyEmailAccessHash;
     @Autowired
     private String updateUserVerifyEmail;
+
+    public JdbcUserDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public void save(@NonNull User user) {
@@ -73,21 +73,19 @@ public class JdbcUserDao implements UserDao {
     }
 
     @Override
-    public User findById(long id) {
-        log.info("Getting user by login {}", id);
-        return jdbcTemplate.queryForObject(findUserById, new UserFindByIdRowMapper(), id);
-    }
-
-    @Override
     public User findByLogin(@NonNull String login) {
         log.info("Getting user by login {}", login);
-        return jdbcTemplate.query(findUserByLogin, USER_ROW_MAPPER, login);
+        return jdbcTemplate.queryForObject(findUserByLogin, new UserRowMapper(), login);
     }
 
     @Override
     public User findByEmail(@NonNull String email) {
         log.info("Getting user by email {}", email);
-        return jdbcTemplate.query(findUserByEmail, USER_ROW_MAPPER, email);
+        try {
+            return jdbcTemplate.queryForObject(findUserByEmail, new UserRowMapper(), email);
+        } catch (DataAccessException e) {
+            throw new IllegalArgumentException("User with email: ".concat(email).concat(" does not exist"), e);
+        }
     }
 
     @Override
@@ -104,7 +102,7 @@ public class JdbcUserDao implements UserDao {
     @Override
     @Transactional
     public void verifyEmailAccessHash(@NonNull String hash) {
-        Long user_id = jdbcTemplate.query(findVerifyEmailAccessHash, new UserIdRowMapper(), hash);
+        Long user_id = jdbcTemplate.query(findVerifyEmailAccessHash, new UserIdExtractor(), hash);
         if (user_id != null) {
             jdbcTemplate.update(deleteVerifyEmailAccessHash, hash);
             jdbcTemplate.update(updateUserVerifyEmail, user_id);
@@ -113,8 +111,12 @@ public class JdbcUserDao implements UserDao {
 
     @Override
     public User findByForgotPasswordAccessHash(String hash) {
-        log.debug("Getting user by access hash");
-        return jdbcTemplate.query(findUserByForgotPassAccessHash, USER_ROW_MAPPER, hash);
+        try {
+            log.debug("Getting user by access hash");
+            return jdbcTemplate.queryForObject(findUserByForgotPassAccessHash, new UserRowMapper(), hash);
+        } catch (DataAccessException e) {
+            throw new IllegalArgumentException("No user found for requested hash");
+        }
     }
 
     @Override

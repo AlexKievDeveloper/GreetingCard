@@ -38,6 +38,7 @@ public class GreetingCardAppInitializer extends AbstractAnnotationConfigDispatch
     protected Filter[] getServletFilters() {
         CharacterEncodingFilter encodingFilter = new CharacterEncodingFilter();
         encodingFilter.setEncoding("UTF-8");
+        encodingFilter.setForceEncoding(true);
         return new Filter[]{new AuthorizationFilter(), encodingFilter};
     }
 

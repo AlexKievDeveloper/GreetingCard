@@ -12,8 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -58,5 +57,15 @@ class CongratulationExtractorTest {
         assertEquals(1, actualCongratulation.getLinkList().get(0).getId());
         assertEquals("you_tube_1", actualCongratulation.getLinkList().get(0).getLink());
         assertEquals(LinkType.VIDEO, actualCongratulation.getLinkList().get(0).getType());
+    }
+
+    @Test
+    @DisplayName("Empty result set")
+    void extractDataEmptyResultSet() {
+        //prepare
+        CongratulationExtractor congratulationExtractor = new CongratulationExtractor();
+        //when + then
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> congratulationExtractor.extractData(mockResultSet));
+        assertEquals("Empty result set for requested congratulation", e.getMessage());
     }
 }

@@ -6,28 +6,28 @@ import com.greetingcard.entity.Link;
 import com.greetingcard.entity.LinkType;
 import com.greetingcard.entity.Status;
 import com.greetingcard.service.CongratulationService;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class DefaultCongratulationService implements CongratulationService {
     private CongratulationDao congratulationDao;
     private DefaultAmazonService defaultAmazonService;
 
-    public DefaultCongratulationService(CongratulationDao congratulationDao, DefaultAmazonService defaultAmazonService) {
-        this.congratulationDao = congratulationDao;
-        this.defaultAmazonService = defaultAmazonService;
-    }
-
     @Override
-    public Optional<Congratulation> getCongratulationById(long congratulationId) {
+    public Congratulation getCongratulationById(long congratulationId) {
         return congratulationDao.getCongratulationById(congratulationId);
     }
 

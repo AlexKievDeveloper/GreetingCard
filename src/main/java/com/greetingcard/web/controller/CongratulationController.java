@@ -9,9 +9,7 @@ import com.greetingcard.entity.Status;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CongratulationService;
 import lombok.AllArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +21,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -34,10 +31,9 @@ public class CongratulationController {
     private final ObjectMapper objectMapper;
 
     @GetMapping("/{id}")
-    public Congratulation getCongratulation(@PathVariable("id") long congratulationId) throws JsonProcessingException {
+    public Congratulation getCongratulation(@PathVariable("id") long congratulationId) {
         log.info("Received request for getting congratulation");
-        Optional<Congratulation> optionalCongratulation = congratulationService.getCongratulationById(congratulationId);
-        return optionalCongratulation.orElseThrow(() -> new IllegalArgumentException("No such congratulations"));
+        return congratulationService.getCongratulationById(congratulationId);
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

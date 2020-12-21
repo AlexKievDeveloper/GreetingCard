@@ -6,13 +6,14 @@ import com.greetingcard.entity.Language;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.EmailService;
 import com.greetingcard.service.impl.DefaultAmazonService;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.MessageDigest;
@@ -23,18 +24,20 @@ import java.util.UUID;
 import static com.greetingcard.entity.AccessHashType.VERIFY_EMAIL;
 
 @Slf4j
-@Setter//TODO:костыль - сеттер нужен только для тестов
+@RequestScope
 @Service
 @PropertySource(value = "classpath:application.properties")
 public class DefaultSecurityService implements SecurityService {
+    @Autowired
     private UserDao userDao;
+    @Autowired
     private DefaultAmazonService defaultAmazonService;
 
     @Value("${algorithm:SHA-256}")
     private String algorithm;
     @Value("${iteration:1}")
     private int iteration;
-    @Value("${webapp.url:https://greeting-team.herokuapp.com/}")
+    @Value("${webapp.url}")
     private String siteUrl;
     @Value("${max.characters.name.and.last.name}")
     private int maxCharactersNameAndLastName;
@@ -48,11 +51,12 @@ public class DefaultSecurityService implements SecurityService {
 
     @Override
     public User login(String login, String password) {
+
         log.info("login: {}", login);
         checkUserCredentials(login, maxCharactersEmailAndLogin, "login");
-        User user = userDao.findByLogin(login);
 
-        if (user != null) {
+        try {
+            User user = userDao.findByLogin(login);
             String salt = user.getSalt();
             String hashPassword = getHashPassword(salt.concat(password));
 
@@ -60,8 +64,13 @@ public class DefaultSecurityService implements SecurityService {
                 log.info("Credentials is ok");
                 return user;
             }
+
+            log.info("Credentials not valid");
+            throw new IllegalAccessError("Access denied. Please check your login and password");
+        } catch (DataAccessException e) {
+            log.info("Credentials not valid");
+            throw new IllegalAccessError("Access denied. Please check your login and password");
         }
-        return null;
     }
 
     @Override
@@ -111,22 +120,19 @@ public class DefaultSecurityService implements SecurityService {
     }
 
     @Override
-    public User findById(long id) {
-        return userDao.findById(id);
-    }
-
-    @Override
     public User findByLogin(String login) {
-        return userDao.findByLogin(login);
+        try {
+            return userDao.findByLogin(login);
+        } catch (DataAccessException e) {
+            log.info("Login does not exist: {}", login);
+            throw new IllegalArgumentException("Login does not exist", e);
+        }
     }
 
     @Override
     @Transactional
     public void restorePassword(String email) {
         User user = userDao.findByEmail(email);
-        if (user == null) {
-            throw new RuntimeException("Cannot find a user with email: " + email);
-        }
 
         log.info("Generating new password for user with email {}", email);
         String newPassword = UUID.randomUUID().toString().substring(0, 15);

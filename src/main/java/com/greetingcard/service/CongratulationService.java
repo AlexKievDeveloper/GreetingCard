@@ -7,11 +7,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public interface CongratulationService {
-
-    Optional<Congratulation> getCongratulationById(long congratulationId);
+    Congratulation getCongratulationById(long congratulationId);
 
     List<Link> getLinkList(MultipartFile[] files_image, MultipartFile[] files_audio, Map<String, String> parametersMap);
 

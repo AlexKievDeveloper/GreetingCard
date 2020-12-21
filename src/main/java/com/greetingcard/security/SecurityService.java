@@ -14,8 +14,6 @@ public interface SecurityService {
 
     void updatePassword(User user);
 
-    User findById(long id);
-
     User findByLogin(String login);
 
     void restorePassword(String email);

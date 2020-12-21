@@ -1,7 +1,6 @@
 package com.greetingcard.dao.jdbc.mapper;
 
 import com.greetingcard.entity.*;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
 import java.sql.ResultSet;
@@ -11,9 +10,9 @@ import java.util.List;
 
 public class CongratulationExtractor implements ResultSetExtractor<Congratulation> {
     @Override
-    public Congratulation extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+    public Congratulation extractData(ResultSet resultSet) throws SQLException {
         if (!resultSet.next()) {
-            return null;
+            throw new IllegalArgumentException("Empty result set for requested congratulation");
         }
 
         Congratulation congratulation = Congratulation.builder()
@@ -24,30 +23,19 @@ public class CongratulationExtractor implements ResultSetExtractor<Congratulatio
                 .status(Status.getByNumber(resultSet.getInt("status_id")))
                 .build();
 
-        Link firstLink = null;
-        if (resultSet.getInt("link_id") != 0) {
-            firstLink = Link.builder()
-                    .id(resultSet.getInt("link_id"))
-                    .link(resultSet.getString("link"))
-                    .congratulationId(resultSet.getInt("congratulation_id"))
-                    .type(LinkType.getByNumber(resultSet.getInt("type_id")))
-                    .build();
-        }
-
         List<Link> linkList = new ArrayList<>();
-        linkList.add(firstLink);
+        if (resultSet.getInt("link_id") != 0) {
+            do {
+                Link link = Link.builder()
+                        .id(resultSet.getInt("link_id"))
+                        .link(resultSet.getString("link"))
+                        .congratulationId(resultSet.getInt("congratulation_id"))
+                        .type(LinkType.getByNumber(resultSet.getInt("type_id")))
+                        .build();
 
-        while (resultSet.next()) {
-            Link link = Link.builder()
-                    .id(resultSet.getInt("link_id"))
-                    .link(resultSet.getString("link"))
-                    .congratulationId(resultSet.getInt("congratulation_id"))
-                    .type(LinkType.getByNumber(resultSet.getInt("type_id")))
-                    .build();
-
-            linkList.add(link);
+                linkList.add(link);
+            } while (resultSet.next());
         }
-
         congratulation.setLinkList(linkList);
         return congratulation;
     }

@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -123,6 +122,24 @@ public class JdbcCardDaoITest {
     }
 
     @Test
+    @DisplayName("Returns empty List<Cards> from DB when user not exist")
+    void getAllMyCardsByUserIdAndRoleIdUserNotExist() {
+        //when
+        List<Card> actualList = jdbcCardDao.getCardsByUserIdAndRoleId(1000, 2);
+        //then
+        assertEquals(0, actualList.size());
+    }
+
+    @Test
+    @DisplayName("Returns empty List<Cards> from DB when role not exist")
+    void getAllMyCardsByUserIdAndRoleIdRoleNotExist() {
+        //when
+        List<Card> actualList = jdbcCardDao.getCardsByUserIdAndRoleId(1, 1000);
+        //then
+        assertEquals(0, actualList.size());
+    }
+
+    @Test
     @DisplayName("Save new card")
     public void createCard() {
         //prepare
@@ -144,8 +161,7 @@ public class JdbcCardDaoITest {
     @DisplayName("Return card of admin with all congratulations")
     public void getCardAndCongratulationAdmin() {
         //when
-        Optional<Card> optionalCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
-        Card actualCard = optionalCard.get();
+        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
         List<Congratulation> actualCongratulationList = actualCard.getCongratulationList();
 
         //then
@@ -176,8 +192,7 @@ public class JdbcCardDaoITest {
     @DisplayName("Return card of member with all congratulations")
     public void getCardAndCongratulationMember() {
         //when
-        Optional<Card> optionalCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
-        Card actualCard = optionalCard.get();
+        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
         List<Congratulation> actualCongratulationList = actualCard.getCongratulationList();
 
         //then
@@ -207,19 +222,17 @@ public class JdbcCardDaoITest {
     @Test
     @DisplayName("Return null when user does not has cards or access")
     public void getCardAndCongratulationNoAccess() {
-        //when
-        Optional<Card> optionalCard = jdbcCardDao.getCardAndCongratulationByCardId(1, -1);
-        //then
-        assertFalse(optionalCard.isPresent());
+        //when + then
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> jdbcCardDao.getCardAndCongratulationByCardId(1, -1));
+        assertEquals("Sorry, you are not a member of this card", e.getMessage());
     }
 
     @Test
     @DisplayName("Return null if card does not exist")
     public void getCardAndCongratulationNotExist() {
-        //when
-        Optional<Card> optionalCard = jdbcCardDao.getCardAndCongratulationByCardId(-1000, 1);
-        //then
-        assertFalse(optionalCard.isPresent());
+        //when + then
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> jdbcCardDao.getCardAndCongratulationByCardId(-1000, 1));
+        assertEquals("Sorry, you are not a member of this card", e.getMessage());
     }
 
     @Test
@@ -228,8 +241,8 @@ public class JdbcCardDaoITest {
         //when
         jdbcCardDao.deleteCardById(1, 1);
         //then
-        Optional<Card> optionalCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
-        assertFalse(optionalCard.isPresent());
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> jdbcCardDao.getCardAndCongratulationByCardId(1, 1));
+        assertEquals("Sorry, you are not a member of this card", e.getMessage());
     }
 
     @Test
@@ -238,8 +251,7 @@ public class JdbcCardDaoITest {
         //when
         jdbcCardDao.deleteCardById(1, 10000);
         //then
-        Optional<Card> optionalCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
-        assertTrue(optionalCard.isPresent());
+        assertNotNull(jdbcCardDao.getCardAndCongratulationByCardId(1, 1));
     }
 
     @Test
@@ -248,8 +260,7 @@ public class JdbcCardDaoITest {
         //when
         jdbcCardDao.changeCardStatusById(Status.ISOVER, 1);
         //then
-        Optional<Card> optionalCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
-        Card actualCard = optionalCard.get();
+        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
         assertEquals(Status.ISOVER, actualCard.getStatus());
     }
 

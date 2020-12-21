@@ -10,10 +10,7 @@ import com.greetingcard.entity.Status;
 import com.greetingcard.service.impl.DefaultAmazonService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -22,27 +19,18 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.annotation.RequestScope;
 
 import java.sql.PreparedStatement;
 import java.util.*;
 
 @Slf4j
 @Repository
-@PropertySource("classpath:queries.properties")
-@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)//TODO:я не понимаю как это работает.
-// Эта аннотация была добавлена что бы исправить Bean named 'congratulationDao'
-// is expected to be of type 'com.greetingcard.dao.jdbc.' but was actually of type
-// 'com.sun.proxy.$Proxy63'
+@RequestScope
 public class JdbcCongratulationDao implements CongratulationDao {
-    private static final CongratulationExtractor CONGRATULATION_EXTRACTOR = new CongratulationExtractor();
-    private static final CongratulationsExtractor CONGRATULATIONS_EXTRACTOR = new CongratulationsExtractor();
-    private static final LinksRowMapper LINKS_ROW_MAPPER = new LinksRowMapper();
 
-    @Autowired
     private JdbcTemplate jdbcTemplate;
-    @Autowired
     private NamedParameterJdbcTemplate namedJdbcTemplate;
-    @Autowired
     private DefaultAmazonService defaultAmazonService;
 
     @Autowired
@@ -72,9 +60,15 @@ public class JdbcCongratulationDao implements CongratulationDao {
     @Autowired
     private String deleteLinkById;
 
+    public JdbcCongratulationDao(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedJdbcTemplate, DefaultAmazonService defaultAmazonService) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.namedJdbcTemplate = namedJdbcTemplate;
+        this.defaultAmazonService = defaultAmazonService;
+    }
+
     @Override
-    public Optional<Congratulation> getCongratulationById(long congratulationId) {
-        return Optional.ofNullable(jdbcTemplate.query(getCongratulation, CONGRATULATION_EXTRACTOR, congratulationId));
+    public Congratulation getCongratulationById(long congratulationId) {
+        return jdbcTemplate.query(getCongratulation, new CongratulationExtractor(), congratulationId);
     }
 
     @Override
@@ -129,7 +123,7 @@ public class JdbcCongratulationDao implements CongratulationDao {
 
     @Override
     public List<Congratulation> findCongratulationsByCardId(long cardId) {
-        return jdbcTemplate.query(findCongratulationsByCardId, CONGRATULATIONS_EXTRACTOR, cardId);
+        return jdbcTemplate.query(findCongratulationsByCardId, new CongratulationsExtractor(), cardId);
     }
 
     @Override
@@ -175,11 +169,16 @@ public class JdbcCongratulationDao implements CongratulationDao {
     }
 
     List<Link> getLinksList(List<Link> linkList, long congratulationId) {
-        if (linkList.size() > 0) {
-            MapSqlParameterSource params = getMapSqlParameterSourceForList(linkList);
-            String sql = getLinks + getNamesOfParams(params.getParameterNames()) + "and congratulation_id = congratulation_id and (type_id = 2 OR type_id = 3)";
-            params.addValue("congratulation_id", congratulationId);
-            return namedJdbcTemplate.query(sql, params, LINKS_ROW_MAPPER);
+        try {
+            if (linkList.size() > 0) {
+                MapSqlParameterSource params = getMapSqlParameterSourceForList(linkList);
+                String sql = getLinks + getNamesOfParams(params.getParameterNames()) + "and congratulation_id = congratulation_id and (type_id = 2 OR type_id = 3)";
+                params.addValue("congratulation_id", congratulationId);
+                return namedJdbcTemplate.query(sql, params, new LinksRowMapper());
+            }
+        } catch (DataAccessException e) {
+            log.info("There are no links for congratulation with id: " + congratulationId);
+            return List.of();
         }
         return List.of();
     }

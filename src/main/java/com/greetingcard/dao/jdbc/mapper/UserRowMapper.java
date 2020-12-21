@@ -2,12 +2,14 @@ package com.greetingcard.dao.jdbc.mapper;
 
 import com.greetingcard.entity.Language;
 import com.greetingcard.entity.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@Slf4j
 public class UserRowMapper implements RowMapper<User> {
     @Override
     public User mapRow(ResultSet resultSet, int row) throws SQLException, DataAccessException {

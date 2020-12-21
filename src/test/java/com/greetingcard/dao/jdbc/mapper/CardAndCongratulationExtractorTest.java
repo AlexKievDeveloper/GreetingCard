@@ -9,6 +9,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -21,7 +23,7 @@ class CardAndCongratulationExtractorTest {
     @DisplayName("Returns an object of class Card with all congratulations from result set")
     void extractData() throws SQLException {
         //prepare
-        CardAndCongratulationExtractor rowMapper = new CardAndCongratulationExtractor();
+        CardAndCongratulationExtractor extractor = new CardAndCongratulationExtractor();
 
         when(mockResultSet.next()).thenReturn(true).thenReturn(false);
         when(mockResultSet.getLong("card_user")).thenReturn(1L);
@@ -45,7 +47,7 @@ class CardAndCongratulationExtractorTest {
         when(mockResultSet.getInt("type_id")).thenReturn(1);
 
         //when
-        rowMapper.extractData(mockResultSet);
+        extractor.extractData(mockResultSet);
 
         //then
         verify(mockResultSet).getLong("card_user");
@@ -68,4 +70,15 @@ class CardAndCongratulationExtractorTest {
         verify(mockResultSet).getString("link");
         verify(mockResultSet).getInt("type_id");
     }
+
+    @Test
+    @DisplayName("Returns an object of class Card with all congratulations from result set")
+    void extractDataTrowException() {
+        //prepare
+        CardAndCongratulationExtractor extractor = new CardAndCongratulationExtractor();
+        //when+then
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> extractor.extractData(mockResultSet));
+        assertEquals("Sorry, you are not a member of this card", e.getMessage());
+    }
+
 }

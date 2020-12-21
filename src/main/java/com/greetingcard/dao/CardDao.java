@@ -13,7 +13,7 @@ public interface CardDao {
 
     Long createCard(Card card);
 
-    Optional<Card> getCardAndCongratulationByCardId(long cardId, long userId);
+    Card getCardAndCongratulationByCardId(long cardId, long userId);
 
     void deleteCardById(long cardId, long userId);
 

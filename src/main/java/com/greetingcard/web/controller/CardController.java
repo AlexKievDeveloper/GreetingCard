@@ -1,14 +1,12 @@
 package com.greetingcard.web.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.CardsType;
 import com.greetingcard.entity.Status;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,19 +16,17 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Slf4j
+@AllArgsConstructor
 @RestController
 @RequestMapping(value = "api/v1/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CardController {
-    @Autowired
     private CardService cardService;
-    @Autowired
-    private ObjectMapper objectMapper;
 
+    //TODO выводить нормальный месседж для незалогиненого юзера с кривой ссылкой
     @GetMapping("cards")
-    public ResponseEntity<Object> getCards(HttpSession session, @RequestBody CardsType type) {
+    public ResponseEntity<Object> getCards(HttpSession session, @RequestParam("type") CardsType type) {//TODO Tell to front send us caps-lock types
         log.info("getCards");
         User user = (User) session.getAttribute("user");
         long userId = user.getId();
@@ -39,22 +35,16 @@ public class CardController {
     }
 
     @GetMapping("card/{id}")
-    public ResponseEntity<Object> getCard(HttpSession session, @PathVariable long id) throws JsonProcessingException {
+    public ResponseEntity<Object> getCard(HttpSession session, @PathVariable long id) {
         log.info("Get card request");
         User user = (User) session.getAttribute("user");
-        Optional<Card> optionalCard = cardService.getCardAndCongratulationByCardId(id, user.getId());
-        if (optionalCard.isPresent()) {
-            log.info("Successfully writing card to response, id: {}", id);
-            return ResponseEntity.status(HttpServletResponse.SC_OK).body(optionalCard.get());
-        } else {
-            log.info("User has no access : {}", id);
-            String json = objectMapper.writeValueAsString(Map.of("message", "Sorry, you are not a member of this card"));
-            return ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body(json);
-        }
+        Card card = cardService.getCardAndCongratulationByCardId(id, user.getId());
+        log.info("Successfully writing card to response, id: {}", id);
+        return ResponseEntity.status(HttpServletResponse.SC_OK).body(card);
     }
 
     @PostMapping(value = "card", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> createCard(@RequestBody Card card, HttpSession session) throws JsonProcessingException {
+    public ResponseEntity<Object> createCard(@RequestBody Card card, HttpSession session) {
         log.info("Creating card request");
         int length = card.getName().length();
         if (length == 0 || length > 250) {
@@ -62,9 +52,9 @@ public class CardController {
         }
         User user = (User) session.getAttribute("user");
         card.setUser(user);
-        String json = objectMapper.writeValueAsString(Map.of("id", cardService.createCard(card)));
+
         log.info("Сard successefully created");
-        return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(json);
+        return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(Map.of("id", cardService.createCard(card)));
     }
 
     @PutMapping("card/{id}/status")

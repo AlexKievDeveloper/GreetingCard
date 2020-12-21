@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 public class QueriesContext {
     /**
      * JdbcCardDao queries
-     * */
+     */
     @Bean
     protected String getCardsByUserIdAndRoleId() {
         return "SELECT cards.card_id, name, background_image, card_link, status_id, users.user_id, firstName, lastName, login, " +
@@ -51,7 +51,7 @@ public class QueriesContext {
 
     @Bean
     protected String getAllCardsByUserId() {
-        return "SELECT c.card_id ,c.name, c.background_image, c.card_link, c.status_id, u.user_id, u.firstName, u.lastName, u.login, " +
+        return "SELECT c.card_id, c.name, c.background_image, c.card_link, c.status_id, u.user_id, u.firstName, u.lastName, u.login, " +
                 "u.email FROM users_cards uc JOIN cards c ON (uc.card_id = c.card_id) JOIN users u ON (c.user_id = u.user_id) " +
                 "WHERE uc.user_id = :id ORDER BY c.card_id";
     }
@@ -64,7 +64,7 @@ public class QueriesContext {
 
     /**
      * JdbcCardUserDao queries
-     * */
+     */
     @Bean
     protected String insertMemberUser() {
         return "INSERT INTO users_cards (user_id, card_id, role_id) VALUES (:user_id, :card_id, 2)";
@@ -96,7 +96,7 @@ public class QueriesContext {
 
     /**
      * JdbcCongratulationDao queries
-     * */
+     */
     @Bean
     protected String getCongratulation() {
         return "SELECT congratulations.congratulation_id, user_id, card_id, status_id, message, link_id, link, type_id " +
@@ -170,7 +170,7 @@ public class QueriesContext {
 
     /**
      * JdbcUserDao queries
-     * */
+     */
     @Bean
     protected String saveUser() {
         return "INSERT INTO users (firstName, lastName, login, email, password, salt, language_id) VALUES (?, ?, ?, ?, ?, ?, ?)";

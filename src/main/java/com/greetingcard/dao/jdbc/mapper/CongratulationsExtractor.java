@@ -1,7 +1,6 @@
 package com.greetingcard.dao.jdbc.mapper;
 
 import com.greetingcard.entity.*;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
 import java.sql.ResultSet;
@@ -13,7 +12,7 @@ import java.util.Map;
 
 public class CongratulationsExtractor implements ResultSetExtractor<List<Congratulation>> {
     @Override
-    public List<Congratulation> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+    public List<Congratulation> extractData(ResultSet resultSet) throws SQLException {
         Map<Long, Congratulation> congratulationMap = new HashMap<>();
         while (resultSet.next()) {
             long congratulationId = resultSet.getLong("congratulation_id");
