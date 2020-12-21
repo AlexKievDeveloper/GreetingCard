@@ -78,7 +78,7 @@ class CardAndCongratulationExtractorTest {
         CardAndCongratulationExtractor extractor = new CardAndCongratulationExtractor();
         //when+then
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> extractor.extractData(mockResultSet));
-        assertEquals("Sorry, you are not a member of this card", e.getMessage());
+        assertEquals("Sorry, you do not have access rights to the card or the card does not exist", e.getMessage());
     }
 
 }

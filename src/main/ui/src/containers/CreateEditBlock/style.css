@@ -22,18 +22,6 @@
     padding: 0px 0px 100px;
 }
 
-.text-element {
-    font-family: 'Sunshiney';
-    font-size: 48px;
-    padding: 0px 15px 5px;
-    background: none;
-    border-left: none;
-    border-top: none;
-    border-right: none;
-    border-bottom: 2px solid rgba(0, 0, 0, 0.5);
-    margin-bottom: 37px;
-}
-
 #elements-adder__row {
     display: flex;
     justify-content: space-between;

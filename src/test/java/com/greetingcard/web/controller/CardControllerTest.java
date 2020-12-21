@@ -68,13 +68,41 @@ class CardControllerTest {
     }
 
     @Test
+    @DisplayName("Return card with status ISOVER and full card_link by card_id and user_id")
+    void getISoverCard() throws Exception {
+        User user = User.builder().id(2).build();
+        mockMvc.perform(get("/api/v1/card/{id}", 2)
+                .sessionAttr("user", user))
+                .andDo(print())
+                .andExpect(jsonPath("$.id").value("2"))
+                .andExpect(jsonPath("$.user.id").value("2"))
+                .andExpect(jsonPath("$.name").value("greeting Oleksandr"))
+                .andExpect(jsonPath("$.cardLink").value("https://greeting-team.herokuapp.com/card/2/card_link/link_to_greeting"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Return finished card by card_id and user_id with hash only as link_to_greeting(only for showing to birthday boy)")
+    void getFinishedCard() throws Exception {
+        User user = User.builder().id(2).build();
+        mockMvc.perform(get("/api/v1/card/{id}/card_link/{hash}", 2, "link_to_greeting")
+                .sessionAttr("user", user))
+                .andDo(print())
+                .andExpect(jsonPath("$.id").value("2"))
+                .andExpect(jsonPath("$.user.id").value("2"))
+                .andExpect(jsonPath("$.name").value("greeting Oleksandr"))
+                .andExpect(jsonPath("$.cardLink").value("link_to_greeting"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     @DisplayName("Return message when user is not a member of this card")
     void getCardNoAccessOrCard() throws Exception {
         User user = User.builder().id(-1).build();
         mockMvc.perform(get("/api/v1/card/{id}", 1)
                 .sessionAttr("user", user))
                 .andDo(print())
-                .andExpect(jsonPath("$.message").value("Sorry, you are not a member of this card"))
+                .andExpect(jsonPath("$.message").value("Sorry, you do not have access rights to the card or the card does not exist"))
                 .andExpect(status().isBadRequest());
     }
 

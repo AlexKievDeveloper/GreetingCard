@@ -15,7 +15,10 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -27,7 +30,8 @@ import java.util.Optional;
 public class JdbcCardDao implements CardDao {
     private JdbcTemplate jdbcTemplate;
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
+    @Autowired
+    private TransactionTemplate transactionTemplate;
     @Autowired
     private String getCardsByUserIdAndRoleId;
     @Autowired
@@ -39,9 +43,11 @@ public class JdbcCardDao implements CardDao {
     @Autowired
     private String addToUsersCards;
     @Autowired
+    private String finishedCardAndCongratulation;
+    @Autowired
     private String deleteByCardId;
     @Autowired
-    private String changeStatusOfCardById;
+    private String changeStatusOfCardAndSetCardLinkById;
     @Autowired
     private String getAllCardsByUserId;
     @Autowired
@@ -51,7 +57,6 @@ public class JdbcCardDao implements CardDao {
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
-
     @Override
     public List<Card> getAllCardsByUserId(long id) {
         SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
@@ -82,9 +87,15 @@ public class JdbcCardDao implements CardDao {
     }
 
     @Override
-    public Card getCardAndCongratulationByCardId(long cardId, long userId) {
+    public Card getCardAndCongratulationByCardIdAndUserId(long cardId, long userId) {
         MapSqlParameterSource namedParameters = new MapSqlParameterSource("cardId", cardId).addValue("userId", userId);
         return namedParameterJdbcTemplate.query(cardAndCongratulation, namedParameters, new CardAndCongratulationExtractor());
+    }
+
+    @Override
+    public Card getCardAndCongratulationByCardId(long cardId) {
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource("cardId", cardId);
+        return namedParameterJdbcTemplate.query(finishedCardAndCongratulation, namedParameters, new CardAndCongratulationExtractor());
     }
 
     @Override
@@ -93,8 +104,13 @@ public class JdbcCardDao implements CardDao {
     }
 
     @Override
-    public void changeCardStatusById(Status newStatus, long cardId) {
-        jdbcTemplate.update(changeStatusOfCardById, newStatus.getStatusNumber(), cardId);
+    public void changeCardStatusAndSetCardLinkById(Status newStatus, long cardId, String link) {
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                jdbcTemplate.update(changeStatusOfCardAndSetCardLinkById, newStatus.getStatusNumber(), link, cardId);
+            }
+        });
     }
 
     @Override

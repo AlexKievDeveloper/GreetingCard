@@ -8,10 +8,11 @@ import finishedCardImg from '../../../assets/images/finished-card-icon.png';
 
 export default function CardInfo(props) {
     const imgSrc = props.cardStatus === 'STARTUP' ? progressCardImg : finishedCardImg;
+    const linkToPreview = "/preview/" + props.id;
 
     return (
         <div className="card__row">
-            <Link to="/preview" className="card-link">
+            <Link to={linkToPreview} className="card-link">
                 <img src={imgSrc} alt=""/>
             </Link>
             <div className="card-details__column">

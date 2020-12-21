@@ -9,9 +9,11 @@ import com.greetingcard.service.CongratulationService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -39,23 +41,34 @@ public class DefaultCardService implements CardService {
     }
 
     @Override
-    public Card getCardAndCongratulationByCardId(long cardId, long userId) {
-        return cardDao.getCardAndCongratulationByCardId(cardId, userId);
+    public Card getCardAndCongratulationByCardIdAndUserId(long cardId, long userId) {
+        return cardDao.getCardAndCongratulationByCardIdAndUserId(cardId, userId);
     }
 
     @Override
-    @Transactional
+    public Card getCardAndCongratulationByCardId(long cardId) {
+        return cardDao.getCardAndCongratulationByCardId(cardId);
+    }
+
+    @Override
     public void deleteCardById(long cardId, long userId) {
         cardDao.deleteCardById(cardId, userId);
-        congratulationService.deleteByCardId(cardId, userId);
     }
 
     @Override
     @Transactional
-    public void changeCardStatus(Status status, long cardId) {
-        cardDao.changeCardStatusById(status, cardId);
+    public void changeCardStatusAndCreateCardLink(Status status, long cardId) {
+        String hash = UUID.randomUUID().toString().replaceAll("/", "");
+        cardDao.changeCardStatusAndSetCardLinkById(status, cardId, hash);
         congratulationService.changeCongratulationStatusByCardId(status, cardId);
     }
+
+/*    @Override
+
+    public void changeCardStatus(Status status, long cardId) {
+        cardDao.changeCardStatusById(status, cardId);
+        c
+    }*/
 
     @Override
     public void changeCardName(Card card) {

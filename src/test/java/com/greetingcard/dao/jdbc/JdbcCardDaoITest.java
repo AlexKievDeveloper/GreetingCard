@@ -9,14 +9,12 @@ import com.greetingcard.RootApplicationContext;
 import com.greetingcard.dao.CardDao;
 import com.greetingcard.entity.*;
 import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -62,9 +60,13 @@ public class JdbcCardDaoITest {
         //when
         List<Card> actualList = jdbcCardDao.getAllCardsByUserId(1);
         //then
-        assertEquals(3, actualList.size());
+        assertTrue(actualList.contains(expectedCard1));
+        assertTrue(actualList.contains(expectedCard2));
         assertEquals(actualList.get(0), expectedCard1);
         assertEquals(actualList.get(1), expectedCard2);
+        for (Card card : actualList) {
+            assertNotNull(card.getUser());
+        }
     }
 
     @Test
@@ -99,26 +101,19 @@ public class JdbcCardDaoITest {
     @DisplayName("Returns List<Cards> from DB with cards where user role is Member")
     void getAllMyCardsByUserIdTestRoleMember() {
         //prepare
-        Card expectedCard1 = Card.builder()
+        Card expectedCard2 = Card.builder()
                 .id(2)
                 .name("greeting Oleksandr")
                 .backgroundImage("path_to_image")
                 .cardLink("link_to_greeting")
                 .status(Status.ISOVER)
                 .build();
-        Card expectedCard2 = Card.builder()
-                .id(3)
-                .name("no_congratulation")
-                .backgroundImage("path_to_image")
-                .cardLink("link_to_greeting")
-                .status(Status.STARTUP)
-                .build();
         //when
         List<Card> actualList = jdbcCardDao.getCardsByUserIdAndRoleId(1, 2);
         //then
         assertEquals(2, actualList.size());
-        assertEquals(actualList.get(0), expectedCard1);
-        assertEquals(actualList.get(1), expectedCard2);
+        assertTrue(actualList.contains(expectedCard2));
+        assertEquals(actualList.get(0), expectedCard2);
     }
 
     @Test
@@ -150,9 +145,8 @@ public class JdbcCardDaoITest {
         List<Card> actualList = jdbcCardDao.getAllCardsByUserId(1);
         Card actualCard = actualList.get(3);
         //then
-        assertEquals(4, actualList.size());
-
         assertEquals(4, id);
+        assertEquals(4, actualList.size());
         assertEquals(actualCard.getUser().getId(), card.getUser().getId());
         assertEquals(actualCard.getName(), card.getName());
     }
@@ -161,7 +155,7 @@ public class JdbcCardDaoITest {
     @DisplayName("Return card of admin with all congratulations")
     public void getCardAndCongratulationAdmin() {
         //when
-        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
+        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardIdAndUserId(1, 1);
         List<Congratulation> actualCongratulationList = actualCard.getCongratulationList();
 
         //then
@@ -192,7 +186,7 @@ public class JdbcCardDaoITest {
     @DisplayName("Return card of member with all congratulations")
     public void getCardAndCongratulationMember() {
         //when
-        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
+        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardIdAndUserId(1, 1);
         List<Congratulation> actualCongratulationList = actualCard.getCongratulationList();
 
         //then
@@ -220,19 +214,53 @@ public class JdbcCardDaoITest {
     }
 
     @Test
+    @DisplayName("Return card with all congratulations")
+    public void getCardAndCongratulationByCardId() {
+        //when
+        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1);
+        List<Congratulation> actualCongratulationList = actualCard.getCongratulationList();
+
+        //then
+        List<Link> fromRoma = actualCongratulationList.get(0).getLinkList();
+        List<Link> fromSasha = actualCongratulationList.get(1).getLinkList();
+        List<Link> fromNastya = actualCongratulationList.get(2).getLinkList();
+
+        assertEquals(3, actualCongratulationList.size());
+        assertEquals(1, actualCard.getId());
+        assertEquals("greeting Nomar", actualCard.getName());
+        assertEquals("path_to_image", actualCard.getBackgroundImage());
+        assertEquals("link_to_greeting", actualCard.getCardLink());
+        assertEquals(Status.STARTUP, actualCard.getStatus());
+
+        assertEquals("from Roma", actualCongratulationList.get(0).getMessage());
+        assertEquals("from Sasha", actualCongratulationList.get(1).getMessage());
+        assertEquals("from Nastya", actualCongratulationList.get(2).getMessage());
+        assertEquals(1, actualCongratulationList.get(0).getUser().getId());
+        assertEquals(1, actualCongratulationList.get(1).getUser().getId());
+        assertEquals(2, actualCongratulationList.get(2).getUser().getId());
+
+        assertEquals(6, fromRoma.size());
+        assertEquals(3, fromSasha.size());
+        assertEquals(0, fromNastya.size());
+    }
+
+
+    @Test
     @DisplayName("Return null when user does not has cards or access")
     public void getCardAndCongratulationNoAccess() {
         //when + then
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> jdbcCardDao.getCardAndCongratulationByCardId(1, -1));
-        assertEquals("Sorry, you are not a member of this card", e.getMessage());
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
+                jdbcCardDao.getCardAndCongratulationByCardIdAndUserId(-1000, 1));
+        assertEquals("Sorry, you do not have access rights to the card or the card does not exist", e.getMessage());
     }
 
     @Test
     @DisplayName("Return null if card does not exist")
     public void getCardAndCongratulationNotExist() {
         //when + then
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> jdbcCardDao.getCardAndCongratulationByCardId(-1000, 1));
-        assertEquals("Sorry, you are not a member of this card", e.getMessage());
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
+                jdbcCardDao.getCardAndCongratulationByCardIdAndUserId(-1000, 1));
+        assertEquals("Sorry, you do not have access rights to the card or the card does not exist", e.getMessage());
     }
 
     @Test
@@ -241,27 +269,31 @@ public class JdbcCardDaoITest {
         //when
         jdbcCardDao.deleteCardById(1, 1);
         //then
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> jdbcCardDao.getCardAndCongratulationByCardId(1, 1));
-        assertEquals("Sorry, you are not a member of this card", e.getMessage());
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
+                jdbcCardDao.getCardAndCongratulationByCardIdAndUserId(1, 1));
+        assertEquals("Sorry, you do not have access rights to the card or the card does not exist", e.getMessage());
     }
 
     @Test
-    @DisplayName("Does not remove card if user does not have access")
+    @DisplayName("Remove card if user does not have access")
     void deleteCardByIdNoAccess() {
         //when
         jdbcCardDao.deleteCardById(1, 10000);
         //then
-        assertNotNull(jdbcCardDao.getCardAndCongratulationByCardId(1, 1));
+        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardIdAndUserId(1, 1);
+        assertNotNull(actualCard);
     }
 
     @Test
     @DisplayName("Change status of card to ISOVER")
     void changeStatusCardById() {
         //when
-        jdbcCardDao.changeCardStatusById(Status.ISOVER, 1);
+        String salt = UUID.randomUUID().toString().replaceAll("/", "");
+        jdbcCardDao.changeCardStatusAndSetCardLinkById(Status.ISOVER, 1, salt);
         //then
-        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardId(1, 1);
-        assertEquals(Status.ISOVER, actualCard.getStatus());
+        Card card = jdbcCardDao.getCardAndCongratulationByCardIdAndUserId(1, 1);
+        assertEquals(Status.ISOVER, card.getStatus());
+        assertEquals(salt, card.getCardLink());
     }
 
     @Test
@@ -271,5 +303,5 @@ public class JdbcCardDaoITest {
         User user = User.builder().id(1).build();
         Card actual = Card.builder().id(1).user(user).name("newName").build();
         jdbcCardDao.changeCardName(actual);
-    }
+     }
 }

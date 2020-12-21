@@ -45,8 +45,8 @@ public class QueriesContext {
     }
 
     @Bean
-    protected String changeStatusOfCardById() {
-        return "UPDATE cards SET status_id = ? where card_id = ?";
+    protected String changeStatusOfCardAndSetCardLinkById() {
+        return "UPDATE cards SET status_id = ?, card_link = ? where card_id = ?";
     }
 
     @Bean
@@ -93,6 +93,15 @@ public class QueriesContext {
         return "DELETE from users_cards WHERE card_id = :card_id AND user_id IN";
     }
 
+    @Bean
+    protected String finishedCardAndCongratulation() {
+        return "SELECT cards.card_id, cards.user_id as card_user, name, background_image, card_link, cards.status_id, " +
+                "cg.congratulation_id, cg.status_id as con_status, message, cg.user_id, firstName, lastName, " +
+                "pathToPhoto, login, link_id, link,type_id FROM cards LEFT JOIN congratulations cg" +
+                " ON (cards.card_id=cg.card_id) LEFT JOIN users u ON (cg.user_id=u.user_id) " +
+                "LEFT JOIN links l ON (cg.congratulation_id=l.congratulation_id) " +
+                "WHERE cards.card_id = :cardId";
+    }
 
     /**
      * JdbcCongratulationDao queries

@@ -13,13 +13,15 @@ public interface CardService {
 
     Long createCard(Card card);
 
-    Card getCardAndCongratulationByCardId(long cardId, long userId);
+    Card getCardAndCongratulationByCardIdAndUserId(long cardId, long userId);
+
+    Card getCardAndCongratulationByCardId(long cardId);
 
     Optional<Status> getCardStatusById(long cardId);
 
     void deleteCardById(long cardId, long userId);
 
-    void changeCardStatus(Status status, long cardId);
+    void changeCardStatusAndCreateCardLink(Status status, long cardId);
 
     void changeCardName(Card card);
 }

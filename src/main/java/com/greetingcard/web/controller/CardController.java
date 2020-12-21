@@ -7,6 +7,8 @@ import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,15 +20,16 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@AllArgsConstructor
 @RestController
 @RequestMapping(value = "api/v1/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CardController {
+    @Autowired
     private CardService cardService;
+    @Value("${webapp.url}")
+    private String siteUrl;
 
-    //TODO выводить нормальный месседж для незалогиненого юзера с кривой ссылкой
     @GetMapping("cards")
-    public ResponseEntity<Object> getCards(HttpSession session, @RequestParam("type") CardsType type) {//TODO Tell to front send us caps-lock types
+    public ResponseEntity<Object> getCards(HttpSession session, @RequestParam CardsType type) {
         log.info("getCards");
         User user = (User) session.getAttribute("user");
         long userId = user.getId();
@@ -38,9 +41,27 @@ public class CardController {
     public ResponseEntity<Object> getCard(HttpSession session, @PathVariable long id) {
         log.info("Get card request");
         User user = (User) session.getAttribute("user");
-        Card card = cardService.getCardAndCongratulationByCardId(id, user.getId());
+        Card card = cardService.getCardAndCongratulationByCardIdAndUserId(id, user.getId());
+
+        if (card.getStatus().equals(Status.ISOVER)) {
+            card.setCardLink(siteUrl + "card/" + card.getId() + "/card_link/" + card.getCardLink());
+        }
         log.info("Successfully writing card to response, id: {}", id);
         return ResponseEntity.status(HttpServletResponse.SC_OK).body(card);
+    }
+
+    @GetMapping("card/{id}/card_link/{hash}")
+    public ResponseEntity<Object> getFinishedCard(@PathVariable long id, @PathVariable String hash) {
+        log.info("Get finished card request");
+
+        Card card = cardService.getCardAndCongratulationByCardId(id);
+        if (card != null && card.getCardLink().equals(hash) && card.getStatus().equals(Status.ISOVER)) {
+            log.info("Successfully writing card to response, id: {}", id);
+            return ResponseEntity.status(HttpServletResponse.SC_OK).body(card);
+        } else {
+            log.info("User has no access : {}", id);
+            return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).body(Map.of("message", "Sorry, your link isn`t correct"));
+        }
     }
 
     @PostMapping(value = "card", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -52,15 +73,14 @@ public class CardController {
         }
         User user = (User) session.getAttribute("user");
         card.setUser(user);
-
         log.info("Сard successefully created");
         return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(Map.of("id", cardService.createCard(card)));
     }
 
     @PutMapping("card/{id}/status")
-    public void changeStatus(@PathVariable long id) {
+    public void changeStatusAndCreateCardLink(@PathVariable long id) {
         log.info("Received PUT request");
-        cardService.changeCardStatus(Status.ISOVER, id);
+        cardService.changeCardStatusAndCreateCardLink(Status.ISOVER, id);
         log.info("Successfully changed card status for card id: {}", id);
     }
 
