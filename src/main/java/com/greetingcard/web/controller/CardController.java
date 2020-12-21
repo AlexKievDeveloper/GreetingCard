@@ -66,11 +66,10 @@ public class CardController {
         return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(json);
     }
 
-    @PutMapping("card/{id}/status")
-    public void changeStatus(@PathVariable long id) {
-        log.info("Received PUT request");
-        cardService.changeCardStatus(Status.ISOVER, id);
-        log.info("Successfully changed card status for card id: {}", id);
+    @PutMapping("card/{id}/status/{statusName}")
+    public void changeStatus(@PathVariable long id, @PathVariable String statusName) {
+        cardService.changeCardStatus(statusName, id);
+        log.info("Successfully changed card status for card id: {} to {}", id,statusName);
     }
 
     @DeleteMapping("card/{id}")

@@ -55,11 +55,21 @@ class DefaultCardServiceTest {
     }
 
     @Test
-    @DisplayName("Return List with all congratulations")
-    void changeCardStatus() {
+    @DisplayName("Change status of card to STARTUP")
+    void changeCardStatusToSTARTUP() {
         //when
-        defaultCardService.changeCardStatus(Status.STARTUP, 1);
+        defaultCardService.changeCardStatus("STARTUP", 1);
         //then
         verify(jdbcCardDao).changeCardStatusById(Status.STARTUP, 1);
     }
+
+    @Test
+    @DisplayName("Change status of card to ISOVER")
+    void changeCardStatusToISOVER() {
+        //when
+        defaultCardService.changeCardStatus("ISOVER", 1);
+        //then
+        verify(jdbcCardDao).changeCardStatusById(Status.ISOVER, 1);
+    }
+
 }

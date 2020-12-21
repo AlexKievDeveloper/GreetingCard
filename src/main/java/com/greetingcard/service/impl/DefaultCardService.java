@@ -46,7 +46,8 @@ public class DefaultCardService implements CardService {
     }
 
     @Override
-    public void changeCardStatus(Status status, long cardId) {
+    public void changeCardStatus(String statusName, long cardId) {
+        Status status = Status.getByName(statusName);
         cardDao.changeCardStatusById(status, cardId);
     }
 

@@ -34,7 +34,7 @@ function leaveCard(id) {
 }
 
 function finishCard(id) {
-    serverService.sendRequest(`/card/${id}/status`, 'PUT');
+    serverService.sendRequest(`/card/${id}/status/ISOVER`, 'PUT');
 }
 
 function updateName(id, newName) {

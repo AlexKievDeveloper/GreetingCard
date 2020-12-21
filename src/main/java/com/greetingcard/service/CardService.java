@@ -18,7 +18,7 @@ public interface CardService {
 
     void deleteCardById(long cardId, long userId);
 
-    void changeCardStatus(Status status, long cardId);
+    void changeCardStatus(String statusName, long cardId);
 
     void changeCardName(Card card);
 }
