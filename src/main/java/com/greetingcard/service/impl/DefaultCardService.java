@@ -63,13 +63,6 @@ public class DefaultCardService implements CardService {
         congratulationService.changeCongratulationStatusByCardId(status, cardId);
     }
 
-/*    @Override
-
-    public void changeCardStatus(Status status, long cardId) {
-        cardDao.changeCardStatusById(status, cardId);
-        c
-    }*/
-
     @Override
     public void changeCardName(Card card) {
         int length = card.getName().length();
