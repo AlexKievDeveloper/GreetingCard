@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,27 +50,27 @@ class DefaultCardServiceTest {
     @DisplayName("Return List with all congratulations")
     void getCardAndCongratulationByCardId() {
         //when
-        defaultCardService.getCardAndCongratulationByCardId(1, 1);
+        defaultCardService.getCardAndCongratulationByCardIdAndUserId(1, 1);
         //then
-        verify(jdbcCardDao).getCardAndCongratulationByCardId(1, 1);
+        verify(jdbcCardDao).getCardAndCongratulationByCardIdAndUserId(1, 1);
     }
 
     @Test
-    @DisplayName("Change status of card to STARTUP")
-    void changeCardStatusToSTARTUP() {
+    @DisplayName("Changing card status to STARTUP and creating card link(hash)")
+    void changeCardStatusAndCreateCardLinkToSTARTUP() {
         //when
-        defaultCardService.changeCardStatus("STARTUP", 1);
+        defaultCardService.changeCardStatusAndCreateCardLink("STARTUP", 1);
         //then
-        verify(jdbcCardDao).changeCardStatusById(Status.STARTUP, 1);
+        verify(jdbcCardDao).changeCardStatusAndSetCardLinkById(any(), anyLong(), anyString());
     }
 
     @Test
-    @DisplayName("Change status of card to ISOVER")
-    void changeCardStatusToISOVER() {
+    @DisplayName("Change status of card to ISOVER and creating card link(hash)")
+    void changeCardStatusAndCreateCardLinkToISOVER() {
         //when
-        defaultCardService.changeCardStatus("ISOVER", 1);
+        defaultCardService.changeCardStatusAndCreateCardLink("ISOVER", 1);
         //then
-        verify(jdbcCardDao).changeCardStatusById(Status.ISOVER, 1);
+        verify(jdbcCardDao).changeCardStatusAndSetCardLinkById(any(), anyLong(), anyString());
     }
 
 }

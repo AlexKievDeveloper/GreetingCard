@@ -14,6 +14,7 @@ import ChangePassword from '../../forms/user/ChangePassword';
 import CardUsers from '../../containers/CardUsers';
 import ForgotPassword from '../../forms/user/ForgotPassword';
 import RecoverPassword from '../../forms/user/RecoverPassword';
+import CardPreview from '../../containers/CardPreview';
 
 
 export default function SwitchRoute(props) {
@@ -30,10 +31,11 @@ export default function SwitchRoute(props) {
                 <Route path="/card_users/:id" component={CardUsers}/>
                 <Route path="/change_password" component={ChangePassword}/>
                 <Route path="/cards/:type" component={Cards}/>
-                <Route path="/create_card/:id" component={CreateEditCard}/>
-                <Route path="/edit_card/:id" component={CreateEditCard}/>
+                <Route path="/edit_card/:id/:typeBlocks" component={CreateEditCard}/>
                 <Route path="/add_block/:idCard" component={CreateEditBlock}/>
                 <Route path="/edit_block/:idBlock" component={CreateEditBlock}/>
+                <Route path="/preview/:idCard" component={CardPreview}/>
+                <Route path="/card/:idCard/card_link/:hash" component={CardPreview}/>
             </Switch>
         )
     else
@@ -49,10 +51,11 @@ export default function SwitchRoute(props) {
                 <Route path="/card_users/:id" component={Login}/>
                 <Route path="/change_password" component={Login}/>
                 <Route path="/cards/:type" component={Login}/>
-                <Route path="/create_card/:id" component={Login}/>
-                <Route path="/edit_card/:id" component={Login}/>
+                <Route path="/edit_card/:id/:typeBlock" component={Login}/>
                 <Route path="/add_block/:idCard" component={Login}/>
                 <Route path="/edit_block/:idBlock" component={Login}/>
+                <Route path="/preview/:idCard" component={Login}/>
+                <Route path="/card/:idCard/card_link/:hash" component={CardPreview}/>
             </Switch>
         )
 }

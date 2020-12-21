@@ -66,17 +66,18 @@ export class CreateEditBlock extends Component {
   };
 
   saveBlock = () => {
+    const linkAfter = "/edit_card/" + this.state.card_id + "/my_blocks";
     if (this.state.block_id === 0) {
       blockService
         .createBlock(this.state)
         .then(() =>
-          this.props.history.push("/edit_card/" + this.state.card_id)
+          this.props.history.push(linkAfter)
         );
     } else {
       blockService
         .updateBlock(this.state)
         .then(() =>
-          this.props.history.push("/edit_card/" + this.state.card_id)
+          this.props.history.push(linkAfter)
         );
     }
   };
@@ -84,7 +85,7 @@ export class CreateEditBlock extends Component {
   deleteBlock = () => {
      if (this.state.block_id !== 0) {
            blockService.deleteBlock(this.state.block_id)
-                       .then(()=> this.props.history.push("/edit_card/" + this.state.card_id));
+                       .then(()=> this.props.history.push("/edit_card/" + this.state.card_id + "/my_blocks"));
      }
   }
 

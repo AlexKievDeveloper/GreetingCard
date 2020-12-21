@@ -1,0 +1,42 @@
+.hide-with-scroll {
+	position: absolute;
+}
+
+.padding-right_75 {
+	padding-right: 75px;
+}
+
+.with-background {
+	background-color: rgba(255, 255, 255, 0.2);
+	border: 1px black solid;
+	border-radius: 25px;
+	padding: 10px;
+	margin: 0px auto 40px;
+}
+
+.card__title {
+	font-family: 'Sunshiney';
+	font-size: 110px;
+	border-radius: 0;
+	background-color: #FAE7CE;
+	max-width: 1280px;
+	min-width: 1280px;
+	text-align: center;
+	border: none;
+	border-bottom: 0.5px solid rgba(0, 0, 0, 0.6);
+}
+
+.margin-top_65 {
+	margin-top: 65px;
+}
+
+.pointer-to-navigation {
+	position: sticky;
+	margin-right: 40px;
+	bottom: 75px;
+	align-self: flex-end;
+	min-width: 0;
+	text-decoration: none;
+	color: navy;
+}
+

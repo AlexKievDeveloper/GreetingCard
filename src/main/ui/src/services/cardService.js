@@ -3,6 +3,7 @@ import {serverService} from "./serverService";
 export const cardService = {
     getCards,
     getCard,
+    getFinishedCard,
     createCard,
     deleteCard,
     leaveCard,
@@ -21,6 +22,10 @@ function getCard(id) {
     return serverService.getData(`/card/${id}`);
 }
 
+function getFinishedCard(id, hash) {
+    return serverService.getData(`/card/${id}/card_link/${hash}`);
+}
+
 function createCard(nameCard) {
     return serverService.sendRequest(`/card`, 'POST', {name: nameCard});
 }
@@ -34,7 +39,7 @@ function leaveCard(id) {
 }
 
 function finishCard(id) {
-    serverService.sendRequest(`/card/${id}/status/ISOVER`, 'PUT');
+    return serverService.sendRequest(`/card/${id}/status/ISOVER`, 'PUT');
 }
 
 function updateName(id, newName) {

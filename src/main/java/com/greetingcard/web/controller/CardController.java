@@ -6,9 +6,9 @@ import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Status;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +27,8 @@ public class CardController {
     private CardService cardService;
     @Autowired
     private ObjectMapper objectMapper;
+    @Value("${webapp.url:https://greeting-team.herokuapp.com/}")
+    private String siteUrl;
 
     @GetMapping("cards")
     public ResponseEntity<Object> getCards(HttpSession session, @RequestParam String type) {
@@ -41,14 +43,32 @@ public class CardController {
     public ResponseEntity<Object> getCard(HttpSession session, @PathVariable long id) throws JsonProcessingException {
         log.info("Get card request");
         User user = (User) session.getAttribute("user");
-        Card card = cardService.getCardAndCongratulationByCardId(id, user.getId());
+        Card card = cardService.getCardAndCongratulationByCardIdAndUserId(id, user.getId());
         if (card == null) {
             log.info("User has no access : {}", id);
             String json = objectMapper.writeValueAsString(Map.of("message", "Sorry, you are not a member of this card"));
             return ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body(json);
         } else {
             log.info("Successfully writing card to response, id: {}", id);
+            if (card.getStatus().equals(Status.ISOVER)) {
+                card.setCardLink(siteUrl + "card/" + card.getId() + "/card_link/" + card.getCardLink());
+            }
             return ResponseEntity.status(HttpServletResponse.SC_OK).body(card);
+        }
+    }
+
+    @GetMapping("card/{id}/card_link/{hash}")
+    public ResponseEntity<Object> getFinishedCard(@PathVariable long id, @PathVariable String hash) throws JsonProcessingException {
+        log.info("Get finished card request");
+
+        Card card = cardService.getCardAndCongratulationByCardId(id);
+        if (card != null && card.getCardLink().equals(hash) && card.getStatus().equals(Status.ISOVER)) {
+            log.info("Successfully writing card to response, id: {}", id);
+            return ResponseEntity.status(HttpServletResponse.SC_OK).body(card);
+        } else {
+            log.info("User has no access : {}", id);
+            String json = objectMapper.writeValueAsString(Map.of("message", "Wrong card data"));
+            return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).body(json);
         }
     }
 
@@ -67,9 +87,10 @@ public class CardController {
     }
 
     @PutMapping("card/{id}/status/{statusName}")
-    public void changeStatus(@PathVariable long id, @PathVariable String statusName) {
-        cardService.changeCardStatus(statusName, id);
-        log.info("Successfully changed card status for card id: {} to {}", id,statusName);
+    public void changeStatusAndCreateCardLink(@PathVariable long id, @PathVariable String statusName) {
+        log.info("Received PUT request");
+        cardService.changeCardStatusAndCreateCardLink(statusName, id);
+        log.info("Successfully changed card status for card id: {}", id);
     }
 
     @DeleteMapping("card/{id}")
