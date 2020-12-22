@@ -184,7 +184,7 @@ public class DefaultSecurityService implements SecurityService {
             return Base64.getEncoder().encodeToString(bytes);
         } catch (NoSuchAlgorithmException e) {
             log.error("Cannot find algorithm -", e);
-            throw new RuntimeException();
+            throw new RuntimeException("Cannot find algorithm -", e);
         }
     }
 

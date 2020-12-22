@@ -21,7 +21,6 @@ public class DefaultCardService implements CardService {
     private CardDao cardDao;
     private CongratulationService congratulationService;
 
-    //TODO не прописывать явно  @Value("${webapp.url}") подтягивать с сервиса
     @Override
     public List<Card> getCards(long userId, CardsType cardsType) {
         switch (cardsType) {

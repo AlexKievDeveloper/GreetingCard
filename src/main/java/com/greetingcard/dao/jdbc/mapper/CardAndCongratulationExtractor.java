@@ -14,7 +14,7 @@ public class CardAndCongratulationExtractor implements ResultSetExtractor<Card> 
     @Override
     public Card extractData(ResultSet resultSet) throws SQLException {
         if (!resultSet.next()) {
-            throw new IllegalArgumentException("Sorry, you do not have access rights to the card or the card does not exist");//TODO Tell to front: instead forbidden we send bad request.
+            throw new IllegalArgumentException("Sorry, you do not have access rights to the card or the card does not exist");
         }
 
         List<Congratulation> congratulationList = new ArrayList<>();

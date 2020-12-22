@@ -2,8 +2,6 @@ package com.greetingcard;
 
 import com.greetingcard.web.WebApplicationContext;
 import com.greetingcard.web.filter.AuthorizationFilter;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
@@ -11,13 +9,9 @@ import javax.servlet.Filter;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletRegistration;
 
-@PropertySource("classpath:application.properties")
 public class GreetingCardAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
-    @Value("${max.upload.file.size}")
-    private int maxUploadFileSizeInMb;
-
-    @Value("${max.upload.request.size}")
-    private int maxUploadRequestSizeInMb;
+    private final int maxUploadFileSizeInMb = 1024 * 1024 * 10;
+    private final int maxUploadRequestSizeInMb = 1024 * 1024 * 50;
 
     @Override
     protected Class<?>[] getRootConfigClasses() {

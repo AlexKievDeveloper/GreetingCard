@@ -14,7 +14,7 @@ export const cardService = {
     getUsers
 }
 
-function getCards(type = 'all') {
+function getCards(type = 'ALL') {
     return serverService.getData(`/cards?type=${type}`);
 }
 

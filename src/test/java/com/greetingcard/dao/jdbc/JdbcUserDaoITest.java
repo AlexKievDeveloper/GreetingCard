@@ -62,7 +62,7 @@ class JdbcUserDaoITest {
     @DisplayName("Throws exception when user with requested login does not exist")
     void testFindUserByLoginIfLoginNotFound() {
         //when + then
-        EmptyResultDataAccessException e = assertThrows(EmptyResultDataAccessException.class, () -> userDao.findByLogin("user_is_not_created"));
+        assertThrows(EmptyResultDataAccessException.class, () -> userDao.findByLogin("user_is_not_created"));
     }
 
     @Test

@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
+@AllArgsConstructor
 @RestController
 @RequestMapping("/api/v1/congratulation")
-@AllArgsConstructor
 public class CongratulationController {
     private final CongratulationService congratulationService;
     private final ObjectMapper objectMapper;
