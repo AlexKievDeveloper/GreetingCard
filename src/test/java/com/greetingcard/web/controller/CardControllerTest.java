@@ -124,8 +124,17 @@ class CardControllerTest {
 
     @Test
     @DisplayName("Change status of card")
-    void doPut() throws Exception {
-        mockMvc.perform(put("/api/v1/card/{id}/status", 1)
+    void doPut_ISOVER() throws Exception {
+        mockMvc.perform(put("/api/v1/card/{id}/status/{statusName}", 1,"ISOVER")
+                .characterEncoding("utf-8"))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Change status of card to STARTUP")
+    void doPut_STARTUP() throws Exception {
+        mockMvc.perform(put("/api/v1/card/{id}/status/{statusName}", 1,"STARTUP")
                 .characterEncoding("utf-8"))
                 .andDo(print())
                 .andExpect(status().isOk());

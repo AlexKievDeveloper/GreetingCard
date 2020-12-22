@@ -60,11 +60,21 @@ class DefaultCardServiceTest {
     }
 
     @Test
-    @DisplayName("Changing card status and creating card link(hash)")
-    void changeCardStatusAndCreateCardLink() {
+    @DisplayName("Changing card status to STARTUP and creating card link(hash)")
+    void changeCardStatusAndCreateCardLinkToSTARTUP() {
         //when
-        defaultCardService.changeCardStatusAndCreateCardLink(Status.STARTUP, 1);
+        defaultCardService.changeCardStatusAndCreateCardLink("STARTUP", 1);
         //then
         verify(jdbcCardDao).changeCardStatusAndSetCardLinkById(any(), anyLong(), anyString());
     }
+
+    @Test
+    @DisplayName("Change status of card to ISOVER and creating card link(hash)")
+    void changeCardStatusAndCreateCardLinkToISOVER() {
+        //when
+        defaultCardService.changeCardStatusAndCreateCardLink("ISOVER", 1);
+        //then
+        verify(jdbcCardDao).changeCardStatusAndSetCardLinkById(any(), anyLong(), anyString());
+    }
+
 }

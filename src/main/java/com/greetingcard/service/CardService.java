@@ -21,7 +21,7 @@ public interface CardService {
 
     void deleteCardById(long cardId, long userId);
 
-    void changeCardStatusAndCreateCardLink(Status status, long cardId);
+    void changeCardStatusAndCreateCardLink(String statusName, long cardId);
 
     void changeCardName(Card card);
 }
