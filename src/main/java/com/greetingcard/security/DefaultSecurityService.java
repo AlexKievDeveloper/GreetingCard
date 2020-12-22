@@ -6,6 +6,7 @@ import com.greetingcard.entity.Language;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.EmailService;
 import com.greetingcard.service.impl.DefaultAmazonService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,14 +25,13 @@ import java.util.UUID;
 import static com.greetingcard.entity.AccessHashType.VERIFY_EMAIL;
 
 @Slf4j
+@RequiredArgsConstructor
 @RequestScope
 @Service
 @PropertySource(value = "classpath:application.properties")
 public class DefaultSecurityService implements SecurityService {
-    @Autowired
-    private UserDao userDao;
-    @Autowired
-    private DefaultAmazonService defaultAmazonService;
+    private final UserDao userDao;
+    private final DefaultAmazonService defaultAmazonService;
 
     @Value("${algorithm:SHA-256}")
     private String algorithm;

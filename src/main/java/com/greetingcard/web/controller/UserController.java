@@ -2,6 +2,7 @@ package com.greetingcard.web.controller;
 
 import com.greetingcard.entity.User;
 import com.greetingcard.security.SecurityService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -14,17 +15,14 @@ import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 @Slf4j
+@RequiredArgsConstructor
 @PropertySource("classpath:application.properties")
 @RestController
 @RequestMapping(value = "/api/v1/")
 public class UserController {
-    private SecurityService securityService;
+    private final SecurityService securityService;
     @Value("${max.inactive.interval:3600}")
     private Integer maxInactiveInterval;
-
-    public UserController(SecurityService securityService) {
-        this.securityService = securityService;
-    }
 
     @DeleteMapping("session")
     public ResponseEntity<?> logout(HttpSession session) {

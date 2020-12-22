@@ -4,6 +4,7 @@ import com.greetingcard.dao.CardUserDao;
 import com.greetingcard.dao.jdbc.mapper.UserInfoRowMapper;
 import com.greetingcard.entity.Role;
 import com.greetingcard.entity.UserInfo;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -16,9 +17,10 @@ import java.util.Optional;
 import java.util.StringJoiner;
 
 @Slf4j
+@RequiredArgsConstructor
 @Repository
 public class JdbcCardUserDao implements CardUserDao {
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Autowired
     private String insertMemberUser;
@@ -30,10 +32,6 @@ public class JdbcCardUserDao implements CardUserDao {
     private String deleteUser;
     @Autowired
     private String deleteListUsers;
-
-    public JdbcCardUserDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-    }
 
     @Override
     public void addUserMember(long cardId, long userId) {

@@ -7,6 +7,7 @@ import com.greetingcard.entity.Status;
 import com.greetingcard.service.CardService;
 import com.greetingcard.service.CongratulationService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,10 +17,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class DefaultCardService implements CardService {
-    private CardDao cardDao;
-    private CongratulationService congratulationService;
+    private final CardDao cardDao;
+    private final CongratulationService congratulationService;
 
     @Override
     public List<Card> getCards(long userId, CardsType cardsType) {

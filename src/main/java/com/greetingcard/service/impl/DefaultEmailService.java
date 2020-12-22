@@ -2,14 +2,15 @@ package com.greetingcard.service.impl;
 
 import com.greetingcard.service.EmailService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class DefaultEmailService implements EmailService {
-    private JavaMailSender mailSender;
+    private final JavaMailSender mailSender;
 
     public void sendMail(String to, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();

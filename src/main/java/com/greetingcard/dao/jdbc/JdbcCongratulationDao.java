@@ -8,6 +8,7 @@ import com.greetingcard.entity.Congratulation;
 import com.greetingcard.entity.Link;
 import com.greetingcard.entity.Status;
 import com.greetingcard.service.impl.DefaultAmazonService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -25,13 +26,14 @@ import java.sql.PreparedStatement;
 import java.util.*;
 
 @Slf4j
+@RequiredArgsConstructor
 @Repository
 @RequestScope
 public class JdbcCongratulationDao implements CongratulationDao {
 
-    private JdbcTemplate jdbcTemplate;
-    private NamedParameterJdbcTemplate namedJdbcTemplate;
-    private DefaultAmazonService defaultAmazonService;
+    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedJdbcTemplate;
+    private final DefaultAmazonService defaultAmazonService;
 
     @Autowired
     private String getCongratulation;
@@ -59,12 +61,6 @@ public class JdbcCongratulationDao implements CongratulationDao {
     private String findImageAndAudioLinksByCongratulationId;
     @Autowired
     private String deleteLinkById;
-
-    public JdbcCongratulationDao(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedJdbcTemplate, DefaultAmazonService defaultAmazonService) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.namedJdbcTemplate = namedJdbcTemplate;
-        this.defaultAmazonService = defaultAmazonService;
-    }
 
     @Override
     public Congratulation getCongratulationById(long congratulationId) {

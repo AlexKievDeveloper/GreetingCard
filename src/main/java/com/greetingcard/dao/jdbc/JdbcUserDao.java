@@ -5,6 +5,7 @@ import com.greetingcard.dao.jdbc.mapper.UserIdExtractor;
 import com.greetingcard.dao.jdbc.mapper.UserRowMapper;
 import com.greetingcard.entity.AccessHashType;
 import com.greetingcard.entity.User;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -19,10 +20,11 @@ import static com.greetingcard.entity.AccessHashType.FORGOT_PASSWORD;
 import static com.greetingcard.entity.AccessHashType.VERIFY_EMAIL;
 
 @Slf4j
+@RequiredArgsConstructor
 @Repository
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class JdbcUserDao implements UserDao {
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     private String saveUser;
@@ -48,10 +50,6 @@ public class JdbcUserDao implements UserDao {
     private String deleteVerifyEmailAccessHash;
     @Autowired
     private String updateUserVerifyEmail;
-
-    public JdbcUserDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public void save(@NonNull User user) {

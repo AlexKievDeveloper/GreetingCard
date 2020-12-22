@@ -6,6 +6,7 @@ import com.greetingcard.dao.jdbc.mapper.CardRowMapper;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Role;
 import com.greetingcard.entity.Status;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,10 +16,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -26,12 +24,11 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
+@RequiredArgsConstructor
 @Repository
 public class JdbcCardDao implements CardDao {
-    private JdbcTemplate jdbcTemplate;
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    @Autowired
-    private TransactionTemplate transactionTemplate;
+    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     @Autowired
     private String getCardsByUserIdAndRoleId;
     @Autowired
@@ -53,10 +50,6 @@ public class JdbcCardDao implements CardDao {
     @Autowired
     private String changeName;
 
-    public JdbcCardDao(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-    }
     @Override
     public List<Card> getAllCardsByUserId(long id) {
         SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
@@ -105,12 +98,7 @@ public class JdbcCardDao implements CardDao {
 
     @Override
     public void changeCardStatusAndSetCardLinkById(Status newStatus, long cardId, String link) {
-        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                jdbcTemplate.update(changeStatusOfCardAndSetCardLinkById, newStatus.getStatusNumber(), link, cardId);
-            }
-        });
+        jdbcTemplate.update(changeStatusOfCardAndSetCardLinkById, newStatus.getStatusNumber(), link, cardId);
     }
 
     @Override
