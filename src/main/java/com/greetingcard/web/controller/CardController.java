@@ -90,7 +90,7 @@ public class CardController {
     public void changeStatusAndCreateCardLink(@PathVariable long id, @PathVariable String statusName) {
         log.info("Received PUT request");
         cardService.changeCardStatusAndCreateCardLink(statusName, id);
-        log.info("Successfully changed card status for card id: {}", id);
+        log.info("Successfully changed card status for card id: {} to {}", id, statusName);
     }
 
     @DeleteMapping("card/{id}")
