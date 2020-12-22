@@ -56,9 +56,6 @@ public class DefaultCardService implements CardService {
         Status status = Status.getByName(statusName);
         String hash = UUID.randomUUID().toString().replaceAll("/", "");
         cardDao.changeCardStatusAndSetCardLinkById(status, cardId, hash);
-//    public void changeCardStatus(String statusName, long cardId) {
-//        Status status = Status.getByName(statusName);
-//        cardDao.changeCardStatusById(status, cardId);
     }
 
     @Override
