@@ -20,7 +20,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.annotation.RequestScope;
 
 import java.sql.PreparedStatement;
 import java.util.*;
@@ -28,7 +27,6 @@ import java.util.*;
 @Slf4j
 @RequiredArgsConstructor
 @Repository
-@RequestScope
 public class JdbcCongratulationDao implements CongratulationDao {
 
     private final JdbcTemplate jdbcTemplate;

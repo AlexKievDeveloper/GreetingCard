@@ -14,7 +14,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.MessageDigest;
@@ -26,7 +25,6 @@ import static com.greetingcard.entity.AccessHashType.VERIFY_EMAIL;
 
 @Slf4j
 @RequiredArgsConstructor
-@RequestScope
 @Service
 @PropertySource(value = "classpath:application.properties")
 public class DefaultSecurityService implements SecurityService {

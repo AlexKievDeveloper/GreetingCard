@@ -6,10 +6,8 @@ import com.greetingcard.entity.CardsType;
 import com.greetingcard.entity.Status;
 import com.greetingcard.service.CardService;
 import com.greetingcard.service.CongratulationService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -57,7 +55,8 @@ public class DefaultCardService implements CardService {
 
     @Override
     @Transactional
-    public void changeCardStatusAndCreateCardLink(Status status, long cardId) {
+    public void changeCardStatusAndCreateCardLink(String statusName, long cardId) {
+        Status status = Status.getByName(statusName);
         String hash = UUID.randomUUID().toString().replaceAll("/", "");
         cardDao.changeCardStatusAndSetCardLinkById(status, cardId, hash);
         congratulationService.changeCongratulationStatusByCardId(status, cardId);
