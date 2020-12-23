@@ -25,7 +25,6 @@ class UserRowMapperTest {
     void mapRowTest() throws SQLException {
         //prepare
         UserRowMapper userRowMapper = new UserRowMapper();
-        when(mockResultSet.next()).thenReturn(true).thenReturn(false);
         when(mockResultSet.getInt("user_id")).thenReturn(2);
         when(mockResultSet.getString("firstName")).thenReturn("user");
         when(mockResultSet.getString("lastName")).thenReturn("user");
@@ -36,7 +35,7 @@ class UserRowMapperTest {
         when(mockResultSet.getString("salt")).thenReturn("salt");
         when(mockResultSet.getInt("language_id")).thenReturn(2);
         //when
-        User actualUser = userRowMapper.extractData(mockResultSet);
+        User actualUser = userRowMapper.mapRow(mockResultSet, 0);
         //then
         assertNotNull(actualUser);
         assertEquals(2, actualUser.getId());

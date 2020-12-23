@@ -6,11 +6,12 @@ import com.greetingcard.entity.Language;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.EmailService;
 import com.greetingcard.service.impl.DefaultAmazonService;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,36 +24,37 @@ import java.util.UUID;
 import static com.greetingcard.entity.AccessHashType.VERIFY_EMAIL;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
-@Setter
 @PropertySource(value = "classpath:application.properties")
 public class DefaultSecurityService implements SecurityService {
+    private final UserDao userDao;
+    private final DefaultAmazonService defaultAmazonService;
+
     @Value("${algorithm:SHA-256}")
     private String algorithm;
-
     @Value("${iteration:1}")
     private int iteration;
-
-    @Value("${webapp.url:https://greeting-team.herokuapp.com/}")
+    @Value("${webapp.url}")
     private String siteUrl;
-
-    @Autowired
-    private UserDao userDao;
-
-    @Autowired
-    private DefaultAmazonService defaultAmazonService;
+    @Value("${max.characters.name.and.last.name}")
+    private int maxCharactersNameAndLastName;
+    @Value("${max.characters.email.and.login}")
+    private int maxCharactersEmailAndLogin;
+    @Value("${max.characters.password}")
+    private int maxCharactersPassword;
 
     @Autowired
     private EmailService emailService;
 
-
     @Override
     public User login(String login, String password) {
-        log.info("login: {}", login);
-        checkUserCredentials(login, 50, "login");
-        User user = userDao.findByLogin(login);
 
-        if (user != null) {
+        log.info("login: {}", login);
+        checkUserCredentials(login, maxCharactersEmailAndLogin, "login");
+
+        try {
+            User user = userDao.findByLogin(login);
             String salt = user.getSalt();
             String hashPassword = getHashPassword(salt.concat(password));
 
@@ -60,17 +62,22 @@ public class DefaultSecurityService implements SecurityService {
                 log.info("Credentials is ok");
                 return user;
             }
+
+            log.info("Credentials not valid");
+            throw new IllegalAccessError("Access denied. Please check your login and password");
+        } catch (DataAccessException e) {
+            log.info("Credentials not valid");
+            throw new IllegalAccessError("Access denied. Please check your login and password");
         }
-        return null;
     }
 
     @Override
     public void register(User user) {
-        checkUserCredentials(user.getFirstName(), 40, "first name");
-        checkUserCredentials(user.getLastName(), 40, "last name");
-        checkUserCredentials(user.getEmail(), 50, "email");
-        checkUserCredentials(user.getLogin(), 50, "login");
-        checkUserCredentials(user.getPassword(), 200, "password");
+        checkUserCredentials(user.getFirstName(), maxCharactersNameAndLastName, "first name");
+        checkUserCredentials(user.getLastName(), maxCharactersNameAndLastName, "last name");
+        checkUserCredentials(user.getEmail(), maxCharactersEmailAndLogin, "email");
+        checkUserCredentials(user.getLogin(), maxCharactersEmailAndLogin, "login");
+        checkUserCredentials(user.getPassword(), maxCharactersPassword, "password");
 
         String salt = UUID.randomUUID().toString();
         String saltAndPassword = getHashPassword(salt.concat(user.getPassword()));
@@ -111,22 +118,19 @@ public class DefaultSecurityService implements SecurityService {
     }
 
     @Override
-    public User findById(long id) {
-        return userDao.findById(id);
-    }
-
-    @Override
     public User findByLogin(String login) {
-        return userDao.findByLogin(login);
+        try {
+            return userDao.findByLogin(login);
+        } catch (DataAccessException e) {
+            log.info("Login does not exist: {}", login);
+            throw new IllegalArgumentException("Login does not exist", e);
+        }
     }
 
     @Override
     @Transactional
     public void restorePassword(String email) {
         User user = userDao.findByEmail(email);
-        if (user == null) {
-            throw new RuntimeException("Cannot find a user with email: " + email);
-        }
 
         log.info("Generating new password for user with email {}", email);
         String newPassword = UUID.randomUUID().toString().substring(0, 15);
@@ -164,7 +168,6 @@ public class DefaultSecurityService implements SecurityService {
         String newAccessHash = getHashPassword(emailAndSalt).replaceAll("/", "");
 
         userDao.saveAccessHash(email, newAccessHash, hashType);
-
         return newAccessHash;
     }
 
@@ -179,7 +182,7 @@ public class DefaultSecurityService implements SecurityService {
             return Base64.getEncoder().encodeToString(bytes);
         } catch (NoSuchAlgorithmException e) {
             log.error("Cannot find algorithm -", e);
-            throw new RuntimeException(e);
+            throw new RuntimeException("Cannot find algorithm -", e);
         }
     }
 
@@ -202,5 +205,4 @@ public class DefaultSecurityService implements SecurityService {
                     "Please put " + fieldName + " up to " + maxCharacters + " characters.");
         }
     }
-
 }

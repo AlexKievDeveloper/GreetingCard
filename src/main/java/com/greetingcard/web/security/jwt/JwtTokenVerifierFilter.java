@@ -34,7 +34,6 @@ public class JwtTokenVerifierFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        log.info("JwtTokenVerifier");
 
         String token = getTokenFromRequest(request);
         if (token != null && jwtProvider.validateToken(token)) {

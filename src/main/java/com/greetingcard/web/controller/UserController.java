@@ -1,12 +1,9 @@
 package com.greetingcard.web.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greetingcard.entity.User;
 import com.greetingcard.security.SecurityService;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
@@ -18,26 +15,21 @@ import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 @Slf4j
+@RequiredArgsConstructor
 @PropertySource("classpath:application.properties")
 @RestController
 @RequestMapping(value = "/api/v1/")
 public class UserController {
-    @Autowired
-    private SecurityService securityService;
-
+    private final SecurityService securityService;
     @Value("${max.inactive.interval:3600}")
     private Integer maxInactiveInterval;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @PostMapping(value = "user", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> register(@RequestBody Map<String, String> userCredentials) {
-        String email = userCredentials.get("email");
         User user = User.builder()
                 .firstName(userCredentials.get("firstName"))
                 .lastName(userCredentials.get("lastName"))
-                .email(email)
+                .email(userCredentials.get("email"))
                 .login(userCredentials.get("login"))
                 .password(userCredentials.get("password"))
                 .build();
@@ -62,7 +54,7 @@ public class UserController {
         user = securityService.login(login, oldPassword);
 
         if (user == null) {
-            log.debug("Login or or old password value is incorrect.");
+            log.debug("Login or old password value is incorrect.");
             throw new IllegalArgumentException("Login or or old password value is incorrect.");
         }
 

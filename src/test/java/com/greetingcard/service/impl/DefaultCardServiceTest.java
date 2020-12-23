@@ -1,7 +1,8 @@
 package com.greetingcard.service.impl;
 
 import com.greetingcard.dao.CardDao;
-import com.greetingcard.entity.Status;
+import com.greetingcard.entity.CardsType;
+import com.greetingcard.service.CongratulationService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +17,8 @@ import static org.mockito.Mockito.verify;
 class DefaultCardServiceTest {
     @Mock
     private CardDao jdbcCardDao;
+    @Mock
+    private CongratulationService service;
     @InjectMocks
     private DefaultCardService defaultCardService;
 
@@ -23,7 +26,7 @@ class DefaultCardServiceTest {
     @DisplayName("Returns list with cards")
     void getCardsWhenParameterIsAllCards() {
         //when
-        defaultCardService.getCards(1, "all");
+        defaultCardService.getCards(1, CardsType.ALL);
         //then
         verify(jdbcCardDao).getAllCardsByUserId(1);
     }
@@ -32,7 +35,7 @@ class DefaultCardServiceTest {
     @DisplayName("Returns list with cards")
     void getCardsWhenParameterIsMyCards() {
         //when
-        defaultCardService.getCards(1, "my");
+        defaultCardService.getCards(1, CardsType.MY);
         //then
         verify(jdbcCardDao).getCardsByUserIdAndRoleId(1, 1);
     }
@@ -41,7 +44,7 @@ class DefaultCardServiceTest {
     @DisplayName("Returns list with cards")
     void getCardsWhenParameterIsAnotherCards() {
         //when
-        defaultCardService.getCards(1, "other");
+        defaultCardService.getCards(1, CardsType.OTHER);
         //then
         verify(jdbcCardDao).getCardsByUserIdAndRoleId(1, 2);
     }
@@ -56,11 +59,21 @@ class DefaultCardServiceTest {
     }
 
     @Test
-    @DisplayName("Changing card status and creating card link(hash)")
-    void changeCardStatusAndCreateCardLink() {
+    @DisplayName("Changing card status to STARTUP and creating card link(hash)")
+    void changeCardStatusAndCreateCardLinkToSTARTUP() {
         //when
-        defaultCardService.changeCardStatusAndCreateCardLink(Status.STARTUP, 1);
+        defaultCardService.changeCardStatusAndCreateCardLink("STARTUP", 1);
         //then
         verify(jdbcCardDao).changeCardStatusAndSetCardLinkById(any(), anyLong(), anyString());
     }
+
+    @Test
+    @DisplayName("Change status of card to ISOVER and creating card link(hash)")
+    void changeCardStatusAndCreateCardLinkToISOVER() {
+        //when
+        defaultCardService.changeCardStatusAndCreateCardLink("ISOVER", 1);
+        //then
+        verify(jdbcCardDao).changeCardStatusAndSetCardLinkById(any(), anyLong(), anyString());
+    }
+
 }

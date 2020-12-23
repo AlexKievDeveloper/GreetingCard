@@ -16,7 +16,7 @@ public interface CongratulationDao {
 
     List<Congratulation> findCongratulationsByCardId(long cardId);
 
-    void changeStatusCongratulationsByCardId(Status status, long cardId);
+    void changeCongratulationsStatusByCardId(Status status, long cardId);
 
     void changeCongratulationStatusByCongratulationId(Status status, long congratulationId);
 

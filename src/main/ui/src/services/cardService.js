@@ -14,7 +14,7 @@ export const cardService = {
     getUsers
 }
 
-function getCards(type = 'all') {
+function getCards(type = 'ALL') {
     return serverService.getData(`/cards?type=${type}`);
 }
 
@@ -39,7 +39,7 @@ function leaveCard(id) {
 }
 
 function finishCard(id) {
-    return serverService.sendRequest(`/card/${id}/status`, 'PUT');
+    return serverService.sendRequest(`/card/${id}/status/ISOVER`, 'PUT');
 }
 
 function updateName(id, newName) {

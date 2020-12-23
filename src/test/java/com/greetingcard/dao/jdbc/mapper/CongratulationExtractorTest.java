@@ -12,12 +12,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class CongratulationRowMapperTest {
+class CongratulationExtractorTest {
     @Mock
     private ResultSet mockResultSet;
 
@@ -25,7 +24,7 @@ class CongratulationRowMapperTest {
     @DisplayName("Returns an object of class Congratulation from result set")
     void extractData() throws SQLException {
         //prepare
-        CongratulationRowMapper congratulationRowMapper = new CongratulationRowMapper();
+        CongratulationExtractor congratulationExtractor = new CongratulationExtractor();
         when(mockResultSet.next()).thenReturn(true).thenReturn(false);
         when(mockResultSet.getInt("congratulation_id")).thenReturn(1);
         when(mockResultSet.getString("message")).thenReturn("from Roma");
@@ -37,7 +36,7 @@ class CongratulationRowMapperTest {
         when(mockResultSet.getInt("type_id")).thenReturn(1);
 
         //when
-        Congratulation actualCongratulation = congratulationRowMapper.extractData(mockResultSet);
+        Congratulation actualCongratulation = congratulationExtractor.extractData(mockResultSet);
 
         //then
         assertNotNull(actualCongratulation);
@@ -58,5 +57,15 @@ class CongratulationRowMapperTest {
         assertEquals(1, actualCongratulation.getLinkList().get(0).getId());
         assertEquals("you_tube_1", actualCongratulation.getLinkList().get(0).getLink());
         assertEquals(LinkType.VIDEO, actualCongratulation.getLinkList().get(0).getType());
+    }
+
+    @Test
+    @DisplayName("Empty result set")
+    void extractDataEmptyResultSet() {
+        //prepare
+        CongratulationExtractor congratulationExtractor = new CongratulationExtractor();
+        //when + then
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> congratulationExtractor.extractData(mockResultSet));
+        assertEquals("Empty result set for requested congratulation", e.getMessage());
     }
 }

@@ -11,6 +11,7 @@ import java.util.Set;
 
 @Slf4j
 public class AuthorizationFilter implements Filter {
+
     private static final Set<String> ALLOWED_PATHS =
             Set.of("/", "/login", "/home", "/api/v1/user/forgot_password", "/signup", "/index.html",
                     "/logo192.png", "/favicon.ico", "/static/*", "/manifest.json", "/api/v1/session", "/api/v1/user",

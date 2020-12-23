@@ -2,33 +2,35 @@ package com.greetingcard.service.impl;
 
 import com.greetingcard.dao.CardDao;
 import com.greetingcard.entity.Card;
+import com.greetingcard.entity.CardsType;
 import com.greetingcard.entity.Status;
 import com.greetingcard.service.CardService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.greetingcard.service.CongratulationService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class DefaultCardService implements CardService {
-    @Autowired
-    private CardDao cardDao;
+    private final CardDao cardDao;
+    private final CongratulationService congratulationService;
 
     @Override
-    public List<Card> getCards(long userId, String cardsType) {
-
+    public List<Card> getCards(long userId, CardsType cardsType) {
         switch (cardsType) {
-            case "all":
+            case ALL:
                 return cardDao.getAllCardsByUserId(userId);
-            case "my":
+            case MY:
                 return cardDao.getCardsByUserIdAndRoleId(userId, 1);
-            case "other":
+            case OTHER:
                 return cardDao.getCardsByUserIdAndRoleId(userId, 2);
-            default:
-                return null;
         }
+        return List.of();
     }
 
     @Override
@@ -52,20 +54,24 @@ public class DefaultCardService implements CardService {
     }
 
     @Override
-    public void changeCardStatusAndCreateCardLink(Status status, long cardId) {
+    @Transactional
+    public void changeCardStatusAndCreateCardLink(String statusName, long cardId) {
+        Status status = Status.getByName(statusName);
         String hash = UUID.randomUUID().toString().replaceAll("/", "");
         cardDao.changeCardStatusAndSetCardLinkById(status, cardId, hash);
+        congratulationService.changeCongratulationStatusByCardId(status, cardId);
     }
 
     @Override
     public void changeCardName(Card card) {
         int length = card.getName().length();
         if (length == 0 || length > 250) {
-            throw new IllegalArgumentException("Name is short or too long");
+            throw new IllegalArgumentException("Name is empty or too long");
         }
         cardDao.changeCardName(card);
     }
 
+    @Override
     public Optional<Status> getCardStatusById(long cardId) {
         return cardDao.getCardStatusById(cardId);
     }

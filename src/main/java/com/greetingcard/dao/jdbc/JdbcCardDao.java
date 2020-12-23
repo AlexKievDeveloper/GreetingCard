@@ -1,12 +1,12 @@
 package com.greetingcard.dao.jdbc;
 
 import com.greetingcard.dao.CardDao;
-import com.greetingcard.dao.CongratulationDao;
-import com.greetingcard.dao.jdbc.mapper.CardAndCongratulationRowMapper;
+import com.greetingcard.dao.jdbc.mapper.CardAndCongratulationExtractor;
 import com.greetingcard.dao.jdbc.mapper.CardRowMapper;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Role;
 import com.greetingcard.entity.Status;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,173 +16,101 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
+@RequiredArgsConstructor
 @Repository
 public class JdbcCardDao implements CardDao {
-    private static final String GET_CARDS_BY_USER_ID_AND_ROLE_ID =
-            "SELECT cards.card_id, " +
-                    "name, " +
-                    "background_image, " +
-                    "card_link, " +
-                    "status_id, " +
-                    "users.user_id, " +
-                    "firstName, " +
-                    "lastName, " +
-                    "login, " +
-                    "email " +
-                    "FROM cards " +
-                    "LEFT JOIN users_cards ON (cards.card_id=users_cards.card_id) " +
-                    "LEFT JOIN users ON (users_cards.user_id=users.user_id) " +
-                    "WHERE (users.user_id = :userId AND role_id = :roleId) " +
-                    "ORDER BY cards.card_id";
-    private static final String GET_CARD_STATUS = "SELECT status_id FROM cards WHERE card_id = :card_id";
-    private static final String SAVE_NEW_CARD = "INSERT INTO cards (user_id, name, status_id) VALUES (?,?,?)";
-    private static final String ADD_TO_USERS_CARDS = "INSERT INTO users_cards (card_id, user_id, role_id) VALUES (?,?,?)";
-    private static final String CARD_AND_CONGRATULATION =
-            "SELECT c.card_id, " +
-                    "c.user_id as card_user, " +
-                    "name, " +
-                    "background_image, " +
-                    "card_link, " +
-                    "c.status_id, " +
-                    "cg.congratulation_id, " +
-                    "cg.status_id as con_status, " +
-                    "message, " +
-                    "cg.user_id, " +
-                    "firstName, " +
-                    "lastName, " +
-                    "pathToPhoto, " +
-                    "login, " +
-                    "link_id, " +
-                    "link,type_id " +
-                    "FROM users_cards uc " +
-                    "JOIN cards c ON (uc.card_id = c.card_id) " +
-                    "LEFT JOIN congratulations cg ON (c.card_id=cg.card_id) " +
-                    "LEFT JOIN users u ON (cg.user_id=u.user_id) " +
-                    "LEFT JOIN links l ON (cg.congratulation_id=l.congratulation_id) " +
-                    "WHERE uc.card_id = :cardId AND uc.user_id = :userId";
-    private static final String FINISHED_CARD_AND_CONGRATULATION =
-            "SELECT cards.card_id, " +
-                    "cards.user_id as card_user, " +
-                    "name, " +
-                    "background_image, " +
-                    "card_link, " +
-                    "cards.status_id, " +
-                    "cg.congratulation_id, " +
-                    "cg.status_id as con_status, " +
-                    "message, " +
-                    "cg.user_id, " +
-                    "firstName, " +
-                    "lastName, " +
-                    "pathToPhoto, " +
-                    "login, " +
-                    "link_id, " +
-                    "link,type_id " +
-                    "FROM cards " +
-                    "LEFT JOIN congratulations cg ON (cards.card_id=cg.card_id) " +
-                    "LEFT JOIN users u ON (cg.user_id=u.user_id) " +
-                    "LEFT JOIN links l ON (cg.congratulation_id=l.congratulation_id) " +
-                    "WHERE cards.card_id = :cardId";
-    private static final String DELETE_BY_CARD_ID = "DELETE FROM cards WHERE card_id=? and user_id=?";
-    private static final String CHANGE_STATUS_OF_CARD_AND_SET_CARD_LINK_BY_ID = "UPDATE cards SET status_id = ?, card_link = ? where card_id = ?";
-    private static final String GET_ALL_CARDS_BY_USER_ID = "SELECT c.card_id ,c.name, c.background_image, c.card_link, c.status_id," +
-            " u.user_id, u.firstName, u.lastName, u.login, u.email " +
-            "FROM users_cards uc JOIN cards c ON (uc.card_id = c.card_id) " +
-            "JOIN users u ON (c.user_id = u.user_id) " +
-            "WHERE uc.user_id = :id ORDER BY c.card_id";
-    private static final String CHANGE_NAME = "UPDATE cards SET name = ? where card_id = ? and user_id = ?";
-
+    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     @Autowired
-    private CongratulationDao congratulationDao;
+    private String getCardsByUserIdAndRoleId;
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private String cardAndCongratulation;
     @Autowired
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private String getCardStatus;
     @Autowired
-    private TransactionTemplate transactionTemplate;
+    private String saveNewCard;
+    @Autowired
+    private String addToUsersCards;
+    @Autowired
+    private String finishedCardAndCongratulation;
+    @Autowired
+    private String deleteByCardId;
+    @Autowired
+    private String changeStatusOfCardAndSetCardLinkById;
+    @Autowired
+    private String getAllCardsByUserId;
+    @Autowired
+    private String changeName;
 
     @Override
     public List<Card> getAllCardsByUserId(long id) {
         SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
-        return namedParameterJdbcTemplate.query(GET_ALL_CARDS_BY_USER_ID, namedParameters, new CardRowMapper());
+        return namedParameterJdbcTemplate.query(getAllCardsByUserId, namedParameters, new CardRowMapper());
     }
 
     @Override
     public List<Card> getCardsByUserIdAndRoleId(long userId, long roleId) {
         MapSqlParameterSource namedParameters = new MapSqlParameterSource("userId", userId);
         namedParameters.addValue("roleId", roleId);
-        return namedParameterJdbcTemplate.query(GET_CARDS_BY_USER_ID_AND_ROLE_ID, namedParameters, new CardRowMapper());
+        return namedParameterJdbcTemplate.query(getCardsByUserIdAndRoleId, namedParameters, new CardRowMapper());
     }
 
     @Override
+    @Transactional
     public Long createCard(Card card) {
-        return transactionTemplate.execute(status -> {
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(connection -> {
-                PreparedStatement preparedStatement = connection.prepareStatement(SAVE_NEW_CARD, new String[]{"card_id"});
-                preparedStatement.setLong(1, card.getUser().getId());
-                preparedStatement.setString(2, card.getName());
-                preparedStatement.setInt(3, Status.STARTUP.getStatusNumber());
-                return preparedStatement;
-            }, keyHolder);
-            long id = keyHolder.getKey().longValue();
-            jdbcTemplate.update(ADD_TO_USERS_CARDS, id, card.getUser().getId(), Role.ADMIN.getRoleNumber());
-            return id;
-        });
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(saveNewCard, new String[]{"card_id"});
+            preparedStatement.setLong(1, card.getUser().getId());
+            preparedStatement.setString(2, card.getName());
+            preparedStatement.setInt(3, Status.STARTUP.getStatusNumber());
+            return preparedStatement;
+        }, keyHolder);
+        long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        jdbcTemplate.update(addToUsersCards, id, card.getUser().getId(), Role.ADMIN.getRoleNumber());
+        return id;
     }
 
     @Override
     public Card getCardAndCongratulationByCardIdAndUserId(long cardId, long userId) {
         MapSqlParameterSource namedParameters = new MapSqlParameterSource("cardId", cardId).addValue("userId", userId);
-        return namedParameterJdbcTemplate.query(CARD_AND_CONGRATULATION, namedParameters, new CardAndCongratulationRowMapper());
+        return namedParameterJdbcTemplate.query(cardAndCongratulation, namedParameters, new CardAndCongratulationExtractor());
     }
 
     @Override
     public Card getCardAndCongratulationByCardId(long cardId) {
         MapSqlParameterSource namedParameters = new MapSqlParameterSource("cardId", cardId);
-        return namedParameterJdbcTemplate.query(FINISHED_CARD_AND_CONGRATULATION, namedParameters, new CardAndCongratulationRowMapper());
+        return namedParameterJdbcTemplate.query(finishedCardAndCongratulation, namedParameters, new CardAndCongratulationExtractor());
     }
 
     @Override
     public void deleteCardById(long cardId, long userId) {
-        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                congratulationDao.deleteByCardId(cardId, userId);
-                jdbcTemplate.update(DELETE_BY_CARD_ID, cardId, userId);
-            }
-        });
+        jdbcTemplate.update(deleteByCardId, cardId, userId);
     }
 
     @Override
     public void changeCardStatusAndSetCardLinkById(Status newStatus, long cardId, String link) {
-        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                jdbcTemplate.update(CHANGE_STATUS_OF_CARD_AND_SET_CARD_LINK_BY_ID, newStatus.getStatusNumber(), link, cardId);
-                congratulationDao.changeStatusCongratulationsByCardId(newStatus, cardId);
-            }
-        });
+        jdbcTemplate.update(changeStatusOfCardAndSetCardLinkById, newStatus.getStatusNumber(), link, cardId);
     }
 
     @Override
     public Optional<Status> getCardStatusById(long cardId) {
         SqlParameterSource parameterSource = new MapSqlParameterSource("card_id", cardId);
-        List<Integer> statusIds = namedParameterJdbcTemplate.queryForList(GET_CARD_STATUS, parameterSource, Integer.class);
+        List<Integer> statusIds = namedParameterJdbcTemplate.queryForList(getCardStatus, parameterSource, Integer.class);
         return (statusIds.size() != 0 ? Optional.of(Status.getByNumber(statusIds.get(0))) : Optional.empty());
     }
 
     @Override
     public void changeCardName(Card card) {
-        jdbcTemplate.update(CHANGE_NAME, card.getName(), card.getId(), card.getUser().getId());
+        jdbcTemplate.update(changeName, card.getName(), card.getId(), card.getUser().getId());
         log.info("Changed name of card to {} by id - {}", card.getName(), card.getId());
     }
 }

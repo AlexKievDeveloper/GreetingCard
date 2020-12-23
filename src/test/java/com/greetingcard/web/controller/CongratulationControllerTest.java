@@ -42,7 +42,7 @@ import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfig
 class CongratulationControllerTest {
     private MockMvc mockMvc;
 
-    private final byte[] bytes = new byte[1024 * 1024 * 10];
+    private final byte[] bytes = new byte[1024 * 1024];
 
     @MockBean
     private DefaultCongratulationService defaultCongratulationService;
@@ -114,12 +114,10 @@ class CongratulationControllerTest {
     void getCongratulation() throws Exception {
         Congratulation congratulation = Congratulation.builder()
                 .id(1)
-                .message("from Roma")
-                .cardId(1)
                 .status(Status.STARTUP)
+                .cardId(1)
+                .message("from Roma")
                 .build();
-        User user = User.builder().id(1).login("user").build();
-        TestWebUtils.loginAsUser(user);
         when(defaultCongratulationService.getCongratulationById(1)).thenReturn(congratulation);
 
         mockMvc.perform(get("/api/v1/congratulation/{id}", 1))

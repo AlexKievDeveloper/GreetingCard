@@ -1,11 +1,11 @@
 package com.greetingcard.dao.jdbc.mapper;
 
 import com.greetingcard.entity.UserInfo;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 
 public class UserInfoRowMapper implements RowMapper<UserInfo> {
     @Override

@@ -98,8 +98,8 @@ class CardControllerTest {
         TestWebUtils.loginAsUserId(3);
         mockMvc.perform(get("/api/v1/card/{id}", 1))
                 .andDo(print())
-                .andExpect(jsonPath("$.message").value("Sorry, you are not a member of this card"))
-                .andExpect(status().isForbidden());
+                .andExpect(jsonPath("$.message").value("Sorry, you do not have access rights to the card or the card does not exist"))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -119,8 +119,17 @@ class CardControllerTest {
 
     @Test
     @DisplayName("Change status of card")
-    void doPut() throws Exception {
-        mockMvc.perform(put("/api/v1/card/{id}/status", 1)
+    void doPut_ISOVER() throws Exception {
+        mockMvc.perform(put("/api/v1/card/{id}/status/{statusName}", 1,"ISOVER")
+                .characterEncoding("utf-8"))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Change status of card to STARTUP")
+    void doPut_STARTUP() throws Exception {
+        mockMvc.perform(put("/api/v1/card/{id}/status/{statusName}", 1,"STARTUP")
                 .characterEncoding("utf-8"))
                 .andDo(print())
                 .andExpect(status().isOk());
@@ -139,8 +148,9 @@ class CardControllerTest {
     @Test
     @DisplayName("Return all card of user")
     void getCardsAll() throws Exception {
+
         TestWebUtils.loginAsUserId(1);
-        mockMvc.perform(get("/api/v1/cards?type=all"))
+        mockMvc.perform(get("/api/v1/cards?type=ALL"))
                 .andDo(print())
                 .andExpect(jsonPath("$[0].id").value("1"))
                 .andExpect(jsonPath("$[0].name").value("greeting Nomar"))
@@ -196,7 +206,7 @@ class CardControllerTest {
                 .content(json)
                 .characterEncoding("utf-8"))
                 .andDo(print())
-                .andExpect(jsonPath("$.message").value("Name is short or too long"))
+                .andExpect(jsonPath("$.message").value("Name is empty or too long"))
                 .andExpect(status().isBadRequest());
     }
 

@@ -18,7 +18,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.mock.web.MockMultipartFile;
@@ -60,8 +59,7 @@ class DefaultCongratulationServiceSystemTest {
     @Autowired
     private CongratulationService congratulationService;
 
-    private final byte[] bytes = new byte[1024 * 1024 * 10];
-
+    private final byte[] bytes = new byte[1024 * 1024];
 
     @Test
     @DisplayName("Adds links to linkList")
@@ -153,6 +151,5 @@ class DefaultCongratulationServiceSystemTest {
         linkList.removeIf(x -> x.getType() == LinkType.PICTURE);
 
         assertEquals(0, linkList.size());
-
     }
 }

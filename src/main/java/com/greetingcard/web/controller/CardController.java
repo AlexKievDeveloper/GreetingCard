@@ -1,13 +1,12 @@
 package com.greetingcard.web.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greetingcard.entity.Card;
+import com.greetingcard.entity.CardsType;
 import com.greetingcard.entity.Status;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,18 +19,16 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
+@RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "api/v1/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CardController {
-    @Autowired
-    private CardService cardService;
-    @Autowired
-    private ObjectMapper objectMapper;
-    @Value("${webapp.url:https://greeting-team.herokuapp.com/}")
+    private final CardService cardService;
+    @Value("${webapp.url}")
     private String siteUrl;
 
     @GetMapping("cards")
-    public ResponseEntity<Object> getCards(@RequestParam String type) {
+    public ResponseEntity<Object> getCards(@RequestParam CardsType type) {
         log.info("getCards");
         long userId = WebUtils.getCurrentUserId();
         List<Card> cardList = cardService.getCards(userId, type);
@@ -39,25 +36,21 @@ public class CardController {
     }
 
     @GetMapping("card/{id}")
-    public ResponseEntity<Object> getCard(HttpSession session, @PathVariable long id) throws JsonProcessingException {
+    public ResponseEntity<Object> getCard(@PathVariable long id) {
         log.info("Get card request");
         long userId = WebUtils.getCurrentUserId();
+
         Card card = cardService.getCardAndCongratulationByCardIdAndUserId(id, userId);
-        if (card == null) {
-            log.info("User has no access : {}", id);
-            String json = objectMapper.writeValueAsString(Map.of("message", "Sorry, you are not a member of this card"));
-            return ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body(json);
-        } else {
-            log.info("Successfully writing card to response, id: {}", id);
-            if (card.getStatus().equals(Status.ISOVER)) {
-                card.setCardLink(siteUrl + "card/" + card.getId() + "/card_link/" + card.getCardLink());
-            }
-            return ResponseEntity.status(HttpServletResponse.SC_OK).body(card);
+
+        if (card.getStatus().equals(Status.ISOVER)) {
+            card.setCardLink(siteUrl + "card/" + card.getId() + "/card_link/" + card.getCardLink());
         }
+        log.info("Successfully writing card to response, id: {}", id);
+        return ResponseEntity.status(HttpServletResponse.SC_OK).body(card);
     }
 
     @GetMapping("card/{id}/card_link/{hash}")
-    public ResponseEntity<Object> getFinishedCard(@PathVariable long id, @PathVariable String hash) throws JsonProcessingException {
+    public ResponseEntity<Object> getFinishedCard(@PathVariable long id, @PathVariable String hash) {
         log.info("Get finished card request");
 
         Card card = cardService.getCardAndCongratulationByCardId(id);
@@ -66,13 +59,12 @@ public class CardController {
             return ResponseEntity.status(HttpServletResponse.SC_OK).body(card);
         } else {
             log.info("User has no access : {}", id);
-            String json = objectMapper.writeValueAsString(Map.of("message", "Wrong card data"));
-            return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).body(json);
+            return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).body(Map.of("message", "Sorry, your link isn`t correct"));
         }
     }
 
     @PostMapping(value = "card", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> createCard(@RequestBody Card card) throws JsonProcessingException {
+    public ResponseEntity<Object> createCard(@RequestBody Card card)  {
         log.info("Creating card request");
         int length = card.getName().length();
         if (length == 0 || length > 250) {
@@ -80,16 +72,15 @@ public class CardController {
         }
         User user = WebUtils.getCurrentUser();
         card.setUser(user);
-        String json = objectMapper.writeValueAsString(Map.of("id", cardService.createCard(card)));
         log.info("Сard successefully created");
-        return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(json);
+        return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(Map.of("id", cardService.createCard(card)));
     }
 
-    @PutMapping("card/{id}/status")
-    public void changeStatusAndCreateCardLink(@PathVariable long id) {
-        log.info("Received PUT request");
-        cardService.changeCardStatusAndCreateCardLink(Status.ISOVER, id);
-        log.info("Successfully changed card status for card id: {}", id);
+    @PutMapping("card/{id}/status/{statusName}")
+    public void changeStatusAndCreateCardLink(@PathVariable long id, @PathVariable String statusName) {
+        log.info("Received PUT request for change status");
+        cardService.changeCardStatusAndCreateCardLink(statusName, id);
+        log.info("Successfully changed card status for card id: {} to {}", id, statusName);
     }
 
     @DeleteMapping("card/{id}")

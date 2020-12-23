@@ -1,6 +1,7 @@
 package com.greetingcard.service;
 
 import com.greetingcard.entity.Card;
+import com.greetingcard.entity.CardsType;
 import com.greetingcard.entity.Status;
 
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.Optional;
 
 public interface CardService {
 
-    List<Card> getCards(long userId, String cardsType);
+    List<Card> getCards(long userId, CardsType cardsType);
 
     Long createCard(Card card);
 
@@ -20,7 +21,7 @@ public interface CardService {
 
     void deleteCardById(long cardId, long userId);
 
-    void changeCardStatusAndCreateCardLink(Status status, long cardId);
+    void changeCardStatusAndCreateCardLink(String statusName, long cardId);
 
     void changeCardName(Card card);
 }

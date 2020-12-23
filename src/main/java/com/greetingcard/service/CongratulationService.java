@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface CongratulationService {
-
     Congratulation getCongratulationById(long congratulationId);
 
     List<Link> getLinkList(MultipartFile[] files_image, MultipartFile[] files_audio, Map<String, String> parametersMap);
@@ -17,6 +16,8 @@ public interface CongratulationService {
     void save(Congratulation congratulation);
 
     void changeCongratulationStatusByCongratulationId(Status status, long congratulationId);
+
+    void changeCongratulationStatusByCardId(Status status, long cardId);
 
     void updateCongratulationById(MultipartFile[] files_image, MultipartFile[] files_audio, Map<String, String> parametersMap, long congratulationId, long userId);
 
