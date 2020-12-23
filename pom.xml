@@ -219,6 +219,17 @@
             <artifactId>javax.annotation-api</artifactId>
             <version>${javax.annotation.api.version}</version>
         </dependency>
+        <!--Web sockets-->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-websocket</artifactId>
+            <version>5.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-messaging</artifactId>
+            <version>5.3.2</version>
+        </dependency>
         <!--Test-->
         <dependency>
             <groupId>org.flywaydb</groupId>
