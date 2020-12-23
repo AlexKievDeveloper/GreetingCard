@@ -5,10 +5,8 @@ import com.greetingcard.entity.CardsType;
 import com.greetingcard.entity.Status;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -80,7 +78,7 @@ public class CardController {
 
     @PutMapping("card/{id}/status/{statusName}")
     public void changeStatusAndCreateCardLink(@PathVariable long id, @PathVariable String statusName) {
-        log.info("Received PUT request");
+        log.info("Received PUT request for change status");
         cardService.changeCardStatusAndCreateCardLink(statusName, id);
         log.info("Successfully changed card status for card id: {} to {}", id, statusName);
     }

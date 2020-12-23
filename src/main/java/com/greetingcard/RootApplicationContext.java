@@ -21,7 +21,7 @@ import java.util.Properties;
 @ComponentScan(value = "com.greetingcard", excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX,
         pattern = "com.greetingcard.web.controller.*"))
 @EnableScheduling
-@EnableTransactionManagement
+@EnableTransactionManagement(proxyTargetClass = true)
 public class RootApplicationContext {
 
     @Bean

@@ -2,7 +2,6 @@ package com.greetingcard.service.impl;
 
 import com.greetingcard.dao.CardDao;
 import com.greetingcard.entity.CardsType;
-import com.greetingcard.entity.Status;
 import com.greetingcard.service.CongratulationService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
