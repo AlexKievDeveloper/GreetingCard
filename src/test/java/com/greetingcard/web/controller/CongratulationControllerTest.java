@@ -37,12 +37,12 @@ import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfig
 @DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardsUsers.xml",
         "congratulations.xml", "links.xml"},
         executeStatementsBefore = "SELECT setval('congratulations_congratulation_id_seq', 6);", cleanAfter = true)
-@SpringJUnitWebConfig(value = {TestConfiguration.class,  RootApplicationContext.class})
+@SpringJUnitWebConfig(value = {TestConfiguration.class, RootApplicationContext.class})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CongratulationControllerTest {
     private MockMvc mockMvc;
 
-    private final byte[] bytes = new byte[1024 * 1024 * 10];
+    private final byte[] bytes = new byte[1024 * 1024];
 
     @MockBean
     private DefaultCongratulationService defaultCongratulationService;
@@ -114,13 +114,14 @@ class CongratulationControllerTest {
     @Test
     @DisplayName("Returns congratulation by id")
     void getCongratulation() throws Exception {
+        User user = User.builder().id(1).login("user").build();
         Congratulation congratulation = Congratulation.builder()
                 .id(1)
-                .message("from Roma")
-                .cardId(1)
                 .status(Status.STARTUP)
+                .cardId(1)
+                .message("from Roma")
                 .build();
-        User user = User.builder().id(1).login("user").build();
+
         when(defaultCongratulationService.getCongratulationById(1)).thenReturn(congratulation);
 
         mockMvc.perform(get("/api/v1/congratulation/{id}", 1)

@@ -6,9 +6,9 @@ import com.greetingcard.entity.Link;
 import com.greetingcard.entity.LinkType;
 import com.greetingcard.entity.Status;
 import com.greetingcard.service.CongratulationService;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,11 +22,9 @@ import java.util.regex.Pattern;
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class DefaultCongratulationService implements CongratulationService {
-    @Autowired
     private CongratulationDao congratulationDao;
-
-    @Autowired
     private DefaultAmazonService defaultAmazonService;
 
     @Override
@@ -53,6 +51,11 @@ public class DefaultCongratulationService implements CongratulationService {
     @Override
     public void changeCongratulationStatusByCongratulationId(Status status, long congratulationId) {
         congratulationDao.changeCongratulationStatusByCongratulationId(status, congratulationId);
+    }
+
+    @Override
+    public void changeCongratulationStatusByCardId(Status status, long cardId) {
+        congratulationDao.changeCongratulationsStatusByCardId(status, cardId);
     }
 
     @Override

@@ -8,8 +8,9 @@ import com.greetingcard.entity.Link;
 import com.greetingcard.entity.Status;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CongratulationService;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,20 +24,17 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/congratulation")
 public class CongratulationController {
-    @Autowired
-    private CongratulationService congratulationService;
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final CongratulationService congratulationService;
+    private final ObjectMapper objectMapper;
 
     @GetMapping("/{id}")
     public Congratulation getCongratulation(@PathVariable("id") long congratulationId) {
         log.info("Received request for getting congratulation");
-        Congratulation congratulation = congratulationService.getCongratulationById(congratulationId);
-        log.info("Successfully returned json with Congratulation entity");
-        return congratulation;
+        return congratulationService.getCongratulationById(congratulationId);
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

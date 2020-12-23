@@ -1,11 +1,12 @@
 package com.greetingcard.web.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greetingcard.entity.Card;
+import com.greetingcard.entity.CardsType;
 import com.greetingcard.entity.Status;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,18 +21,16 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
+@RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "api/v1/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CardController {
-    @Autowired
-    private CardService cardService;
-    @Autowired
-    private ObjectMapper objectMapper;
-    @Value("${webapp.url:https://greeting-team.herokuapp.com/}")
+    private final CardService cardService;
+    @Value("${webapp.url}")
     private String siteUrl;
 
     @GetMapping("cards")
-    public ResponseEntity<Object> getCards(HttpSession session, @RequestParam String type) {
+    public ResponseEntity<Object> getCards(HttpSession session, @RequestParam CardsType type) {
         log.info("getCards");
         User user = (User) session.getAttribute("user");
         long userId = user.getId();
@@ -40,25 +39,20 @@ public class CardController {
     }
 
     @GetMapping("card/{id}")
-    public ResponseEntity<Object> getCard(HttpSession session, @PathVariable long id) throws JsonProcessingException {
+    public ResponseEntity<Object> getCard(HttpSession session, @PathVariable long id) {
         log.info("Get card request");
         User user = (User) session.getAttribute("user");
         Card card = cardService.getCardAndCongratulationByCardIdAndUserId(id, user.getId());
-        if (card == null) {
-            log.info("User has no access : {}", id);
-            String json = objectMapper.writeValueAsString(Map.of("message", "Sorry, you are not a member of this card"));
-            return ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body(json);
-        } else {
-            log.info("Successfully writing card to response, id: {}", id);
-            if (card.getStatus().equals(Status.ISOVER)) {
-                card.setCardLink(siteUrl + "card/" + card.getId() + "/card_link/" + card.getCardLink());
-            }
-            return ResponseEntity.status(HttpServletResponse.SC_OK).body(card);
+
+        if (card.getStatus().equals(Status.ISOVER)) {
+            card.setCardLink(siteUrl + "card/" + card.getId() + "/card_link/" + card.getCardLink());
         }
+        log.info("Successfully writing card to response, id: {}", id);
+        return ResponseEntity.status(HttpServletResponse.SC_OK).body(card);
     }
 
     @GetMapping("card/{id}/card_link/{hash}")
-    public ResponseEntity<Object> getFinishedCard(@PathVariable long id, @PathVariable String hash) throws JsonProcessingException {
+    public ResponseEntity<Object> getFinishedCard(@PathVariable long id, @PathVariable String hash) {
         log.info("Get finished card request");
 
         Card card = cardService.getCardAndCongratulationByCardId(id);
@@ -67,13 +61,12 @@ public class CardController {
             return ResponseEntity.status(HttpServletResponse.SC_OK).body(card);
         } else {
             log.info("User has no access : {}", id);
-            String json = objectMapper.writeValueAsString(Map.of("message", "Wrong card data"));
-            return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).body(json);
+            return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).body(Map.of("message", "Sorry, your link isn`t correct"));
         }
     }
 
     @PostMapping(value = "card", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> createCard(@RequestBody Card card, HttpSession session) throws JsonProcessingException {
+    public ResponseEntity<Object> createCard(@RequestBody Card card, HttpSession session) {
         log.info("Creating card request");
         int length = card.getName().length();
         if (length == 0 || length > 250) {
@@ -81,9 +74,8 @@ public class CardController {
         }
         User user = (User) session.getAttribute("user");
         card.setUser(user);
-        String json = objectMapper.writeValueAsString(Map.of("id", cardService.createCard(card)));
         log.info("Сard successefully created");
-        return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(json);
+        return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(Map.of("id", cardService.createCard(card)));
     }
 
     @PutMapping("card/{id}/status/{statusName}")

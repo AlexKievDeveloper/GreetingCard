@@ -6,7 +6,6 @@ import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.greetingcard.RootApplicationContext;
-import com.greetingcard.dao.UserDao;
 import com.greetingcard.entity.AccessHashType;
 import com.greetingcard.entity.Language;
 import com.greetingcard.entity.User;
@@ -16,6 +15,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,12 +26,11 @@ import static org.junit.jupiter.api.Assertions.*;
         "congratulations.xml", "links.xml", "forgot_password_hashes.xml", "verify_email_hashes.xml"},
         executeStatementsBefore = "SELECT setval('users_user_id_seq', 10);",
         cleanAfter = true)
-@SpringJUnitWebConfig(value = {TestConfiguration.class,  RootApplicationContext.class})
+@SpringJUnitWebConfig(value = {TestConfiguration.class, RootApplicationContext.class})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JdbcUserDaoITest {
-
     @Autowired
-    private UserDao userDao;
+    private JdbcUserDao userDao;
 
     @Autowired
     private Flyway flyway;
@@ -60,12 +59,10 @@ class JdbcUserDaoITest {
     }
 
     @Test
-    @DisplayName("Find user by login if login didn't create")
+    @DisplayName("Throws exception when user with requested login does not exist")
     void testFindUserByLoginIfLoginNotFound() {
-        //when
-        User actualUser = userDao.findByLogin("user_is_not_created");
-        //then
-        assertNull(actualUser);
+        //when + then
+        assertThrows(EmptyResultDataAccessException.class, () -> userDao.findByLogin("user_is_not_created"));
     }
 
     @Test
@@ -120,20 +117,6 @@ class JdbcUserDaoITest {
     }
 
     @Test
-    @DisplayName("Find user by id")
-    void testFindUserById() {
-        //when
-        User actualUser = userDao.findById(2);
-        //then
-        assertNotNull(actualUser);
-        assertEquals(2, actualUser.getId());
-        assertEquals("user", actualUser.getFirstName());
-        assertEquals("user", actualUser.getLastName());
-        assertEquals("user", actualUser.getLogin());
-        assertEquals("@user", actualUser.getEmail());
-    }
-
-    @Test
     @DisplayName("Find user by email")
     void testFindUserByEmail() {
         //when
@@ -147,14 +130,12 @@ class JdbcUserDaoITest {
         assertEquals("@user", actualUser.getEmail());
     }
 
-
     @Test
     @DisplayName("Find user by email if there is no user with such email in DB")
     void testFindUserByEmailIfEmailAddressNotFound() {
-        //when
-        User actualUser = userDao.findByEmail("non-existing@email.address");
-        //then
-        assertNull(actualUser);
+        //when + then
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> userDao.findByEmail("non-existing@email.address"));
+        assertEquals("User with email: non-existing@email.address does not exist", e.getMessage());
     }
 
     @Test
@@ -188,6 +169,16 @@ class JdbcUserDaoITest {
     }
 
     @Test
+    @DisplayName("Throws IllegalArgumentException when hash is not valid")
+    void testVerifyEmailAccessHashIsNotValid() {
+        //prepare
+        String testHash = "HashHash";
+        //when
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> userDao.verifyEmailAccessHash(testHash));
+        assertEquals("No user found for requested hash", e.getMessage());
+    }
+
+    @Test
     @DisplayName("Search forgot_password_hashes table for access hash and get user by ID")
     void testFindUserByForgotPasswordAccessHash() {
         //prepare
@@ -199,5 +190,15 @@ class JdbcUserDaoITest {
         assertEquals(2, user.getId());
         assertEquals("gDE3fEwV4WEZhgiURMj/WMlTWP/cldaSptEMe2M+md8=", user.getPassword());
         assertEquals("salt", user.getSalt());
+    }
+
+    @Test
+    @DisplayName("Throws IllegalArgumentException when hash is not valid")
+    void testFindUserByForgotPasswordAccessHashWhenHashIsNotValid() {
+        //prepare
+        String testHash = "HashHash";
+        //when + then
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> userDao.findByForgotPasswordAccessHash(testHash));
+        assertEquals("No user found for requested hash", e.getMessage());
     }
 }

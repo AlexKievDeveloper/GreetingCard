@@ -17,7 +17,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class CongratulationsRowMapperTest {
+class CongratulationsExtractorTest {
     @Mock
     private ResultSet mockResultSet;
 
@@ -25,7 +25,7 @@ class CongratulationsRowMapperTest {
     @DisplayName("Returns all congratulations from result set")
     void extractData() throws SQLException {
         //prepare
-        CongratulationsRowMapper rowMapper = new CongratulationsRowMapper();
+        CongratulationsExtractor rowMapper = new CongratulationsExtractor();
 
         when(mockResultSet.next()).thenReturn(true).thenReturn(false);
         when(mockResultSet.getLong("card_id")).thenReturn(1L);

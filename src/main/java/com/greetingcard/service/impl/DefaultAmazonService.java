@@ -25,7 +25,6 @@ import java.io.IOException;
 @Service
 @PropertySource("classpath:application.properties")
 public class DefaultAmazonService implements AmazonService {
-
     private AmazonS3 s3client;
 
     @Value("${bucketName}")
@@ -57,15 +56,13 @@ public class DefaultAmazonService implements AmazonService {
         } catch (AmazonServiceException ase) {
             log.info("Caught an AmazonServiceException from GET requests, rejected reasons:");
             log.info("Error Message: {}", ase.getMessage());
-            log.info("HTTP Status Code: {}", + ase.getStatusCode());
+            log.info("HTTP Status Code: {}", +ase.getStatusCode());
             log.info("AWS Error Code: {}", ase.getErrorCode());
             log.info("Error Type: {}", ase.getErrorType());
             log.info("Request ID: {}", ase.getRequestId());
         } catch (AmazonClientException ace) {
             log.info("Caught an AmazonClientException: ");
             log.info("Error Message: {}", ace.getMessage());
-        } catch (IOException ioe) {
-            log.info("IOE Error Message: {}", ioe.getMessage());
         }
     }
 
@@ -81,12 +78,14 @@ public class DefaultAmazonService implements AmazonService {
         s3client.putObject(new PutObjectRequest(bucketName, fileName, file));
     }
 
-    private File convertMultiPartToFile(MultipartFile file) throws IOException {
+    private File convertMultiPartToFile(MultipartFile file) {
         File convFile = new File(file.getOriginalFilename());
-        FileOutputStream fos = new FileOutputStream(convFile);
-        fos.write(file.getBytes());
-        fos.close();
+        try (FileOutputStream fos = new FileOutputStream(convFile)) {
+            fos.write(file.getBytes());
+        } catch (IOException e) {
+            log.info("Cannot save file: {}", file.getOriginalFilename());
+            throw new RuntimeException("Cannot save file");
+        }
         return convFile;
     }
-
 }

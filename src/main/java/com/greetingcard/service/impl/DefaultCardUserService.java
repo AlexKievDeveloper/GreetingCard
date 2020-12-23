@@ -9,8 +9,9 @@ import com.greetingcard.security.SecurityService;
 import com.greetingcard.service.CardService;
 import com.greetingcard.service.CardUserService;
 import com.greetingcard.service.CongratulationService;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,15 +20,12 @@ import java.util.Optional;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class DefaultCardUserService implements CardUserService {
-    @Autowired
-    private CardUserDao cardUserDao;
-    @Autowired
-    private SecurityService userService;
-    @Autowired
-    private CardService cardService;
-    @Autowired
-    private CongratulationService congratulationService;
+    private final CardUserDao cardUserDao;
+    private final SecurityService userService;
+    private final CardService cardService;
+    private final CongratulationService congratulationService;
 
     @Override
     public void addUser(long cardId, User userAdmin, User userNewLogin) {
@@ -96,9 +94,6 @@ public class DefaultCardUserService implements CardUserService {
 
     long checkLoginExistInDB(String login) {
         User user = userService.findByLogin(login);
-        if (user == null) {
-            throw new IllegalArgumentException("Login does not exist");
-        }
         return user.getId();
     }
 

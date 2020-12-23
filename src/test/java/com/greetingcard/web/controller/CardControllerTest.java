@@ -102,8 +102,8 @@ class CardControllerTest {
         mockMvc.perform(get("/api/v1/card/{id}", 1)
                 .sessionAttr("user", user))
                 .andDo(print())
-                .andExpect(jsonPath("$.message").value("Sorry, you are not a member of this card"))
-                .andExpect(status().isForbidden());
+                .andExpect(jsonPath("$.message").value("Sorry, you do not have access rights to the card or the card does not exist"))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -155,7 +155,7 @@ class CardControllerTest {
     @DisplayName("Return all card of user")
     void getCardsAll() throws Exception {
         User user = User.builder().id(1).build();
-        mockMvc.perform(get("/api/v1/cards?type=all")
+        mockMvc.perform(get("/api/v1/cards?type=ALL")
                 .sessionAttr("user", user))
                 .andDo(print())
                 .andExpect(jsonPath("$[0].id").value("1"))
@@ -215,7 +215,7 @@ class CardControllerTest {
                 .characterEncoding("utf-8")
                 .sessionAttr("user", user))
                 .andDo(print())
-                .andExpect(jsonPath("$.message").value("Name is short or too long"))
+                .andExpect(jsonPath("$.message").value("Name is empty or too long"))
                 .andExpect(status().isBadRequest());
     }
 
