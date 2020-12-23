@@ -31,10 +31,9 @@ public class CardController {
     private String siteUrl;
 
     @GetMapping("cards")
-    public ResponseEntity<Object> getCards(HttpSession session, @RequestParam String type) {
+    public ResponseEntity<Object> getCards(@RequestParam String type) {
         log.info("getCards");
-        User user = (User) session.getAttribute("user");
-        long userId = user.getId();
+        long userId = WebUtils.getCurrentUserId();
         List<Card> cardList = cardService.getCards(userId, type);
         return ResponseEntity.status(HttpStatus.OK).body(cardList);
     }
@@ -42,8 +41,8 @@ public class CardController {
     @GetMapping("card/{id}")
     public ResponseEntity<Object> getCard(HttpSession session, @PathVariable long id) throws JsonProcessingException {
         log.info("Get card request");
-        User user = (User) session.getAttribute("user");
-        Card card = cardService.getCardAndCongratulationByCardIdAndUserId(id, user.getId());
+        long userId = WebUtils.getCurrentUserId();
+        Card card = cardService.getCardAndCongratulationByCardIdAndUserId(id, userId);
         if (card == null) {
             log.info("User has no access : {}", id);
             String json = objectMapper.writeValueAsString(Map.of("message", "Sorry, you are not a member of this card"));
@@ -73,13 +72,13 @@ public class CardController {
     }
 
     @PostMapping(value = "card", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> createCard(@RequestBody Card card, HttpSession session) throws JsonProcessingException {
+    public ResponseEntity<Object> createCard(@RequestBody Card card) throws JsonProcessingException {
         log.info("Creating card request");
         int length = card.getName().length();
         if (length == 0 || length > 250) {
             throw new IllegalArgumentException("Name is short or too long");
         }
-        User user = (User) session.getAttribute("user");
+        User user = WebUtils.getCurrentUser();
         card.setUser(user);
         String json = objectMapper.writeValueAsString(Map.of("id", cardService.createCard(card)));
         log.info("Сard successefully created");
@@ -96,13 +95,13 @@ public class CardController {
     @DeleteMapping("card/{id}")
     public void delete(@PathVariable long id, HttpSession session) {
         log.info("Request for DELETE card");
-        User user = (User) session.getAttribute("user");
-        cardService.deleteCardById(id, user.getId());
+        Long userId = WebUtils.getCurrentUserId();
+        cardService.deleteCardById(id, userId);
     }
 
     @PutMapping("card/{id}/name")
-    public void changeName(@RequestBody Card card, @PathVariable long id, HttpSession session) {
-        User user = (User) session.getAttribute("user");
+    public void changeName(@RequestBody Card card, @PathVariable long id) {
+        User user = WebUtils.getCurrentUser();
         card.setId(id);
         card.setUser(user);
         cardService.changeCardName(card);

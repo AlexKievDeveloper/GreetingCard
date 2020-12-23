@@ -24,6 +24,7 @@
         <flyway.version>6.5.5</flyway.version>
         <!--Dependencies-->
         <spring.version>5.3.0</spring.version>
+        <spring-security.version>5.4.0</spring-security.version>
         <postgres.version>42.2.17</postgres.version>
         <javax.servlet.version>4.0.1</javax.servlet.version>
         <commons-dbcp2.version>2.8.0</commons-dbcp2.version>
@@ -215,9 +216,38 @@
             <version>${aws.java.sdk.version}</version>
         </dependency>
         <!--Javax annotation(@PostConstruct in AmazonService)-->
-        <dependency> <groupId>javax.annotation</groupId>
+        <dependency>
+            <groupId>javax.annotation</groupId>
             <artifactId>javax.annotation-api</artifactId>
             <version>${javax.annotation.api.version}</version>
+        </dependency>
+        <!--Security -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+            <version>${spring-security.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>${spring-security.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.11.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.11.2</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is preferred -->
+            <version>0.11.2</version>
+            <scope>runtime</scope>
         </dependency>
         <!--Test-->
         <dependency>
@@ -236,6 +266,12 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <version>${spring.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <version>${spring-security.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

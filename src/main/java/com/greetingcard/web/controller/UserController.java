@@ -31,34 +31,6 @@ public class UserController {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @DeleteMapping("session")
-    public ResponseEntity<?> logout(HttpSession session) {
-        session.invalidate();
-        log.info("Successfully logout");
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
-    @PostMapping(value = "session", produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> login(@RequestBody Map<String, String> userCredentials, HttpSession session) throws JsonProcessingException {
-        log.info("login request");
-        String login = userCredentials.get("login");
-        String password = userCredentials.get("password");
-        log.info("login for user {}", login);
-        User user = securityService.login(login, password);
-        if (user == null) {
-            log.info("Credentials not valid");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(objectMapper
-                    .writeValueAsString(Map.of("message",
-                            "Access denied. Please check your login and password")));
-        }
-        session.setAttribute("user", user);
-        session.setMaxInactiveInterval(maxInactiveInterval);
-        log.info("Successfully authentication");
-        return ResponseEntity.status(HttpStatus.OK).body(objectMapper
-                .writeValueAsString(Map.of("login", login, "userId", user.getId())));
-    }
-
     @PostMapping(value = "user", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> register(@RequestBody Map<String, String> userCredentials) {
         String email = userCredentials.get("email");
@@ -83,8 +55,8 @@ public class UserController {
     }
 
     @PutMapping(value = "user/password", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void changePassword(@RequestBody Map<String, String> userCredentials, HttpSession session) {
-        User user = (User) session.getAttribute("user");
+    public void changePassword(@RequestBody Map<String, String> userCredentials) {
+        User user = WebUtils.getCurrentUser();
         String login = user.getLogin();
         String oldPassword = userCredentials.get("oldPassword");
         user = securityService.login(login, oldPassword);

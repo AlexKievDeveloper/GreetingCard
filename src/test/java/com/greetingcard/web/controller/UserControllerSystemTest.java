@@ -14,13 +14,12 @@ import org.junit.jupiter.api.*;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockHttpSession;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "congratulations.xml", "links.xml", "forgot_password_hashes.xml", "verify_email_hashes.xml"},
         executeStatementsBefore = "SELECT setval('users_user_id_seq', 10);",
         cleanAfter = true)
-@SpringJUnitWebConfig(value = {TestConfiguration.class,  RootApplicationContext.class})
+@SpringJUnitWebConfig(value = {TestConfiguration.class, RootApplicationContext.class})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UserControllerSystemTest {
     @Autowired
@@ -58,23 +57,6 @@ class UserControllerSystemTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
     }
 
-    @Test
-    @DisplayName("Invalidates the session")
-    void testLogout() throws Exception {
-        //prepare
-        User user = User.builder()
-                .login("user")
-                .password("user").build();
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("user", user);
-        assertNotNull(session.getAttribute("user"));
-        //when
-        mockMvc.perform(delete("/api/v1/session").session(session))
-                .andDo(print())
-                .andExpect(status().isOk());
-        assertNotNull(session);
-        assertThrows(IllegalStateException.class, () -> session.getAttribute("user"));
-    }
 
     @Test
     @DisplayName("Login user")
@@ -87,7 +69,7 @@ class UserControllerSystemTest {
         String json = mapper.writeValueAsString(userCredential);
 
         //when
-        HttpSession result = mockMvc.perform(post("/api/v1/session")
+        MockHttpServletResponse response = mockMvc.perform(post("/api/v1/auth")
                 .contentType(APPLICATION_JSON_VALUE)
                 .accept(APPLICATION_JSON_VALUE)
                 .content(json))
@@ -95,13 +77,11 @@ class UserControllerSystemTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.login").value("user"))
                 .andExpect(jsonPath("$.userId").value("2"))
-                .andReturn().getRequest().getSession();
+                .andReturn().getResponse();
 
-        //then
-        assertNotNull(result);
-        User user = (User) result.getAttribute("user");
-        assertNotNull(user);
-        assertEquals("user", user.getLogin());
+        String headerValue = response.getHeader("Authorization");
+        assertNotNull(headerValue);
+        assertTrue(headerValue.startsWith("Bearer "));
     }
 
     @Test
@@ -116,18 +96,13 @@ class UserControllerSystemTest {
         String json = mapper.writeValueAsString(userCredential);
 
         //when
-        HttpSession result = mockMvc.perform(post("/api/v1/session")
+        mockMvc.perform(post("/api/v1/auth")
                 .contentType(APPLICATION_JSON_VALUE)
                 .accept(APPLICATION_JSON_VALUE)
                 .content(json))
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.message").value("Access denied. Please check your login and password"))
-                .andReturn().getRequest().getSession();
-        //then
-        assertNotNull(result);
-        User user = (User) result.getAttribute("user");
-        assertNull(user);
+                .andExpect(jsonPath("$.message").value("Access denied. Please check your login and password"));
     }
 
     @Test
@@ -189,6 +164,7 @@ class UserControllerSystemTest {
         User user = User.builder()
                 .login("user")
                 .build();
+        TestWebUtils.loginAsUser(user);
         Map<String, String> userCredential = new HashMap<>();
         userCredential.put("login", "user");
         userCredential.put("oldPassword", "user");
@@ -198,7 +174,6 @@ class UserControllerSystemTest {
 
         //when
         mockMvc.perform(put("/api/v1/user/password")
-                .sessionAttr("user", user)
                 .contentType(APPLICATION_JSON_VALUE)
                 .accept(APPLICATION_JSON_VALUE)
                 .content(json))

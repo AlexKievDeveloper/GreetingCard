@@ -57,9 +57,8 @@ class CardControllerTest {
     @Test
     @DisplayName("Return card by card_id and user_id")
     void getCard() throws Exception {
-        User user = User.builder().id(2).build();
-        mockMvc.perform(get("/api/v1/card/{id}", 1)
-                .sessionAttr("user", user))
+        TestWebUtils.loginAsUserId(2);
+        mockMvc.perform(get("/api/v1/card/{id}", 1))
                 .andDo(print())
                 .andExpect(jsonPath("$.id").value("1"))
                 .andExpect(jsonPath("$.user.id").value("1"))
@@ -70,9 +69,8 @@ class CardControllerTest {
     @Test
     @DisplayName("Return card with status ISOVER and full card_link by card_id and user_id")
     void getISoverCard() throws Exception {
-        User user = User.builder().id(2).build();
-        mockMvc.perform(get("/api/v1/card/{id}", 2)
-                .sessionAttr("user", user))
+        TestWebUtils.loginAsUserId(2);
+        mockMvc.perform(get("/api/v1/card/{id}", 2))
                 .andDo(print())
                 .andExpect(jsonPath("$.id").value("2"))
                 .andExpect(jsonPath("$.user.id").value("2"))
@@ -84,9 +82,8 @@ class CardControllerTest {
     @Test
     @DisplayName("Return finished card by card_id and user_id with hash only as link_to_greeting(only for showing to birthday boy)")
     void getFinishedCard() throws Exception {
-        User user = User.builder().id(2).build();
-        mockMvc.perform(get("/api/v1/card/{id}/card_link/{hash}", 2, "link_to_greeting")
-                .sessionAttr("user", user))
+        TestWebUtils.loginAsUserId(2);
+        mockMvc.perform(get("/api/v1/card/{id}/card_link/{hash}", 2, "link_to_greeting"))
                 .andDo(print())
                 .andExpect(jsonPath("$.id").value("2"))
                 .andExpect(jsonPath("$.user.id").value("2"))
@@ -98,9 +95,8 @@ class CardControllerTest {
     @Test
     @DisplayName("Return message when user is not a member of this card")
     void getCardNoAccessOrCard() throws Exception {
-        User user = User.builder().id(-1).build();
-        mockMvc.perform(get("/api/v1/card/{id}", 1)
-                .sessionAttr("user", user))
+        TestWebUtils.loginAsUserId(3);
+        mockMvc.perform(get("/api/v1/card/{id}", 1))
                 .andDo(print())
                 .andExpect(jsonPath("$.message").value("Sorry, you are not a member of this card"))
                 .andExpect(status().isForbidden());
@@ -110,13 +106,12 @@ class CardControllerTest {
     @DisplayName("Create card")
     void createCard() throws Exception {
         String json = "{\"name\":\"test\"}";
-        User user = User.builder().id(2).build();
+        TestWebUtils.loginAsUserId(2);
 
         mockMvc.perform(post("/api/v1/card")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json)
-                .characterEncoding("utf-8")
-                .sessionAttr("user", user))
+                .characterEncoding("utf-8"))
                 .andDo(print())
                 .andExpect(jsonPath("$.id").value("4"))
                 .andExpect(status().isCreated());
@@ -134,9 +129,8 @@ class CardControllerTest {
     @Test
     @DisplayName("Delete card")
     void doDelete() throws Exception {
-        User user = User.builder().id(1).build();
+        TestWebUtils.loginAsUserId(1);
         mockMvc.perform(delete("/api/v1/card/{id}", 1)
-                .sessionAttr("user", user)
                 .characterEncoding("utf-8"))
                 .andDo(print())
                 .andExpect(status().isOk());
@@ -145,9 +139,8 @@ class CardControllerTest {
     @Test
     @DisplayName("Return all card of user")
     void getCardsAll() throws Exception {
-        User user = User.builder().id(1).build();
-        mockMvc.perform(get("/api/v1/cards?type=all")
-                .sessionAttr("user", user))
+        TestWebUtils.loginAsUserId(1);
+        mockMvc.perform(get("/api/v1/cards?type=all"))
                 .andDo(print())
                 .andExpect(jsonPath("$[0].id").value("1"))
                 .andExpect(jsonPath("$[0].name").value("greeting Nomar"))
@@ -164,14 +157,13 @@ class CardControllerTest {
     @Test
     @DisplayName("Change the name of the card")
     void changeName() throws Exception {
-        User user = User.builder().id(1).build();
+        TestWebUtils.loginAsUserId(1);
         String json = "{\"name\":\"newName\"}";
 
         mockMvc.perform(put("/api/v1/card/{id}/name", 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json)
-                .characterEncoding("utf-8")
-                .sessionAttr("user", user))
+                .characterEncoding("utf-8"))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -179,7 +171,7 @@ class CardControllerTest {
     @Test
     @DisplayName("Change the name of the card to long")
     void changeNameToLong() throws Exception {
-        User user = User.builder().id(1).build();
+        TestWebUtils.loginAsUserId(1);
         String json = "{\"name\":\"NewnamecarNewnamecarNewnamecarNewnamecarNewnamecar" +
                 "NewnamecarNewnamecarNewnamecarNewnamecarNewnamecarNewnamecarNewnamecar" +
                 "NewnamecarNewnamecarNewnamecarNewnamecarNewnamecarNewnamecarNewnamecar" +
@@ -188,8 +180,7 @@ class CardControllerTest {
         mockMvc.perform(put("/api/v1/card/{id}/name", 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json)
-                .characterEncoding("utf-8")
-                .sessionAttr("user", user))
+                .characterEncoding("utf-8"))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
@@ -197,14 +188,13 @@ class CardControllerTest {
     @Test
     @DisplayName("Change the name of the card to short")
     void changeNameToShort() throws Exception {
-        User user = User.builder().id(1).build();
+        TestWebUtils.loginAsUserId(1);
         String json = "{\"name\":\"\"}";
 
         mockMvc.perform(put("/api/v1/card/{id}/name", 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json)
-                .characterEncoding("utf-8")
-                .sessionAttr("user", user))
+                .characterEncoding("utf-8"))
                 .andDo(print())
                 .andExpect(jsonPath("$.message").value("Name is short or too long"))
                 .andExpect(status().isBadRequest());

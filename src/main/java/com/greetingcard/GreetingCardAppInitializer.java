@@ -1,7 +1,7 @@
 package com.greetingcard;
 
 import com.greetingcard.web.WebApplicationContext;
-import com.greetingcard.web.filter.AuthorizationFilter;
+import com.greetingcard.web.security.ApplicationSecurityConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.filter.CharacterEncodingFilter;
@@ -17,10 +17,9 @@ public class GreetingCardAppInitializer extends AbstractAnnotationConfigDispatch
     @Value("${max.upload.request.size}")
     private int maxUploadRequestSizeInMb;
 
-
     @Override
     protected Class<?>[] getRootConfigClasses() {
-        return new Class[]{RootApplicationContext.class};
+        return new Class[]{RootApplicationContext.class, ApplicationSecurityConfig.class};
     }
 
     @Override
@@ -34,10 +33,12 @@ public class GreetingCardAppInitializer extends AbstractAnnotationConfigDispatch
     }
 
     @Override
-    protected Filter[]getServletFilters() {
+    protected Filter[] getServletFilters() {
         CharacterEncodingFilter encodingFilter = new CharacterEncodingFilter();
         encodingFilter.setEncoding("UTF-8");
-        return new Filter[]{new AuthorizationFilter(), encodingFilter};
+        encodingFilter.setForceEncoding(true);
+
+        return new Filter[]{encodingFilter};
     }
 
     private MultipartConfigElement getMultipartConfigElement() {
