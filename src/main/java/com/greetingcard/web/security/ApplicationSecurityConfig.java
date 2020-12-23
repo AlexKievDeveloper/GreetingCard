@@ -5,7 +5,9 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -19,6 +21,11 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private JwtTokenVerifierFilter jwtTokenVerifierFilter;
 
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers("/profile/*", "/img/*", "/audio/*", "/static/**", "/index.html", "/manifest.json");
+    }
+
     @SneakyThrows
     @Override
     protected void configure(HttpSecurity http) {
@@ -31,7 +38,8 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .addFilterBefore(jwtTokenVerifierFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                .antMatchers("/api/v1/auth", "/api/v1/user/forgot_password", "/api/v1/user/verification/*", "/api/v1/card/*/card_link/*", "/ap/v1/user").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/v1/user").permitAll()
+                .antMatchers("/api/v1/auth", "/api/v1/user/forgot_password", "/api/v1/user/verification/*", "/api/v1/card/*/card_link/*").permitAll()
                 .antMatchers("/api/v1/**").authenticated();
     }
 
