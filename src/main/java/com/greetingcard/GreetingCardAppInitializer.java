@@ -1,7 +1,7 @@
 package com.greetingcard;
 
 import com.greetingcard.web.WebApplicationContext;
-import com.greetingcard.web.security.ApplicationSecurityConfig;
+import com.greetingcard.web.security.SecurityApplicationConfig;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
@@ -15,7 +15,7 @@ public class GreetingCardAppInitializer extends AbstractAnnotationConfigDispatch
 
     @Override
     protected Class<?>[] getRootConfigClasses() {
-        return new Class[]{RootApplicationContext.class, ApplicationSecurityConfig.class};
+        return new Class[]{RootApplicationContext.class, SecurityApplicationConfig.class};
     }
 
     @Override

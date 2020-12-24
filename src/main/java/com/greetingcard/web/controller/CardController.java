@@ -86,7 +86,7 @@ public class CardController {
     @DeleteMapping("card/{id}")
     public void delete(@PathVariable long id, HttpSession session) {
         log.info("Request for DELETE card");
-        Long userId = WebUtils.getCurrentUserId();
+        long userId = WebUtils.getCurrentUserId();
         cardService.deleteCardById(id, userId);
     }
 

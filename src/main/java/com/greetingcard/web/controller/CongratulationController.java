@@ -91,7 +91,7 @@ public class CongratulationController {
         TypeReference<HashMap<String, String>> typeRef = new TypeReference<>() {
         };
 
-        Long userId = WebUtils.getCurrentUserId();
+        long userId = WebUtils.getCurrentUserId();
         Map<String, String> parametersMap = objectMapper.readValue(json, typeRef);
         log.info("Got Map from json");
         congratulationService.updateCongratulationById(files_image, files_audio, parametersMap, congratulationId, userId);

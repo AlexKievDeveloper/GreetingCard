@@ -37,13 +37,6 @@ public class AuthController {
         String password = userCredentials.get("password");
         log.info("login for user {}", login);
         User user = securityService.login(login, password);
-        if (user == null) {
-            log.info("Credentials not valid");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(objectMapper
-                    .writeValueAsString(Map.of("message",
-                            "Access denied. Please check your login and password")));
-        }
-        log.info(jwtProvider.toString());
         String token = jwtProvider.generateToken(login);
         log.info("Successfully authentication");
 

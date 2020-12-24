@@ -11,10 +11,7 @@ import com.greetingcard.dao.jdbc.TestConfiguration;
 import com.greetingcard.entity.User;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.*;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -23,7 +20,6 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -55,54 +51,6 @@ class UserControllerSystemTest {
     @BeforeEach
     void setMockMvc() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
-    }
-
-
-    @Test
-    @DisplayName("Login user")
-    void testLoginIfUserExist() throws Exception {
-        //prepare
-        Map<String, String> userCredential = new HashMap<>();
-        userCredential.put("login", "user");
-        userCredential.put("password", "user");
-        ObjectMapper mapper = new ObjectMapper();
-        String json = mapper.writeValueAsString(userCredential);
-
-        //when
-        MockHttpServletResponse response = mockMvc.perform(post("/api/v1/auth")
-                .contentType(APPLICATION_JSON_VALUE)
-                .accept(APPLICATION_JSON_VALUE)
-                .content(json))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.login").value("user"))
-                .andExpect(jsonPath("$.userId").value("2"))
-                .andReturn().getResponse();
-
-        String headerValue = response.getHeader("Authorization");
-        assertNotNull(headerValue);
-        assertTrue(headerValue.startsWith("Bearer "));
-    }
-
-    @Test
-    @DisplayName("Login user if login didn't create")
-    @MockitoSettings(strictness = Strictness.LENIENT)
-    void testLoginIfUserIsNotExist() throws Exception {
-        //prepare
-        Map<String, String> userCredential = new HashMap<>();
-        userCredential.put("login", "user_don't_create");
-        userCredential.put("password", "user");
-        ObjectMapper mapper = new ObjectMapper();
-        String json = mapper.writeValueAsString(userCredential);
-
-        //when
-        mockMvc.perform(post("/api/v1/auth")
-                .contentType(APPLICATION_JSON_VALUE)
-                .accept(APPLICATION_JSON_VALUE)
-                .content(json))
-                .andDo(print())
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.message").value("Access denied. Please check your login and password"));
     }
 
     @Test
