@@ -1,23 +1,23 @@
 CREATE TABLE IF NOT EXISTS languages
 (
     language_id BIGINT PRIMARY KEY,
-    name    VARCHAR(50) NOT NULL
+    name        VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS users
 (
-    user_id     SERIAL PRIMARY KEY,
-    firstName   VARCHAR(40),
-    lastName    VARCHAR(40),
-    login       VARCHAR(50) UNIQUE NOT NULL,
-    email       VARCHAR(50) UNIQUE NOT NULL,
+    user_id        SERIAL PRIMARY KEY,
+    firstName      VARCHAR(40),
+    lastName       VARCHAR(40),
+    login          VARCHAR(50) UNIQUE NOT NULL,
+    email          VARCHAR(50) UNIQUE NOT NULL,
     email_verified BOOLEAN,
-    password    VARCHAR(200)       NOT NULL,
-    salt        VARCHAR(200)       NOT NULL,
-    language_id INTEGER,
-    facebook    VARCHAR(200),
-    google      VARCHAR(200),
-    pathToPhoto VARCHAR(200),
+    password       VARCHAR(200)       NOT NULL,
+    salt           VARCHAR(200)       NOT NULL,
+    language_id    INTEGER,
+    facebook       VARCHAR(200),
+    google         VARCHAR(200),
+    pathToPhoto    VARCHAR(200),
 
     FOREIGN KEY (language_id) REFERENCES languages (language_id)
 );
@@ -36,12 +36,13 @@ CREATE TABLE IF NOT EXISTS roles
 
 CREATE TABLE IF NOT EXISTS cards
 (
-    card_id          SERIAL PRIMARY KEY,
-    user_id          BIGINT NOT NULL,
-    name             VARCHAR(250) NOT NULL,
-    background_image VARCHAR(250),
-    card_link        VARCHAR(500),
-    status_id        INTEGER      NOT NULL,
+    card_id                    SERIAL PRIMARY KEY,
+    user_id                    BIGINT       NOT NULL,
+    name                       VARCHAR(250) NOT NULL,
+    background_image           VARCHAR(250),
+    background_congratulations VARCHAR(250),
+    card_link                  VARCHAR(500),
+    status_id                  INTEGER      NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users (user_id),
     FOREIGN KEY (status_id) REFERENCES statuses (status_id)
 );
@@ -55,7 +56,7 @@ CREATE TABLE IF NOT EXISTS users_cards
     FOREIGN KEY (card_id) REFERENCES cards (card_id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users (user_id),
     FOREIGN KEY (role_id) REFERENCES roles (role_id),
-    UNIQUE(card_id, user_id)
+    UNIQUE (card_id, user_id)
 );
 
 CREATE TABLE IF NOT EXISTS congratulations
@@ -88,14 +89,14 @@ CREATE TABLE IF NOT EXISTS links
 
 CREATE TABLE IF NOT EXISTS verify_email_hashes
 (
-    user_id INTEGER NOT NULL,
-    hash VARCHAR(200) NOT NULL,
+    user_id INTEGER      NOT NULL,
+    hash    VARCHAR(200) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users (user_id)
 );
 
 CREATE TABLE IF NOT EXISTS forgot_password_hashes
 (
-    user_id INTEGER NOT NULL,
-    hash VARCHAR(200) NOT NULL,
+    user_id INTEGER      NOT NULL,
+    hash    VARCHAR(200) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users (user_id)
 );

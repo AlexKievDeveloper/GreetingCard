@@ -20,8 +20,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class DefaultCongratulationServiceTest {
-    @Mock
-    private JdbcCongratulationDao jdbcCongratulationDao;
     @InjectMocks
     private DefaultCongratulationService congratulationService;
     private List<Link> linkList;

@@ -6,6 +6,7 @@ import com.greetingcard.dao.jdbc.mapper.CardRowMapper;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Role;
 import com.greetingcard.entity.Status;
+import com.greetingcard.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +20,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.PreparedStatement;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -49,6 +48,12 @@ public class JdbcCardDao implements CardDao {
     private String getAllCardsByUserId;
     @Autowired
     private String changeName;
+    @Autowired
+    private String saveBackground;
+    @Autowired
+    private String saveBackgroundOfCongratulations;
+    @Autowired
+    private String deleteBackground;
 
     @Override
     public List<Card> getAllCardsByUserId(long id) {
@@ -112,5 +117,31 @@ public class JdbcCardDao implements CardDao {
     public void changeCardName(Card card) {
         jdbcTemplate.update(changeName, card.getName(), card.getId(), card.getUser().getId());
         log.info("Changed name of card to {} by id - {}", card.getName(), card.getId());
+    }
+
+    @Override
+    public void saveBackground(long id, User user, String newName) {
+        Map<String,Object> map=new HashMap<>();
+        map.put("card_id",id);
+        map.put("user_id",user.getId());
+        map.put("background_image",newName);
+        namedParameterJdbcTemplate.update(saveBackground,map);
+    }
+
+    @Override
+    public void saveBackgroundOfCongratulation(long id, User user, String numberOfColor) {
+        Map<String,Object> map=new HashMap<>();
+        map.put("card_id",id);
+        map.put("user_id",user.getId());
+        map.put("background_congratulations",numberOfColor);
+        namedParameterJdbcTemplate.update(saveBackgroundOfCongratulations,map);
+    }
+
+    @Override
+    public void removeBackground(long id, User user) {
+        Map<String,Object> map=new HashMap<>();
+        map.put("card_id",id);
+        map.put("user_id",user.getId());
+        namedParameterJdbcTemplate.update(deleteBackground,map);
     }
 }

@@ -12,11 +12,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -72,7 +74,7 @@ public class CardController {
         }
         User user = (User) session.getAttribute("user");
         card.setUser(user);
-        log.info("Сard successefully created");
+        log.info("Сard successfully created");
         return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(Map.of("id", cardService.createCard(card)));
     }
 
@@ -91,10 +93,32 @@ public class CardController {
     }
 
     @PutMapping("card/{id}/name")
-    public void changeName(@RequestBody Card card, @PathVariable long id, HttpSession session) {
+    public void changeName(@RequestBody Card card,
+                           @PathVariable long id,
+                           HttpSession session) {
+        log.info("Change name of card");
         User user = (User) session.getAttribute("user");
         card.setId(id);
         card.setUser(user);
         cardService.changeCardName(card);
+    }
+
+    @PutMapping("card/{id}/background")
+    public void addBackground(@RequestParam Optional<MultipartFile> backgroundImage,
+                              @RequestParam Optional<String> numberOfColor,
+                              @PathVariable long id,
+                              HttpSession session) {
+        log.info("Add background to card");
+        User user = (User) session.getAttribute("user");
+
+        backgroundImage.ifPresent(file->cardService.saveBackground(id,user,file));
+        numberOfColor.ifPresent(color -> cardService.saveBackgroundOfCongratulation(id,user,color));
+    }
+
+    @DeleteMapping("card/{id}/background")
+    public void resetBackground(@PathVariable long id, HttpSession session) {
+        log.info("Reset background to card");
+        User user = (User) session.getAttribute("user");
+        cardService.removeBackground(id,user);
     }
 }

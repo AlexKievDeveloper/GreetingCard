@@ -29,7 +29,8 @@ class CardAndCongratulationExtractorTest {
         when(mockResultSet.getLong("card_user")).thenReturn(1L);
         when(mockResultSet.getLong("card_id")).thenReturn(1L);
         when(mockResultSet.getString("name")).thenReturn("Card");
-        when(mockResultSet.getString("background_image")).thenReturn("/link");
+        when(mockResultSet.getString("background_image")).thenReturn("/background_image");
+        when(mockResultSet.getString("background_congratulations")).thenReturn("/background_congratulations");
         when(mockResultSet.getString("card_link")).thenReturn("/link");
         when(mockResultSet.getInt("status_id")).thenReturn(1);
 
@@ -54,6 +55,7 @@ class CardAndCongratulationExtractorTest {
         verify(mockResultSet).getLong("card_id");
         verify(mockResultSet).getString("name");
         verify(mockResultSet).getString("background_image");
+        verify(mockResultSet).getString("background_congratulations");
         verify(mockResultSet).getString("card_link");
         verify(mockResultSet).getInt("status_id");
 

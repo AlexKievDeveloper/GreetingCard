@@ -1,14 +1,13 @@
 package com.greetingcard.service.impl;
 
 import com.greetingcard.dao.CardDao;
-import com.greetingcard.entity.Card;
-import com.greetingcard.entity.CardsType;
-import com.greetingcard.entity.Status;
+import com.greetingcard.entity.*;
 import com.greetingcard.service.CardService;
 import com.greetingcard.service.CongratulationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +18,7 @@ import java.util.UUID;
 public class DefaultCardService implements CardService {
     private final CardDao cardDao;
     private final CongratulationService congratulationService;
+    private final DefaultAmazonService defaultAmazonService;
 
     @Override
     public List<Card> getCards(long userId, CardsType cardsType) {
@@ -69,6 +69,32 @@ public class DefaultCardService implements CardService {
             throw new IllegalArgumentException("Name is empty or too long");
         }
         cardDao.changeCardName(card);
+    }
+
+    @Override
+    @Transactional
+    public void saveBackground(long id, User user, MultipartFile image) {
+        String pathToStorage = "background/";
+        String newName = pathToStorage.concat(UUID.randomUUID().toString());
+        String contentType = image.getContentType();
+
+        if (LinkType.PICTURE.getAdditionalTypes().contains(contentType)) {
+            cardDao.saveBackground(id, user, "/"+newName);
+            defaultAmazonService.uploadFile(image, newName);
+        } else {
+            throw new IllegalArgumentException("Sorry, this format is not supported by the application: "
+                    .concat(contentType));
+        }
+    }
+
+    @Override
+    public void saveBackgroundOfCongratulation(long id, User user, String numberOfColor) {
+        cardDao.saveBackgroundOfCongratulation(id, user, numberOfColor);
+    }
+
+    @Override
+    public void removeBackground(long id, User user) {
+        cardDao.removeBackground(id,user);
     }
 
     @Override

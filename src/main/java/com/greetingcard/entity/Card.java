@@ -14,6 +14,7 @@ public class Card {
     private User user;
     private String name;
     private String backgroundImage;
+    private String backgroundCongratulations;
     private String cardLink;
     private Status status;
     @EqualsAndHashCode.Exclude
