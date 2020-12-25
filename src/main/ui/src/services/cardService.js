@@ -8,10 +8,12 @@ export const cardService = {
     deleteCard,
     leaveCard,
     finishCard,
+    unFinishCard,
     updateName,
     deleteUsers,
     addUser,
-    getUsers
+    getUsers,
+    changeBackground
 }
 
 function getCards(type = 'ALL') {
@@ -42,6 +44,10 @@ function finishCard(id) {
     return serverService.sendRequest(`/card/${id}/status/ISOVER`, 'PUT');
 }
 
+function unFinishCard(id) {
+    return serverService.sendRequest(`/card/${id}/status/STARTUP`, 'PUT');
+}
+
 function updateName(id, newName) {
     return serverService.sendRequest(`/card/${id}/name`, 'PUT', {name: newName});
 }
@@ -58,4 +64,15 @@ function addUser(cardId, login) {
     
 function getUsers(cardId) {
    return serverService.getData(`/card/${cardId}/users`);
+}
+
+function changeBackground(cardId, backgroundColorBlocks, backgroundCardLink, backgroundCardFile) {
+    let formData = new FormData();
+    if (backgroundCardFile != null) {
+       formData.append("backgroundCardFile", backgroundCardFile, backgroundCardFile.filename);
+    }
+
+    formData.append("backgroundColorCongratulations", backgroundColorBlocks);
+    formData.append("backgroundCard", backgroundCardLink);
+    serverService.sendFormData(`/card/${cardId}/background`, 'PUT', formData);
 }
