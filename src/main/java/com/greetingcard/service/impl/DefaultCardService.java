@@ -73,7 +73,7 @@ public class DefaultCardService implements CardService {
 
     @Override
     @Transactional
-    public void saveBackground(long id, User user, MultipartFile image) {
+    public void saveBackground(long id, long user, MultipartFile image) {
         String pathToStorage = "background/";
         String newName = pathToStorage.concat(UUID.randomUUID().toString());
         String contentType = image.getContentType();
@@ -88,12 +88,12 @@ public class DefaultCardService implements CardService {
     }
 
     @Override
-    public void saveBackgroundOfCongratulation(long id, User user, String numberOfColor) {
+    public void saveBackgroundOfCongratulation(long id, long user, String numberOfColor) {
         cardDao.saveBackgroundOfCongratulation(id, user, numberOfColor);
     }
 
     @Override
-    public void removeBackground(long id, User user) {
+    public void removeBackground(long id, long user) {
         cardDao.removeBackground(id,user);
     }
 

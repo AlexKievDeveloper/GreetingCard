@@ -53,12 +53,9 @@ public class DefaultCardServiceSystemITest {
     @Test
     @DisplayName("Save background")
     void saveImageForBackground() throws IOException {
-        //prepare
-        long id = 2;
-        User user = User.builder().id(2).build();
         MockMultipartFile mockImageFile = new MockMultipartFile("files_image", "image.jpg", "image/jpg", bytes);
         //when
-        cardService.saveBackground(id, user, mockImageFile);
+        cardService.saveBackground(2, 2, mockImageFile);
         Card card = cardService.getCardAndCongratulationByCardId(2);
         //then
         assertNotNull(card);
@@ -77,10 +74,7 @@ public class DefaultCardServiceSystemITest {
     @DisplayName("Wrong format of file for background")
     void saveImageForBackground_WrongFormat() {
         //prepare
-        long id = 2;
-        User user = User.builder().id(2).build();
         MockMultipartFile mockImageFile = new MockMultipartFile("files_image", "image.jpg", "ups/ups", bytes);
-
-        assertThrows(IllegalArgumentException.class, () -> cardService.saveBackground(id, user, mockImageFile));
+        assertThrows(IllegalArgumentException.class, () -> cardService.saveBackground(2, 2, mockImageFile));
     }
 }

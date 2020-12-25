@@ -3,7 +3,6 @@ package com.greetingcard.service;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.CardsType;
 import com.greetingcard.entity.Status;
-import com.greetingcard.entity.User;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -27,9 +26,9 @@ public interface CardService {
 
     void changeCardName(Card card);
 
-    void saveBackground(long id,User user,MultipartFile file);
+    void saveBackground(long id, long user, MultipartFile file);
 
-    void saveBackgroundOfCongratulation(long id, User user, String color);
+    void saveBackgroundOfCongratulation(long id, long user, String color);
 
-    void removeBackground(long id, User user);
+    void removeBackground(long id, long user);
 }

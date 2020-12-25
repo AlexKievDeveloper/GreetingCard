@@ -2,7 +2,6 @@ package com.greetingcard.dao;
 
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Status;
-import com.greetingcard.entity.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,9 +25,9 @@ public interface CardDao {
 
     void changeCardName(Card card);
 
-    void saveBackground(long id, User user, String newName);
+    void saveBackground(long id, long user, String newName);
 
-    void saveBackgroundOfCongratulation(long id, User user, String numberOfColor);
+    void saveBackgroundOfCongratulation(long id, long user, String numberOfColor);
 
-    void removeBackground(long id, User user);
+    void removeBackground(long id, long user);
 }

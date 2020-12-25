@@ -42,6 +42,7 @@ public class CardAndCongratulationExtractor implements ResultSetExtractor<Card> 
                         .firstName(resultSet.getString("firstName"))
                         .lastName(resultSet.getString("lastName"))
                         .login(resultSet.getString("login"))
+                        .pathToPhoto(resultSet.getString("pathToPhoto"))
                         .build();
                 Congratulation congratulation = Congratulation.builder()
                         .id(congratulationId)

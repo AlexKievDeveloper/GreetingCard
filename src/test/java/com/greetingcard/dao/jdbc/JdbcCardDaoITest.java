@@ -174,8 +174,11 @@ public class JdbcCardDaoITest {
         assertEquals("from Sasha", actualCongratulationList.get(1).getMessage());
         assertEquals("from Nastya", actualCongratulationList.get(2).getMessage());
         assertEquals(1, actualCongratulationList.get(0).getUser().getId());
+        assertEquals("testPathToPhoto1", actualCongratulationList.get(0).getUser().getPathToPhoto());
         assertEquals(1, actualCongratulationList.get(1).getUser().getId());
+        assertEquals("testPathToPhoto1", actualCongratulationList.get(1).getUser().getPathToPhoto());
         assertEquals(2, actualCongratulationList.get(2).getUser().getId());
+        assertEquals("testPathToPhoto2", actualCongratulationList.get(2).getUser().getPathToPhoto());
 
         assertEquals(6, fromRoma.size());
         assertEquals(3, fromSasha.size());
@@ -205,8 +208,11 @@ public class JdbcCardDaoITest {
         assertEquals("from Sasha", actualCongratulationList.get(1).getMessage());
         assertEquals("from Nastya", actualCongratulationList.get(2).getMessage());
         assertEquals(1, actualCongratulationList.get(0).getUser().getId());
+        assertEquals("testPathToPhoto1", actualCongratulationList.get(0).getUser().getPathToPhoto());
         assertEquals(1, actualCongratulationList.get(1).getUser().getId());
+        assertEquals("testPathToPhoto1", actualCongratulationList.get(1).getUser().getPathToPhoto());
         assertEquals(2, actualCongratulationList.get(2).getUser().getId());
+        assertEquals("testPathToPhoto2", actualCongratulationList.get(2).getUser().getPathToPhoto());
 
         assertEquals(6, fromRoma.size());
         assertEquals(3, fromSasha.size());
@@ -309,24 +315,21 @@ public class JdbcCardDaoITest {
     @DisplayName("Delete background of card")
     @ExpectedDataSet("removeBackground.xml")
     void removeBackGround() {
-        User user = User.builder().id(2).build();
-        jdbcCardDao.removeBackground(3,user);
+        jdbcCardDao.removeBackground(3,2);
     }
 
     @Test
     @DisplayName("Save background of card")
     @ExpectedDataSet("saveBackgroundOfCard.xml")
     void saveBackground() {
-        User user = User.builder().id(2).build();
-        jdbcCardDao.saveBackground(2,user,"image");
+        jdbcCardDao.saveBackground(2,2,"image");
     }
 
     @Test
     @DisplayName("Save background of congratulations")
     @ExpectedDataSet("saveBackgroundOfCongratulations.xml")
     void saveBackgroundOfCongratulations() {
-        User user = User.builder().id(2).build();
-        jdbcCardDao.saveBackgroundOfCongratulation(2,user,"imageOfCongratulation");
+        jdbcCardDao.saveBackgroundOfCongratulation(2,2,"imageOfCongratulation");
     }
 
 }

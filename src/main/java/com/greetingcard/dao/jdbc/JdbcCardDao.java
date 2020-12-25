@@ -6,7 +6,6 @@ import com.greetingcard.dao.jdbc.mapper.CardRowMapper;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Role;
 import com.greetingcard.entity.Status;
-import com.greetingcard.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,28 +119,28 @@ public class JdbcCardDao implements CardDao {
     }
 
     @Override
-    public void saveBackground(long id, User user, String newName) {
+    public void saveBackground(long id, long user, String newName) {
         Map<String, Object> map = new HashMap<>();
         map.put("card_id", id);
-        map.put("user_id", user.getId());
+        map.put("user_id", user);
         map.put("background_image", newName);
         namedParameterJdbcTemplate.update(saveBackground, map);
     }
 
     @Override
-    public void saveBackgroundOfCongratulation(long id, User user, String numberOfColor) {
+    public void saveBackgroundOfCongratulation(long id, long user, String numberOfColor) {
         Map<String, Object> map = new HashMap<>();
         map.put("card_id", id);
-        map.put("user_id", user.getId());
+        map.put("user_id", user);
         map.put("background_congratulations", numberOfColor);
         namedParameterJdbcTemplate.update(saveBackgroundOfCongratulations, map);
     }
 
     @Override
-    public void removeBackground(long id, User user) {
+    public void removeBackground(long id, long user) {
         Map<String, Object> map = new HashMap<>();
         map.put("card_id", id);
-        map.put("user_id", user.getId());
+        map.put("user_id", user);
         namedParameterJdbcTemplate.update(deleteBackground, map);
     }
 }

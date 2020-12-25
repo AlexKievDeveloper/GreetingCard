@@ -38,6 +38,7 @@ class CardAndCongratulationExtractorTest {
         when(mockResultSet.getString("firstName")).thenReturn("user");
         when(mockResultSet.getString("lastName")).thenReturn("user");
         when(mockResultSet.getString("login")).thenReturn("user");
+        when(mockResultSet.getString("pathToPhoto")).thenReturn("pathToPhoto1");
 
         when(mockResultSet.getLong("congratulation_id")).thenReturn(1L);
         when(mockResultSet.getString("message")).thenReturn("from Roma");
@@ -63,6 +64,7 @@ class CardAndCongratulationExtractorTest {
         verify(mockResultSet).getString("firstName");
         verify(mockResultSet).getString("lastName");
         verify(mockResultSet).getString("login");
+        verify(mockResultSet).getString("pathToPhoto");
 
         verify(mockResultSet).getLong("congratulation_id");
         verify(mockResultSet).getString("message");

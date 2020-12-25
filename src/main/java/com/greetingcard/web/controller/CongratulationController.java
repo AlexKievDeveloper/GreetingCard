@@ -39,8 +39,7 @@ public class CongratulationController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createCongratulation(@RequestParam(required = false) MultipartFile[] files_image,
                                                   @RequestParam(required = false) MultipartFile[] files_audio,
-                                                  @RequestParam String json,
-                                                  HttpSession session) throws IOException {
+                                                  @RequestParam String json) throws IOException {
 
         log.info("Received request for saving congratulation");
 
@@ -51,7 +50,7 @@ public class CongratulationController {
 
         Map<String, String> parametersMap = objectMapper.readValue(jsonString, typeRef);
         log.info("Got Map from json");
-        User user = (User) session.getAttribute("user");
+        User user = WebUtils.getCurrentUser();
         long userId = user.getId();
         log.info("Request for adding congratulation from user: {}", user.getLogin());
 
@@ -85,25 +84,24 @@ public class CongratulationController {
     public ResponseEntity<?> editCongratulation(@RequestParam(required = false) MultipartFile[] files_image,
                                                 @RequestParam(required = false) MultipartFile[] files_audio,
                                                 @RequestParam String json,
-                                                @PathVariable("id") int congratulationId,
-                                                HttpSession session) throws JsonProcessingException {
+                                                @PathVariable("id") int congratulationId) throws JsonProcessingException {
 
         log.info("Received PUT request for edit congratulation with id: {}", congratulationId);
         TypeReference<HashMap<String, String>> typeRef = new TypeReference<>() {
         };
 
-        User user = (User) session.getAttribute("user");
+        long userId = WebUtils.getCurrentUserId();
         Map<String, String> parametersMap = objectMapper.readValue(json, typeRef);
         log.info("Got Map from json");
-        congratulationService.updateCongratulationById(files_image, files_audio, parametersMap, congratulationId, user.getId());
+        congratulationService.updateCongratulationById(files_image, files_audio, parametersMap, congratulationId, userId);
         log.info("Successfully edit congratulation with id: {}", congratulationId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCongratulation(@PathVariable("id") long congratulationId, HttpSession session) {
+    public ResponseEntity<?> deleteCongratulation(@PathVariable("id") long congratulationId) {
         log.info("Request for DELETE congratulation received");
-        User user = (User) session.getAttribute("user");
+        User user = WebUtils.getCurrentUser();
 
         log.info("Request DELETE for congratulation with id {}, user: {}", congratulationId, user.getLogin());
         congratulationService.deleteById(congratulationId, user.getId());
@@ -113,10 +111,10 @@ public class CongratulationController {
     }
 
     @DeleteMapping("/{id}/links")
-    public ResponseEntity<?> deleteLinksById(@PathVariable("id") long congratulationId, HttpSession session,
+    public ResponseEntity<?> deleteLinksById(@PathVariable("id") long congratulationId,
                                              @RequestBody List<Link> linkIdToDeleteFromCongratulation) {
         log.info("Request for DELETE links received");
-        User user = (User) session.getAttribute("user");
+        User user = WebUtils.getCurrentUser();
 
         log.info("Request DELETE links in congratulation with id {}, user: {}", congratulationId, user.getLogin());
         congratulationService.deleteLinksById(linkIdToDeleteFromCongratulation, congratulationId);
