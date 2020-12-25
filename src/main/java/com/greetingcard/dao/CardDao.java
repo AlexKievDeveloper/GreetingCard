@@ -24,4 +24,10 @@ public interface CardDao {
     Optional<Status> getCardStatusById(long cardId);
 
     void changeCardName(Card card);
+
+    void saveBackground(long id, long user, String newName);
+
+    void saveBackgroundOfCongratulation(long id, long user, String numberOfColor);
+
+    void removeBackground(long id, long user);
 }

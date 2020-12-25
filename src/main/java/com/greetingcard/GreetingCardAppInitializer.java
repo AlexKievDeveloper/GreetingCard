@@ -1,7 +1,7 @@
 package com.greetingcard;
 
 import com.greetingcard.web.WebApplicationContext;
-import com.greetingcard.web.filter.AuthorizationFilter;
+import com.greetingcard.web.security.SecurityApplicationConfig;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
@@ -15,7 +15,7 @@ public class GreetingCardAppInitializer extends AbstractAnnotationConfigDispatch
 
     @Override
     protected Class<?>[] getRootConfigClasses() {
-        return new Class[]{RootApplicationContext.class};
+        return new Class[]{RootApplicationContext.class, SecurityApplicationConfig.class};
     }
 
     @Override
@@ -33,7 +33,7 @@ public class GreetingCardAppInitializer extends AbstractAnnotationConfigDispatch
         CharacterEncodingFilter encodingFilter = new CharacterEncodingFilter();
         encodingFilter.setEncoding("UTF-8");
         encodingFilter.setForceEncoding(true);
-        return new Filter[]{new AuthorizationFilter(), encodingFilter};
+        return new Filter[]{encodingFilter};
     }
 
     private MultipartConfigElement getMultipartConfigElement() {

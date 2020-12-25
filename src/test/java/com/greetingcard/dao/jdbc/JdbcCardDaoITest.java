@@ -13,7 +13,9 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -53,7 +55,6 @@ public class JdbcCardDaoITest {
         Card expectedCard2 = Card.builder()
                 .id(2)
                 .name("greeting Oleksandr")
-                .backgroundImage("path_to_image")
                 .cardLink("link_to_greeting")
                 .status(Status.ISOVER)
                 .build();
@@ -104,7 +105,6 @@ public class JdbcCardDaoITest {
         Card expectedCard2 = Card.builder()
                 .id(2)
                 .name("greeting Oleksandr")
-                .backgroundImage("path_to_image")
                 .cardLink("link_to_greeting")
                 .status(Status.ISOVER)
                 .build();
@@ -174,8 +174,11 @@ public class JdbcCardDaoITest {
         assertEquals("from Sasha", actualCongratulationList.get(1).getMessage());
         assertEquals("from Nastya", actualCongratulationList.get(2).getMessage());
         assertEquals(1, actualCongratulationList.get(0).getUser().getId());
+        assertEquals("testPathToPhoto1", actualCongratulationList.get(0).getUser().getPathToPhoto());
         assertEquals(1, actualCongratulationList.get(1).getUser().getId());
+        assertEquals("testPathToPhoto1", actualCongratulationList.get(1).getUser().getPathToPhoto());
         assertEquals(2, actualCongratulationList.get(2).getUser().getId());
+        assertEquals("testPathToPhoto2", actualCongratulationList.get(2).getUser().getPathToPhoto());
 
         assertEquals(6, fromRoma.size());
         assertEquals(3, fromSasha.size());
@@ -205,8 +208,11 @@ public class JdbcCardDaoITest {
         assertEquals("from Sasha", actualCongratulationList.get(1).getMessage());
         assertEquals("from Nastya", actualCongratulationList.get(2).getMessage());
         assertEquals(1, actualCongratulationList.get(0).getUser().getId());
+        assertEquals("testPathToPhoto1", actualCongratulationList.get(0).getUser().getPathToPhoto());
         assertEquals(1, actualCongratulationList.get(1).getUser().getId());
+        assertEquals("testPathToPhoto1", actualCongratulationList.get(1).getUser().getPathToPhoto());
         assertEquals(2, actualCongratulationList.get(2).getUser().getId());
+        assertEquals("testPathToPhoto2", actualCongratulationList.get(2).getUser().getPathToPhoto());
 
         assertEquals(6, fromRoma.size());
         assertEquals(3, fromSasha.size());
@@ -304,4 +310,26 @@ public class JdbcCardDaoITest {
         Card actual = Card.builder().id(1).user(user).name("newName").build();
         jdbcCardDao.changeCardName(actual);
      }
+
+    @Test
+    @DisplayName("Delete background of card")
+    @ExpectedDataSet("removeBackground.xml")
+    void removeBackGround() {
+        jdbcCardDao.removeBackground(3,2);
+    }
+
+    @Test
+    @DisplayName("Save background of card")
+    @ExpectedDataSet("saveBackgroundOfCard.xml")
+    void saveBackground() {
+        jdbcCardDao.saveBackground(2,2,"image");
+    }
+
+    @Test
+    @DisplayName("Save background of congratulations")
+    @ExpectedDataSet("saveBackgroundOfCongratulations.xml")
+    void saveBackgroundOfCongratulations() {
+        jdbcCardDao.saveBackgroundOfCongratulation(2,2,"imageOfCongratulation");
+    }
+
 }

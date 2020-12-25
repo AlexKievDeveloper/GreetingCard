@@ -15,7 +15,9 @@ export const userService = {
 
 function login(login, password) {
 
-    return serverService.sendRequest('/session', 'POST', {login, password})
+    const headerSecurityName = 'Authorization';
+
+    return serverService.sendRequest('/auth', 'POST', {login, password}, false)
         .then(response => {
             console.log(response);
             if (!response.ok) {
@@ -23,6 +25,11 @@ function login(login, password) {
                 return response.json();
             } else {
                 localStorage.setItem('user', login);
+                let headers = response.headers;
+                if (headers.has(headerSecurityName)) {
+                    let token = headers.get(headerSecurityName); 
+                    localStorage.setItem('userToken', token);
+                }
                 return response.json();
             }
         });
@@ -33,10 +40,9 @@ function setUserId(id) {
 }
 
 function logout() {
-    serverService.sendRequest('/session', 'DELETE')
-        .then(() => {localStorage.removeItem('user');
-                     localStorage.removeItem('userId')
-                     });
+    localStorage.removeItem('user');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userToken');
 }
 
 function getUser() {

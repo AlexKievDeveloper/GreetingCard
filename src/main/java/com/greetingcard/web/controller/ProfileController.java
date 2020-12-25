@@ -2,7 +2,6 @@ package com.greetingcard.web.controller;
 
 import com.greetingcard.entity.User;
 import com.greetingcard.security.SecurityService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -23,30 +22,27 @@ public class ProfileController {
     private final SecurityService service;
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> getUser(HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        User profileUser = User.builder()
+    public User getUser() {
+        User user = WebUtils.getCurrentUser();
+        return User.builder()
                 .id(user.getId())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .login(user.getLogin())
                 .pathToPhoto(user.getPathToPhoto()).build();
-        return ResponseEntity.status(HttpServletResponse.SC_OK).body(profileUser);
     }
 
     @PutMapping(consumes = MULTIPART_FORM_DATA_VALUE, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updateUser(@RequestParam MultipartFile profileFile,
-                                        @RequestParam String firstName,
-                                        @RequestParam String lastName,
-                                        @RequestParam String login,
-                                        HttpSession session) {
-        User user = (User) session.getAttribute("user");
+    public void updateUser(@RequestParam MultipartFile profileFile,
+                           @RequestParam String firstName,
+                           @RequestParam String lastName,
+                           @RequestParam String login) {
+        User user = WebUtils.getCurrentUser();
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setLogin(login);
 
         service.update(user, profileFile);
-        return ResponseEntity.status(HttpServletResponse.SC_OK).build();
     }
 
 }

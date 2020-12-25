@@ -7,7 +7,6 @@ import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.greetingcard.RootApplicationContext;
 import com.greetingcard.dao.jdbc.TestConfiguration;
-import com.greetingcard.entity.User;
 import com.greetingcard.entity.UserInfo;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.*;
@@ -25,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfigurer.sharedHttpSession;
 
-@SpringJUnitWebConfig(value = {TestConfiguration.class,  RootApplicationContext.class})
+@SpringJUnitWebConfig(value = {TestConfiguration.class, RootApplicationContext.class})
 @DBRider
 @DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE)
 @DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardUser/cardUsers.xml",
@@ -54,16 +53,17 @@ class CardUserControllerSystemTest {
     @BeforeEach
     void setMockMvc() {
         MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(sharedHttpSession()).build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(context)
+                .apply(sharedHttpSession())
+                .build();
     }
 
     @Test
     @DisplayName("Add member to card - login is empty")
     void addUserMemberIfEmptyLogin() throws Exception {
-        User user = User.builder().id(2).build();
+        TestWebUtils.loginAsUserId(2);
         String json = "{\"login\":\"\"}";
         mockMvc.perform(post(URL_ADD_MEMBER, 1)
-                .sessionAttr("user", user)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andDo(print())
@@ -74,10 +74,9 @@ class CardUserControllerSystemTest {
     @Test
     @DisplayName("Add member to card - login does not exist")
     void addUserMemberIfNotExistingLogin() throws Exception {
-        User user = User.builder().id(2).build();
+        TestWebUtils.loginAsUserId(2);
         String json = "{\"login\":\"u1111\"}";
         mockMvc.perform(post(URL_ADD_MEMBER, 1)
-                .sessionAttr("user", user)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andDo(print())
@@ -88,10 +87,9 @@ class CardUserControllerSystemTest {
     @Test
     @DisplayName("Add member to card - user is already added")
     void addUserMemberIfAlreadyMember() throws Exception {
-        User user = User.builder().id(1).build();
+        TestWebUtils.loginAsUserId(1);
         String json = "{\"login\":\"admin\"}";
         mockMvc.perform(post(URL_ADD_MEMBER, 1)
-                .sessionAttr("user", user)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andDo(print())
@@ -102,10 +100,9 @@ class CardUserControllerSystemTest {
     @Test
     @DisplayName("Add member to card - user is not admin for card")
     void addUserMemberIfNotAdminAddsMember() throws Exception {
-        User user = User.builder().id(2).build();
+        TestWebUtils.loginAsUserId(2);
         String json = "{\"login\":\"new\"}";
         mockMvc.perform(post(URL_ADD_MEMBER, 1)
-                .sessionAttr("user", user)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andDo(print())
@@ -116,10 +113,9 @@ class CardUserControllerSystemTest {
     @Test
     @DisplayName("Add member to card - card is over")
     void addUserMemberCardIsOver() throws Exception {
-        User user = User.builder().id(2).build();
+        TestWebUtils.loginAsUserId(2);
         String json = "{\"login\":\"new\"}";
         mockMvc.perform(post(URL_ADD_MEMBER, 2)
-                .sessionAttr("user", user)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andDo(print())
@@ -131,10 +127,9 @@ class CardUserControllerSystemTest {
     @DisplayName("Add member to card - success")
     @ExpectedDataSet("cardUser/cardUsersAdded.xml")
     void addUserMember() throws Exception {
-        User user = User.builder().id(1).build();
+        TestWebUtils.loginAsUserId(1);
         String json = "{\"login\":\"new\"}";
         mockMvc.perform(post(URL_ADD_MEMBER, 1)
-                .sessionAttr("user", user)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andDo(print())
@@ -144,9 +139,8 @@ class CardUserControllerSystemTest {
     @Test
     @DisplayName("Get users by card - not admin")
     void getUsersByCardIdNotAdmin() throws Exception {
-        User user = User.builder().id(1).build();
-        mockMvc.perform(get(URL_GET_MEMBERS, 2)
-                .sessionAttr("user", user))
+        TestWebUtils.loginAsUserId(1);
+        mockMvc.perform(get(URL_GET_MEMBERS, 2))
                 .andDo(print())
                 .andExpect(jsonPath("$.message").value("Only card owner can get users"))
                 .andExpect(status().isBadRequest());
@@ -155,9 +149,8 @@ class CardUserControllerSystemTest {
     @Test
     @DisplayName("Get users by card (members only) - no members")
     void getUsersByCardIdForCardWithoutMembers() throws Exception {
-        User user = User.builder().id(2).build();
-        mockMvc.perform(get(URL_GET_MEMBERS, 3)
-                .sessionAttr("user", user))
+        TestWebUtils.loginAsUserId(2);
+        mockMvc.perform(get(URL_GET_MEMBERS, 3))
                 .andDo(print())
                 .andExpect(content().string("[]"))
                 .andExpect(status().isOk());
@@ -181,9 +174,8 @@ class CardUserControllerSystemTest {
                 .pathToPhoto("testPathToPhoto")
                 .build();
 
-        User user = User.builder().id(2).build();
-        mockMvc.perform(get(URL_GET_MEMBERS, 2)
-                .sessionAttr("user", user))
+        TestWebUtils.loginAsUserId(2);
+        mockMvc.perform(get(URL_GET_MEMBERS, 2))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
@@ -203,10 +195,9 @@ class CardUserControllerSystemTest {
     @DisplayName("Delete some users - success")
     @ExpectedDataSet(value = {"cardUser/cardUsersListDeleted.xml", "cardUser/congratulationsDeleted.xml"})
     void deleteUsers() throws Exception {
-        User user = User.builder().id(2).build();
+        TestWebUtils.loginAsUserId(2);
         String json = "[{\"id\":\"1\"}, {\"id\":\"4\"}]";
         mockMvc.perform(delete(URL_DELETE_MEMBERS, 2)
-                .sessionAttr("user", user)
                 .characterEncoding("utf-8")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
@@ -219,10 +210,9 @@ class CardUserControllerSystemTest {
     @DataSet({"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardUser/cardUsersListDeleted.xml", "cardUser/congratulationsDeleted.xml"})
     @ExpectedDataSet({"cardUser/cardUsersListDeleted.xml", "cardUser/congratulationsDeleted.xml"})
     void deleteUsersNothingToDelete() throws Exception {
-        User user = User.builder().id(2).build();
+        TestWebUtils.loginAsUserId(2);
         String json = "[{\"id\":\"1\"}, {\"id\":\"4\"}]";
         mockMvc.perform(delete(URL_DELETE_MEMBERS, 2)
-                .sessionAttr("user", user)
                 .characterEncoding("utf-8")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
@@ -233,10 +223,9 @@ class CardUserControllerSystemTest {
     @Test
     @DisplayName("Delete users - empty list of users")
     void deleteUsersEmptyList() throws Exception {
-        User user = User.builder().id(2).build();
+        TestWebUtils.loginAsUserId(2);
         String json = "[]";
         mockMvc.perform(delete(URL_DELETE_MEMBERS, 2)
-                .sessionAttr("user", user)
                 .characterEncoding("utf-8")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
@@ -247,10 +236,9 @@ class CardUserControllerSystemTest {
     @Test
     @DisplayName("Delete users - not admin deletes")
     void deleteUsersEmptyListNotAdmin() throws Exception {
-        User user = User.builder().id(1).build();
+        TestWebUtils.loginAsUserId(1);
         String json = "[]";
         mockMvc.perform(delete(URL_DELETE_MEMBERS, 2)
-                .sessionAttr("user", user)
                 .characterEncoding("utf-8")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
@@ -262,9 +250,8 @@ class CardUserControllerSystemTest {
     @Test
     @DisplayName("Leave card")
     void leaveCard() throws Exception {
-        User user = User.builder().id(1).build();
+        TestWebUtils.loginAsUserId(1);
         mockMvc.perform(delete("/api/v1/card/{id}/user", 2L)
-                .sessionAttr("user", user)
                 .characterEncoding("utf-8"))
                 .andDo(print())
                 .andExpect(status().isOk());

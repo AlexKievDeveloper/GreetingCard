@@ -1,5 +1,6 @@
 package com.greetingcard.dao.jdbc;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,15 +11,15 @@ public class QueriesContext {
      */
     @Bean
     public String getCardsByUserIdAndRoleId() {
-        return "SELECT cards.card_id, name, background_image, card_link, status_id, users.user_id, firstName, lastName, login, " +
+        return "SELECT cards.card_id, name, background_image, background_congratulations, card_link, status_id, users.user_id, firstName, lastName, login, " +
                 "email FROM cards LEFT JOIN users_cards ON (cards.card_id=users_cards.card_id) LEFT JOIN users " +
                 "ON (users_cards.user_id=users.user_id) WHERE (users.user_id = :userId AND role_id = :roleId) ORDER BY cards.card_id";
     }
 
     @Bean
     public String cardAndCongratulation() {
-        return "SELECT c.card_id, c.user_id as card_user, name, background_image, card_link, c.status_id, cg.congratulation_id, " +
-                "cg.status_id as con_status, message, cg.user_id, firstName, lastName, login, link_id, link,type_id FROM users_cards uc " +
+        return "SELECT c.card_id, c.user_id as card_user, name, background_image, background_congratulations, card_link, c.status_id, cg.congratulation_id, " +
+                "cg.status_id as con_status, message, cg.user_id, firstName, lastName, pathToPhoto, login, link_id, link,type_id FROM users_cards uc " +
                 "JOIN cards c ON (uc.card_id = c.card_id) LEFT JOIN congratulations cg ON (c.card_id=cg.card_id) LEFT JOIN users u " +
                 "ON (cg.user_id=u.user_id) LEFT JOIN links l ON (cg.congratulation_id=l.congratulation_id) WHERE uc.card_id = :cardId " +
                 "AND uc.user_id = :userId";
@@ -51,7 +52,7 @@ public class QueriesContext {
 
     @Bean
     public String getAllCardsByUserId() {
-        return "SELECT c.card_id, c.name, c.background_image, c.card_link, c.status_id, u.user_id, u.firstName, u.lastName, u.login, " +
+        return "SELECT c.card_id, c.name, c.background_image, c.background_congratulations, c.card_link, c.status_id, u.user_id, u.firstName, u.lastName, u.login, " +
                 "u.email FROM users_cards uc JOIN cards c ON (uc.card_id = c.card_id) JOIN users u ON (c.user_id = u.user_id) " +
                 "WHERE uc.user_id = :id ORDER BY c.card_id";
     }
@@ -61,6 +62,20 @@ public class QueriesContext {
         return "UPDATE cards SET name = ? where card_id = ? and user_id = ?";
     }
 
+    @Bean
+    public String saveBackground() {
+        return "UPDATE cards SET background_image = :background_image where card_id = :card_id and user_id = :user_id";
+    }
+
+    @Bean
+    public String saveBackgroundOfCongratulations() {
+        return "UPDATE cards SET background_congratulations = :background_congratulations where card_id = :card_id and user_id = :user_id";
+    }
+
+    @Bean
+    public String deleteBackground() {
+        return "UPDATE cards SET background_image=null where card_id = :card_id and user_id = :user_id";
+    }
 
     /**
      * JdbcCardUserDao queries
@@ -95,7 +110,7 @@ public class QueriesContext {
 
     @Bean
     public String finishedCardAndCongratulation() {
-        return "SELECT cards.card_id, cards.user_id as card_user, name, background_image, card_link, cards.status_id, " +
+        return "SELECT cards.card_id, cards.user_id as card_user, name, background_image, background_congratulations, card_link, cards.status_id, " +
                 "cg.congratulation_id, cg.status_id as con_status, message, cg.user_id, firstName, lastName, " +
                 "pathToPhoto, login, link_id, link,type_id FROM cards LEFT JOIN congratulations cg" +
                 " ON (cards.card_id=cg.card_id) LEFT JOIN users u ON (cg.user_id=u.user_id) " +

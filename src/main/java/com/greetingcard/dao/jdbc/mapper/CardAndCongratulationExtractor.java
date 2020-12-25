@@ -28,6 +28,7 @@ public class CardAndCongratulationExtractor implements ResultSetExtractor<Card> 
                 .user(user)
                 .name(resultSet.getString("name"))
                 .backgroundImage(resultSet.getString("background_image"))
+                .backgroundCongratulations(resultSet.getString("background_congratulations"))
                 .cardLink(resultSet.getString("card_link"))
                 .status(Status.getByNumber(resultSet.getInt("status_id")))
                 .congratulationList(congratulationList)
@@ -41,6 +42,7 @@ public class CardAndCongratulationExtractor implements ResultSetExtractor<Card> 
                         .firstName(resultSet.getString("firstName"))
                         .lastName(resultSet.getString("lastName"))
                         .login(resultSet.getString("login"))
+                        .pathToPhoto(resultSet.getString("pathToPhoto"))
                         .build();
                 Congratulation congratulation = Congratulation.builder()
                         .id(congratulationId)
