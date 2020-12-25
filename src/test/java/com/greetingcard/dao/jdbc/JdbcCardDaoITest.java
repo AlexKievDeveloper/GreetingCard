@@ -174,8 +174,11 @@ public class JdbcCardDaoITest {
         assertEquals("from Sasha", actualCongratulationList.get(1).getMessage());
         assertEquals("from Nastya", actualCongratulationList.get(2).getMessage());
         assertEquals(1, actualCongratulationList.get(0).getUser().getId());
+        assertEquals("testPathToPhoto1", actualCongratulationList.get(0).getUser().getPathToPhoto());
         assertEquals(1, actualCongratulationList.get(1).getUser().getId());
+        assertEquals("testPathToPhoto1", actualCongratulationList.get(1).getUser().getPathToPhoto());
         assertEquals(2, actualCongratulationList.get(2).getUser().getId());
+        assertEquals("testPathToPhoto2", actualCongratulationList.get(2).getUser().getPathToPhoto());
 
         assertEquals(6, fromRoma.size());
         assertEquals(3, fromSasha.size());
@@ -205,8 +208,11 @@ public class JdbcCardDaoITest {
         assertEquals("from Sasha", actualCongratulationList.get(1).getMessage());
         assertEquals("from Nastya", actualCongratulationList.get(2).getMessage());
         assertEquals(1, actualCongratulationList.get(0).getUser().getId());
+        assertEquals("testPathToPhoto1", actualCongratulationList.get(0).getUser().getPathToPhoto());
         assertEquals(1, actualCongratulationList.get(1).getUser().getId());
+        assertEquals("testPathToPhoto1", actualCongratulationList.get(1).getUser().getPathToPhoto());
         assertEquals(2, actualCongratulationList.get(2).getUser().getId());
+        assertEquals("testPathToPhoto2", actualCongratulationList.get(2).getUser().getPathToPhoto());
 
         assertEquals(6, fromRoma.size());
         assertEquals(3, fromSasha.size());

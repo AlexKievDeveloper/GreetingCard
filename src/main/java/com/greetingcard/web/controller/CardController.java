@@ -28,19 +28,19 @@ public class CardController {
     private String siteUrl;
 
     @GetMapping("cards")
-    public ResponseEntity<Object> getCards(HttpSession session, @RequestParam CardsType type) {
+    public ResponseEntity<Object> getCards(@RequestParam CardsType type) {
         log.info("getCards");
-        User user = (User) session.getAttribute("user");
-        long userId = user.getId();
+        long userId = WebUtils.getCurrentUserId();
         List<Card> cardList = cardService.getCards(userId, type);
         return ResponseEntity.status(HttpStatus.OK).body(cardList);
     }
 
     @GetMapping("card/{id}")
-    public ResponseEntity<Object> getCard(HttpSession session, @PathVariable long id) {
+    public ResponseEntity<Object> getCard(@PathVariable long id) {
         log.info("Get card request");
-        User user = (User) session.getAttribute("user");
-        Card card = cardService.getCardAndCongratulationByCardIdAndUserId(id, user.getId());
+        long userId = WebUtils.getCurrentUserId();
+
+        Card card = cardService.getCardAndCongratulationByCardIdAndUserId(id, userId);
 
         if (card.getStatus().equals(Status.ISOVER)) {
             card.setCardLink(siteUrl + "card/" + card.getId() + "/card_link/" + card.getCardLink());
@@ -64,13 +64,13 @@ public class CardController {
     }
 
     @PostMapping(value = "card", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> createCard(@RequestBody Card card, HttpSession session) {
+    public ResponseEntity<Object> createCard(@RequestBody Card card)  {
         log.info("Creating card request");
         int length = card.getName().length();
         if (length == 0 || length > 250) {
             throw new IllegalArgumentException("Name is short or too long");
         }
-        User user = (User) session.getAttribute("user");
+        User user = WebUtils.getCurrentUser();
         card.setUser(user);
         log.info("Сard successefully created");
         return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(Map.of("id", cardService.createCard(card)));
@@ -86,13 +86,13 @@ public class CardController {
     @DeleteMapping("card/{id}")
     public void delete(@PathVariable long id, HttpSession session) {
         log.info("Request for DELETE card");
-        User user = (User) session.getAttribute("user");
-        cardService.deleteCardById(id, user.getId());
+        long userId = WebUtils.getCurrentUserId();
+        cardService.deleteCardById(id, userId);
     }
 
     @PutMapping("card/{id}/name")
-    public void changeName(@RequestBody Card card, @PathVariable long id, HttpSession session) {
-        User user = (User) session.getAttribute("user");
+    public void changeName(@RequestBody Card card, @PathVariable long id) {
+        User user = WebUtils.getCurrentUser();
         card.setId(id);
         card.setUser(user);
         cardService.changeCardName(card);
