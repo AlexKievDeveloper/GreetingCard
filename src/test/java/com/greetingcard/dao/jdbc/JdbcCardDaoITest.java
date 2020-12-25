@@ -319,32 +319,14 @@ public class JdbcCardDaoITest {
     void saveBackground() {
         User user = User.builder().id(2).build();
         jdbcCardDao.saveBackground(2,user,"image");
+    }
+
+    @Test
+    @DisplayName("Save background of congratulations")
+    @ExpectedDataSet("saveBackgroundOfCongratulations.xml")
+    void saveBackgroundOfCongratulations() {
+        User user = User.builder().id(2).build();
         jdbcCardDao.saveBackgroundOfCongratulation(2,user,"imageOfCongratulation");
     }
 
-//    @Override
-//    public void saveBackground(long id, User user, String newName) {
-//        Map<String,Object> map=new HashMap<>();
-//        map.put("card_id",id);
-//        map.put("user_id",user.getId());
-//        map.put("background_image",newName);
-//        namedParameterJdbcTemplate.update(saveBackground,map);
-//    }
-//
-//    @Override
-//    public void saveBackgroundOfCongratulation(long id, User user, String numberOfColor) {
-//        Map<String,Object> map=new HashMap<>();
-//        map.put("card_id",id);
-//        map.put("user_id",user.getId());
-//        map.put("background_congratulations",numberOfColor);
-//        namedParameterJdbcTemplate.update(saveBackgroundOfCongratulations,map);
-//    }
-//
-//    @Override
-//    public void removeBackground(long id, User user) {
-//        Map<String,Object> map=new HashMap<>();
-//        map.put("card_id",id);
-//        map.put("user_id",user.getId());
-//        namedParameterJdbcTemplate.update(deleteBackground,map);
-//    }
 }

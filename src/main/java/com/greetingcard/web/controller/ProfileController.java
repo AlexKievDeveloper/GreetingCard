@@ -2,7 +2,6 @@ package com.greetingcard.web.controller;
 
 import com.greetingcard.entity.User;
 import com.greetingcard.security.SecurityService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

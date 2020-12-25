@@ -111,14 +111,14 @@ public class CardController {
         log.info("Add background to card");
         User user = (User) session.getAttribute("user");
 
-        backgroundImage.ifPresent(file->cardService.saveBackground(id,user,file));
-        numberOfColor.ifPresent(color -> cardService.saveBackgroundOfCongratulation(id,user,color));
+        backgroundImage.ifPresent(file -> cardService.saveBackground(id, user, file));
+        numberOfColor.ifPresent(color -> cardService.saveBackgroundOfCongratulation(id, user, color));
     }
 
     @DeleteMapping("card/{id}/background")
     public void resetBackground(@PathVariable long id, HttpSession session) {
         log.info("Reset background to card");
         User user = (User) session.getAttribute("user");
-        cardService.removeBackground(id,user);
+        cardService.removeBackground(id, user);
     }
 }

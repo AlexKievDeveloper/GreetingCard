@@ -9,7 +9,6 @@
        user_id = "2"
        name = "greeting Oleksandr"
        background_image = "image"
-       background_congratulations = "imageOfCongratulation"
        card_link = "link_to_greeting"
        status_id = "2"/>
 <CARDS card_id = "3"
