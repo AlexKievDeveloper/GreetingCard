@@ -12,11 +12,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -72,7 +73,7 @@ public class CardController {
         }
         User user = WebUtils.getCurrentUser();
         card.setUser(user);
-        log.info("Сard successefully created");
+        log.info("Сard successfully created");
         return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(Map.of("id", cardService.createCard(card)));
     }
 
@@ -84,7 +85,7 @@ public class CardController {
     }
 
     @DeleteMapping("card/{id}")
-    public void delete(@PathVariable long id, HttpSession session) {
+    public void delete(@PathVariable long id) {
         log.info("Request for DELETE card");
         long userId = WebUtils.getCurrentUserId();
         cardService.deleteCardById(id, userId);
@@ -97,4 +98,21 @@ public class CardController {
         card.setUser(user);
         cardService.changeCardName(card);
     }
+
+    @PutMapping("card/{id}/background")
+    public void addBackground(@RequestParam Optional<MultipartFile> backgroundCardFile,
+                              @RequestParam String backgroundColorCongratulations,
+                              @RequestParam String backgroundCard,
+                              @PathVariable long id) {
+        log.info("Add background to card");
+        long userId = WebUtils.getCurrentUserId();
+
+        if (backgroundCard.isBlank()){
+            backgroundCardFile.ifPresent(file -> cardService.saveBackground(id, userId, file));
+            cardService.saveBackgroundOfCongratulation(id, userId, backgroundColorCongratulations);
+        }else {
+            cardService.removeBackground(id, userId);
+        }
+    }
+
 }
