@@ -221,7 +221,7 @@ class CardControllerTest {
     @DisplayName("Update background")
     void addBackground() throws Exception {
         TestWebUtils.loginAsUserId(1);
-        MockMultipartFile file = new MockMultipartFile("backgroundImage", "image.jpg",
+        MockMultipartFile file = new MockMultipartFile("backgroundCardFile", "image.jpg",
                 "image/jpg", "test-image.jpg".getBytes());
         MockMultipartHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart("/api/v1/card/{id}/background",1);
         builder.with(request -> {
@@ -230,7 +230,8 @@ class CardControllerTest {
         });
         mockMvc.perform(builder
                 .file(file)
-                .param("numberOfColor", "11111")
+                .param("backgroundColorCongratulations", "11111")
+                .param("backgroundCard","http://")
                 .characterEncoding("utf-8")
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andDo(print())
@@ -242,7 +243,8 @@ class CardControllerTest {
     void addBackgroundWithOutFile() throws Exception {
         TestWebUtils.loginAsUserId(1);
         mockMvc.perform(put("/api/v1/card/{id}/background",1)
-                .param("numberOfColor", "11111")
+                .param("backgroundColorCongratulations", "11111")
+                .param("backgroundCard","http://")
                 .characterEncoding("utf-8")
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andDo(print())
@@ -250,30 +252,14 @@ class CardControllerTest {
     }
 
     @Test
-    @DisplayName("Update only background of card")
+    @DisplayName("Reset background of card")
     void addBackgroundOfCard() throws Exception {
         TestWebUtils.loginAsUserId(1);
-        MockMultipartFile file = new MockMultipartFile("backgroundImage", "image.jpg",
-                "image/jpg", "test-image.jpg".getBytes());
-        MockMultipartHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart("/api/v1/card/{id}/background",1);
-        builder.with(request -> {
-            request.setMethod("PUT");
-            return request;
-        });
-        mockMvc.perform(builder
-                .file(file)
+        mockMvc.perform(put("/api/v1/card/{id}/background",1)
+                .param("backgroundColorCongratulations", "11111")
+                .param("backgroundCard","")
                 .characterEncoding("utf-8")
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("Delete background")
-    void resetBackground() throws Exception {
-        TestWebUtils.loginAsUserId(2);
-        mockMvc.perform(delete("/api/v1/card/{id}/background", 3)
-                .characterEncoding("utf-8"))
                 .andDo(print())
                 .andExpect(status().isOk());
     }

@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -101,20 +100,19 @@ public class CardController {
     }
 
     @PutMapping("card/{id}/background")
-    public void addBackground(@RequestParam Optional<MultipartFile> backgroundImage,
-                              @RequestParam Optional<String> numberOfColor,
+    public void addBackground(@RequestParam Optional<MultipartFile> backgroundCardFile,
+                              @RequestParam String backgroundColorCongratulations,
+                              @RequestParam String backgroundCard,
                               @PathVariable long id) {
         log.info("Add background to card");
         long userId = WebUtils.getCurrentUserId();
 
-        backgroundImage.ifPresent(file -> cardService.saveBackground(id, userId, file));
-        numberOfColor.ifPresent(color -> cardService.saveBackgroundOfCongratulation(id, userId, color));
+        if (backgroundCard.isBlank()){
+            backgroundCardFile.ifPresent(file -> cardService.saveBackground(id, userId, file));
+            cardService.saveBackgroundOfCongratulation(id, userId, backgroundColorCongratulations);
+        }else {
+            cardService.removeBackground(id, userId);
+        }
     }
 
-    @DeleteMapping("card/{id}/background")
-    public void resetBackground(@PathVariable long id) {
-        log.info("Reset background to card");
-        long userId = WebUtils.getCurrentUserId();
-        cardService.removeBackground(id, userId);
-    }
 }
