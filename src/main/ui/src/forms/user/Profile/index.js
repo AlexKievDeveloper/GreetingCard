@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import CommandButton from "../../../components/UI/CommandButton";
 import InputTextWithLabel from "../../../components/UI/InputTextWithLabel";
 import { userService } from "../../../services/userService";
 import { formValidator } from "../formValidator";
@@ -58,41 +59,46 @@ class Profile extends Component {
 
   render() {
     if (this.state.login.length > 0) {
-    return (
-      <div className="main-functions">
-        <ProfileCommandRow onSubmit={this.save} />
-        <main className="container">
-          <form
-            className="profile-details-changeable"
-            ref={(fm) => {
-              this.form = fm;
-            }}
-          >
-            <ProfilePicture imageProfile={this.state.pathToPhoto} />
-            <div className="profile-text-change__column">
-              <InputTextWithLabel
-                columnName="firstName"
-                labelText="First Name:"
-                valueOfColumn={this.state.firstName}
-              />
-              <InputTextWithLabel
-                columnName="lastName"
-                labelText="Last Name:"
-                valueOfColumn={this.state.lastName}
-              />
-              <InputTextWithLabel
-                columnName="login"
-                labelText="Login:"
-                valueOfColumn={this.state.login}
-              />
-            </div>
-          </form>
-        </main>
-      </div>
-    );
-          } else {
-            return null;
-          }
+      return (
+        <div className="main-functions">
+          <ProfileCommandRow />
+          <main className="container">
+            <form
+              className="profile-details-changeable"
+              ref={(fm) => {
+                this.form = fm;
+              }}
+            >
+              <ProfilePicture imageProfile={this.state.pathToPhoto} />
+              <div className="profile-text-change__column">
+                <InputTextWithLabel
+                  columnName="firstName"
+                  labelText="First Name:"
+                  valueOfColumn={this.state.firstName}
+                />
+                <InputTextWithLabel
+                  columnName="lastName"
+                  labelText="Last Name:"
+                  valueOfColumn={this.state.lastName}
+                />
+                <InputTextWithLabel
+                  columnName="login"
+                  labelText="Login:"
+                  valueOfColumn={this.state.login}
+                />
+                <CommandButton
+                  className="command-button--yellow border_black05rad3"
+                  caption="Save changes"
+                  action={this.save}
+                />
+              </div>
+            </form>
+          </main>
+        </div>
+      );
+    } else {
+      return null;
+    }
   }
 }
 

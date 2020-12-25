@@ -69,7 +69,8 @@
 	margin-left: 142px;
 	background-color: white;
 	border: 3px solid black;
-	border-radius: 39px;
+    border-radius: 39px;
+    position: relative;
 }
 
 .profile-details-changeable {
@@ -101,4 +102,18 @@
 	background-color: white;
 	border: 1px solid black;
 	border-radius: 20px;
+}
+
+
+.profile-text-change__column > input[type="submit"] {
+	position: absolute;
+	bottom: 70px;
+	right: 68px;
+	margin: 0;
+	width: 200px;
+}
+
+.profile-text-change__column > input[type="submit"]:hover {
+	bottom: 69px;
+	right: 67px;
 }
