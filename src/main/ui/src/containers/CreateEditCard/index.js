@@ -29,7 +29,8 @@ export class CreateEditCard extends Component {
         blocks: cardsData.congratulationList,
         userIdCardAdmin: cardsData.user.id,
         name: cardsData.name,
-        backgroundBlocks: "#fff",
+        backgroundBlocks: cardsData.backgroundCongratulations,
+        backgroundCardLink: cardsData.backgroundImage,
       });
     });
   }
