@@ -13,6 +13,7 @@
     <CARDS card_id = "3"
            user_id = "2"
            name = "no_congratulation"
+           background_congratulations = "background_congratulations"
            card_link = "link_to_greeting"
            status_id = "1"/>
 </dataset>

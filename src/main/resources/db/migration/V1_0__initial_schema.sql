@@ -40,7 +40,6 @@ CREATE TABLE IF NOT EXISTS cards
     user_id                    BIGINT       NOT NULL,
     name                       VARCHAR(250) NOT NULL,
     background_image           VARCHAR(250),
-    background_congratulations VARCHAR(250),
     card_link                  VARCHAR(500),
     status_id                  INTEGER      NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users (user_id),

@@ -74,7 +74,7 @@ public class QueriesContext {
 
     @Bean
     public String deleteBackground() {
-        return "UPDATE cards SET background_image=null , background_congratulations=null where card_id = :card_id and user_id = :user_id";
+        return "UPDATE cards SET background_image=null where card_id = :card_id and user_id = :user_id";
     }
 
     /**
