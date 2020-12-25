@@ -1,0 +1,43 @@
+.card-change__column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid black;
+  padding: 8px;
+  font-size: 18px;
+}
+
+.card-change {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.button_with_image {
+  display: block;
+  text-decoration: none;
+  color: black;
+  background-color: rgba(254, 230, 0, 0.7);
+  max-width: max-content;
+  font-family: "Merriweather";
+  font-size: 14px;
+  filter: drop-shadow(1px 3px 1px rgba(0, 0, 0, 0.25));
+}
+.button_with_image:hover {
+  background-color: #fee600;
+  cursor: pointer;
+}
+.button_with_image:active {
+  background-color: #fee600;
+  cursor: pointer;
+  filter: none;
+}
+
+#reset_card {
+  margin: 9px 0 3px;
+  padding: 7px 10px;
+  border-radius: 2px;
+  border: 1px solid black;
+  display: flex;
+  align-items: center;
+}
