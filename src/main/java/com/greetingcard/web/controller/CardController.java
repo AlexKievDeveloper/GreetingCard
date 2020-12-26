@@ -109,10 +109,10 @@ public class CardController {
 
         if (backgroundCard.isBlank()){
             backgroundCardFile.ifPresent(file -> cardService.saveBackground(id, userId, file));
-            cardService.saveBackgroundOfCongratulation(id, userId, backgroundColorCongratulations);
         }else {
             cardService.removeBackground(id, userId);
         }
+        cardService.saveBackgroundOfCongratulation(id, userId, backgroundColorCongratulations);
     }
 
 }
