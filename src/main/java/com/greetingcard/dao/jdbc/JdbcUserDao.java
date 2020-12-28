@@ -12,9 +12,13 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.greetingcard.entity.AccessHashType.FORGOT_PASSWORD;
 import static com.greetingcard.entity.AccessHashType.VERIFY_EMAIL;
@@ -25,6 +29,7 @@ import static com.greetingcard.entity.AccessHashType.VERIFY_EMAIL;
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class JdbcUserDao implements UserDao {
     private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Autowired
     private String saveUser;
@@ -50,6 +55,10 @@ public class JdbcUserDao implements UserDao {
     private String deleteVerifyEmailAccessHash;
     @Autowired
     private String updateUserVerifyEmail;
+    @Autowired
+    private String saveUserFromFacebook;
+    @Autowired
+    private String saveUserFromGoogle;
 
     @Override
     public void save(@NonNull User user) {
@@ -122,5 +131,34 @@ public class JdbcUserDao implements UserDao {
     public void verifyForgotPasswordAccessHash(@NonNull String hash, @NonNull User user) {
         jdbcTemplate.update(deleteForgotPassAccessHash, hash);
         jdbcTemplate.update(updateUserPassword, user.getPassword(), user.getId());
+    }
+
+    @Override
+    public void saveUserFromFacebook(User user) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("firstName", user.getFirstName());
+        map.put("lastName", user.getLastName());
+        map.put("login", user.getLogin());
+        map.put("email", user.getEmail());
+        map.put("facebookId", user.getFacebook());
+        map.put("password", user.getPassword());
+        map.put("salt", user.getSalt());
+        map.put("language", user.getLanguage().getLanguageNumber());
+        namedParameterJdbcTemplate.update(saveUserFromFacebook, map);
+    }
+
+    @Override
+    public void saveUserFromGoogle(User user) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("firstName", user.getFirstName());
+        map.put("lastName", user.getLastName());
+        map.put("login", user.getLogin());
+        map.put("email", user.getEmail());
+        map.put("googleId", user.getGoogle());
+        map.put("password", user.getPassword());
+        map.put("salt", user.getSalt());
+        map.put("language", user.getLanguage().getLanguageNumber());
+        map.put("pathToPhoto", user.getPathToPhoto());
+        namedParameterJdbcTemplate.update(saveUserFromGoogle, map);
     }
 }

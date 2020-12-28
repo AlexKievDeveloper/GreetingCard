@@ -12,12 +12,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
 @RestController
 @Slf4j
+@RequestMapping(value = "/api/v1/auth", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 public class AuthController {
     @Autowired
     private SecurityService securityService;
@@ -29,8 +31,7 @@ public class AuthController {
     private ObjectMapper objectMapper;
 
 
-    @PostMapping(value = "/api/v1/auth", produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping
     public ResponseEntity<?> login(@RequestBody Map<String, String> userCredentials) throws JsonProcessingException {
         log.info("login request");
         String login = userCredentials.get("login");
@@ -44,5 +45,30 @@ public class AuthController {
                 .header("Authorization", "Bearer " + token)
                 .body(objectMapper
                         .writeValueAsString(Map.of("login", login, "userId", user.getId())));
+    }
+
+    @PostMapping(value = "/facebook")
+    public ResponseEntity<?> loginWithFacebook(@RequestBody Map<String, String> facebookCredentials) throws JsonProcessingException {
+        log.info("login request");
+        User user = securityService.loginWithFacebook(facebookCredentials);
+
+        String token = jwtProvider.generateToken(user.getLogin());
+        log.info("Successfully authentication");
+        return ResponseEntity.status(HttpStatus.OK)
+                .header("Authorization", "Bearer " + token)
+                .body(objectMapper
+                        .writeValueAsString(Map.of("login", user.getLogin(), "userId", user.getId())));
+    }
+
+    @PostMapping(value = "/google")
+    public ResponseEntity<?> loginWithGoogle(@RequestBody Map<String, String> googleCredentials) throws JsonProcessingException {
+        User user = securityService.loginWithGoogle(googleCredentials);
+
+        String token = jwtProvider.generateToken(user.getLogin());
+        log.info("Successfully authentication");
+        return ResponseEntity.status(HttpStatus.OK)
+                .header("Authorization", "Bearer " + token)
+                .body(objectMapper
+                        .writeValueAsString(Map.of("login", user.getLogin(), "userId", user.getId())));
     }
 }

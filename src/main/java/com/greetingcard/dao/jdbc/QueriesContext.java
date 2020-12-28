@@ -1,6 +1,5 @@
 package com.greetingcard.dao.jdbc;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -259,5 +258,17 @@ public class QueriesContext {
     @Bean
     public String updateUserVerifyEmail() {
         return "UPDATE users SET email_verified='1' WHERE user_id=?;";
+    }
+
+    @Bean
+    public String saveUserFromFacebook() {
+        return "INSERT INTO users (firstName, lastName, login, email, facebook, password, salt, language_id) " +
+                "VALUES (:firstName, :lastName, :login, :email, :facebookId, :password, :salt, :language)";
+    }
+
+    @Bean
+    public String saveUserFromGoogle() {
+        return "INSERT INTO users (firstName, lastName, login, email, google, password, salt, language_id, pathToPhoto)" +
+                " VALUES (:firstName, :lastName, :login, :email, :googleId, :password, :salt, :language, :pathToPhoto)";
     }
 }
