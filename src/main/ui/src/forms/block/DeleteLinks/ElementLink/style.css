@@ -1,0 +1,21 @@
+.element-with-checkbox {
+	display: flex;
+	margin-top: 36px;
+	align-items: flex-start;
+	justify-content: space-between;
+}
+
+.element-with-checkbox input[type='checkbox'] {
+    -webkit-appearance:none;
+    width:60px;
+    height:60px;
+    background:white;
+    border-radius:5px;
+    border:2px solid black;
+    margin-left: 18px;
+}
+
+.element-with-checkbox input[type='checkbox']:checked {
+    background-image: url('../../../../assets/images/cross.png');
+    background-size: contain;
+}

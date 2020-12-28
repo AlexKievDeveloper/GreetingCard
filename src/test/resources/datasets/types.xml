@@ -1,0 +1,8 @@
+<dataset>
+    <TYPES type_id="1"
+           type="YOUTUBE"/>
+    <TYPES type_id="2"
+           type="PICTURE"/>
+    <TYPES type_id="3"
+           type="AUDIO"/>
+</dataset>

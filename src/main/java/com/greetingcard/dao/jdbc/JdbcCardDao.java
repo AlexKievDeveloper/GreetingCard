@@ -1,168 +1,146 @@
 package com.greetingcard.dao.jdbc;
 
-import com.greetingcard.ServiceLocator;
 import com.greetingcard.dao.CardDao;
-import com.greetingcard.dao.CongratulationDao;
-import com.greetingcard.dao.jdbc.mapper.CardAndCongratulationRowMapper;
+import com.greetingcard.dao.jdbc.mapper.CardAndCongratulationExtractor;
 import com.greetingcard.dao.jdbc.mapper.CardRowMapper;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Role;
 import com.greetingcard.entity.Status;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
+@RequiredArgsConstructor
+@Repository
 public class JdbcCardDao implements CardDao {
-    private static final String GET_ALL_CARDS_BY_USER_ID = "SELECT cards.card_id, name, background_image, card_link, status_id, users.user_id, firstName, lastName, login, email FROM cards LEFT JOIN users_cards ON cards.card_id=users_cards.card_id LEFT JOIN users ON users_cards.user_id=users.user_id WHERE users.user_id = ? ORDER BY cards.card_id";
-    private static final String GET_CARDS_BY_USER_ID_AND_ROLE_ID = "SELECT cards.card_id, name, background_image, card_link, status_id, users.user_id, firstName, lastName, login, email FROM cards LEFT JOIN users_cards ON cards.card_id=users_cards.card_id LEFT JOIN users ON users_cards.user_id=users.user_id WHERE (users.user_id = ? AND role_id = ?) ORDER BY cards.card_id";
-    private static final String SAVE_NEW_CARD = "INSERT INTO cards (user_id, name, status_id) VALUES (?,?,?)";
-    private static final String ADD_TO_USERS_CARDS = "INSERT INTO users_cards (card_id, user_id, role_id) VALUES (?,?,?)";
-    private static final String CARD_AND_CONGRATULATION = "SELECT c.card_id ,c.user_id as card_user, name, background_image, card_link, c.status_id, cg.congratulation_id, cg.status_id as con_status, message, cg.user_id, firstName, lastName, login, link_id, link,type_id " +
-            "FROM users_cards uc JOIN cards c ON uc.card_id = c.card_id LEFT JOIN congratulations cg ON c.card_id=cg.card_id LEFT JOIN users u ON cg.user_id=u.user_id LEFT JOIN links l ON cg.congratulation_id=l.congratulation_id WHERE uc.card_id = ? AND uc.user_id = ?";
-    private static final String DELETE_BY_CARD_ID = "DELETE FROM cards WHERE card_id=? and user_id=?";
-    private static final String CHANGE_STATUS_OF_CARD_BY_ID = "UPDATE cards SET status_id = ? where card_id = ?";
-
-    private static final CardRowMapper CARD_ROW_MAPPER = new CardRowMapper();
-    private static final CardAndCongratulationRowMapper CARD_AND_CONGRATULATION_ROW_MAPPER = new CardAndCongratulationRowMapper();
-    private final CongratulationDao congratulationDao = ServiceLocator.getBean("JdbcCongratulationDao");
-    private final DataSource dataSource;
-
-    public JdbcCardDao(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
+    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    @Autowired
+    private String getCardsByUserIdAndRoleId;
+    @Autowired
+    private String cardAndCongratulation;
+    @Autowired
+    private String getCardStatus;
+    @Autowired
+    private String saveNewCard;
+    @Autowired
+    private String addToUsersCards;
+    @Autowired
+    private String finishedCardAndCongratulation;
+    @Autowired
+    private String deleteByCardId;
+    @Autowired
+    private String changeStatusOfCardAndSetCardLinkById;
+    @Autowired
+    private String getAllCardsByUserId;
+    @Autowired
+    private String changeName;
+    @Autowired
+    private String saveBackground;
+    @Autowired
+    private String saveBackgroundOfCongratulations;
+    @Autowired
+    private String deleteBackground;
 
     @Override
     public List<Card> getAllCardsByUserId(long id) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(GET_ALL_CARDS_BY_USER_ID)) {
-            preparedStatement.setLong(1, id);
-            List<Card> cardsList = new ArrayList<>();
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    Card card = CARD_ROW_MAPPER.mapRow(resultSet);
-                    cardsList.add(card);
-                }
-            }
-            return cardsList;
-        } catch (SQLException e) {
-            log.error("Exception while getting cards from DB by user id: {}", id, e);
-            throw new RuntimeException("Exception while getting cards from DB by user id: " + id, e);
-        }
+        SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
+        return namedParameterJdbcTemplate.query(getAllCardsByUserId, namedParameters, new CardRowMapper());
     }
 
     @Override
     public List<Card> getCardsByUserIdAndRoleId(long userId, long roleId) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(GET_CARDS_BY_USER_ID_AND_ROLE_ID)) {
-            preparedStatement.setLong(1, userId);
-            preparedStatement.setLong(2, roleId);
-            List<Card> cardsList = new ArrayList<>();
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    Card card = CARD_ROW_MAPPER.mapRow(resultSet);
-                    cardsList.add(card);
-                }
-            }
-            return cardsList;
-        } catch (SQLException e) {
-            log.error("Exception while getting my cards from DB by user id: {} and role id: {}", userId, roleId, e);
-            throw new RuntimeException("Exception while getting my cards from DB by user id: " + userId +
-                    " and role id: " + roleId, e);
-        }
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource("userId", userId);
+        namedParameters.addValue("roleId", roleId);
+        return namedParameterJdbcTemplate.query(getCardsByUserIdAndRoleId, namedParameters, new CardRowMapper());
     }
 
     @Override
-    public long createCard(Card card) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statementInCards = connection.prepareStatement(SAVE_NEW_CARD, PreparedStatement.RETURN_GENERATED_KEYS)) {
-            connection.setAutoCommit(false);
-            statementInCards.setLong(1, card.getUser().getId());
-            statementInCards.setString(2, card.getName());
-            statementInCards.setInt(3, Status.STARTUP.getStatusNumber());
-            statementInCards.execute();
-            long id = 0;
-            try (ResultSet resultSet = statementInCards.getGeneratedKeys()) {
-                while (resultSet.next()) {
-                    id = resultSet.getInt(1);
-                    card.setId(id);
-                }
-            }
-            addNewCards(card, connection);
-            connection.commit();
-            return id;
-        } catch (SQLException e) {
-            log.error("Exception while creating new card", e);
-            throw new RuntimeException("Exception while creating new card", e);
-        }
+    @Transactional
+    public Long createCard(Card card) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(saveNewCard, new String[]{"card_id"});
+            preparedStatement.setLong(1, card.getUser().getId());
+            preparedStatement.setString(2, card.getName());
+            preparedStatement.setInt(3, Status.STARTUP.getStatusNumber());
+            return preparedStatement;
+        }, keyHolder);
+        long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        jdbcTemplate.update(addToUsersCards, id, card.getUser().getId(), Role.ADMIN.getRoleNumber());
+        return id;
     }
 
     @Override
-    public Card getCardAndCongratulationByCardId(long cardId, long userId) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(CARD_AND_CONGRATULATION)) {
-            statement.setLong(1, cardId);
-            statement.setLong(2, userId);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                return CARD_AND_CONGRATULATION_ROW_MAPPER.mapRow(resultSet);
-            }
+    public Card getCardAndCongratulationByCardIdAndUserId(long cardId, long userId) {
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource("cardId", cardId).addValue("userId", userId);
+        return namedParameterJdbcTemplate.query(cardAndCongratulation, namedParameters, new CardAndCongratulationExtractor());
+    }
 
-        } catch (SQLException e) {
-            log.error("Exception while get card and congratulation by card id", e);
-            throw new RuntimeException("Exception while get card and congratulation by card id", e);
-        }
+    @Override
+    public Card getCardAndCongratulationByCardId(long cardId) {
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource("cardId", cardId);
+        return namedParameterJdbcTemplate.query(finishedCardAndCongratulation, namedParameters, new CardAndCongratulationExtractor());
     }
 
     @Override
     public void deleteCardById(long cardId, long userId) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(DELETE_BY_CARD_ID)) {
-            connection.setAutoCommit(false);
-            statement.setLong(1, cardId);
-            statement.setLong(2, userId);
-            congratulationDao.deleteByCardId(cardId, userId);
-            statement.execute();
-            connection.commit();
-        } catch (SQLException e) {
-            log.error("Exception while deleting card by - {}", cardId, e);
-            throw new RuntimeException("Exception while deleting card ", e);
-        }
+        jdbcTemplate.update(deleteByCardId, cardId, userId);
     }
 
     @Override
-    public void changeCardStatusById(Status status, long cardId) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(CHANGE_STATUS_OF_CARD_BY_ID)) {
-            connection.setAutoCommit(false);
-            statement.setInt(1, status.getStatusNumber());
-            statement.setLong(2, cardId);
-            statement.execute();
-            try {
-                congratulationDao.changeStatusCongratulationsByCardId(status, cardId);
-            } catch (RuntimeException e) {
-                connection.rollback();
-                log.error("Exception while change status congratulation and card - {}", cardId, e);
-                throw new RuntimeException("Exception while change status congratulation and card", e);
-            }
-            connection.commit();
-        } catch (SQLException e) {
-            log.error("Exception while change status card - {}", cardId, e);
-            throw new RuntimeException("Exception while change status card ", e);
-        }
+    public void changeCardStatusAndSetCardLinkById(Status newStatus, long cardId, String link) {
+        jdbcTemplate.update(changeStatusOfCardAndSetCardLinkById, newStatus.getStatusNumber(), link, cardId);
     }
 
-    void addNewCards(Card card, Connection connection) throws SQLException {
-        try (PreparedStatement statementInUsers_Cards = connection.prepareStatement(ADD_TO_USERS_CARDS)) {
-            statementInUsers_Cards.setLong(1, card.getId());
-            statementInUsers_Cards.setLong(2, card.getUser().getId());
-            statementInUsers_Cards.setInt(3, Role.ADMIN.getRoleNumber());
-            statementInUsers_Cards.execute();
-        }
+    @Override
+    public Optional<Status> getCardStatusById(long cardId) {
+        SqlParameterSource parameterSource = new MapSqlParameterSource("card_id", cardId);
+        List<Integer> statusIds = namedParameterJdbcTemplate.queryForList(getCardStatus, parameterSource, Integer.class);
+        return (statusIds.size() != 0 ? Optional.of(Status.getByNumber(statusIds.get(0))) : Optional.empty());
+    }
+
+    @Override
+    public void changeCardName(Card card) {
+        jdbcTemplate.update(changeName, card.getName(), card.getId(), card.getUser().getId());
+        log.info("Changed name of card to {} by id - {}", card.getName(), card.getId());
+    }
+
+    @Override
+    public void saveBackground(long id, long user, String newName) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("card_id", id);
+        map.put("user_id", user);
+        map.put("background_image", newName);
+        namedParameterJdbcTemplate.update(saveBackground, map);
+    }
+
+    @Override
+    public void saveBackgroundOfCongratulation(long id, long user, String numberOfColor) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("card_id", id);
+        map.put("user_id", user);
+        map.put("background_congratulations", numberOfColor);
+        namedParameterJdbcTemplate.update(saveBackgroundOfCongratulations, map);
+    }
+
+    @Override
+    public void removeBackground(long id, long user) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("card_id", id);
+        map.put("user_id", user);
+        namedParameterJdbcTemplate.update(deleteBackground, map);
     }
 }

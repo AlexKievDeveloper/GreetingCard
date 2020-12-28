@@ -1,91 +1,126 @@
 package com.greetingcard.dao.jdbc;
 
 import com.greetingcard.dao.UserDao;
+import com.greetingcard.dao.jdbc.mapper.UserIdExtractor;
 import com.greetingcard.dao.jdbc.mapper.UserRowMapper;
+import com.greetingcard.entity.AccessHashType;
 import com.greetingcard.entity.User;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import static com.greetingcard.entity.AccessHashType.FORGOT_PASSWORD;
+import static com.greetingcard.entity.AccessHashType.VERIFY_EMAIL;
 
 @Slf4j
+@RequiredArgsConstructor
+@Repository
+@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class JdbcUserDao implements UserDao {
-    private static final UserRowMapper USER_ROW_MAPPER = new UserRowMapper();
-    private static final String FIND_USER_BY_LOGIN = "SELECT user_id, firstName, lastName, login, email, password, salt, language_id FROM users WHERE login = ?";
-    private static final String SAVE_USER = "INSERT INTO users (firstName, lastName, login, email, password, salt, language_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    private static final String UPDATE_USER = "UPDATE users SET firstName=?, lastName=?, login=? WHERE user_id=?;";
+    private final JdbcTemplate jdbcTemplate;
 
-    private final DataSource dataSource;
+    @Autowired
+    private String saveUser;
+    @Autowired
+    private String updateUser;
+    @Autowired
+    private String updateUserPassword;
+    @Autowired
+    private String findUserByLogin;
+    @Autowired
+    private String findUserByEmail;
+    @Autowired
+    private String saveForgotPassAccessHash;
+    @Autowired
+    private String saveVerifyEmailAccessHash;
+    @Autowired
+    private String findUserByForgotPassAccessHash;
+    @Autowired
+    private String findVerifyEmailAccessHash;
+    @Autowired
+    private String deleteForgotPassAccessHash;
+    @Autowired
+    private String deleteVerifyEmailAccessHash;
+    @Autowired
+    private String updateUserVerifyEmail;
 
-    public JdbcUserDao(DataSource dataSource) {
-        this.dataSource = dataSource;
+    @Override
+    public void save(@NonNull User user) {
+        jdbcTemplate.update(saveUser, user.getFirstName(), user.getLastName(), user.getLogin(),
+                user.getEmail(), user.getPassword(), user.getSalt(), user.getLanguage().getLanguageNumber());
+        log.debug("Added new user {} to DB", user.getEmail());
     }
 
     @Override
-    public User findUserByLogin(String login) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(FIND_USER_BY_LOGIN)) {
+    public void update(@NonNull User user) {
+        log.info("Edit user's (user_id:{}) personal information", user.getId());
+        jdbcTemplate.update(updateUser, user.getFirstName(), user.getLastName(), user.getLogin(), user.getPathToPhoto(), user.getId());
+    }
 
-            preparedStatement.setString(1, login);
+    @Override
+    public void updatePassword(@NonNull User user) {
+        log.info("Edit user's (user_id:{}) password", user.getId());
+        jdbcTemplate.update(updateUserPassword, user.getPassword(), user.getId());
+    }
 
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+    @Override
+    public User findByLogin(@NonNull String login) {
+        log.info("Getting user by login {}", login);
+        return jdbcTemplate.queryForObject(findUserByLogin, new UserRowMapper(), login);
+    }
 
-                if (!resultSet.next()) {
-                    log.info("No user found for login: {}", login);
-                    return null;
-                }
-
-                User user = USER_ROW_MAPPER.mapRow(resultSet);
-
-                if (resultSet.next()) {
-                    log.error("More than one user found for login: {}", login);
-                    throw new RuntimeException("More than one user found for login: ".concat(login));
-                }
-                return user;
-            }
-        } catch (SQLException e) {
-            log.error("Exception while getting user from DB: {}", login, e);
-            throw new RuntimeException("Exception while getting user from DB: ".concat(login), e);
+    @Override
+    public User findByEmail(@NonNull String email) {
+        log.info("Getting user by email {}", email);
+        try {
+            return jdbcTemplate.queryForObject(findUserByEmail, new UserRowMapper(), email);
+        } catch (DataAccessException e) {
+            throw new IllegalArgumentException("User with email: ".concat(email).concat(" does not exist"), e);
         }
     }
 
     @Override
-    public void save(User user) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SAVE_USER)) {
-            statement.setString(1, user.getFirstName());
-            statement.setString(2, user.getLastName());
-            statement.setString(3, user.getLogin());
-            statement.setString(4, user.getEmail());
-            statement.setString(5, user.getPassword());
-            statement.setString(6, user.getSalt());
-            statement.setDouble(7, user.getLanguage().getLanguageNumber());
-
-            statement.execute();
-
-        } catch (SQLException e) {
-            log.error("Exception while save user to DB", e);
-            throw new RuntimeException("Exception while save user to DB: ", e);
+    public void saveAccessHash(@NonNull String email, @NonNull String hash, AccessHashType hashType) {
+        User user = findByEmail(email);
+        if (hashType == FORGOT_PASSWORD) {
+            jdbcTemplate.update(saveForgotPassAccessHash, user.getId(), hash);
+        }
+        if (hashType == VERIFY_EMAIL) {
+            jdbcTemplate.update(saveVerifyEmailAccessHash, user.getId(), hash);
         }
     }
 
     @Override
-    public void update(User user) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(UPDATE_USER)) {
-            statement.setString(1, user.getFirstName());
-            statement.setString(2, user.getLastName());
-            statement.setString(3, user.getLogin());
-            statement.setLong(4, user.getId());
-
-            statement.execute();
-
-        } catch (SQLException e) {
-            log.error("Exception while update user", e);
-            throw new RuntimeException("Exception while update user : ", e);
+    @Transactional
+    public void verifyEmailAccessHash(@NonNull String hash) {
+        Long user_id = jdbcTemplate.query(findVerifyEmailAccessHash, new UserIdExtractor(), hash);
+        if (user_id != null) {
+            jdbcTemplate.update(deleteVerifyEmailAccessHash, hash);
+            jdbcTemplate.update(updateUserVerifyEmail, user_id);
         }
+    }
+
+    @Override
+    public User findByForgotPasswordAccessHash(String hash) {
+        try {
+            log.debug("Getting user by access hash");
+            return jdbcTemplate.queryForObject(findUserByForgotPassAccessHash, new UserRowMapper(), hash);
+        } catch (DataAccessException e) {
+            throw new IllegalArgumentException("No user found for requested hash");
+        }
+    }
+
+    @Override
+    @Transactional
+    public void verifyForgotPasswordAccessHash(@NonNull String hash, @NonNull User user) {
+        jdbcTemplate.update(deleteForgotPassAccessHash, hash);
+        jdbcTemplate.update(updateUserPassword, user.getPassword(), user.getId());
     }
 }

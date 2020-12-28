@@ -11,27 +11,104 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!--Plugins-->
+        <maven.war.plugin.version>3.3.1</maven.war.plugin.version>
+        <frontend.maven.plugin.version>1.10.3</frontend.maven.plugin.version>
+        <node.vesion>v12.16.1</node.vesion>
+        <npm.version>6.13.4</npm.version>
+        <maven.comiler.plugin.version>3.8.1</maven.comiler.plugin.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <maven.surefire.plugin>3.0.0-M5</maven.surefire.plugin>
+        <jetty.maven.plugin.version>9.4.35.v20201120</jetty.maven.plugin.version>
+        <flyway.version>6.5.5</flyway.version>
+        <!--Dependencies-->
+        <spring.version>5.3.0</spring.version>
+        <spring-security.version>5.4.0</spring-security.version>
         <postgres.version>42.2.17</postgres.version>
         <javax.servlet.version>4.0.1</javax.servlet.version>
         <commons-dbcp2.version>2.8.0</commons-dbcp2.version>
         <commons-codec.version>1.11</commons-codec.version>
         <logback.version>1.2.3</logback.version>
-        <lombok.version>1.18.12</lombok.version>
-        <thymeleaf.version>3.0.11.RELEASE</thymeleaf.version>
-        <flyway.version>6.5.5</flyway.version>
-        <mockito.version>3.5.10</mockito.version>
-        <systemlambda.version>1.1.0</systemlambda.version>
+        <lombok.version>1.18.16</lombok.version>
+        <jackson-databind.version>2.11.3</jackson-databind.version>
+        <email.version>1.6.2</email.version>
+        <aws.java.sdk.version>1.11.914</aws.java.sdk.version>
+        <javax.annotation.api.version>1.3.2</javax.annotation.api.version>
+        <mockito.version>3.6.28</mockito.version>
+        <hamcrest-library.version>2.2</hamcrest-library.version>
+        <json-path.version>2.4.0</json-path.version>
+        <rider-spring-version>1.16.1</rider-spring-version>
+        <spring-boot-test>2.3.5.RELEASE</spring-boot-test>
+        <commons.io.version>2.8.0</commons.io.version>
     </properties>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>${maven.war.plugin.version}</version>
+                <configuration>
+                    <warSourceExcludes>src/,node/,node_modules/,package.json</warSourceExcludes>
+                    <webResources>
+                        <resource>
+                            <directory>src/main/ui</directory>
+                            <filtering>false</filtering>
+                            <excludes>
+                                <exclude>src/**</exclude>
+                                <exclude>node/**</exclude>
+                                <exclude>node_modules/**</exclude>
+                                <exclude>package.json</exclude>
+                            </excludes>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>${frontend.maven.plugin.version}</version>
+                <configuration>
+                    <workingDirectory>src/main/ui</workingDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>install node and npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <configuration>
+                            <nodeVersion>${node.vesion}</nodeVersion>
+                            <npmVersion>${npm.version}</npmVersion>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm install</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>install</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm run build</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run build</arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>${maven.comiler.plugin.version}</version>
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
@@ -47,7 +124,7 @@
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.4.32.v20200930</version>
+                <version>${jetty.maven.plugin.version}</version>
             </plugin>
 
             <plugin>
@@ -66,6 +143,17 @@
     </build>
 
     <dependencies>
+        <!-- Spring -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
         <!--DB-->
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -106,15 +194,60 @@
         </dependency>
         <!--JSON-->
         <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.74</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson-databind.version}</version>
         </dependency>
-        <!--Thymeleaf-->
+        <!--Mail-->
         <dependency>
-            <groupId>org.thymeleaf</groupId>
-            <artifactId>thymeleaf</artifactId>
-            <version>${thymeleaf.version}</version>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>${email.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <!--AWS-->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk</artifactId>
+            <version>${aws.java.sdk.version}</version>
+        </dependency>
+        <!--Javax annotation(@PostConstruct in AmazonService)-->
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>${javax.annotation.api.version}</version>
+        </dependency>
+        <!--Security -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+            <version>${spring-security.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>${spring-security.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.11.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.11.2</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.11.2</version>
+            <scope>runtime</scope>
         </dependency>
         <!--Test-->
         <dependency>
@@ -123,20 +256,68 @@
             <version>${flyway.version}</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
             <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
-            <groupId>com.github.stefanbirkner</groupId>
-            <artifactId>system-lambda</artifactId>
-            <version>${systemlambda.version}</version>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-inline</artifactId>
+            <version>${mockito.version}</version>
             <scope>test</scope>
-         </dependency>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <version>${spring-security.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-library</artifactId>
+            <version>${hamcrest-library.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+            <version>${json-path.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.database-rider</groupId>
+            <artifactId>rider-spring</artifactId>
+            <version>${rider-spring-version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-test</artifactId>
+            <version>${spring-boot-test}</version>
+            <scope>test</scope>
+        </dependency>
+        <!--For copy files from s3 buckets to local storage while testing-->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons.io.version}</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
 </project>

@@ -1,0 +1,18 @@
+.input-text-element__row {
+	display: flex;
+}
+.input-text-element__row>label {
+	min-width: 142px;
+	font-family: 'Merriweather';
+	font-size: 24px;
+	text-align: center;
+}
+.input-text-element__row>input[type="text"] {
+	font-family: 'Teen';
+	font-size: 24px;
+	text-align: center;
+}
+
+.margin-bottom {
+	margin-bottom: 10px;
+}

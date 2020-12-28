@@ -1,0 +1,38 @@
+.header {
+    width: 100%;
+    height: 98px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 34px;
+    top: 0;
+    font-size: 20px;
+    background-color: white;
+    z-index: 2;
+}
+
+.app-name {
+    font-family: 'Sunshiney';
+    font-size: 48px;
+}
+
+.header-right__row0 {
+    display: flex;
+    position: relative;
+}
+
+.header-right__row {
+    display: flex;
+    position: relative;
+    width: 652px;
+}
+
+.user-greeting {
+    position: absolute;
+    top: 29px;
+    right: 0;
+    font-family: 'Merriweather';
+    font-size: 18;
+    text-align: center;
+    color: black;
+}

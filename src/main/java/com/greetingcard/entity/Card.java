@@ -1,21 +1,20 @@
 package com.greetingcard.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class Card {
     private long id;
     @EqualsAndHashCode.Exclude
     private User user;
     private String name;
     private String backgroundImage;
+    private String backgroundCongratulations;
     private String cardLink;
     private Status status;
     @EqualsAndHashCode.Exclude

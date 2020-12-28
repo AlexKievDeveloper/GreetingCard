@@ -1,0 +1,17 @@
+.change-button {
+  width: 20px;
+  height: 20px;
+  border: 1px solid black;
+  overflow: hidden;
+  margin-right: 6px;
+  transition: all 0.25s ease-out;
+}
+
+.change-button:hover {
+  transform: scale(2);
+  box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.15);
+}
+
+.chosen {
+  border: 3px solid white;
+}

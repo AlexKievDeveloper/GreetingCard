@@ -1,0 +1,115 @@
+.user-and-checkbox-block {
+  display: flex;
+  margin-bottom: 40px;
+}
+
+.user__row {
+  display: flex;
+  align-items: center;
+  margin-right: 25px;
+  padding: 5px;
+  border: 2px solid rgba(0, 0, 0, 0.5);
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+.user-profile-picture {
+  width: 50px;
+  height: 50px;
+  border: 2px solid black;
+  border-radius: 5px;
+  align-self: center;
+  margin-right: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.none {
+  background-color: rgba(169, 222, 249, 0.7);
+}
+
+.no-picture {
+  margin: 3px;
+  width: 40px;
+  height: 40px;
+}
+
+.user-profile-picture > img {
+  object-fit: contain;
+  max-width: 46px;
+  max-height: 46px;
+}
+
+.user-text-details__row {
+	display: flex;
+	height: 50px;
+	background-color: rgba( 255, 255, 255, 0.96);
+	border-radius: 5px;
+	justify-content: space-between;
+	align-items: flex-end;
+	width: 440px;
+	border: 1.5px solid black;
+	padding: 10px 5px;
+}
+
+.user-signature {
+	font-family: 'Merriweather';
+}
+.login {
+	font-family: 'Teen';
+}
+
+.number-of-blocks {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 50px;
+	height: 50px;
+	border: 2px solid black;
+	border-radius: 5px;
+	align-self: center;
+	margin-left: 25px;
+	font-size: 24px;
+    font-style: bold;
+    background-color: rgba(255, 182, 72, 0.25);
+}
+
+
+.user-styled-as-input {
+  font-size: 18px;
+  padding: 10px 5px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+  min-width: max-content;
+  padding: 4px 8px 2px;
+  text-align: left;
+}
+
+.checkbox-for-collaborator {
+	display: flex;
+	align-self: flex-start;
+	background-color: rgba( 255, 255, 255, 0.7);
+	font-size: 20px;
+	border: 2px solid rgba(0, 0, 0, 0.5);
+	border-radius: 4px;
+	margin-top: 6px;
+
+}
+.checkbox-for-collaborator>label{
+	font-family: 'Merriweather';
+	font-size: 18px;
+	align-self: center;
+	margin-right: 4px;
+}
+input[type='checkbox'] {
+    -webkit-appearance:none;
+    width:20px;
+    height:20px;
+    background:white;
+    border-radius: 3.5px;
+    border:1.5px solid black;
+    margin-right: 5px;
+}
+input[type='checkbox']:checked {
+    background-color: red;
+}

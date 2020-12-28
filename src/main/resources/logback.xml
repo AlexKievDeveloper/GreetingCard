@@ -25,8 +25,9 @@
             <pattern>%d %-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
         </encoder>
     </appender>
-
-    <root level="DEBUG">
+    <logger name="org.apache" level="ERROR"/>
+    <logger name="httpclient" level="ERROR"/>
+    <root level="INFO">
         <appender-ref ref="consoleAppender"/>
         <appender-ref ref="file"/>
     </root>

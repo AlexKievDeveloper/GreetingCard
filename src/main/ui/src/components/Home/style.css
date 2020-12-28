@@ -1,0 +1,37 @@
+.app-description__row {
+	display: flex;
+	justify-content: space-between;
+	height: 731px;
+	background-color: white;
+	padding: 46px 0px 0px 125px;
+}
+.text-description__column {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: center;
+	margin-left: 107.5px;
+	padding-top: 75px;
+	text-align: center;
+
+}
+.app-name {
+	font-family: 'Sunshiney';
+	font-size: 48px;
+}
+.app-name_home {
+	font-size: 240px;
+}
+.app-description {
+	font-family: 'Spartan';
+	font-size: 58px;
+	line-height: 65px;
+	opacity: 0.5;
+	width: 753px;
+	margin-top: 43px;
+}
+.app-example-picture {
+	width:100%;
+	margin-left: 232.5px;
+	background: linear-gradient(180deg, #FFFFFF 0%, rgba(255, 255, 255, 0) 30%), url(../../assets/images/app-example.png) no-repeat;
+}

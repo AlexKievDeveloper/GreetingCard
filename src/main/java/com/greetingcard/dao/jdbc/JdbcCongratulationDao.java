@@ -1,177 +1,197 @@
 package com.greetingcard.dao.jdbc;
 
 import com.greetingcard.dao.CongratulationDao;
-import com.greetingcard.dao.jdbc.mapper.CongratulationRowMapper;
-import com.greetingcard.dao.jdbc.mapper.CongratulationsRowMapper;
+import com.greetingcard.dao.jdbc.mapper.CongratulationExtractor;
+import com.greetingcard.dao.jdbc.mapper.CongratulationsExtractor;
+import com.greetingcard.dao.jdbc.mapper.LinksRowMapper;
 import com.greetingcard.entity.Congratulation;
 import com.greetingcard.entity.Link;
 import com.greetingcard.entity.Status;
+import com.greetingcard.service.impl.DefaultAmazonService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.sql.DataSource;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
+@RequiredArgsConstructor
+@Repository
 public class JdbcCongratulationDao implements CongratulationDao {
-    private static final String GET_CONGRATULATION = "SELECT congratulations.congratulation_id, user_id, card_id, status_id, message, link_id, link, type_id FROM congratulations LEFT JOIN links on congratulations.congratulation_id = links.congratulation_id WHERE congratulations.congratulation_id=?";
-    private static final String SAVE_CONGRATULATION = "INSERT INTO congratulations (message, card_id, user_id, status_id) VALUES (?,?,?,?)";
-    private static final String SAVE_LINK = "INSERT INTO links (link, type_id, congratulation_id) VALUES(?,?,?)";
-    private static final String LEAVE_BY_CARD_ID = "DELETE FROM congratulations WHERE card_id=? and user_id=?";
-    private static final String FIND_IMAGE_AND_AUDIO_LINKS_BY_CARD_ID = "SELECT link, type_id FROM links l LEFT JOIN congratulations cg ON cg.congratulation_id = l.congratulation_id where card_id=? and (type_id = 2 OR type_id = 3) and user_id =?";
-    private static final String FIND_CONGRATULATIONS_BY_CARD_ID = "SELECT cg.congratulation_id, user_id, card_id, status_id, message, link_id, link, type_id FROM congratulations cg LEFT JOIN links on cg.congratulation_id = links.congratulation_id WHERE card_id=?";
-    private static final String CHANGE_STATUS_CONGRATULATION_BY_CARD_ID = "UPDATE congratulations SET status_id = ? where card_id = ?";
-    private static final String CHANGE_CONGRATULATION_STATUS_BY_CONGRATULATION_ID = "UPDATE congratulations SET status_id = ? where congratulation_id = ?";
-    private static final String DELETE_BY_ID = "DELETE FROM congratulations WHERE congratulation_id=? and user_id=?";
-    private static final String FIND_IMAGE_AND_AUDIO_LINKS_BY_CONGRATULATION_ID = "SELECT link, type_id FROM links l LEFT JOIN congratulations cg ON cg.congratulation_id = l.congratulation_id where cg.congratulation_id=? and (type_id = 2 OR type_id = 3) and user_id =?";
 
-    private static final CongratulationRowMapper CONGRATULATION_ROW_MAPPER = new CongratulationRowMapper();
-    private static final CongratulationsRowMapper CONGRATULATIONS_ROW_MAPPER = new CongratulationsRowMapper();
-    private final DataSource dataSource;
+    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedJdbcTemplate;
+    private final DefaultAmazonService defaultAmazonService;
 
-    public JdbcCongratulationDao(DataSource dataSource) {
-        this.dataSource = dataSource;
+    @Autowired
+    private String getCongratulation;
+    @Autowired
+    private String getLinks;
+    @Autowired
+    private String saveCongratulation;
+    @Autowired
+    private String updateCongratulation;
+    @Autowired
+    private String saveLink;
+    @Autowired
+    private String leaveByCardId;
+    @Autowired
+    private String findImageAndAudioLinksByCardId;
+    @Autowired
+    private String findCongratulationsByCardId;
+    @Autowired
+    private String changeCongratulationStatusByCardId;
+    @Autowired
+    private String changeCongratulationStatusByCongratulationId;
+    @Autowired
+    private String deleteCongratulationById;
+    @Autowired
+    private String findImageAndAudioLinksByCongratulationId;
+    @Autowired
+    private String deleteLinkById;
+
+    @Override
+    public Congratulation getCongratulationById(long congratulationId) {
+        return jdbcTemplate.query(getCongratulation, new CongratulationExtractor(), congratulationId);
     }
 
     @Override
-    public Congratulation getCongratulationById(int congratulationId) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(GET_CONGRATULATION)) {
-            preparedStatement.setInt(1, congratulationId);
+    @Transactional
+    public void save(@NonNull Congratulation congratulation) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement statement = connection.prepareStatement(saveCongratulation, new String[]{"congratulation_id"});
+            statement.setString(1, congratulation.getMessage());
+            statement.setLong(2, congratulation.getCardId());
+            statement.setLong(3, congratulation.getUser().getId());
+            statement.setInt(4, congratulation.getStatus().getStatusNumber());
+            return statement;
+        }, keyHolder);
 
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    return CONGRATULATION_ROW_MAPPER.mapRow(resultSet);
-                }
-                return null;
-            }
-        } catch (SQLException e) {
-            log.error("Exception while getting congratulation by id: {}", congratulationId, e);
-            throw new RuntimeException("Exception while getting congratulation by id: " + congratulationId, e);
-        }
+        int key = Objects.requireNonNull(keyHolder.getKey()).intValue();
+        saveLinks(congratulation.getLinkList(), key);
+        log.debug("Added new congratulation {} to DB", congratulation.getId());
     }
 
     @Override
-    public void save(Congratulation congratulation) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statementInCongratulations = connection.prepareStatement(SAVE_CONGRATULATION,
-                     PreparedStatement.RETURN_GENERATED_KEYS)) {
-            connection.setAutoCommit(false);
-            statementInCongratulations.setString(1, congratulation.getMessage());
-            statementInCongratulations.setLong(2, congratulation.getCard().getId());
-            statementInCongratulations.setLong(3, congratulation.getUser().getId());
-            statementInCongratulations.setInt(4, congratulation.getStatus().getStatusNumber());
-            statementInCongratulations.execute();
-
-            try (ResultSet resultSet = statementInCongratulations.getGeneratedKeys()) {
-                resultSet.next();
-                List<Link> linkList = congratulation.getLinkList();
-                for (Link link : linkList) {
-                    link.setCongratulationId(resultSet.getInt(1));
-                }
-                saveLinks(linkList, connection);
-            }
-            connection.commit();
-        } catch (SQLException e) {
-            log.error("Exception while saving congratulation", e);
-            throw new RuntimeException("Exception while saving congratulation", e);
-        }
-    }
-
-    @Override
+    @Transactional
     public void deleteByCardId(long cardId, long userId) {
-        delete(cardId, userId, LEAVE_BY_CARD_ID, FIND_IMAGE_AND_AUDIO_LINKS_BY_CARD_ID);
+        deleteCongratulationFiles(cardId, userId, findImageAndAudioLinksByCardId);
+        Map<String, Long> params = new HashMap<>();
+        params.put("user_id", userId);
+        params.put("card_id", cardId);
+        namedJdbcTemplate.update(leaveByCardId, params);
     }
 
     @Override
+    @Transactional
     public void deleteById(long congratulationId, long userId) {
-        delete(congratulationId, userId, DELETE_BY_ID, FIND_IMAGE_AND_AUDIO_LINKS_BY_CONGRATULATION_ID);
+        deleteCongratulationFiles(congratulationId, userId, findImageAndAudioLinksByCongratulationId);
+        Map<String, Long> params = new HashMap<>();
+        params.put("user_id", userId);
+        params.put("congratulation_id", congratulationId);
+        namedJdbcTemplate.update(deleteCongratulationById, params);
+    }
+
+    @Override
+    @Transactional
+    public void deleteLinksById(List<Link> linkIdToDelete, long congratulationId) {
+        deleteFilesFromLinks(linkIdToDelete, congratulationId);
+        if (linkIdToDelete.size() > 0) {
+            MapSqlParameterSource params = getMapSqlParameterSourceForList(linkIdToDelete);
+            String sql = deleteLinkById + getNamesOfParams(params.getParameterNames()) + " and congratulation_id = congratulation_id";
+            params.addValue("congratulation_id", congratulationId);
+            namedJdbcTemplate.update(sql, params);
+        }
     }
 
     @Override
     public List<Congratulation> findCongratulationsByCardId(long cardId) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(FIND_CONGRATULATIONS_BY_CARD_ID)) {
-            statement.setLong(1, cardId);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                return CONGRATULATIONS_ROW_MAPPER.mapRow(resultSet);
-            }
-        } catch (SQLException e) {
-            log.error("Exception while select congratulations by card_id - {}", cardId, e);
-            throw new RuntimeException("Exception while select congratulations by card_id ", e);
-        }
+        return jdbcTemplate.query(findCongratulationsByCardId, new CongratulationsExtractor(), cardId);
     }
 
     @Override
-    public void changeStatusCongratulationsByCardId(Status status, long cardId) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(CHANGE_STATUS_CONGRATULATION_BY_CARD_ID)) {
-            statement.setInt(1, status.getStatusNumber());
-            statement.setLong(2, cardId);
-            statement.execute();
-        } catch (SQLException e) {
-            log.error("Exception while change status congratulation - {}", cardId, e);
-            throw new RuntimeException("Exception while change status congratulation ", e);
-        }
+    public void changeCongratulationsStatusByCardId(Status status, long cardId) {
+        jdbcTemplate.update(changeCongratulationStatusByCardId, status.getStatusNumber(), cardId);
     }
 
     @Override
     public void changeCongratulationStatusByCongratulationId(Status status, long congratulationId) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(CHANGE_CONGRATULATION_STATUS_BY_CONGRATULATION_ID)) {
-            statement.setInt(1, status.getStatusNumber());
-            statement.setLong(2, congratulationId);
-            statement.execute();
-        } catch (SQLException e) {
-            log.error("Exception while changing congratulation status, id: {}", congratulationId, e);
-            throw new RuntimeException("Exception while changing congratulation status", e);
+        jdbcTemplate.update(changeCongratulationStatusByCongratulationId, status.getStatusNumber(), congratulationId);
+    }
+
+    @Override
+    public void updateCongratulationMessage(String message, long congratulationId, long userId) {
+        jdbcTemplate.update(updateCongratulation, message, congratulationId, userId);
+    }
+
+    @Override
+    public void saveLinks(List<Link> linkList, long congratulationId) {
+        jdbcTemplate.batchUpdate(
+                saveLink,
+                linkList,
+                linkList.size(),
+                (statementInLinks, link) -> {
+                    statementInLinks.setString(1, link.getLink());
+                    statementInLinks.setInt(2, link.getType().getTypeNumber());
+                    statementInLinks.setLong(3, congratulationId);
+                });
+    }
+
+    void deleteCongratulationFiles(long id, long userId, String findQuery) {
+        List<String> linkList = jdbcTemplate.queryForList(findQuery, String.class, id, userId);
+        for (String link : linkList) {
+            defaultAmazonService.deleteFileFromS3Bucket(link);
         }
     }
 
-    void saveLinks(List<Link> linkList, Connection connection) throws SQLException {
-        try (PreparedStatement statementInLinks = connection.prepareStatement(SAVE_LINK)) {
-            for (Link link : linkList) {
-                statementInLinks.setString(1, link.getLink());
-                statementInLinks.setInt(2, link.getType().getTypeNumber());
-                statementInLinks.setInt(3, link.getCongratulationId());
-                statementInLinks.addBatch();
-            }
-            statementInLinks.executeBatch();
+    void deleteFilesFromLinks(List<Link> linkIdToDelete, long congratulationId) {
+        List<Link> linkList = getLinksList(linkIdToDelete, congratulationId);
+        for (Link link : linkList) {
+            defaultAmazonService.deleteFileFromS3Bucket(link.getLink());
         }
     }
 
-    void delete(long id, long userId, String deleteQuery, String findQuery) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(deleteQuery)) {
-            connection.setAutoCommit(false);
-            statement.setLong(1, id);
-            statement.setLong(2, userId);
-            try (PreparedStatement statementGetLinks = connection.prepareStatement(findQuery)) {
-                statementGetLinks.setLong(1, id);
-                statementGetLinks.setLong(2, userId);
-                try (ResultSet resultSet = statementGetLinks.executeQuery()) {
-                    while (resultSet.next()) {
-                        String file = resultSet.getString("link");
-                        try {
-                            Files.deleteIfExists(Paths.get(file));
-                        } catch (IOException e) {
-                            log.error("Exception while deleting file - {}", file, e);
-                            throw new RuntimeException("Exception while deleting file", e);
-                        }
-                    }
-                }
+    List<Link> getLinksList(List<Link> linkList, long congratulationId) {
+        try {
+            if (linkList.size() > 0) {
+                MapSqlParameterSource params = getMapSqlParameterSourceForList(linkList);
+                String sql = getLinks + getNamesOfParams(params.getParameterNames()) + "and congratulation_id = congratulation_id and (type_id = 2 OR type_id = 3)";
+                params.addValue("congratulation_id", congratulationId);
+                return namedJdbcTemplate.query(sql, params, new LinksRowMapper());
             }
-            statement.execute();
-            connection.commit();
-        } catch (SQLException e) {
-            log.error("Exception while deleting congratulations by - {}", id, e);
-            throw new RuntimeException("Exception while deleting congratulations ", e);
+        } catch (DataAccessException e) {
+            log.info("There are no links for congratulation with id: " + congratulationId);
+            return List.of();
         }
+        return List.of();
+    }
+
+    String getNamesOfParams(String[] listParams) {
+        StringJoiner stringJoiner = new StringJoiner(",", "(", ")");
+        for (String listParam : listParams) {
+            stringJoiner.add(":" + listParam);
+        }
+        return stringJoiner.toString();
+    }
+
+    MapSqlParameterSource getMapSqlParameterSourceForList(List<Link> listLinkIds) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        for (int i = 0; i < listLinkIds.size(); i++) {
+            long userId = listLinkIds.get(i).getId();
+            String paramName = "link_id" + i;
+            params.addValue(paramName, userId);
+        }
+        return params;
     }
 }

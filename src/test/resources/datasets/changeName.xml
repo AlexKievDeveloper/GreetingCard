@@ -1,0 +1,19 @@
+<dataset>
+    <CARDS card_id = "1"
+           user_id = "1"
+           name = "newName"
+           background_image = "path_to_image"
+           card_link = "link_to_greeting"
+           status_id = "1"/>
+    <CARDS card_id = "2"
+           user_id = "2"
+           name = "greeting Oleksandr"
+           card_link = "link_to_greeting"
+           status_id = "2"/>
+    <CARDS card_id = "3"
+           user_id = "2"
+           name = "no_congratulation"
+           background_image = "path_to_image"
+           card_link = "link_to_greeting"
+           status_id = "1"/>
+</dataset>

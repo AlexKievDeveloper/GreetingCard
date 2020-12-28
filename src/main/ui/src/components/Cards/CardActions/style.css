@@ -1,0 +1,19 @@
+.actions__column {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-action {
+    width: 40px;
+    height: auto;
+}
+
+.edit {
+    border: 1px solid black;
+}
+
+.disabled {
+    pointer-events: none;
+    opacity: 0.6;
+}

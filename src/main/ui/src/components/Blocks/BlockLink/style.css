@@ -1,0 +1,23 @@
+.optional-element {	
+    margin-bottom: 50px;
+    box-shadow: 0 0 2px 1.5px rgba(0, 0, 0, 0.2);
+}
+
+
+.optional-element_image {
+    display: block;
+    height: 425px;
+    width: auto;
+}
+
+.optional-element_audio {
+    box-shadow: none;
+}
+
+.optional-element_video {
+    height: 300px;
+}
+
+audio {
+    min-height: 62px;
+}
