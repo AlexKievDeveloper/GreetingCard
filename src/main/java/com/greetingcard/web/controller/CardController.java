@@ -1,16 +1,21 @@
 package com.greetingcard.web.controller;
 
-import com.greetingcard.entity.Card;
-import com.greetingcard.entity.CardsType;
-import com.greetingcard.entity.Status;
-import com.greetingcard.entity.User;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.greetingcard.entity.*;
 import com.greetingcard.service.CardService;
+import com.greetingcard.service.CardUserService;
+import com.greetingcard.service.WebSocketService;
+import com.greetingcard.service.impl.DefaultCardUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -24,15 +29,19 @@ import java.util.Map;
 @RequestMapping(value = "api/v1/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CardController {
     private final CardService cardService;
+    private final WebSocketService webSocketService;
     @Value("${webapp.url}")
     private String siteUrl;
 
-    @GetMapping("cards")
-    public ResponseEntity<Object> getCards(HttpSession session, @RequestParam CardsType type) {
+    @GetMapping(value = "cards", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> getCards(HttpSession session, @RequestParam CardsType type) throws JsonProcessingException {
         log.info("getCards");
         User user = (User) session.getAttribute("user");
         long userId = user.getId();
+        log.info("USER ID: " + userId);
         List<Card> cardList = cardService.getCards(userId, type);
+
+        webSocketService.notifyAboutGettingCards("Successfully received all cards! User id: " + userId, userId);
         return ResponseEntity.status(HttpStatus.OK).body(cardList);
     }
 
@@ -77,10 +86,13 @@ public class CardController {
     }
 
     @PutMapping("card/{id}/status/{statusName}")
-    public void changeStatusAndCreateCardLink(@PathVariable long id, @PathVariable String statusName) {
+    public void changeStatusAndCreateCardLink(@PathVariable long id, @PathVariable String statusName, HttpSession session) throws JsonProcessingException {
         log.info("Received PUT request for change status");
         cardService.changeCardStatusAndCreateCardLink(statusName, id);
         log.info("Successfully changed card status for card id: {} to {}", id, statusName);
+
+        User userLoggedIn = (User) session.getAttribute("user");
+        webSocketService.notifyAboutCardStatusChanging(id, statusName, userLoggedIn);
     }
 
     @DeleteMapping("card/{id}")

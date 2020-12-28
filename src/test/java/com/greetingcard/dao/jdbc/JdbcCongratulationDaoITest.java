@@ -278,7 +278,7 @@ class JdbcCongratulationDaoITest {
         congratulationDao.save(congratulation);
 
         //when
-        congratulationDao.deleteById(7, 1);
+        congratulationDao.deleteById(7);
 
         //then
         assertThrows(IllegalArgumentException.class, () ->

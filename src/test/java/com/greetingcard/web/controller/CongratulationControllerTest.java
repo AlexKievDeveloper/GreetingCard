@@ -170,6 +170,7 @@ class CongratulationControllerTest {
     @DisplayName("Deleting congratulation")
     void deleteCongratulation() throws Exception {
         User user = User.builder().id(1).login("user").build();
+        when(defaultCongratulationService.getCongratulationById(1)).thenReturn(Congratulation.builder().cardId(1).build());
         mockMvc.perform(delete("/api/v1/congratulation/{id}", 1)
                 .sessionAttr("user", user))
                 .andExpect(status().isNoContent());

@@ -1,8 +1,10 @@
 package com.greetingcard.web.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.greetingcard.entity.User;
 import com.greetingcard.entity.UserInfo;
 import com.greetingcard.service.CardUserService;
+import com.greetingcard.service.WebSocketService;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,12 +19,14 @@ import java.util.List;
 @RequestMapping("api/v1/")
 public class CardUserController {
     private final CardUserService cardUserService;
+    private final WebSocketService webSocketService;
 
     @PostMapping("card/{id}/user")
-    public void addUserMember(@PathVariable long id, @RequestBody User user, HttpSession session) {
+    public void addUserMember(@PathVariable long id, @RequestBody User user, HttpSession session) throws JsonProcessingException {
         log.info("Request for adding user member for card {}, user {}", id, user.getLogin());
         User userLoggedIn = (User) session.getAttribute("user");
         cardUserService.addUser(id, userLoggedIn, user);
+        webSocketService.notifyAboutAddingToCard(userLoggedIn.getLogin() + " added you to card with id: " + id, user.getLogin());//userId = 0
         log.info("User successfully added to card");
     }
 
@@ -36,21 +40,21 @@ public class CardUserController {
     }
 
     @DeleteMapping("card/{id}/users")
-    public void deleteListMembers(@PathVariable long id, @RequestBody List<UserInfo> listUsers, HttpSession session) {
+    public void deleteListMembers(@PathVariable long id, @RequestBody List<UserInfo> listUsers, HttpSession session) throws JsonProcessingException {
         log.info("Request to delete {} users from card {}", listUsers.size(), id);
         User userLoggedIn = (User) session.getAttribute("user");
         cardUserService.deleteUsers(id, listUsers, userLoggedIn);
+        webSocketService.notifyAllDeletedCardMembers(listUsers, id);
         log.info("Users are successfully deleted from card {}", id);
     }
 
     @DeleteMapping("card/{id}/user")
-    public void leaveCard(@PathVariable long id, HttpSession session) {
+    public void leaveCard(@PathVariable long id, HttpSession session) throws JsonProcessingException {
         log.info("Request for leave card with id : {}", id);
         User user = (User) session.getAttribute("user");
-
         log.info("Request for leave card from user with id : {}", user.getId());
         cardUserService.deleteUserFromCard(id, user.getId());
-
+        webSocketService.notifyAdminAboutLeavingCard(user.getLogin() + " left your card with id: " + id, id);
         log.info("Successfully leave card with id: {}", id);
     }
 

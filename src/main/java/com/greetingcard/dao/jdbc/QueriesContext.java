@@ -84,6 +84,14 @@ public class QueriesContext {
     }
 
     @Bean
+    public String getUsersByCardIdForWebSocketNotification() {
+        return "SELECT u.user_id, u.firstName, u.lastName, u.login, u.email, u.pathToPhoto, count(cg.card_id) AS countCongratulations " +
+                "FROM users_cards uc JOIN users u ON (u.user_id = uc.user_id) LEFT JOIN congratulations cg " +
+                "ON (uc.card_id = cg.card_id AND uc.user_id = cg.user_id) WHERE uc.card_id = :card_id " +
+                "GROUP BY u.user_id, u.firstName, u.lastName, u.login, u.email, u.pathToPhoto ORDER BY u.user_id";
+    }
+
+    @Bean
     public String deleteUser() {
         return "DELETE from users_cards WHERE user_id = :user_id AND card_id = :card_id";
     }
@@ -141,7 +149,7 @@ public class QueriesContext {
     @Bean
     public String findImageAndAudioLinksByCardId() {
         return "SELECT link FROM links l JOIN congratulations cg ON (cg.congratulation_id = l.congratulation_id) " +
-                "WHERE card_id=? and (type_id = 2 OR type_id = 3) and user_id =?";
+                "WHERE card_id=? and (type_id = 2 OR type_id = 3)";
     }
 
     @Bean
@@ -162,13 +170,13 @@ public class QueriesContext {
 
     @Bean
     public String deleteCongratulationById() {
-        return "DELETE FROM congratulations WHERE congratulation_id= :congratulation_id AND user_id= :user_id";
+        return "DELETE FROM congratulations WHERE congratulation_id= :congratulation_id";
     }
 
     @Bean
     public String findImageAndAudioLinksByCongratulationId() {
         return "SELECT link FROM links l LEFT JOIN congratulations cg ON (cg.congratulation_id = l.congratulation_id) " +
-                "WHERE cg.congratulation_id=? and (type_id = 2 OR type_id = 3) and user_id =?";
+                "WHERE cg.congratulation_id=? and (type_id = 2 OR type_id = 3)";
     }
 
     @Bean

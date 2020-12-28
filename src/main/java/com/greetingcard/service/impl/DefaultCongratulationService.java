@@ -7,7 +7,6 @@ import com.greetingcard.entity.LinkType;
 import com.greetingcard.entity.Status;
 import com.greetingcard.service.CongratulationService;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,8 +58,8 @@ public class DefaultCongratulationService implements CongratulationService {
     }
 
     @Override
-    public void deleteById(long congratulationId, long userId) {
-        congratulationDao.deleteById(congratulationId, userId);
+    public void deleteById(long congratulationId) {
+        congratulationDao.deleteById(congratulationId);
     }
 
     @Override

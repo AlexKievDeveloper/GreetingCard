@@ -9,7 +9,6 @@ import com.greetingcard.security.SecurityService;
 import com.greetingcard.service.CardService;
 import com.greetingcard.service.CardUserService;
 import com.greetingcard.service.CongratulationService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -42,6 +41,11 @@ public class DefaultCardUserService implements CardUserService {
     public List<UserInfo> getUsersByCardId(long cardId, User userLoggedIn) {
         checkIfUserAdminForCard(cardId, userLoggedIn.getId(), "get");
         return cardUserDao.getUserMembersByCardId(cardId);
+    }
+
+    @Override
+    public List<UserInfo> getUsersByCardIdForWebSocketNotification(long cardId, User userLoggedIn) {
+        return cardUserDao.getUserMembersByCardIdForWebSocketNotification(cardId);
     }
 
     @Override
@@ -88,6 +92,7 @@ public class DefaultCardUserService implements CardUserService {
     void checkIfUserAdminForCard(long cardId, long idUserAdded, String action) {
         Optional<Role> role = cardUserDao.getUserRole(cardId, idUserAdded);
         if (role.isEmpty() || role.get() != Role.ADMIN) {
+            log.debug("Exception while checking user Role. Only card owner can " + action + " users");
             throw new IllegalArgumentException("Only card owner can " + action + " users");
         }
     }

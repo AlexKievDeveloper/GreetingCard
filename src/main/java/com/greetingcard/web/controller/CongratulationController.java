@@ -8,7 +8,7 @@ import com.greetingcard.entity.Link;
 import com.greetingcard.entity.Status;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CongratulationService;
-import lombok.AllArgsConstructor;
+import com.greetingcard.service.WebSocketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -29,6 +29,7 @@ import java.util.Map;
 @RequestMapping("/api/v1/congratulation")
 public class CongratulationController {
     private final CongratulationService congratulationService;
+    private final WebSocketService webSocketService;
     private final ObjectMapper objectMapper;
 
     @GetMapping("/{id}")
@@ -54,6 +55,7 @@ public class CongratulationController {
         log.info("Got Map from json");
         User user = (User) session.getAttribute("user");
         long userId = user.getId();
+        long cardId = Long.parseLong(parametersMap.get("card_id"));
         log.info("Request for adding congratulation from user: {}", user.getLogin());
 
         List<Link> linkList = congratulationService.getLinkList(files_image, files_audio, parametersMap);
@@ -61,7 +63,7 @@ public class CongratulationController {
 
         Congratulation congratulation = Congratulation.builder()
                 .message(parametersMap.get("message"))
-                .cardId(Long.parseLong(parametersMap.get("card_id")))
+                .cardId(cardId)
                 .user(User.builder().id(userId).build())
                 .status(Status.STARTUP)
                 .linkList(linkList)
@@ -69,6 +71,8 @@ public class CongratulationController {
 
         congratulationService.save(congratulation);
 
+        webSocketService.notifyAdminAboutCreatingCongratulation(user.getLogin() +
+                " create congratulation in your card with id: " + cardId, cardId);
         log.info("Successfully created congratulation for user: {}", user.getLogin());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -87,7 +91,7 @@ public class CongratulationController {
                                                 @RequestParam(required = false) MultipartFile[] files_audio,
                                                 @RequestParam String json,
                                                 @PathVariable("id") int congratulationId,
-                                                HttpSession session) throws JsonProcessingException {
+                                                HttpSession session) throws IOException {
 
         log.info("Received PUT request for edit congratulation with id: {}", congratulationId);
         TypeReference<HashMap<String, String>> typeRef = new TypeReference<>() {
@@ -102,13 +106,13 @@ public class CongratulationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCongratulation(@PathVariable("id") long congratulationId, HttpSession session) {
+    public ResponseEntity<?> deleteCongratulation(@PathVariable("id") long congratulationId, HttpSession session) throws JsonProcessingException {
         log.info("Request for DELETE congratulation received");
         User user = (User) session.getAttribute("user");
 
         log.info("Request DELETE for congratulation with id {}, user: {}", congratulationId, user.getLogin());
-        congratulationService.deleteById(congratulationId, user.getId());
-
+        webSocketService.notifyAllCardMembersAboutDeletingCongratulation(congratulationId, user);
+        congratulationService.deleteById(congratulationId);
         log.info("Successfully deleted congratulation with id: {}, user login: {}", congratulationId, user.getLogin());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

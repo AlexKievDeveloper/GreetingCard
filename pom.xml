@@ -23,7 +23,7 @@
         <jetty.maven.plugin.version>9.4.35.v20201120</jetty.maven.plugin.version>
         <flyway.version>6.5.5</flyway.version>
         <!--Dependencies-->
-        <spring.version>5.3.0</spring.version>
+        <spring.version>5.3.2</spring.version>
         <postgres.version>42.2.17</postgres.version>
         <javax.servlet.version>4.0.1</javax.servlet.version>
         <commons-dbcp2.version>2.8.0</commons-dbcp2.version>
@@ -40,6 +40,8 @@
         <rider-spring-version>1.16.1</rider-spring-version>
         <spring-boot-test>2.3.5.RELEASE</spring-boot-test>
         <commons.io.version>2.8.0</commons.io.version>
+        <tomcat.embed.websocket>10.0.0</tomcat.embed.websocket>
+        <javax.websocket-api>1.1</javax.websocket-api>
     </properties>
 
     <build>
@@ -153,6 +155,17 @@
             <artifactId>spring-jdbc</artifactId>
             <version>${spring.version}</version>
         </dependency>
+        <!--Web sockets-->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-websocket</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-messaging</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
         <!--DB-->
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -194,6 +207,11 @@
         <!--JSON-->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson-databind.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson-databind.version}</version>
         </dependency>
@@ -215,20 +233,10 @@
             <version>${aws.java.sdk.version}</version>
         </dependency>
         <!--Javax annotation(@PostConstruct in AmazonService)-->
-        <dependency> <groupId>javax.annotation</groupId>
+        <dependency>
+            <groupId>javax.annotation</groupId>
             <artifactId>javax.annotation-api</artifactId>
             <version>${javax.annotation.api.version}</version>
-        </dependency>
-        <!--Web sockets-->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-websocket</artifactId>
-            <version>5.3.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-messaging</artifactId>
-            <version>5.3.2</version>
         </dependency>
         <!--Test-->
         <dependency>
@@ -290,6 +298,19 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>${commons.io.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!--For configuration web sockets while testing-->
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-websocket</artifactId>
+            <version>${tomcat.embed.websocket}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.websocket</groupId>
+            <artifactId>javax.websocket-api</artifactId>
+            <version>${javax.websocket-api}</version>
             <scope>test</scope>
         </dependency>
 

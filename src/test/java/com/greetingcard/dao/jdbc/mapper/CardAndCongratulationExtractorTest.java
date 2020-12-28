@@ -41,6 +41,7 @@ class CardAndCongratulationExtractorTest {
         when(mockResultSet.getLong("congratulation_id")).thenReturn(1L);
         when(mockResultSet.getString("message")).thenReturn("from Roma");
         when(mockResultSet.getInt("con_status")).thenReturn(1);
+        when(mockResultSet.getString("pathToPhoto")).thenReturn("pathToTestPhoto1");
 
         when(mockResultSet.getInt("link_id")).thenReturn(1);
         when(mockResultSet.getString("link")).thenReturn("/link");
@@ -65,6 +66,7 @@ class CardAndCongratulationExtractorTest {
         verify(mockResultSet).getLong("congratulation_id");
         verify(mockResultSet).getString("message");
         verify(mockResultSet).getInt("con_status");
+        verify(mockResultSet).getString("pathToPhoto");
 
         verify(mockResultSet).getInt("link_id");
         verify(mockResultSet).getString("link");
