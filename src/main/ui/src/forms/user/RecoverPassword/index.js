@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import LoginFilterPages from '../../../components/LoginFilterPages';
+import CommandButton from '../../../components/UI/CommandButton';
 import InputTextWithLabel from '../../../components/UI/InputTextWithLabel';
 import { userService } from '../../../services/userService';
 import { formValidator } from '../formValidator';
@@ -46,14 +47,18 @@ export default class RecoverPassword extends Component {
                 <div className="profile-password-change__column">
                   <InputTextWithLabel
                     columnName="new_password"
-                    labelText="New Password:"
+                    labelText="newPasswordLabel"
                   />
                   <InputTextWithLabel
                     columnName="check_new_password"
-                    labelText="Check New Password:"
+                    labelText="checkPasswordLabel"
                   />
                   <div></div>
-                  <input type="submit" className="command-button" value="Change password" onClick={this.save_password}></input>
+                  <CommandButton
+                     className=""
+                     caption="changePassword"
+                     action={this.save_password}
+                  />
                 </div>
               </form>
             </main>

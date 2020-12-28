@@ -5,9 +5,11 @@ export const userService = {
     logout,
     getUser,
     setUserId,
+    setLanguage,
     registerUser,
     getProfile,
     updateProfile,
+    updateLanguage,
     updatePassword,
     forgotPassword,
     recoverPassword
@@ -39,10 +41,23 @@ function setUserId(id) {
     localStorage.setItem('userId', id); 
 }
 
+function setLanguage(userLanguage) {
+    let language;
+    if (userLanguage === 'ENGLISH') {
+        language = 'EN';
+    } else if (userLanguage === 'UKRAINIAN') {
+        language = 'UA'
+    } else {
+        language = userLanguage;
+    }
+    localStorage.setItem('userLanguage', language); 
+}
+
 function logout() {
     localStorage.removeItem('user');
     localStorage.removeItem('userId');
     localStorage.removeItem('userToken');
+    localStorage.removeItem('userLanguage');
 }
 
 function getUser() {
@@ -65,6 +80,14 @@ function getProfile() {
     
 function updateProfile(formData) {
    return serverService.sendFormData('/user', 'PUT', formData);
+}
+
+function updateLanguage(newLanguage) {
+   let user = getUser();
+   if (user.hasOwnProperty('userId') && user.userId > 0) {
+      let languageForBackend = newLanguage === 'EN' ? 'ENGLISH' : 'UKRAINIAN';
+      return serverService.sendRequest(`/user/language/${languageForBackend}`, 'PUT');
+   }
 }
     
 function updatePassword(oldPassword, newPassword) {

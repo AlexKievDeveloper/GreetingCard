@@ -2,6 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css';
 import Menu from '../../components/Menu';
+import LanguageSelector from '../../components/Language/LanguageSelector';
+import { Text } from '../../components/Language/Text';
 
 export default function Header(props) {
 
@@ -18,8 +20,9 @@ export default function Header(props) {
         <header className="header">
             <div className="app-name">GreetTeam</div>
             <div className={classForHeaderRow}>
+                <LanguageSelector />
                 <Menu isLoggedIn={isLogin} logoutCall={props.logoutCall}/>
-                {isLogin && <div className="user-greeting">Hello, {props.userName}!</div>}
+                {isLogin && <div className="user-greeting"> <Text tid="greetingUser"/> {props.userName}!</div>}
             </div>
         </header>
     )

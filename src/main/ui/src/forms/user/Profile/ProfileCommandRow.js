@@ -9,7 +9,7 @@ export default function ProfileCommandRow(props) {
         <CommandButtonLink
           to="/change_password"
           className="command-button--white"
-          caption="Change password"
+          caption="changePassword"
         />
       </div>
     </div>

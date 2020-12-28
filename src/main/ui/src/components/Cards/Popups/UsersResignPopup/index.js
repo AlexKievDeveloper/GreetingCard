@@ -9,10 +9,10 @@ export default function UsersResignPopup(props) {
         isShow={props.isShow}
         onCloseFunction={props.onCloseFunction}
         onActionFunction={props.onResignFunction}
-        title="Resign users"
-        red_message="When you resign user their blocks are deleted."
-        question="Are you sure you want to resign choosen users?"
-        captionActionButton="Resign"
+        title="resignUsers"
+        red_message="warningResignPopup"
+        question="questionResignPopup"
+        captionActionButton="resign"
       />
     );
   } else {

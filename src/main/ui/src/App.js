@@ -5,6 +5,7 @@ import Header from "./containers/Header";
 import { userService } from "./services/userService";
 import { userContext } from "./context/userContext";
 import SwitchRoute from "./components/SwithRoute";
+import { LanguageProvider } from "./components/Language/LanguageProvider";
 
 class App extends React.Component {
   constructor(props) {
@@ -33,6 +34,7 @@ class App extends React.Component {
         return result;
       } else {
         let userId = result.userId;
+        userService.setLanguage(result.userLanguage);
         this.setState({ user: login, userId: userId });
         userService.setUserId(userId);
       }
@@ -53,12 +55,14 @@ class App extends React.Component {
 
     return (
       <div className="wrapper">
-        <userContext.Provider value={userContextValue}>
-          <Router>
-            <Header userName={this.state.user} logoutCall={this.logout} />
-            <SwitchRoute userName={this.state.user} />
-          </Router>
-        </userContext.Provider>
+        <LanguageProvider>
+          <userContext.Provider value={userContextValue}>
+            <Router>
+              <Header userName={this.state.user} logoutCall={this.logout} />
+              <SwitchRoute userName={this.state.user} />
+            </Router>
+          </userContext.Provider>
+        </LanguageProvider>
       </div>
     );
   }
