@@ -26,6 +26,7 @@ public class WebApplicationContext implements WebMvcConfigurer {
         registry.addResourceHandler("/audio/**").addResourceLocations("https://" + bucketName + ".s3." + region + ".amazonaws.com/audio/");
         registry.addResourceHandler("/img/**").addResourceLocations("https://" + bucketName + ".s3." + region + ".amazonaws.com/img/");
         registry.addResourceHandler("/profile/**").addResourceLocations("https://" + bucketName + ".s3." + region + ".amazonaws.com/profile/");
+        registry.addResourceHandler("/background/**").addResourceLocations("https://" + bucketName + ".s3." + region + ".amazonaws.com/background/");
         registry.addResourceHandler("/index.html").addResourceLocations("/build/index.html");
         registry.addResourceHandler("/manifest.json").addResourceLocations("/build/manifest.json");
         registry.addResourceHandler("/static/**").addResourceLocations("/build/static/");

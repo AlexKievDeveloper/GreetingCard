@@ -1,6 +1,5 @@
 import React from "react";
 import CommandButtonLink from "../../UI/CommandButton/CommandButtonLink";
-import FormAdd from "../../../forms/common/FormAdd";
 import FilterButton from "../../UI/FilterButton";
 import FinishAndDeleteLeaveButtons from "../FinishAndDeleteLeaveButtons";
 
@@ -27,14 +26,11 @@ export default function CardCommandRow(props) {
           className="command-button--yellow"
           caption="+ Add block"
         />
-        {props.isMyCard && props.cardName.length > 0 && (
-          <FormAdd
-            onSubmit={props.saveNameFunction}
-            inputPlaceholder=""
-            buttonCaption="Save name"
-            value={props.cardName}
-          />
-        )}
+        <CommandButtonLink
+          to={"/preview/" + id}
+          className="command-button--yellow"
+          caption="Preview"
+        />
         {props.isMyCard && (
           <CommandButtonLink
             to={"/card_users/" + id}

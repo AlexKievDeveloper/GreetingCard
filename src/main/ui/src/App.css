@@ -2,6 +2,14 @@ button:disabled {
     border: none;
 }
 
+button:focus {
+    outline: none;
+}
+
+input:focus {
+    outline: none;
+}
+
 .wrapper {
     display: flex;
     flex-direction: column;

@@ -33,7 +33,7 @@ export default function FinishAndDeleteLeaveButtons(props) {
 
   const unfinishCard = () => {
     if (props.isMyCard) {
-      alert("This functionality is not implemented yet")
+      cardService.unFinishCard(id).then(() => props.history.push("/cards/my"));
     } else {
       props.history.push("/cards/my");
     }
