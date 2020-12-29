@@ -26,15 +26,6 @@ class Login extends React.Component {
     userService.login(this.state.login, this.state.password).then((result) => {
       this.handleResult(result, loginUser);
     });
-    /* loginUser(this.state.login, this.state.password).then((errorMessage) => {
-            if (errorMessage) {
-              console.log(errorMessage.message);  
-              this.setState({errorMessage:errorMessage.message})
-            } else {
-              console.log('go to my cards');
-              this.props.history.push("/cards/my");
-            }
-        });*/
   }
 
   handleResult = (result, loginUser) => {
