@@ -11,8 +11,11 @@ import com.greetingcard.entity.*;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -330,6 +333,16 @@ public class JdbcCardDaoITest {
     @ExpectedDataSet("saveBackgroundOfCongratulations.xml")
     void saveBackgroundOfCongratulations() {
         jdbcCardDao.saveBackgroundOfCongratulation(2,2,"imageOfCongratulation");
+    }
+
+    @Test
+    @DisplayName("Set time of finish card")
+    @ExpectedDataSet("setTimeOfFinish.xml")
+    void setFinishTime() {
+        User user = User.builder().id(1).build();
+        Card actual = Card.builder().id(1).user(user)
+                .dateOfFinish(LocalDate.parse("2000-01-01")).build();
+        jdbcCardDao.setFinishTime(actual);
     }
 
 }

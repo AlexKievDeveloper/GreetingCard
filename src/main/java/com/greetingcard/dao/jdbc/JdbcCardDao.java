@@ -53,6 +53,8 @@ public class JdbcCardDao implements CardDao {
     private String saveBackgroundOfCongratulations;
     @Autowired
     private String deleteBackground;
+    @Autowired
+    private String setTimeOfFinishCard;
 
     @Override
     public List<Card> getAllCardsByUserId(long id) {
@@ -142,5 +144,14 @@ public class JdbcCardDao implements CardDao {
         map.put("card_id", id);
         map.put("user_id", user);
         namedParameterJdbcTemplate.update(deleteBackground, map);
+    }
+
+    @Override
+    public void setFinishTime(Card card) {
+        SqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("cardId", card.getId())
+                .addValue("userId", card.getUser().getId())
+                .addValue("dateOfFinish", card.getDateOfFinish());
+        namedParameterJdbcTemplate.update(setTimeOfFinishCard, namedParameters);
     }
 }

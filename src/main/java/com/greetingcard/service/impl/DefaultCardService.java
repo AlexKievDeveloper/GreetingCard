@@ -98,6 +98,11 @@ public class DefaultCardService implements CardService {
     }
 
     @Override
+    public void setFinishTime(Card card) {
+        cardDao.setFinishTime(card);
+    }
+
+    @Override
     public Optional<Status> getCardStatusById(long cardId) {
         return cardDao.getCardStatusById(cardId);
     }

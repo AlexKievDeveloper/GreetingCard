@@ -31,4 +31,6 @@ public interface CardService {
     void saveBackgroundOfCongratulation(long id, long user, String color);
 
     void removeBackground(long id, long user);
+
+    void setFinishTime(Card card);
 }

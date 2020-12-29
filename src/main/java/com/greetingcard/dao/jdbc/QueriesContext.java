@@ -76,6 +76,10 @@ public class QueriesContext {
         return "UPDATE cards SET background_image=null where card_id = :card_id and user_id = :user_id";
     }
 
+    @Bean
+    public String setTimeOfFinishCard() {
+        return "UPDATE cards SET dateOfFinish=:dateOfFinish where card_id = :cardId and user_id = :userId";
+    }
     /**
      * JdbcCardUserDao queries
      */
