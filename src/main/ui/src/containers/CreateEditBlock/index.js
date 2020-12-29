@@ -2,13 +2,14 @@ import React, { Component } from "react";
 import BlockCommandRow from "../../components/Blocks/BlockCommandRow";
 import "./style.css";
 import addImg from "../../assets/images/add.png";
-import pictureImg from "../../assets/images/picture.png";
 import audioImg from "../../assets/images/audio.png";
 import youtubeLinkImg from "../../assets/images/youtube-link.png";
 import { blockService } from "../../services/blockService";
 import { Editor } from "@tinymce/tinymce-react";
 import DeleteLinks from "../../forms/block/DeleteLinks";
 import config from "../../services/config";
+import ChooseImage from "../../components/UI/ChooseImage";
+import { languageContext } from "../../context/languageContext";
 
 export class CreateEditBlock extends Component {
   constructor(props) {
@@ -70,24 +71,25 @@ export class CreateEditBlock extends Component {
     if (this.state.block_id === 0) {
       blockService
         .createBlock(this.state)
-        .then(() =>
-          this.props.history.push(linkAfter)
-        );
+        .then(() => this.props.history.push(linkAfter));
     } else {
       blockService
         .updateBlock(this.state)
-        .then(() =>
-          this.props.history.push(linkAfter)
-        );
+        .then(() => this.props.history.push(linkAfter));
     }
   };
 
   deleteBlock = () => {
-     if (this.state.block_id !== 0) {
-           blockService.deleteBlock(this.state.block_id)
-                       .then(()=> this.props.history.push("/edit_card/" + this.state.card_id + "/my_blocks"));
-     }
-  }
+    if (this.state.block_id !== 0) {
+      blockService
+        .deleteBlock(this.state.block_id)
+        .then(() =>
+          this.props.history.push(
+            "/edit_card/" + this.state.card_id + "/my_blocks"
+          )
+        );
+    }
+  };
 
   deleteLinks = (listToDelete) => {
     let newLinks = this.state.links.filter(
@@ -146,7 +148,10 @@ export class CreateEditBlock extends Component {
     return (
       <div className="wrapper">
         <div className="main-functions">
-          <BlockCommandRow saveFunction={this.saveBlock} deleteFunction={this.deleteBlock} />
+          <BlockCommandRow
+            saveFunction={this.saveBlock}
+            deleteFunction={this.deleteBlock}
+          />
           <main className="container_block no-bottom-padding">
             <div className="text-editor">
               <Editor
@@ -171,20 +176,12 @@ export class CreateEditBlock extends Component {
             </div>
 
             <form id="elements-adder__row" method="post">
-              <label htmlFor="image-files" className="adder" name="images">
-                <img src={pictureImg} alt="" className="element-type-icon" />
-                <img src={addImg} alt="" className="element-adder-icon" />
-
-                <input
-                  type="file"
-                  id="image-files"
-                  name="image-files"
-                  accept={config.acceptedFileImage}
-                  className="files-input"
-                  onChange={this.handleFileImagesChange}
-                  multiple
-                />
-              </label>
+              <ChooseImage
+                place="in_block"
+                size="big"
+                handleFileImagesChange={this.handleFileImagesChange}
+                isMultiple={true}
+              />
 
               <label htmlFor="audio-files" className="adder" name="audio">
                 <img src={audioImg} alt="" className="element-type-icon" />
@@ -207,13 +204,17 @@ export class CreateEditBlock extends Component {
                   className="element-type-icon"
                   alt=""
                 />
-                <textarea
-                  id="youtube-links"
-                  name="youtube"
-                  className="links"
-                  placeholder="Youtube links"
-                  onChange={this.handleChange}
-                />
+                <languageContext.Consumer>
+                  {({ dictionary }) => (
+                    <textarea
+                      id="youtube-links"
+                      name="youtube"
+                      className="links"
+                      placeholder={dictionary.youtubeLinksPlaceholder}
+                      onChange={this.handleChange}
+                    />
+                  )}
+                </languageContext.Consumer>
               </label>
             </form>
             <DeleteLinks

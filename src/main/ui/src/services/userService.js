@@ -5,9 +5,11 @@ export const userService = {
     logout,
     getUser,
     setUserId,
+    setLanguage,
     registerUser,
     getProfile,
     updateProfile,
+    updateLanguage,
     updatePassword,
     forgotPassword,
     recoverPassword
@@ -15,7 +17,9 @@ export const userService = {
 
 function login(login, password) {
 
-    return serverService.sendRequest('/session', 'POST', {login, password})
+    const headerSecurityName = 'Authorization';
+
+    return serverService.sendRequest('/auth', 'POST', {login, password}, false)
         .then(response => {
             console.log(response);
             if (!response.ok) {
@@ -23,6 +27,11 @@ function login(login, password) {
                 return response.json();
             } else {
                 localStorage.setItem('user', login);
+                let headers = response.headers;
+                if (headers.has(headerSecurityName)) {
+                    let token = headers.get(headerSecurityName); 
+                    localStorage.setItem('userToken', token);
+                }
                 return response.json();
             }
         });
@@ -32,11 +41,23 @@ function setUserId(id) {
     localStorage.setItem('userId', id); 
 }
 
+function setLanguage(userLanguage) {
+    let language;
+    if (userLanguage === 'ENGLISH') {
+        language = 'EN';
+    } else if (userLanguage === 'UKRAINIAN') {
+        language = 'UA'
+    } else {
+        language = userLanguage;
+    }
+    localStorage.setItem('userLanguage', language); 
+}
+
 function logout() {
-    serverService.sendRequest('/session', 'DELETE')
-        .then(() => {localStorage.removeItem('user');
-                     localStorage.removeItem('userId')
-                     });
+    localStorage.removeItem('user');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('userLanguage');
 }
 
 function getUser() {
@@ -59,6 +80,14 @@ function getProfile() {
     
 function updateProfile(formData) {
    return serverService.sendFormData('/user', 'PUT', formData);
+}
+
+function updateLanguage(newLanguage) {
+   let user = getUser();
+   if (user.hasOwnProperty('userId') && user.userId > 0) {
+      let languageForBackend = newLanguage === 'EN' ? 'ENGLISH' : 'UKRAINIAN';
+      return serverService.sendRequest(`/user/language/${languageForBackend}`, 'PUT');
+   }
 }
     
 function updatePassword(oldPassword, newPassword) {

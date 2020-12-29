@@ -3,6 +3,7 @@ import '../style.css';
 import LoginFilterPages from '../../../components/LoginFilterPages';
 import {userContext} from '../../../context/userContext';
 import { Link } from 'react-router-dom';
+import { languageContext } from '../../../context/languageContext';
 
 class Login extends React.Component {
 
@@ -36,27 +37,31 @@ class Login extends React.Component {
             <div className="main-functions">
                 <LoginFilterPages page="login"/>
                 <main className="container">
+                    <languageContext.Consumer>
+                        {({dictionary}) => (
                     <form id="profile-text">
                         <input type="text" className="styled-as-input"
                                onChange={(event) => this.setState({login: event.target.value})}
-                               placeholder="login"
+                               placeholder={dictionary.loginPlaceholder}
                                pattern="[a-zA-Zа-яА-Я0-9ёЁІіЇїґЄє]{1,30}"/>
                         <br></br>
                         <input type="password" className="password styled-as-input"
                                onChange={(event) => this.setState({password: event.target.value})}
-                               placeholder="password"/>
+                               placeholder={dictionary.passwordPlaceholder}/>
                         <br></br>
-                        <Link to="/forgot_password"> Forgot password </Link>
+                        <Link to="/forgot_password"> {dictionary.forgotPassword} </Link>
                         <br></br>      
                         <userContext.Consumer>
                             {({loginUser}) => (
-                                <input type="submit" className="command-button" value="Log in" onClick={(event) => {
+                                <input type="submit" className="command-button" value={dictionary.loginButton} onClick={(event) => {
                                     this.handleSubmit(event, loginUser)
                                 }}/>)}
                         </userContext.Consumer>
                         <br></br>
                         <span className="error">{this.state.errorMessage}</span>
-                    </form>
+                    </form>)
+                    }
+                    </languageContext.Consumer>
                 </main>
             </div>
         )

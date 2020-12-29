@@ -9,8 +9,8 @@ export default function BlockCommandRow(props) {
             <div className="filter__blocks">
             </div>
             <div className="actions__row">
-                <CommandButton className="command-button--yellow" caption="Save Block" action={props.saveFunction}/>
-                <CommandButton className="command-button--white"  caption="Delete Block" action={props.deleteFunction}/>
+                <CommandButton className="command-button--yellow" caption="saveBlockButton" action={props.saveFunction}/>
+                <CommandButton className="command-button--white"  caption="deleteBlockButton" action={props.deleteFunction}/>
             </div>
         </div>
     )

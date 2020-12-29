@@ -13,11 +13,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -29,13 +31,10 @@ public class CardController {
     @Value("${webapp.url}")
     private String siteUrl;
 
-    @GetMapping(value = "cards", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> getCards(HttpSession session, @RequestParam CardsType type) {
+    @GetMapping("cards")
+    public ResponseEntity<Object> getCards(@RequestParam CardsType type) {
         log.info("Request for getting cards");
-
-        User user = (User) session.getAttribute("user");
-        long userId = user.getId();
-
+        long userId = WebUtils.getCurrentUserId();
         List<Card> cardList = cardService.getCards(userId, type);
         return ResponseEntity.status(HttpStatus.OK).body(cardList);
     }
@@ -43,8 +42,9 @@ public class CardController {
     @GetMapping("card/{id}")
     public ResponseEntity<Object> getCard(HttpSession session, @PathVariable long id) {
         log.info("Get card request");
-        User user = (User) session.getAttribute("user");
-        Card card = cardService.getCardAndCongratulationByCardIdAndUserId(id, user.getId());
+        long userId = WebUtils.getCurrentUserId();
+
+        Card card = cardService.getCardAndCongratulationByCardIdAndUserId(id, userId);
 
         if (card.getStatus().equals(Status.ISOVER)) {
             card.setCardLink(siteUrl + "card/" + card.getId() + "/card_link/" + card.getCardLink());
@@ -68,40 +68,57 @@ public class CardController {
     }
 
     @PostMapping(value = "card", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> createCard(@RequestBody Card card, HttpSession session) {
+    public ResponseEntity<Object> createCard(@RequestBody Card card)  {
         log.info("Creating card request");
         int length = card.getName().length();
         if (length == 0 || length > 250) {
             throw new IllegalArgumentException("Name is short or too long");
         }
-        User user = (User) session.getAttribute("user");
+        User user = WebUtils.getCurrentUser();
         card.setUser(user);
-        log.info("Сard successefully created");
+        log.info("Сard successfully created");
         return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(Map.of("id", cardService.createCard(card)));
     }
 
     @PutMapping("card/{id}/status/{statusName}")
-    public void changeStatusAndCreateCardLink(@PathVariable long id, @PathVariable String statusName, HttpSession session) {
+    public void changeStatusAndCreateCardLink(@PathVariable long id, @PathVariable String statusName) {
         log.info("Received PUT request for change status");
         cardService.changeCardStatusAndCreateCardLink(statusName, id);
         log.info("Successfully changed card status for card id: {} to {}", id, statusName);
 
-        User userLoggedIn = (User) session.getAttribute("user");
+        User userLoggedIn = WebUtils.getCurrentUser();
         webSocketService.notifyAboutCardStatusChanging(id, statusName, userLoggedIn);
     }
 
     @DeleteMapping("card/{id}")
-    public void delete(@PathVariable long id, HttpSession session) {
+    public void delete(@PathVariable long id) {
         log.info("Request for DELETE card");
-        User user = (User) session.getAttribute("user");
-        cardService.deleteCardById(id, user.getId());
+        long userId = WebUtils.getCurrentUserId();
+        cardService.deleteCardById(id, userId);
     }
 
     @PutMapping("card/{id}/name")
-    public void changeName(@RequestBody Card card, @PathVariable long id, HttpSession session) {
-        User user = (User) session.getAttribute("user");
+    public void changeName(@RequestBody Card card, @PathVariable long id) {
+        User user = WebUtils.getCurrentUser();
         card.setId(id);
         card.setUser(user);
         cardService.changeCardName(card);
     }
+
+    @PutMapping("card/{id}/background")
+    public void addBackground(@RequestParam Optional<MultipartFile> backgroundCardFile,
+                              @RequestParam String backgroundColorCongratulations,
+                              @RequestParam String backgroundCard,
+                              @PathVariable long id) {
+        log.info("Add background to card");
+        long userId = WebUtils.getCurrentUserId();
+
+        if (backgroundCard.isBlank()){
+            backgroundCardFile.ifPresent(file -> cardService.saveBackground(id, userId, file));
+        }else {
+            cardService.removeBackground(id, userId);
+        }
+        cardService.saveBackgroundOfCongratulation(id, userId, backgroundColorCongratulations);
+    }
+
 }

@@ -8,7 +8,6 @@
     <CARDS card_id = "2"
            user_id = "2"
            name = "greeting Oleksandr"
-           background_image = "path_to_image"
            card_link = "link_to_greeting"
            status_id = "2"/>
     <CARDS card_id = "3"

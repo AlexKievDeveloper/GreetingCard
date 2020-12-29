@@ -3,6 +3,7 @@ import './style.css';
 import {Link} from 'react-router-dom'
 import markImg from '../../../assets/images/mark.png';
 import {blockService} from "../../../services/blockService";
+import { Text } from '../../Language/Text';
 
 export default function BlockActions(props) {
     const deleteBlock = () => {
@@ -17,8 +18,8 @@ export default function BlockActions(props) {
             <div className="block-actions__dropdown">
                 <img src={markImg} alt=""/>
                 <div className="block-actions">
-                    <Link to={"/edit_block/" + props.id} className="dropdown-link">Edit block</Link>
-                    <Link to={'/edit_card/'+ props.idCard + '/my_blocks'} className="dropdown-link" onClick={deleteBlock}>Delete block</Link>
+                    <Link to={"/edit_block/" + props.id} className="dropdown-link"><Text tid="editBlock"/></Link>
+                    <Link to={'/edit_card/'+ props.idCard + '/my_blocks'} className="dropdown-link" onClick={deleteBlock}><Text tid="deleteBlock"/></Link>
                 </div>
             </div>
         </div>

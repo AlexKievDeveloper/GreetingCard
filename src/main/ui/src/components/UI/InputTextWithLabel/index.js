@@ -2,6 +2,7 @@ import React from "react";
 import "./style.css";
 import PropTypes from "prop-types";
 import { formValidator } from "../../../forms/user/formValidator";
+import { Text } from "../../Language/Text";
 
 
 class InputTextWithLabel extends React.Component {
@@ -51,7 +52,7 @@ class InputTextWithLabel extends React.Component {
   return (
     <React.Fragment>
       <div className="input-text-element__row">
-        <label htmlFor={this.props.columnName}> {this.props.labelText}</label>
+        <label htmlFor={this.props.columnName}> <Text tid={this.props.labelText}/></label>
         <input
           key = {this.props.columnName} 
           type={inputType}

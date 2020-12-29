@@ -30,3 +30,25 @@
     border:none;
     margin-right: 32px;
 }
+
+
+.command-button--yellow:hover, 
+.command-button--yellow:focus {	
+	background-color: #FFF04A;
+	box-shadow: 0px 0px 2px 1px #FEE600;
+}
+
+.command-button--white:hover, 
+.command-button--white:focus {	
+	border: 2px solid orange;
+		box-shadow: 0px 0px 1px 1px orange;
+
+}
+
+.border_black05rad3 {
+	border: 2px solid rgba(0, 0, 0, 0.5);
+	border-radius: 3px;
+}
+.border_black05rad3:hover {
+	border: 3px solid rgba(0, 0, 0, 0.9);
+}

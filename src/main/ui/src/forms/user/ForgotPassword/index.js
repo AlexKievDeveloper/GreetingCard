@@ -3,6 +3,7 @@ import '../style.css';
 import LoginFilterPages from '../../../components/LoginFilterPages';
 import { formValidator } from '../formValidator';
 import { userService } from '../../../services/userService';
+import { languageContext } from '../../../context/languageContext';
 
 class ForgotPassword extends React.Component {
 
@@ -35,17 +36,22 @@ class ForgotPassword extends React.Component {
             <div className="main-functions">
                 <LoginFilterPages page="login"/>
                 <main className="container">
+                <languageContext.Consumer>
+                    {({dictionary}) => (
                     <form id="profile-text">
                         <input type="text" className="styled-as-input"
                                onChange={(event) => this.setState({email: event.target.value, errorMessage:""})}
-                               placeholder="input email"/>
+                               placeholder={dictionary.emailPlaceholder}/>
                         <br></br>
                         <br></br>      
-                        <input type="submit" className="command-button" value="Send Link" 
+                        <input type="submit" className="command-button" value={dictionary.sendLink} 
                                onClick={(event) => {this.handleSubmit(event)}}/>
                         <br></br>
                         <span className="error">{this.state.errorMessage}</span>
                     </form>
+                    )
+                    }
+                    </languageContext.Consumer>
                 </main>
             </div>
         )

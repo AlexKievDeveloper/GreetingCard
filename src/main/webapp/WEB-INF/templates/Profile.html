@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="../../assets/css/reset.css"/>
+    <link rel="stylesheet" href="../../assets/css/profile.css"/>
+    <title>Profile</title>
+</head>
+<body>
+<div class="wrapper">
+    <header class="header">
+        <div class="app-name">GreetTeam</div>
+        <div class=header-right__row>
+            <div class="navigation-row">
+                <a href="#" class="navigation-link home">
+                    <img src="../../assets/pictures/home.png">
+                </a>
+                <a href="#" class="navigation-link profile">
+                    <img src="../../assets/pictures/user.png">
+                </a>
+                <a href="#" class="navigation-link my-cards">
+                    <img src="../../assets/pictures/photos.png">
+                </a>
+                <a href="#" class="navigation-link log-out">
+                    <img src="../../assets/pictures/exit.png">
+                </a>
+            </div>
+            <div class="user-greeting">Hello, Ann!</div>
+        </div>
+    </header>
+    <div class="main-functions">
+        <div class="command__row">
+            <div class="filter">
+            </div>
+            <div class="actions__row">
+                <input type="submit" form="profile-details-changeable" class="yellow-button command-button" value="Save changes">
+                <a href="change-password.html" class="white-button command-button">Change password</a>
+            </div>
+        </div>
+        <main class="container">
+            <form action="" id="profile-details-changeable" class="profile-details-changeable" method="post">
+                <div class="profile-picture__row">
+                    <div class="profile-picture-change__column">
+                        <label for="profile-picture-add" class="file-adder adder" name="images">
+
+                            <img src="../../assets/pictures/edit.jpg" class="element-type-icon">
+
+                            <input type="file" id="profile-picture-add" name="image-files" accept="image/*" class="files-input" multiple>
+                        </label>
+                        <button></button>
+                    </div>
+                    <div class="profile-picture__picture none">
+                        <img src="../../assets/pictures/user.png" class="no-picture">
+                    </div>
+                </div>
+                <div class="profile-text-change__column">
+                    <div class="input-text-element__row">
+                        <label for="first-name" class="">First Name:</label>
+                        <input type="text" id="first-name" class="styled-as-input" name="first-name" value="Ann">
+                    </div>
+                     <div class="input-text-element__row">
+                        <label for="last-name" class="">Last Name:</label>
+                        <input type="text" id="last-name" class="styled-as-input" name="last-name" value="Bachinsky">
+                    </div>
+                    <div class="input-text-element__row">
+                        <label for="login" class="">Login:</label>
+                        <input type="text" id="login" class="styled-as-input" name="login" value="AnnRose">
+                    </div>
+                </div>
+            </form>
+        </main>
+    </div>
+</div>
+</body>
+</html>

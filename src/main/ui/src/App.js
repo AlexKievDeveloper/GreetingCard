@@ -1,10 +1,11 @@
 import "./App.css";
 import React from "react";
-import {BrowserRouter as Router} from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
 import Header from "./containers/Header";
-import {userService} from "./services/userService";
-import {userContext} from "./context/userContext";
+import { userService } from "./services/userService";
+import { userContext } from "./context/userContext";
 import SwitchRoute from "./components/SwithRoute";
+import { LanguageProvider } from "./components/Language/LanguageProvider";
 import SockJsClient from "react-stomp";
 
 class App extends React.Component {
@@ -16,35 +17,36 @@ class App extends React.Component {
             clientConnected: false,
         };
 
-        this.logout = this.logout.bind(this);
-        this.login = this.login.bind(this);
-    }
+    this.logout = this.logout.bind(this);
+    this.login = this.login.bind(this);
+  }
 
-    componentDidMount() {
-        const userLogined = userService.getUser();
-        this.setState({
-            user: userLogined.user,
-            userId: parseInt(userLogined.userId),
-        });
-    }
+  componentDidMount() {
+    const userLogined = userService.getUser();
+    this.setState({
+      user: userLogined.user,
+      userId: parseInt(userLogined.userId),
+    });
+  }
 
-    login(name, password) {
-        const login = name;
-        return userService.login(login, password).then((result) => {
-            if (result.hasOwnProperty("message")) {
-                return result;
-            } else {
-                let userId = result.userId;
-                this.setState({user: login, userId: userId});
-                userService.setUserId(userId);
-            }
-        });
-    }
+  login(name, password) {
+    const login = name;
+    return userService.login(login, password).then((result) => {
+      if (result.hasOwnProperty("message")) {
+        return result;
+      } else {
+        let userId = result.userId;
+        userService.setLanguage(result.userLanguage);
+        this.setState({ user: login, userId: userId });
+        userService.setUserId(userId);
+      }
+    });
+  }
 
-    logout() {
-        userService.logout();
-        this.setState({user: ""});
-    }
+  logout() {
+    userService.logout();
+    this.setState({ user: "" });
+  }
 
     onMessageReceive = (msg) => {
         console.log("REACT RECEIVED MESSAGE ")
@@ -72,38 +74,39 @@ class App extends React.Component {
             userId: this.state.userId,
             loginUser: this.login,
         };
+      const wsSourceUrl = 'http://localhost:9998/request';
+      return (
+          <div className="wrapper">
+            {this.state.user &&
+            <SockJsClient url={wsSourceUrl} topics={["/topic/" + this.state.userId, "/topic/greetings"]}
+                          onMessage={this.onMessageReceive} ref={(client) => {
+              this.clientRef = client
+            }}
+                          onConnect={() => {
+                            console.log("Connect start!");
+                            console.log("USER LOGIN: " + this.state.user);//DEMO
+                            console.log("USER ID: " + this.state.userId);//20
+                            this.sendMessage({"message": "Hello server! I am React. Lets connect?"});
+                            this.setState({clientConnected: true})
+                          }}
 
-        const wsSourceUrl = 'http://localhost:9998/request';
-        return (
-            <div className="wrapper">
-                {this.state.user &&
-                <SockJsClient url={wsSourceUrl} topics={["/topic/" + this.state.userId, "/topic/greetings"]}
-                              onMessage={this.onMessageReceive} ref={(client) => {
-                    this.clientRef = client
-                }}
-                              onConnect={() => {
-                                  console.log("Connect start!");
-                                  console.log("USER LOGIN: " + this.state.user);//DEMO
-                                  console.log("USER ID: " + this.state.userId);//20
-                                  this.sendMessage({"message": "Hello server! I am React. Lets connect?"});
-                                  this.setState({clientConnected: true})
-                              }}
-
-                              onDisconnect={() => {
-                                  console.log("Disconnect")
-                                  this.setState({clientConnected: false})
-                              }}
-                              debug={false}/>}
+                          onDisconnect={() => {
+                            console.log("Disconnect")
+                            this.setState({clientConnected: false})
+                          }}
+                          debug={false}/>}
 
 
-                <userContext.Provider value={userContextValue}>
-                    <Router>
-                        <Header userName={this.state.user} logoutCall={this.logout}/>
-                        <SwitchRoute userName={this.state.user}/>
-                    </Router>
-                </userContext.Provider>
-            </div>
-        );
+            <LanguageProvider>
+              <userContext.Provider value={userContextValue}>
+                <Router>
+                  <Header userName={this.state.user} logoutCall={this.logout} />
+                  <SwitchRoute userName={this.state.user} />
+                </Router>
+              </userContext.Provider>
+            </LanguageProvider>
+          </div>
+      );
     }
 }
 

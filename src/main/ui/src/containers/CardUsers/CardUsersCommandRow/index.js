@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import UsersResignPopup from "../../../components/Cards/Popups/UsersResignPopup";
 import CommandButton from "../../../components/UI/CommandButton";
+import { languageContext } from "../../../context/languageContext";
 import FormAdd from "../../../forms/common/FormAdd";
 
 export default function CardUsersCommandRow(props) {
   const [isShowPopup, setIsShowPopup] = useState(false);
+  const { dictionary } = useContext(languageContext);
+
 
   const showPopup = () => {
     console.log('showPopup');  
@@ -27,12 +30,12 @@ export default function CardUsersCommandRow(props) {
       <div className="filter"></div>
       <div className="actions__row">
         <CommandButton
-          caption="Clear choice"
+          caption="clearChoiceButton"
           action={props.clearChoiceFunction}
           className="command-button--yellow"
         />
         <CommandButton
-          caption="Delete chosen"
+          caption="deleteChosenButton"
           action={showPopup}
           className="command-button--white"
         />
@@ -44,8 +47,8 @@ export default function CardUsersCommandRow(props) {
         <FormAdd
           {...props}
           onSubmit={props.addUserFunction}
-          inputPlaceholder="input login"
-          buttonCaption="Add user"
+          inputPlaceholder={dictionary.inputLoginPlaceholder}
+          buttonCaption="addUserButton"
         />
       </div>
     </div>

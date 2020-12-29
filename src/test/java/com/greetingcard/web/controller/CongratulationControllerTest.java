@@ -67,7 +67,7 @@ class CongratulationControllerTest {
     @Test
     @DisplayName("Creating new congratulation from json which we get from request body")
     void createCongratulation() throws Exception {
-        User user = User.builder().id(1).build();
+        TestWebUtils.loginAsUserId(1);
         MockMultipartFile mockImageFile = new MockMultipartFile("files_image", "image.jpg", "image/jpg", bytes);
         MockMultipartFile mockAudioFile = new MockMultipartFile("files_audio", "audio.mp3", "audio/mpeg", bytes);
         String parametersJson = "{\"message\":\"Happy new year!\", \"card_id\":\"1\", \"youtube\":\"https://www.youtube.com/watch?v=BmBr5diz8WA\"}";
@@ -77,7 +77,6 @@ class CongratulationControllerTest {
                 .file(mockAudioFile)
                 .param("json", parametersJson)
                 .characterEncoding("utf-8")
-                .sessionAttr("user", user)
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andDo(print())
                 .andExpect(status().isCreated());
@@ -86,7 +85,7 @@ class CongratulationControllerTest {
     @Test
     @DisplayName("Return bad request while creating congratulation in case to long value of youtube link")
     void createCongratulationExceptionOfToLongYoutubeLinkValue() throws Exception {
-        User user = User.builder().id(1).build();
+        TestWebUtils.loginAsUserId(1);
         MockMultipartFile mockImageFile = new MockMultipartFile("files_image", "image.jpg", "image/jpg", bytes);
         MockMultipartFile mockAudioFile = new MockMultipartFile("files_audio", "audio.mp3", "audio/mpeg", bytes);
         String parametersJson = "{\"message\":\"Happy new year!\", \"card_id\":\"1\", \"youtube\":\"https://www.youtube.com/watch?v=BmBr5diz8WA" +
@@ -104,7 +103,6 @@ class CongratulationControllerTest {
                 .file(mockImageFile)
                 .file(mockAudioFile)
                 .param("json", parametersJson)
-                .sessionAttr("user", user)
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andDo(print())
                 .andExpect(jsonPath("$.message").value("Wrong youtube link url!"))
@@ -114,18 +112,15 @@ class CongratulationControllerTest {
     @Test
     @DisplayName("Returns congratulation by id")
     void getCongratulation() throws Exception {
-        User user = User.builder().id(1).login("user").build();
         Congratulation congratulation = Congratulation.builder()
                 .id(1)
                 .status(Status.STARTUP)
                 .cardId(1)
                 .message("from Roma")
                 .build();
-
         when(defaultCongratulationService.getCongratulationById(1)).thenReturn(congratulation);
 
-        mockMvc.perform(get("/api/v1/congratulation/{id}", 1)
-                .sessionAttr("user", user))
+        mockMvc.perform(get("/api/v1/congratulation/{id}", 1))
                 .andDo(print())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.message").value("from Roma"))
@@ -137,7 +132,7 @@ class CongratulationControllerTest {
     @Test
     @DisplayName("Creating new congratulation from json which we get from request body")
     void editCongratulation() throws Exception {
-        User user = User.builder().id(1).build();
+        TestWebUtils.loginAsUserId(1);
         MockMultipartFile mockImageFile = new MockMultipartFile("files_image", "image.jpg", "image/jpg", bytes);
         MockMultipartFile mockAudioFile = new MockMultipartFile("files_audio", "audio.mp3", "audio/mpeg", bytes);
         String parametersJson = "{\"message\":\"Happy new year!\", \"card_id\":\"1\", \"youtube\":\"https://www.youtube.com/watch?v=BmBr5diz8WA\"}";
@@ -153,7 +148,6 @@ class CongratulationControllerTest {
                 .file(mockAudioFile)
                 .param("json", parametersJson)
                 .characterEncoding("utf-8")
-                .sessionAttr("user", user)
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andDo(print())
                 .andExpect(status().isCreated());
@@ -170,9 +164,8 @@ class CongratulationControllerTest {
     @DisplayName("Deleting congratulation")
     void deleteCongratulation() throws Exception {
         User user = User.builder().id(1).login("user").build();
-        when(defaultCongratulationService.getCongratulationById(1)).thenReturn(Congratulation.builder().cardId(1).build());
-        mockMvc.perform(delete("/api/v1/congratulation/{id}", 1)
-                .sessionAttr("user", user))
+        TestWebUtils.loginAsUser(user);
+        mockMvc.perform(delete("/api/v1/congratulation/{id}", 1))
                 .andExpect(status().isNoContent());
     }
 
@@ -180,9 +173,9 @@ class CongratulationControllerTest {
     @DisplayName("Deleting links from congratulation")
     void deleteLinksById() throws Exception {
         User user = User.builder().id(1).login("user").build();
+        TestWebUtils.loginAsUser(user);
         String idsJson = "[{\"id\":\"1\", \"id\":\"2\"}]";
         mockMvc.perform(delete("/api/v1/congratulation/{id}/links", 1)
-                .sessionAttr("user", user)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(idsJson)
                 .characterEncoding("utf-8"))

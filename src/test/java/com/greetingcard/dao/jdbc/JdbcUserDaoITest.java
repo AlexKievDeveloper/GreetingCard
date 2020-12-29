@@ -201,4 +201,14 @@ class JdbcUserDaoITest {
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> userDao.findByForgotPasswordAccessHash(testHash));
         assertEquals("No user found for requested hash", e.getMessage());
     }
+
+    @Test
+    @DisplayName("Change language")
+    @ExpectedDataSet("usersAfterChangeLanguage.xml")
+    void testUpdateLanguage() {
+        User user = new User();
+        user.setId(2);
+        user.setLanguage(Language.ENGLISH);
+        userDao.updateLanguage(user);
+    }
 }

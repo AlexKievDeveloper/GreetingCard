@@ -43,15 +43,15 @@ class ChangePassword extends React.Component {
             <div className="profile-text-change__column no-margin-left no-border">
               <InputTextWithLabel
                 columnName="old_password"
-                labelText="Old Password:"
+                labelText="oldPasswordLabel"
               />
               <InputTextWithLabel
                 columnName="new_password"
-                labelText="New Password:"
+                labelText="newPasswordLabel"
               />
               <InputTextWithLabel
                 columnName="check_new_password"
-                labelText="Check New Password:"
+                labelText="checkPasswordLabel"
               />
             </div>
           </form>

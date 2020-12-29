@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import BlockByUser from "../../components/Blocks/BlockByUser";
+import { Text } from "../../components/Language/Text";
 import { userContext } from "../../context/userContext";
 import { cardService } from "../../services/cardService";
 import CardPreviewCommandRow from "./CardPreviewCommandRow";
@@ -40,6 +41,8 @@ export default class CardPreview extends Component {
       cardId: cardData.id,
       cardStatus: cardData.status,
       cardLink: cardData.cardLink,
+      backgroundBlocks: cardData.backgroundCongratulations,
+      backgroundCardLink: cardData.backgroundImage,
     });
   };
 
@@ -64,12 +67,22 @@ export default class CardPreview extends Component {
 
   getBlocksByUser = () => {
     return this.state.usersWithBlocks.map((user) => (
-      <BlockByUser key={user.id} blocks={user.blocks} />
+      <BlockByUser key={user.id} blocks={user.blocks} backgroundColor={this.state.backgroundBlocks}/>
     ));
   };
 
   render() {
     const path = this.props.location.pathname;
+    let cardStyle;
+    if (this.state.backgroundCardLink) {
+      cardStyle = {
+        backgroundImage: "url(" + this.state.backgroundCardLink + ")",
+      };
+    } else {
+      cardStyle = {
+        backgroundColor: "#C1CF7A",
+      };
+    }
     return (
       <div className="main-functions">
         {!path.startsWith("/card/") && (
@@ -85,7 +98,7 @@ export default class CardPreview extends Component {
             )}
           </userContext.Consumer>
         )}
-        <main className="container">
+        <main className="container" style={cardStyle}>
           <div className="card__title with-background margin-top_65">
             {this.state.name}
           </div>
@@ -97,7 +110,7 @@ export default class CardPreview extends Component {
             className="pointer-to-navigation with-background"
             href="#card__navigation"
           >
-            To Navigation
+            <Text tid="toNavigationLabel"/>
           </a>
         </main>
       </div>
