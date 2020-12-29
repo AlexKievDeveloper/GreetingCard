@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import arrayMove from "array-move";
 import BlockByUser from "../../components/Blocks/BlockByUser";
 import { Text } from "../../components/Language/Text";
 import { userContext } from "../../context/userContext";
@@ -32,6 +33,12 @@ export default class CardPreview extends Component {
       cardService.getCard(id).then((cardData) => this.changeState(cardData));
     }
   }
+
+  onSortEnd = ({ oldIndex, newIndex }) => {
+    this.setState(({ usersWithBlocks }) => ({
+      usersWithBlocks: arrayMove(usersWithBlocks, oldIndex, newIndex),
+    }));
+  };
 
   changeState = (cardData) => {
     this.setState({
@@ -67,7 +74,11 @@ export default class CardPreview extends Component {
 
   getBlocksByUser = () => {
     return this.state.usersWithBlocks.map((user) => (
-      <BlockByUser key={user.id} blocks={user.blocks} backgroundColor={this.state.backgroundBlocks}/>
+      <BlockByUser
+        key={user.id}
+        blocks={user.blocks}
+        backgroundColor={this.state.backgroundBlocks}
+      />
     ));
   };
 
@@ -103,14 +114,22 @@ export default class CardPreview extends Component {
             {this.state.name}
           </div>
           <div className="with-background" id="card__navigation">
-            <FromUsers users={this.state.usersWithBlocks} />
+            <userContext.Consumer>
+              {({ userId }) => (
+                <FromUsers
+                  users={this.state.usersWithBlocks}
+                  isMyCard={userId === this.state.userIdCardAdmin}
+                  onSortEnd={this.onSortEnd}
+                />
+              )}
+            </userContext.Consumer>
           </div>
           {this.getBlocksByUser()}
           <a
             className="pointer-to-navigation with-background"
             href="#card__navigation"
           >
-            <Text tid="toNavigationLabel"/>
+            <Text tid="toNavigationLabel" />
           </a>
         </main>
       </div>
