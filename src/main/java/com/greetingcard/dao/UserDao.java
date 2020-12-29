@@ -23,7 +23,7 @@ public interface UserDao {
 
     void verifyForgotPasswordAccessHash(String hash, User user);
 
-    void saveUserFromFacebook(User user);
+    long saveUserFromFacebook(User user);
 
-    void saveUserFromGoogle(User user);
+    long saveUserFromGoogle(User user);
 }

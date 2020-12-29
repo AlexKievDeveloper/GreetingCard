@@ -118,7 +118,7 @@ public class AuthControllerSystemTest {
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.login").value("userFacebook"))
-                .andExpect(jsonPath("$.userId").value("0"))
+                .andExpect(jsonPath("$.userId").value("1"))
                 .andReturn().getResponse();
 
         String headerValue = response.getHeader("Authorization");
@@ -147,7 +147,7 @@ public class AuthControllerSystemTest {
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.login").value("userGoogle"))
-                .andExpect(jsonPath("$.userId").value("0"))
+                .andExpect(jsonPath("$.userId").value("1"))
                 .andReturn().getResponse();
 
         String headerValue = response.getHeader("Authorization");

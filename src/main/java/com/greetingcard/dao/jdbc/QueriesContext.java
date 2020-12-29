@@ -269,6 +269,6 @@ public class QueriesContext {
     @Bean
     public String saveUserFromGoogle() {
         return "INSERT INTO users (firstName, lastName, login, email, google, password, salt, language_id, pathToPhoto)" +
-                " VALUES (:firstName, :lastName, :login, :email, :googleId, :password, :salt, :language, :pathToPhoto)";
+                " VALUES (:firstName, :lastName, :login, :email, :google, :password, :salt, :language, :pathToPhoto)";
     }
 }

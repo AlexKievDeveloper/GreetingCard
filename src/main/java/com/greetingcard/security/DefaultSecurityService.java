@@ -187,8 +187,8 @@ public class DefaultSecurityService implements SecurityService {
         String[] names = name.split(" ", 2);
         user = User.builder().facebook(facebookId).firstName(names[0]).lastName(names[1]).login(email)
                 .email(email).salt("").password(getHashPassword(facebookId)).language(Language.ENGLISH).build();
-
-        userDao.saveUserFromFacebook(user);
+        long id = userDao.saveUserFromFacebook(user);
+        user.setId(id);
         return user;
     }
 
@@ -209,8 +209,8 @@ public class DefaultSecurityService implements SecurityService {
         user = User.builder().google(googleId).firstName(firstName).lastName(lastName).login(email)
                 .email(email).pathToPhoto(pathToPhoto).salt("").password(getHashPassword(googleId)).
                         language(Language.ENGLISH).build();
-
-        userDao.saveUserFromGoogle(user);
+        long id = userDao.saveUserFromGoogle(user);
+        user.setId(id);
         return user;
     }
 

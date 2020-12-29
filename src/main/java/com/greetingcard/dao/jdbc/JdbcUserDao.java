@@ -12,13 +12,14 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.greetingcard.entity.AccessHashType.FORGOT_PASSWORD;
 import static com.greetingcard.entity.AccessHashType.VERIFY_EMAIL;
@@ -134,31 +135,36 @@ public class JdbcUserDao implements UserDao {
     }
 
     @Override
-    public void saveUserFromFacebook(User user) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("firstName", user.getFirstName());
-        map.put("lastName", user.getLastName());
-        map.put("login", user.getLogin());
-        map.put("email", user.getEmail());
-        map.put("facebookId", user.getFacebook());
-        map.put("password", user.getPassword());
-        map.put("salt", user.getSalt());
-        map.put("language", user.getLanguage().getLanguageNumber());
-        namedParameterJdbcTemplate.update(saveUserFromFacebook, map);
+    public long saveUserFromFacebook(User user) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        SqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("firstName", user.getFirstName())
+                .addValue("lastName", user.getLastName())
+                .addValue("login", user.getLogin())
+                .addValue("email", user.getEmail())
+                .addValue("facebookId", user.getFacebook())
+                .addValue("password", user.getPassword())
+                .addValue("salt", user.getSalt())
+                .addValue("language", user.getLanguage().getLanguageNumber());
+
+        return namedParameterJdbcTemplate.update(saveUserFromFacebook, namedParameters, keyHolder);
     }
 
     @Override
-    public void saveUserFromGoogle(User user) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("firstName", user.getFirstName());
-        map.put("lastName", user.getLastName());
-        map.put("login", user.getLogin());
-        map.put("email", user.getEmail());
-        map.put("googleId", user.getGoogle());
-        map.put("password", user.getPassword());
-        map.put("salt", user.getSalt());
-        map.put("language", user.getLanguage().getLanguageNumber());
-        map.put("pathToPhoto", user.getPathToPhoto());
-        namedParameterJdbcTemplate.update(saveUserFromGoogle, map);
+    public long saveUserFromGoogle(User user) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        SqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("firstName", user.getFirstName())
+                .addValue("lastName", user.getLastName())
+                .addValue("login", user.getLogin())
+                .addValue("email", user.getEmail())
+                .addValue("google", user.getGoogle())
+                .addValue("password", user.getPassword())
+                .addValue("salt", user.getSalt())
+                .addValue("language", user.getLanguage().getLanguageNumber())
+                .addValue("pathToPhoto", user.getPathToPhoto());
+
+        return namedParameterJdbcTemplate.update(saveUserFromGoogle, namedParameters, keyHolder);
+
     }
 }
