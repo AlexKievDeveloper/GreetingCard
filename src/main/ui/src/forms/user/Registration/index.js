@@ -4,6 +4,7 @@ import LoginFilterPages from "../../../components/LoginFilterPages";
 import "./style.css";
 import "../style.css";
 import { formValidator } from "../formValidator";
+import { languageContext } from "../../../context/languageContext";
 
 class Registration extends React.Component {
   constructor(props) {
@@ -103,12 +104,14 @@ class Registration extends React.Component {
       <div className="main-functions">
         <LoginFilterPages page="signup" />
         <main className="container">
-          <form id="profile-text">
+          <languageContext.Consumer>
+          { ({dictionary}) => (
+            <form id="profile-text">
             <input
               type="email"
               className="styled-as-input"
               name="email"
-              placeholder="input e-mail"
+              placeholder={dictionary.emailPlaceholder}
               value={this.state.email}
               onChange={this.changeHandler}
             />
@@ -119,7 +122,7 @@ class Registration extends React.Component {
                 type="text"
                 className="styled-as-input"
                 name="firstName"
-                placeholder="input first name"
+                placeholder={dictionary.firstNamePlaceholder}
                 value={this.state.firstName}
                 onChange={this.changeHandler}
               />
@@ -132,7 +135,7 @@ class Registration extends React.Component {
                 type="text"
                 className="styled-as-input"
                 name="lastName"
-                placeholder="input last name"
+                placeholder={dictionary.lastNamePlaceholder}
                 value={this.state.lastName}
                 onChange={this.changeHandler}
               />
@@ -146,7 +149,7 @@ class Registration extends React.Component {
               type="text"
               className="styled-as-input"
               name="login"
-              placeholder="input username"
+              placeholder={dictionary.usernamePlaceholder}
               value={this.state.login}
               onChange={this.changeHandler}
             />
@@ -156,7 +159,7 @@ class Registration extends React.Component {
               type="password"
               className="styled-as-input"
               name="password"
-              placeholder="input password"
+              placeholder={dictionary.inputPasswordPlaceholder}
               value={this.state.password}
               onChange={this.changeHandler}
             />
@@ -169,7 +172,7 @@ class Registration extends React.Component {
               type="password"
               className="styled-as-input"
               name="password_check"
-              placeholder="input password"
+              placeholder={dictionary.inputPasswordPlaceholder}
               value={this.state.password_check}
               onChange={this.changeHandler}
             />
@@ -181,7 +184,7 @@ class Registration extends React.Component {
             <input
               type="submit"
               className="command-button"
-              value="Sign Up"
+              value={dictionary.signUpButton}
               onClick={this.registration}
             />
             <br></br>
@@ -189,7 +192,9 @@ class Registration extends React.Component {
               "formError",
               "Error: " + this.state.errors.formError
             )}
-          </form>
+          </form>)
+          }
+          </languageContext.Consumer>
         </main>
       </div>
     );

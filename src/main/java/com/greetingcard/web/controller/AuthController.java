@@ -43,6 +43,6 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK)
                 .header("Authorization", "Bearer " + token)
                 .body(objectMapper
-                        .writeValueAsString(Map.of("login", login, "userId", user.getId())));
+                        .writeValueAsString(Map.of("login", login, "userId", user.getId(), "userLanguage", user.getLanguage().getName())));
     }
 }

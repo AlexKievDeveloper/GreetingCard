@@ -9,10 +9,10 @@ export default function LeaveCardPopup(props) {
         isShow={props.isShow}
         onCloseFunction={props.onCloseFunction}
         onActionFunction={props.onLeaveFunction}
-        title="Leave Card"
-        red_message="Your blocks will be deleted"
-        question="Are you sure you want to leave this card?"
-        captionActionButton="Leave"
+        title="leaveCardButton"
+        red_message="warningLeavePopup"
+        question="questionLeavePopup"
+        captionActionButton="leave"
       />
     );
   } else {

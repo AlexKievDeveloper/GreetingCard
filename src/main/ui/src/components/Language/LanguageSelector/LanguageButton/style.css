@@ -1,0 +1,9 @@
+.language-link img {
+  height: 38px;
+  width: auto;
+  margin: 10px;
+}
+.language-link.choosen {
+  background-color: rgb(128 62 155 / 35%);
+  border-radius: 10px;
+}

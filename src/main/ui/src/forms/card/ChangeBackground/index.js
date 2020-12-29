@@ -3,6 +3,7 @@ import ChangeBlocksBackground from "./ChangeBlocksBackground";
 import ChangeCardBackground from "./ChangeCardBackground";
 import "./style.css";
 import markImg from "../../../assets/images/mark.png";
+import { Text } from "../../../components/Language/Text";
 
 export default class ChangeBackground extends Component {
   render() {
@@ -29,7 +30,7 @@ export default class ChangeBackground extends Component {
                 className="dropdown-link"
                 onClick={this.props.onSave}
               >
-                Save
+                <Text tid="save"/>
               </button>
             </form>
           </div>

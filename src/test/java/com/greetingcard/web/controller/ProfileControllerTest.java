@@ -1,5 +1,6 @@
 package com.greetingcard.web.controller;
 
+import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.greetingcard.RootApplicationContext;
 import com.greetingcard.dao.jdbc.TestConfiguration;
 import com.greetingcard.entity.User;
@@ -18,6 +19,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -89,4 +91,15 @@ class ProfileControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
     }
+
+    @Test
+    @DisplayName("Request to change language")
+    @ExpectedDataSet("usersAfterChangeLanguage.xml")
+    void testChangeLanguage() throws Exception {
+        TestWebUtils.loginAsUserId(2);
+        mockMvc.perform(put("/api/v1/user/language/ENGLISH"))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
 }

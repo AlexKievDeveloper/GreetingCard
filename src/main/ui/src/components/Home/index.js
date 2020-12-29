@@ -2,6 +2,7 @@ import React from 'react'
 import './style.css';
 import HomeButtons from '../HomeButtons';
 import { userContext } from '../../context/userContext';
+import { Text } from '../Language/Text';
 
 export default function Home() {
 
@@ -14,7 +15,7 @@ export default function Home() {
 			<div className="app-description__row">
 				<div className="text-description__column">
 					<div className="app-name app-name_home">GreetTeam</div>
-					<div className="app-description">Send a greeting card from all friends</div>
+					<div className="app-description"><Text tid="appDescription"/></div>
 				</div>
 				<div className="app-example-picture"></div>
 			</div>
