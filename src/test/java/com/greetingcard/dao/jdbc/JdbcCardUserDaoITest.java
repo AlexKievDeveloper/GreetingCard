@@ -92,6 +92,22 @@ class JdbcCardUserDaoITest {
     }
 
     @Test
+    void getUserMembersByCardForWebSocketNotification() {
+        List<UserInfo> userInfoList = jdbcCardUserDao.getUserMembersByCardIdForWebSocketNotification(2);
+        for (UserInfo userInfo : userInfoList) {
+            System.out.println(userInfo);
+        }
+        assertEquals(3, userInfoList.size());
+        assertEquals(1, userInfoList.get(0).getId());
+        assertEquals(2, userInfoList.get(1).getId());
+        assertEquals(4, userInfoList.get(2).getId());
+
+        assertEquals(1, userInfoList.get(0).getCountCongratulations());
+        assertEquals(2, userInfoList.get(1).getCountCongratulations());
+        assertEquals(0, userInfoList.get(2).getCountCongratulations());
+    }
+
+    @Test
     @ExpectedDataSet("cardUser/cardUsersDeleted.xml")
     void deleteUserFromCard() {
         jdbcCardUserDao.deleteUserFromCard(1, 2);

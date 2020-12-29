@@ -29,6 +29,8 @@ public class JdbcCardUserDao implements CardUserDao {
     @Autowired
     private String getUsersByCardId;
     @Autowired
+    private String getUsersByCardIdForWebSocketNotification;
+    @Autowired
     private String deleteUser;
     @Autowired
     private String deleteListUsers;
@@ -51,6 +53,13 @@ public class JdbcCardUserDao implements CardUserDao {
         SqlParameterSource namedParameters = new MapSqlParameterSource("card_id", cardId);
         log.debug(getUsersByCardId);
         return namedParameterJdbcTemplate.query(getUsersByCardId, namedParameters, new UserInfoRowMapper());
+    }
+
+    @Override
+    public List<UserInfo> getUserMembersByCardIdForWebSocketNotification(long cardId) {
+        SqlParameterSource namedParameters = new MapSqlParameterSource("card_id", cardId);
+        log.debug(getUsersByCardIdForWebSocketNotification);
+        return namedParameterJdbcTemplate.query(getUsersByCardIdForWebSocketNotification, namedParameters, new UserInfoRowMapper());
     }
 
     @Override

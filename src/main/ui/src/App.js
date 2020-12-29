@@ -6,14 +6,16 @@ import { userService } from "./services/userService";
 import { userContext } from "./context/userContext";
 import SwitchRoute from "./components/SwithRoute";
 import { LanguageProvider } from "./components/Language/LanguageProvider";
+import SockJsClient from "react-stomp";
 
 class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      user: "",
-      userId: 0,
-    };
+    constructor(props) {
+        super(props);
+        this.state = {
+            user: "",
+            userId: 0,
+            clientConnected: false,
+        };
 
     this.logout = this.logout.bind(this);
     this.login = this.login.bind(this);
@@ -39,26 +41,66 @@ class App extends React.Component {
     this.setState({ user: "" });
   }
 
-  render() {
-    const userContextValue = {
-      user: this.state.user,
-      userId: this.state.userId,
-      loginUser: this.login,
-    };
+    onMessageReceive = (msg) => {
+        console.log("REACT RECEIVED MESSAGE ")
+        console.log('First:');
+        console.log(msg);
+        console.log('Second:');
+        console.log(msg.body);
+        console.log('Third:');
+        console.log(JSON.parse(msg.body).message)
+    }
 
-    return (
-      <div className="wrapper">
-        <LanguageProvider>
-          <userContext.Provider value={userContextValue}>
-            <Router>
-              <Header userName={this.state.user} logoutCall={this.logout} />
-              <SwitchRoute userName={this.state.user} />
-            </Router>
-          </userContext.Provider>
-        </LanguageProvider>
-      </div>
-    );
-  }
+
+    sendMessage = (selfMsg) => {
+        try {
+            this.clientRef.sendMessage("/app/request", JSON.stringify(selfMsg));
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    render() {
+        const userContextValue = {
+            user: this.state.user,
+            userId: this.state.userId,
+            loginUser: this.login,
+        };
+      const wsSourceUrl = 'http://localhost:9998/request';
+      return (
+          <div className="wrapper">
+            {this.state.user &&
+            <SockJsClient url={wsSourceUrl} topics={["/topic/" + this.state.userId, "/topic/greetings"]}
+                          onMessage={this.onMessageReceive} ref={(client) => {
+              this.clientRef = client
+            }}
+                          onConnect={() => {
+                            console.log("Connect start!");
+                            console.log("USER LOGIN: " + this.state.user);//DEMO
+                            console.log("USER ID: " + this.state.userId);//20
+                            this.sendMessage({"message": "Hello server! I am React. Lets connect?"});
+                            this.setState({clientConnected: true})
+                          }}
+
+                          onDisconnect={() => {
+                            console.log("Disconnect")
+                            this.setState({clientConnected: false})
+                          }}
+                          debug={false}/>}
+
+
+            <LanguageProvider>
+              <userContext.Provider value={userContextValue}>
+                <Router>
+                  <Header userName={this.state.user} logoutCall={this.logout} />
+                  <SwitchRoute userName={this.state.user} />
+                </Router>
+              </userContext.Provider>
+            </LanguageProvider>
+          </div>
+      );
+    }
 }
 
 export default App;
