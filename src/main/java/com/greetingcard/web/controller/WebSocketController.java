@@ -15,8 +15,8 @@ public class WebSocketController {
     public WebResponse webResponseUser(WebRequest webRequest) throws InterruptedException {
         log.info("I received message from react: " + webRequest.getMessage());
         Thread.sleep(1000);
-        WebResponse webResponse = new WebResponse("Hello React. I am server. I received your message: " +
-                webRequest.getMessage() + ". Of course, lets connect!");
+        WebResponse webResponse = new WebResponse("Server received message: " +
+                webRequest.getMessage() + ". connection established.");
         return webResponse;
     }
 }
