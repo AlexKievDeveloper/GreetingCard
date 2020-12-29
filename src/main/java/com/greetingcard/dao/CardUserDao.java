@@ -9,17 +9,17 @@ import java.util.Optional;
 public interface CardUserDao {
     void addUserMember(long cardId, long userId);
 
+    void saveHash(long cardId, String hash);
+
     Optional<Role> getUserRole(long cardId, long userId);
 
     List<UserInfo> getUserMembersByCardId(long cardId);
 
     List<UserInfo> getUserMembersByCardIdForWebSocketNotification(long cardId);
 
+    List<String> getCardHashesByCardId(long cardId);
+
     void deleteUserFromCard(long cardId, long userId);
 
     void deleteListUsers(long cardId, List<UserInfo> listUserIds);
-
-    List<String> getCardHashesByCardId(long cardId);
-
-    void saveHash(long cardId, String hash);
 }

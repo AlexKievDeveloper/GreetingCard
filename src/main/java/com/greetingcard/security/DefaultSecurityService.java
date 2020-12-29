@@ -178,13 +178,6 @@ public class DefaultSecurityService implements SecurityService {
     }
 
     @Override
-    public boolean verifyQuickLoginHash(long id, String hash) {
-
-
-        return false;
-    }
-
-    @Override
     public User loginWithFacebook(Map<String, String> facebookCredentials) {
         String name = facebookCredentials.get("name");
         String email = facebookCredentials.get("email");

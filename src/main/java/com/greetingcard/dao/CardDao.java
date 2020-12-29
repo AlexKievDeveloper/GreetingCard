@@ -30,5 +30,4 @@ public interface CardDao {
     void saveBackgroundOfCongratulation(long id, long user, String numberOfColor);
 
     void removeBackground(long id, long user);
-
 }

@@ -31,6 +31,4 @@ public interface SecurityService {
     User loginWithFacebook(Map<String, String> facebookCredentials);
 
     User loginWithGoogle(Map<String, String> googleCredentials);
-
-    boolean verifyQuickLoginHash(long id, String hash);
 }

@@ -97,7 +97,6 @@ public class QueriesContext {
         return "SELECT hash FROM cards_hashes WHERE card_id = :card_id";
     }
 
-
     @Bean
     public String getUsersByCardId() {
         return "SELECT u.user_id, u.firstName, u.lastName, u.login, u.email, u.pathToPhoto, count(cg.card_id) AS countCongratulations " +
