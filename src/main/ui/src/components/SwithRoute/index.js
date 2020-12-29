@@ -16,6 +16,7 @@ import ForgotPassword from '../../forms/user/ForgotPassword';
 import RecoverPassword from '../../forms/user/RecoverPassword';
 import CardPreview from '../../containers/CardPreview';
 import VerifiedEmail from '../../containers/VerifiedEmail';
+import InviteCollaborator from '../../forms/user/Login/InviteCollaborator';
 
 
 export default function SwitchRoute(props) {
@@ -38,6 +39,7 @@ export default function SwitchRoute(props) {
                 <Route path="/preview/:idCard" component={CardPreview}/>
                 <Route path="/card/:idCard/card_link/:hash" component={CardPreview}/>
                 <Route path="/user/verification/:hash" component={VerifiedEmail}/>
+                <Route path="/invite_link/:idCard/code/:hash" component={InviteCollaborator}/>
             </Switch>
         )
     else
@@ -59,6 +61,7 @@ export default function SwitchRoute(props) {
                 <Route path="/preview/:idCard" component={Login}/>
                 <Route path="/card/:idCard/card_link/:hash" component={CardPreview}/>
                 <Route path="/user/verification/:hash" component={VerifiedEmail}/>
+                <Route path="/invite_link/:idCard/code/:hash" component={InviteCollaborator}/>
             </Switch>
         )
 }
