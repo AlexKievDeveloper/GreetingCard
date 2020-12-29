@@ -39,7 +39,7 @@ public class AuthController {
         log.info("login for user {}", login);
         User user = securityService.login(login, password);
 
-        return getResponseEntityWithToken(login, user);
+        return getResponseEntityWithToken(user);
     }
 
     @PostMapping(value = "/facebook")
@@ -47,22 +47,22 @@ public class AuthController {
         log.info("login request");
         User user = securityService.loginWithFacebook(facebookCredentials);
 
-        return getResponseEntityWithToken(user.getLogin(), user);
+        return getResponseEntityWithToken(user);
     }
 
     @PostMapping(value = "/google")
     public ResponseEntity<?> loginWithGoogle(@RequestBody Map<String, String> googleCredentials) throws JsonProcessingException {
         User user = securityService.loginWithGoogle(googleCredentials);
 
-        return getResponseEntityWithToken(user.getLogin(), user);
+        return getResponseEntityWithToken(user);
     }
 
-    private ResponseEntity<?> getResponseEntityWithToken(String login, User user) throws JsonProcessingException {
-        String token = jwtProvider.generateToken(login);
+    private ResponseEntity<?> getResponseEntityWithToken(User user) throws JsonProcessingException {
+        String token = jwtProvider.generateToken(user.getLogin());
         log.info("Successfully authentication");
         return ResponseEntity.status(HttpStatus.OK)
                 .header("Authorization", "Bearer " + token)
                 .body(objectMapper
-                        .writeValueAsString(Map.of("login", user.getLogin(), "userId", user.getId())));
+                        .writeValueAsString(Map.of("login", user.getLogin(), "userId", user.getId(), "userLanguage", user.getLanguage().getName())));
     }
 }
