@@ -5,6 +5,7 @@ import com.greetingcard.entity.CardsType;
 import com.greetingcard.entity.Status;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
+import com.greetingcard.service.WebSocketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +26,7 @@ import java.util.Optional;
 @RequestMapping(value = "api/v1/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CardController {
     private final CardService cardService;
+    private final WebSocketService webSocketService;
     @Value("${webapp.url}")
     private String siteUrl;
 
@@ -64,15 +66,6 @@ public class CardController {
         }
     }
 
-    @GetMapping("card/{id}/generate_card_link/")
-    public ResponseEntity<Object> getGeneratedCardLink(@PathVariable long id) {
-        log.info("Get generated card link request");
-        String hash = cardService.generateCardLink(id);
-        String link = siteUrl + "invite_link/" + id + "/code/"+ hash;
-        //@GetMapping("card/{id}/invite_card_link/") должна вести на страницу логина внутри с айди карты
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("invite_link", link));
-    }
-
     @PostMapping(value = "card", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> createCard(@RequestBody Card card) {
         log.info("Creating card request");
@@ -91,6 +84,9 @@ public class CardController {
         log.info("Received PUT request for change status");
         cardService.changeCardStatusAndCreateCardLink(statusName, id);
         log.info("Successfully changed card status for card id: {} to {}", id, statusName);
+
+        User userLoggedIn = WebUtils.getCurrentUser();
+        webSocketService.notifyAboutCardStatusChanging(id, statusName, userLoggedIn);
     }
 
     @DeleteMapping("card/{id}")

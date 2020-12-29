@@ -1,0 +1,20 @@
+<dataset>
+    <CARDS_HASHES
+            card_id="1"
+            hash="hash1"/>
+    <CARDS_HASHES
+            card_id="1"
+            hash="hash2"/>
+    <CARDS_HASHES
+            card_id="2"
+            hash="hash3"/>
+    <CARDS_HASHES
+            card_id="2"
+            hash="hash4"/>
+    <CARDS_HASHES
+            card_id="3"
+            hash="hash5"/>
+    <CARDS_HASHES
+            card_id="3"
+            hash="hash6"/>
+</dataset>

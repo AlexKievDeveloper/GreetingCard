@@ -143,4 +143,5 @@ public class JdbcCardDao implements CardDao {
         map.put("user_id", user);
         namedParameterJdbcTemplate.update(deleteBackground, map);
     }
+
 }

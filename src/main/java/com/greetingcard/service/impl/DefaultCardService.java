@@ -98,11 +98,6 @@ public class DefaultCardService implements CardService {
     }
 
     @Override
-    public String generateCardLink(long id) {
-        return UUID.randomUUID().toString().replaceAll("/", "");
-    }
-
-    @Override
     public Optional<Status> getCardStatusById(long cardId) {
         return cardDao.getCardStatusById(cardId);
     }

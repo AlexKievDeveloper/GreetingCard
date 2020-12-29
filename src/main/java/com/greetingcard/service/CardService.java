@@ -32,5 +32,4 @@ public interface CardService {
 
     void removeBackground(long id, long user);
 
-    String generateCardLink(long id);
 }

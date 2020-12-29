@@ -51,7 +51,7 @@ public class AuthControllerSystemTest {
 
     @BeforeEach
     void setMockMvc() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(context).alwaysDo(print()).build();
     }
 
 
@@ -97,10 +97,63 @@ public class AuthControllerSystemTest {
                 .contentType(APPLICATION_JSON_VALUE)
                 .accept(APPLICATION_JSON_VALUE)
                 .content(json))
-                .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").value("Access denied. Please check your login and password"));
     }
 
+    @Test
+    @DisplayName("Login user with Facebook")
+    void testLoginWithFacebook() throws Exception {
+        //prepare
+        Map<String, String> facebookCredential = new HashMap<>();
+        facebookCredential.put("name", "Roma Roma");
+        facebookCredential.put("email", "userFacebook");
+        facebookCredential.put("userID", "userFacebook");
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(facebookCredential);
+
+        //when
+        MockHttpServletResponse response = mockMvc.perform(post("/api/v1/auth/facebook")
+                .contentType(APPLICATION_JSON_VALUE)
+                .accept(APPLICATION_JSON_VALUE)
+                .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.login").value("userFacebook"))
+                .andExpect(jsonPath("$.userId").value("1"))
+                .andReturn().getResponse();
+
+        String headerValue = response.getHeader("Authorization");
+        assertNotNull(headerValue);
+        assertTrue(headerValue.startsWith("Bearer "));
+    }
+
+    @Test
+    @DisplayName("Login user with Google")
+    void testLoginWithGoogle() throws Exception {
+        //prepare
+        Map<String, String> googleCredential = new HashMap<>();
+        googleCredential.put("googleId", "Roma Roma");
+        googleCredential.put("imageUrl", "user");
+        googleCredential.put("email", "userGoogle");
+        googleCredential.put("name", "user");
+        googleCredential.put("givenName", "user");
+        googleCredential.put("familyName", "user");
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(googleCredential);
+
+        //when
+        MockHttpServletResponse response = mockMvc.perform(post("/api/v1/auth/google")
+                .contentType(APPLICATION_JSON_VALUE)
+                .accept(APPLICATION_JSON_VALUE)
+                .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.login").value("userGoogle"))
+                .andExpect(jsonPath("$.userId").value("1"))
+                .andReturn().getResponse();
+
+        String headerValue = response.getHeader("Authorization");
+        assertNotNull(headerValue);
+        assertTrue(headerValue.startsWith("Bearer "));
+    }
 
 }

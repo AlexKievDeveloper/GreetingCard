@@ -4,6 +4,8 @@ import com.greetingcard.entity.AccessHashType;
 import com.greetingcard.entity.User;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Map;
+
 public interface SecurityService {
 
     User login(String login, String password);
@@ -25,6 +27,10 @@ public interface SecurityService {
     void verifyForgotPasswordAccessHash(String hash, String password);
 
     String generateAccessHash(String email, AccessHashType hashType);
+
+    User loginWithFacebook(Map<String, String> facebookCredentials);
+
+    User loginWithGoogle(Map<String, String> googleCredentials);
 
     boolean verifyQuickLoginHash(long id, String hash);
 }

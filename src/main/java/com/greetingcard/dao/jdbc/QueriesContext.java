@@ -1,6 +1,5 @@
 package com.greetingcard.dao.jdbc;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -86,9 +85,18 @@ public class QueriesContext {
     }
 
     @Bean
+    public String addToCardsHashes() {return "INSERT INTO cards_hashes (card_id, hash) VALUES (:card_id, :hash)"; }
+
+    @Bean
     public String getUserRole() {
         return "SELECT role_id FROM users_cards WHERE user_id = :user_id AND card_id = :card_id";
     }
+
+    @Bean
+    public String getCardsHashes() {
+        return "SELECT hash FROM cards_hashes WHERE card_id = :card_id";
+    }
+
 
     @Bean
     public String getUsersByCardId() {
@@ -96,6 +104,14 @@ public class QueriesContext {
                 "FROM users_cards uc JOIN users u ON (u.user_id = uc.user_id) LEFT JOIN congratulations cg " +
                 "ON (uc.card_id = cg.card_id AND uc.user_id = cg.user_id) WHERE uc.card_id = :card_id AND uc.role_id !=1 " +
                 "GROUP BY u.user_id, u.firstName, u.lastName, u.login, u.email, u.pathToPhoto ORDER BY u.login";
+    }
+
+    @Bean
+    public String getUsersByCardIdForWebSocketNotification() {
+        return "SELECT u.user_id, u.firstName, u.lastName, u.login, u.email, u.pathToPhoto, count(cg.card_id) AS countCongratulations " +
+                "FROM users_cards uc JOIN users u ON (u.user_id = uc.user_id) LEFT JOIN congratulations cg " +
+                "ON (uc.card_id = cg.card_id AND uc.user_id = cg.user_id) WHERE uc.card_id = :card_id " +
+                "GROUP BY u.user_id, u.firstName, u.lastName, u.login, u.email, u.pathToPhoto ORDER BY u.user_id";
     }
 
     @Bean
@@ -156,7 +172,7 @@ public class QueriesContext {
     @Bean
     public String findImageAndAudioLinksByCardId() {
         return "SELECT link FROM links l JOIN congratulations cg ON (cg.congratulation_id = l.congratulation_id) " +
-                "WHERE card_id=? and (type_id = 2 OR type_id = 3) and user_id =?";
+                "WHERE card_id=? and (type_id = 2 OR type_id = 3)";
     }
 
     @Bean
@@ -177,13 +193,13 @@ public class QueriesContext {
 
     @Bean
     public String deleteCongratulationById() {
-        return "DELETE FROM congratulations WHERE congratulation_id= :congratulation_id AND user_id= :user_id";
+        return "DELETE FROM congratulations WHERE congratulation_id= :congratulation_id";
     }
 
     @Bean
     public String findImageAndAudioLinksByCongratulationId() {
         return "SELECT link FROM links l LEFT JOIN congratulations cg ON (cg.congratulation_id = l.congratulation_id) " +
-                "WHERE cg.congratulation_id=? and (type_id = 2 OR type_id = 3) and user_id =?";
+                "WHERE cg.congratulation_id=? and (type_id = 2 OR type_id = 3)";
     }
 
     @Bean
@@ -264,5 +280,17 @@ public class QueriesContext {
     @Bean
     public String updateUserVerifyEmail() {
         return "UPDATE users SET email_verified='1' WHERE user_id=?;";
+    }
+
+    @Bean
+    public String saveUserFromFacebook() {
+        return "INSERT INTO users (firstName, lastName, login, email, facebook, password, salt, language_id) " +
+                "VALUES (:firstName, :lastName, :login, :email, :facebookId, :password, :salt, :language)";
+    }
+
+    @Bean
+    public String saveUserFromGoogle() {
+        return "INSERT INTO users (firstName, lastName, login, email, google, password, salt, language_id, pathToPhoto)" +
+                " VALUES (:firstName, :lastName, :login, :email, :google, :password, :salt, :language, :pathToPhoto)";
     }
 }
