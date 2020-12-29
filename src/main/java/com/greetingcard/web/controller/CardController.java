@@ -30,7 +30,7 @@ public class CardController {
 
     @GetMapping("cards")
     public ResponseEntity<Object> getCards(@RequestParam CardsType type) {
-        log.info("getCards");
+        log.info("Get cards request");
         long userId = WebUtils.getCurrentUserId();
         List<Card> cardList = cardService.getCards(userId, type);
         return ResponseEntity.status(HttpStatus.OK).body(cardList);
@@ -64,8 +64,17 @@ public class CardController {
         }
     }
 
+    @GetMapping("card/{id}/generate_card_link/")
+    public ResponseEntity<Object> getGeneratedCardLink(@PathVariable long id) {
+        log.info("Get generated card link request");
+        String hash = cardService.generateCardLink(id);
+        String link = siteUrl + "invite_link/" + id + "/code/"+ hash;
+        //@GetMapping("card/{id}/invite_card_link/") должна вести на страницу логина внутри с айди карты
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("invite_link", link));
+    }
+
     @PostMapping(value = "card", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> createCard(@RequestBody Card card)  {
+    public ResponseEntity<Object> createCard(@RequestBody Card card) {
         log.info("Creating card request");
         int length = card.getName().length();
         if (length == 0 || length > 250) {
@@ -107,9 +116,9 @@ public class CardController {
         log.info("Add background to card");
         long userId = WebUtils.getCurrentUserId();
 
-        if (backgroundCard.isBlank()){
+        if (backgroundCard.isBlank()) {
             backgroundCardFile.ifPresent(file -> cardService.saveBackground(id, userId, file));
-        }else {
+        } else {
             cardService.removeBackground(id, userId);
         }
         cardService.saveBackgroundOfCongratulation(id, userId, backgroundColorCongratulations);

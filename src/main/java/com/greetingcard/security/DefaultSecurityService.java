@@ -176,6 +176,13 @@ public class DefaultSecurityService implements SecurityService {
         return newAccessHash;
     }
 
+    @Override
+    public boolean verifyQuickLoginHash(long id, String hash) {
+
+
+        return false;
+    }
+
     String getHashPassword(String saltAndPassword) {
         try {
             MessageDigest digest = MessageDigest.getInstance(algorithm);

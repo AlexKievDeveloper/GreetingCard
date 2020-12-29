@@ -25,4 +25,6 @@ public interface SecurityService {
     void verifyForgotPasswordAccessHash(String hash, String password);
 
     String generateAccessHash(String email, AccessHashType hashType);
+
+    boolean verifyQuickLoginHash(long id, String hash);
 }

@@ -1,7 +1,5 @@
 package com.greetingcard.web.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greetingcard.entity.User;
 import com.greetingcard.security.SecurityService;
 import com.greetingcard.web.security.jwt.JwtProvider;
@@ -10,28 +8,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
 @Slf4j
+@RequestMapping(value = "/api/v1/")
 public class AuthController {
     @Autowired
     private SecurityService securityService;
-
     @Autowired
     private JwtProvider jwtProvider;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
-
-    @PostMapping(value = "/api/v1/auth", produces = MediaType.APPLICATION_JSON_VALUE,
+    @PostMapping(value = "auth", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> login(@RequestBody Map<String, String> userCredentials) throws JsonProcessingException {
+    public ResponseEntity<?> login(@RequestBody Map<String, String> userCredentials) {
         log.info("login request");
         String login = userCredentials.get("login");
         String password = userCredentials.get("password");
@@ -42,7 +34,21 @@ public class AuthController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .header("Authorization", "Bearer " + token)
-                .body(objectMapper
-                        .writeValueAsString(Map.of("login", login, "userId", user.getId(), "userLanguage", user.getLanguage().getName())));
+                .body(Map.of("login", login, "userId", user.getId(), "userLanguage", user.getLanguage().getName()));
+    }
+
+    @GetMapping(value = "invite_link/{id}/code/{hash}", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> quickRegistrationByInvitingLink(@PathVariable long id, @PathVariable String hash) {
+        log.info("request for quick login");
+        boolean isVerified = securityService.verifyQuickLoginHash(id, hash);
+
+        if (isVerified) {
+            log.info("Successfully verified hash");
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("cardId", id));
+        } else {
+            log.info("Not valid verification hash");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 }
