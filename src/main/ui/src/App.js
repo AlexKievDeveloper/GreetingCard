@@ -7,6 +7,7 @@ import { userContext } from "./context/userContext";
 import SwitchRoute from "./components/SwithRoute";
 import { LanguageProvider } from "./components/Language/LanguageProvider";
 import SockJsClient from "react-stomp";
+import config from "./services/config";
 
 class App extends React.Component {
     constructor(props) {
@@ -34,6 +35,7 @@ class App extends React.Component {
     this.setState({ user: user.login, userId: userId });
     userService.setUserId(userId);
     userService.setLanguage(user.userLanguage);
+    userService.setUser(user.login)
   }
 
   logout() {
@@ -67,7 +69,7 @@ class App extends React.Component {
             userId: this.state.userId,
             loginUser: this.login,
         };
-      const wsSourceUrl = 'http://localhost:9998/request';
+      const wsSourceUrl = config.wsSourceUrl;
       return (
           <div className="wrapper">
             {this.state.user &&

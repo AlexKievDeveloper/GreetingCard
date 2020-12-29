@@ -8,6 +8,7 @@ export const userService = {
     getUser,
     setUserId,
     setLanguage,
+    setUser,
     registerUser,
     getProfile,
     updateProfile,
@@ -26,7 +27,6 @@ function login(login, password) {
             if (!response.ok) {
                 console.log('response not ok')
             } else {
-                localStorage.setItem('user', login);
                 saveToken(response.headers);
             }
             return response.json();
@@ -48,7 +48,6 @@ function loginBy(app, data) {
         if (!response.ok) {
             console.log('response not ok')
         } else {
-            localStorage.setItem('user', data.email);
             saveToken(response.headers);
         }
         return response.json();
@@ -62,6 +61,10 @@ function saveToken(headers) {
         let token = headers.get(headerSecurityName); 
         localStorage.setItem('userToken', token);
     }
+}
+
+function setUser(userName) {
+    localStorage.setItem('user', userName);
 }
 
 function setUserId(id) {
