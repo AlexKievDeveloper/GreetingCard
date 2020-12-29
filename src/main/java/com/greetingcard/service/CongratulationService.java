@@ -21,7 +21,7 @@ public interface CongratulationService {
 
     void updateCongratulationById(MultipartFile[] files_image, MultipartFile[] files_audio, Map<String, String> parametersMap, long congratulationId, long userId);
 
-    void deleteById(long congratulationId, long userId);
+    void deleteById(long congratulationId);
 
     void deleteLinksById(List<Link> linkIdToDelete, long congratulationId);
 

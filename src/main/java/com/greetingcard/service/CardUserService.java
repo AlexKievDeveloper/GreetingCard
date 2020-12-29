@@ -10,6 +10,8 @@ public interface CardUserService {
 
     List<UserInfo> getUsersByCardId(long cardId, User userLoggedIn);
 
+    List<UserInfo> getUsersByCardIdForWebSocketNotification(long cardId, User userLoggedIn);
+
     void deleteUsers(long cardId, List<UserInfo> listUserIds, User userLoggedIn);
 
     void deleteUserFromCard(long cardId, long userId);

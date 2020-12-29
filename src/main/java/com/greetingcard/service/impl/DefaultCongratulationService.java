@@ -58,8 +58,8 @@ public class DefaultCongratulationService implements CongratulationService {
     }
 
     @Override
-    public void deleteById(long congratulationId, long userId) {
-        congratulationDao.deleteById(congratulationId, userId);
+    public void deleteById(long congratulationId) {
+        congratulationDao.deleteById(congratulationId);
     }
 
     @Override

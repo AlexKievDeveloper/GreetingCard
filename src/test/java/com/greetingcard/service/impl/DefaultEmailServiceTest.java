@@ -1,6 +1,5 @@
 package com.greetingcard.service.impl;
 
-
 import com.greetingcard.RootApplicationContext;
 import com.greetingcard.dao.jdbc.TestConfiguration;
 import org.junit.jupiter.api.Test;
@@ -10,7 +9,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
-
 
 import static org.mockito.Mockito.verify;
 
