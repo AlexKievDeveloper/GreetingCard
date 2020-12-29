@@ -1,85 +1,128 @@
 package com.greetingcard.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.github.database.rider.core.api.configuration.DBUnit;
-import com.github.database.rider.core.api.configuration.Orthography;
-import com.github.database.rider.core.api.dataset.DataSet;
-import com.github.database.rider.spring.api.DBRider;
-import com.greetingcard.RootApplicationContext;
-import com.greetingcard.dao.jdbc.TestConfiguration;
-import com.greetingcard.entity.User;
-import com.greetingcard.service.CongratulationService;
-import com.greetingcard.service.WebSocketService;
+import com.greetingcard.entity.*;
+import com.greetingcard.security.SecurityService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-import java.net.http.WebSocket;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
-@DBRider
-@DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE)
-@DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardsUsers.xml",
-        "congratulations.xml", "links.xml"},
-        executeStatementsBefore = "SELECT setval('congratulations_congratulation_id_seq', 6);", cleanAfter = true)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension.class)
-@SpringJUnitWebConfig(value = {TestConfiguration.class, RootApplicationContext.class})
-@PropertySource("classpath:application.properties")
 class DefaultWebSocketServiceTest {
-
-    @Autowired
-    private WebSocketService webSocketService;
+    @Mock
+    private DefaultCardService cardService;
+    @Mock
+    private DefaultCongratulationService congratulationService;
+    @Mock
+    private DefaultCardUserService cardUserService;
+    @Mock
+    private SecurityService securityService;
+    @Mock
+    private SimpMessagingTemplate template;
+    @InjectMocks
+    private DefaultWebSocketService webSocketService;
 
     @Test
-    @DisplayName("")
+    @DisplayName("Notify about status changing")
     void notifyAboutCardStatusChanging() {
-    }
-
-    @Test
-    @DisplayName("")
-    void notifyAboutGettingCards() {
-    }
-
-    @Test
-    @DisplayName("")
-    void notifyAboutAddingToCard() {
-    }
-
-    @Test
-    @DisplayName("")
-    void notifyAdminAboutLeavingCard() {
-    }
-
-    @Test
-    @DisplayName("")
-    void notifyAdminAboutCreatingCongratulation() {
-    }
-
-    @Test
-    @DisplayName("")
-    void notifyAllCardMembersAboutDeletingCongratulation() throws JsonProcessingException {
         //prepare
         User user = User.builder().id(1).login("user").build();
-        //when
-        webSocketService.notifyAllCardMembersAboutDeletingCongratulation(1, user);
-        //then
+        List<UserInfo> userInfoList = List.of(UserInfo.builder().id(1).login("user").build());
+        when(cardUserService.getUsersByCardId(1, user)).thenReturn(userInfoList);
+        doNothing().when(template).convertAndSend(any(String.class), any(WebResponse.class));
 
+        //when
+        webSocketService.notifyAboutCardStatusChanging(1, "ISOVER", user);
+
+        //then
+        verify(cardUserService).getUsersByCardId(1, user);
+        verify(template).convertAndSend(any(String.class), any(WebResponse.class));
+    }
+
+
+    @Test
+    @DisplayName("Notify about adding to card")
+    void notifyAboutAddingToCard() {
+        //prepare
+        User user = User.builder().id(1).login("user").build();
+        when(securityService.findByLogin("user")).thenReturn(user);
+        doNothing().when(template).convertAndSend(any(String.class), any(WebResponse.class));
+
+        //when
+        webSocketService.notifyAboutAddingToCard("test", "user");
+
+        //then
+        verify(securityService).findByLogin("user");
+        verify(template).convertAndSend(any(String.class), any(WebResponse.class));
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Notify Admin")
+    void notifyAdmin() {
+        //prepare
+        User user = User.builder().id(1).login("user").build();
+        Card card = Card.builder().id(1).build();
+        card.setUser(user);
+        when(cardService.getCardAndCongratulationByCardId(1)).thenReturn(card);
+        doNothing().when(template).convertAndSend(any(String.class), any(WebResponse.class));
+
+        //when
+        webSocketService.notifyAdmin("test", 1);
+
+        //then
+        verify(cardService).getCardAndCongratulationByCardId(1);
+        verify(template).convertAndSend(any(String.class), any(WebResponse.class));
+    }
+
+    @Test
+    @DisplayName("Notify all card members about deleting congratulation")
+    void notifyAllCardMembersAboutDeletingCongratulation() {
+        //prepare
+        User user = User.builder().id(1).login("user").build();
+        Congratulation congratulation = Congratulation.builder().cardId(1).build();
+        List<UserInfo> userInfoList = List.of(UserInfo.builder().id(1).login("user").build());
+        when(congratulationService.getCongratulationById(1)).thenReturn(congratulation);
+        when(cardUserService.getUsersByCardIdForWebSocketNotification(1, user)).thenReturn(userInfoList);
+        doNothing().when(template).convertAndSend(any(String.class), any(WebResponse.class));
+
+        //when
+        webSocketService.notifyAllCardMembersAboutDeletingCongratulation(1, user);
+
+        //then
+        verify(congratulationService).getCongratulationById(1);
+        verify(cardUserService).getUsersByCardIdForWebSocketNotification(1, user);
+        verify(template).convertAndSend(any(String.class), any(WebResponse.class));
+    }
+
+    @Test
+    @DisplayName("Notify all deleted card members")
     void notifyAllDeletedCardMembers() {
+        //prepare
+        List<UserInfo> userInfoList = List.of(UserInfo.builder().id(1).login("user").build());
+        doNothing().when(template).convertAndSend(any(String.class), any(WebResponse.class));
+
+        //when
+        webSocketService.notifyAllDeletedCardMembers(userInfoList, 1);
+
+        //then
+        verify(template).convertAndSend(any(String.class), any(WebResponse.class));
     }
 
     @Test
     @DisplayName("")
     void sendMessage() {
+        //when
+        webSocketService.sendMessage("test", 1);
+
+        //then
+        verify(template).convertAndSend("/topic/1", new WebResponse("test"));
     }
 }

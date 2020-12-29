@@ -71,7 +71,7 @@ public class CongratulationController {
 
         congratulationService.save(congratulation);
 
-        webSocketService.notifyAdminAboutCreatingCongratulation(user.getLogin() +
+        webSocketService.notifyAdmin(user.getLogin() +
                 " create congratulation in your card with id: " + cardId, cardId);
         log.info("Successfully created congratulation for user: {}", user.getLogin());
         return ResponseEntity.status(HttpStatus.CREATED).build();

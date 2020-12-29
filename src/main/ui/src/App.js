@@ -54,9 +54,6 @@ class App extends React.Component {
         console.log(msg.body);
         console.log('Third:');
         console.log(JSON.parse(msg.body).message)
-        /* console.log('Fourth:');
-        * console.log('Message from server: ' + JSON.parse(msg.body).message);
-         console.log(JSON.parse(msg.body).message);*/
     }
 
 
@@ -98,8 +95,6 @@ class App extends React.Component {
                               }}
                               debug={false}/>}
 
-
-                {/*<input onClick={this.sendMessage("Privet I am React", {"message":"Hello server! I am React"})} type="button" value="Send message"/>*/}
 
                 <userContext.Provider value={userContextValue}>
                     <Router>
