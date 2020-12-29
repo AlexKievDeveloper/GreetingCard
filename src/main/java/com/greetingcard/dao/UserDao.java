@@ -24,4 +24,8 @@ public interface UserDao {
     void verifyEmailAccessHash(String hash);
 
     void verifyForgotPasswordAccessHash(String hash, User user);
+
+    long saveUserFromFacebook(User user);
+
+    long saveUserFromGoogle(User user);
 }

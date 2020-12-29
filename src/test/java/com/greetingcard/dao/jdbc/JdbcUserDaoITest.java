@@ -211,4 +211,40 @@ class JdbcUserDaoITest {
         user.setLanguage(Language.ENGLISH);
         userDao.updateLanguage(user);
     }
+
+
+    @Test
+    @DisplayName("Save user from facebook")
+    void saveUserFromFacebook() {
+        //prepare
+        User user = User.builder().facebook("facebookId").firstName("Roma").lastName("Amor").login("emailRoma")
+                .email("emailRoma").salt("").password("password").language(Language.ENGLISH).build();
+        //when
+        userDao.saveUserFromFacebook(user);
+        //then
+        User actualUser = userDao.findByEmail("emailRoma");
+        assertEquals(user.getFacebook(), actualUser.getFacebook());
+        assertEquals(user.getFirstName(), actualUser.getFirstName());
+        assertEquals(user.getLastName(), actualUser.getLastName());
+        assertEquals(user.getEmail(), actualUser.getEmail());
+        assertEquals(user.getSalt(), actualUser.getSalt());
+    }
+
+    @Test
+    @DisplayName("Save user from Google")
+    void saveUserFromGoogle() {
+        //prepare
+        User user = User.builder().google("googleId").firstName("Roma").lastName("Amor").login("emailRoma")
+                .email("emailRoma").salt("").password("password").language(Language.ENGLISH).pathToPhoto("http").build();
+        //when
+        userDao.saveUserFromGoogle(user);
+        //then
+        User actualUser = userDao.findByEmail("emailRoma");
+        assertEquals(user.getGoogle(), actualUser.getGoogle());
+        assertEquals(user.getFirstName(), actualUser.getFirstName());
+        assertEquals(user.getLastName(), actualUser.getLastName());
+        assertEquals(user.getEmail(), actualUser.getEmail());
+        assertEquals(user.getSalt(), actualUser.getSalt());
+        assertEquals(user.getPathToPhoto(), actualUser.getPathToPhoto());
+    }
 }

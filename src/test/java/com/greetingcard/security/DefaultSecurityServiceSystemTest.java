@@ -23,6 +23,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.greetingcard.entity.AccessHashType.FORGOT_PASSWORD;
 import static com.greetingcard.entity.AccessHashType.VERIFY_EMAIL;
 import static org.junit.jupiter.api.Assertions.*;
@@ -200,5 +203,46 @@ class DefaultSecurityServiceSystemTest {
         String actualPassword = securityService.getHashPassword(salt.concat(testPassword));
         //then
         assertEquals(expectedPassword, actualPassword);
+    }
+
+    @Test
+    @DisplayName("Login user from facebook")
+    void loginWithFacebook() {
+        //prepare
+        Map<String, String> facebookCredential = new HashMap<>();
+        facebookCredential.put("name", "Roma Roma");
+        facebookCredential.put("email", "@user");
+        facebookCredential.put("userID", "userFacebook");
+        //when
+        User actualUser = securityService.loginWithFacebook(facebookCredential);
+        //then
+        assertNull(actualUser.getFacebook());
+        assertNull(actualUser.getGoogle());
+        assertEquals("user", actualUser.getFirstName());
+        assertEquals("user", actualUser.getLastName());
+        assertEquals("@user", actualUser.getEmail());
+        assertEquals("salt", actualUser.getSalt());
+    }
+
+    @Test
+    @DisplayName("Login user from google")
+    void loginWithGoogle() {
+        //prepare
+        Map<String, String> googleCredential = new HashMap<>();
+        googleCredential.put("googleId", "Roma Roma");
+        googleCredential.put("imageUrl", "@user");
+        googleCredential.put("email", "@user");
+        googleCredential.put("name", "user");
+        googleCredential.put("givenName", "user");
+        googleCredential.put("familyName", "user");
+        //when
+        User actualUser = securityService.loginWithGoogle(googleCredential);
+        //then
+        assertNull(actualUser.getFacebook());
+        assertNull(actualUser.getGoogle());
+        assertEquals("user", actualUser.getFirstName());
+        assertEquals("user", actualUser.getLastName());
+        assertEquals("@user", actualUser.getEmail());
+        assertEquals("salt", actualUser.getSalt());
     }
 }
