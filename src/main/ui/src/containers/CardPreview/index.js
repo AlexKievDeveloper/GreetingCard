@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import BlockByUser from "../../components/Blocks/BlockByUser";
+import { Text } from "../../components/Language/Text";
 import { userContext } from "../../context/userContext";
 import { cardService } from "../../services/cardService";
 import CardPreviewCommandRow from "./CardPreviewCommandRow";
@@ -109,7 +110,7 @@ export default class CardPreview extends Component {
             className="pointer-to-navigation with-background"
             href="#card__navigation"
           >
-            To Navigation
+            <Text tid="toNavigationLabel"/>
           </a>
         </main>
       </div>

@@ -1,11 +1,12 @@
 import React from "react";
+import { Text } from "../../../../components/Language/Text";
 import ColorButton from "../../../../components/UI/ColorButton";
 import "./style.css";
 
 export default function ChangeBlocksBackground(props) {
   return (
     <div className="block-change__column">
-      <p>Blocks</p>
+      <p><Text tid="blocks"/></p>
       <div>
         <div className="choose__row">
           <ColorButton

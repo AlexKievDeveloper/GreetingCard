@@ -74,6 +74,7 @@ public class AuthControllerSystemTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.login").value("user"))
                 .andExpect(jsonPath("$.userId").value("2"))
+                .andExpect(jsonPath("$.userLanguage").value("UA"))
                 .andReturn().getResponse();
 
         String headerValue = response.getHeader("Authorization");

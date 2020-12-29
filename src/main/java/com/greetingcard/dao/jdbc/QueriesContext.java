@@ -210,6 +210,11 @@ public class QueriesContext {
     }
 
     @Bean
+    public String updateUserLanguage() {
+        return "UPDATE users SET language_id=? WHERE user_id=?;";
+    }
+
+    @Bean
     public String findUserById() {
         return "SELECT user_id, firstName, lastName, login, email, language_id, facebook, google, pathToPhoto FROM users WHERE user_id = ?";
     }

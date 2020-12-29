@@ -73,22 +73,22 @@ class Profile extends Component {
               <div className="profile-text-change__column">
                 <InputTextWithLabel
                   columnName="firstName"
-                  labelText="First Name:"
+                  labelText="firstName"
                   valueOfColumn={this.state.firstName}
                 />
                 <InputTextWithLabel
                   columnName="lastName"
-                  labelText="Last Name:"
+                  labelText="lastName"
                   valueOfColumn={this.state.lastName}
                 />
                 <InputTextWithLabel
                   columnName="login"
-                  labelText="Login:"
+                  labelText="loginLabel"
                   valueOfColumn={this.state.login}
                 />
                 <CommandButton
                   className="command-button--yellow border_black05rad3"
-                  caption="Save changes"
+                  caption="saveChanges"
                   action={this.save}
                 />
               </div>

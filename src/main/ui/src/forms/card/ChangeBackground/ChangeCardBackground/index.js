@@ -3,6 +3,7 @@ import "./style.css";
 
 import resetImg from "../../../../assets/images/reset.png";
 import ChooseImage from "../../../../components/UI/ChooseImage";
+import { Text } from "../../../../components/Language/Text";
 
 export default function ChangeCardBackground(props) {
   const handleReset = (event) => {
@@ -12,7 +13,9 @@ export default function ChangeCardBackground(props) {
 
   return (
     <div className="card-change__column">
-      <p>Card</p>
+      <p>
+        <Text tid="card" />
+      </p>
       <div className="card-change">
         <ChooseImage
           place="background"
@@ -30,7 +33,7 @@ export default function ChangeCardBackground(props) {
             alt=""
             style={{ height: "14px", marginRight: "8px" }}
           />
-          Reset
+          <Text tid="reset" />
         </button>
       </div>
     </div>

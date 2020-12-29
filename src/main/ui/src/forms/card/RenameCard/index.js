@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { languageContext } from "../../../context/languageContext";
 import "./style.css";
 
 export default function RenameCard(props) {
   const [name, setName] = useState(props.cardName ? props.cardName : "");
+  const { dictionary } = useContext(languageContext);
 
   React.useEffect(() => {
     setName(props.cardName);
@@ -31,7 +33,7 @@ export default function RenameCard(props) {
         type="submit"
         name="Save name"
         className="save-name"
-        value="Save name"
+        value={dictionary.saveName}
         onClick={doAction}
       />
     </form>

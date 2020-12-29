@@ -8,9 +8,9 @@ export default function DeleteCardPopup(props) {
     return (<Popup
       onCloseFunction={props.onCloseFunction}
       onActionFunction={props.onDeleteFunction}
-      title="Delete Card"
-      question="Are you sure you want to delete this card?"
-      captionActionButton="Delete"
+      title="deleteCardButton"
+      question="questionDeletePopup"
+      captionActionButton="delete"
     />);
   } else {
     return null;

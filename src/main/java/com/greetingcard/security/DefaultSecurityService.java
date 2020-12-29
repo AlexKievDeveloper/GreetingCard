@@ -119,6 +119,11 @@ public class DefaultSecurityService implements SecurityService {
     }
 
     @Override
+    public void updateLanguage(User user) {
+        userDao.updateLanguage(user);
+    }
+
+    @Override
     public User findByLogin(String login) {
         try {
             return userDao.findByLogin(login);

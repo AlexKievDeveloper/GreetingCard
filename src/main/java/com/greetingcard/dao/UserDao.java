@@ -11,6 +11,8 @@ public interface UserDao {
 
     void updatePassword(User user);
 
+    void updateLanguage(User user);
+
     User findByLogin(String login);
 
     User findByEmail(String email);

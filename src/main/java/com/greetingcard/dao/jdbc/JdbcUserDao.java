@@ -39,6 +39,8 @@ public class JdbcUserDao implements UserDao {
     @Autowired
     private String updateUserPassword;
     @Autowired
+    private String updateUserLanguage;
+    @Autowired
     private String findUserByLogin;
     @Autowired
     private String findUserByEmail;
@@ -78,6 +80,12 @@ public class JdbcUserDao implements UserDao {
     public void updatePassword(@NonNull User user) {
         log.info("Edit user's (user_id:{}) password", user.getId());
         jdbcTemplate.update(updateUserPassword, user.getPassword(), user.getId());
+    }
+
+    @Override
+    public void updateLanguage(User user) {
+        log.info("Update user's (user_id:{}) language to {}", user.getId(), user.getLanguage().getName());
+        jdbcTemplate.update(updateUserLanguage, user.getLanguage().getLanguageNumber(), user.getId());
     }
 
     @Override
