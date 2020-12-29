@@ -15,7 +15,8 @@ export const userService = {
     updateLanguage,
     updatePassword,
     forgotPassword,
-    recoverPassword
+    recoverPassword,
+    verifyEmail
 }
 
 function login(login, password) {
@@ -131,4 +132,9 @@ function forgotPassword(email) {
 
 function recoverPassword(new_password, hash) {
    return serverService.sendRequest(`/user/recover_password/${hash}`, 'PUT', {password:new_password}); 
+}
+
+function verifyEmail(hash) {
+    console.log(hash);
+    return serverService.sendRequest(`/user/verification/${hash}`, 'POST');
 }

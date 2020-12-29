@@ -1,8 +1,8 @@
 import React from "react";
 import "./style.css";
 import { Link } from "react-router-dom";
-import config from "../../services/config";
-import { Text } from "../Language/Text";
+import config from "../../../services/config";
+import { Text } from "../../Language/Text";
 
 export default function HomeButtons(props) {
   const handleCopy = async () => {
