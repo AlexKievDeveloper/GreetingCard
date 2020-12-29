@@ -27,18 +27,11 @@ class App extends React.Component {
     });
   }
 
-  login(name, password) {
-    const login = name;
-    return userService.login(login, password).then((result) => {
-      if (result.hasOwnProperty("message")) {
-        return result;
-      } else {
-        let userId = result.userId;
-        userService.setLanguage(result.userLanguage);
-        this.setState({ user: login, userId: userId });
-        userService.setUserId(userId);
-      }
-    });
+  login(user) {
+    let userId = user.userId;
+    this.setState({ user: user.login, userId: userId });
+    userService.setUserId(userId);
+    userService.setLanguage(user.userLanguage);
   }
 
   logout() {

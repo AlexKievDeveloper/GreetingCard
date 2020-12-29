@@ -2,6 +2,8 @@ import {serverService} from './serverService.js';
 
 export const userService = {
     login,
+    loginWithFacebook,
+    loginWithGoogle,
     logout,
     getUser,
     setUserId,
@@ -17,24 +19,49 @@ export const userService = {
 
 function login(login, password) {
 
-    const headerSecurityName = 'Authorization';
 
     return serverService.sendRequest('/auth', 'POST', {login, password}, false)
         .then(response => {
             console.log(response);
             if (!response.ok) {
                 console.log('response not ok')
-                return response.json();
             } else {
                 localStorage.setItem('user', login);
-                let headers = response.headers;
-                if (headers.has(headerSecurityName)) {
-                    let token = headers.get(headerSecurityName); 
-                    localStorage.setItem('userToken', token);
-                }
-                return response.json();
+                saveToken(response.headers);
             }
+            return response.json();
         });
+}
+
+function loginWithFacebook(facebookData) {
+    return loginBy('facebook', facebookData);
+}
+
+function loginWithGoogle(googleData) {
+    return loginBy('google', googleData);
+}
+
+function loginBy(app, data) {
+    return serverService.sendRequest(`/auth/${app}`, 'POST', data, false)
+    .then(response => {
+        console.log(response);
+        if (!response.ok) {
+            console.log('response not ok')
+        } else {
+            localStorage.setItem('user', data.email);
+            saveToken(response.headers);
+        }
+        return response.json();
+    });
+}
+
+function saveToken(headers) {
+    const headerSecurityName = 'Authorization';
+
+    if (headers.has(headerSecurityName)) {
+        let token = headers.get(headerSecurityName); 
+        localStorage.setItem('userToken', token);
+    }
 }
 
 function setUserId(id) {
