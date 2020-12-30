@@ -16,6 +16,7 @@
            name = "no_congratulation"
            background_image = "path_to_image"
            background_congratulations = "background_congratulations"
+           dateoffinish = "2000-01-01"
            card_link = "link_to_greeting"
            status_id = "1"/>
 </dataset>

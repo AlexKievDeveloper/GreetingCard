@@ -51,6 +51,7 @@ public class JdbcCardDaoITest {
                 .id(1)
                 .name("greeting Nomar")
                 .backgroundImage("path_to_image")
+                .backgroundCongratulations("background_congratulations")
                 .cardLink("link_to_greeting")
                 .status(Status.STARTUP)
                 .build();
@@ -91,14 +92,22 @@ public class JdbcCardDaoITest {
                 .name("greeting Nomar")
                 .backgroundImage("path_to_image")
                 .cardLink("link_to_greeting")
+                .dateOfFinish(LocalDate.parse("2000-01-01"))
+                .backgroundCongratulations("background_congratulations")
                 .status(Status.STARTUP)
                 .build();
         //when
         List<Card> actualList = jdbcCardDao.getCardsByUserIdAndRoleId(1, 1);
         //then
         assertEquals(1, actualList.size());
-        assertTrue(actualList.contains(expectedCard1));
-        assertEquals(actualList.get(0), expectedCard1);
+
+        Card card = actualList.get(0);
+        assertEquals("greeting Nomar",card.getName());
+        assertEquals(1,card.getId());
+        assertEquals("path_to_image",card.getBackgroundImage());
+        assertEquals("background_congratulations",card.getBackgroundCongratulations());
+        assertEquals("link_to_greeting",card.getCardLink());
+        assertEquals(Status.STARTUP,card.getStatus());
     }
 
     @Test

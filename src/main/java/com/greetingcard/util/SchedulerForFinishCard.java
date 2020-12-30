@@ -20,7 +20,9 @@ class SchedulerForFinishCard {
     @Async
     @Scheduled(cron = "${scheduled.cron}")
     public void reportCurrentData() {
-        cardService.finishCards(LocalDate.now());
+        LocalDate localDate = LocalDate.now();
+        cardService.finishCards(localDate);
+        log.info("Finish cards " + localDate);
     }
 
 }
