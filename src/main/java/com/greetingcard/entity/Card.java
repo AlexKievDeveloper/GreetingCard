@@ -2,6 +2,7 @@ package com.greetingcard.entity;
 
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -17,6 +18,7 @@ public class Card {
     private String backgroundCongratulations;
     private String cardLink;
     private Status status;
+    private LocalDate dateOfFinish;
     @EqualsAndHashCode.Exclude
     private List<Congratulation> congratulationList;
 }

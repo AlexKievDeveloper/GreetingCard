@@ -23,7 +23,7 @@ public class CardRowMapper implements RowMapper<Card> {
                 .user(user)
                 .name(resultSet.getString("name"))
                 .backgroundImage(resultSet.getString("background_image"))
-                .backgroundCongratulations( resultSet.getString("background_congratulations"))
+                .backgroundCongratulations(resultSet.getString("background_congratulations"))
                 .cardLink(resultSet.getString("card_link"))
                 .status(Status.getByNumber(resultSet.getInt("status_id")))
                 .build();

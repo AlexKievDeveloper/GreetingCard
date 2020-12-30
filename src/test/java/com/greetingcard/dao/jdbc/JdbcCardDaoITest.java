@@ -12,8 +12,11 @@ import com.greetingcard.entity.*;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +52,7 @@ public class JdbcCardDaoITest {
                 .id(1)
                 .name("greeting Nomar")
                 .backgroundImage("path_to_image")
+                .backgroundCongratulations("background_congratulations")
                 .cardLink("link_to_greeting")
                 .status(Status.STARTUP)
                 .build();
@@ -89,14 +93,22 @@ public class JdbcCardDaoITest {
                 .name("greeting Nomar")
                 .backgroundImage("path_to_image")
                 .cardLink("link_to_greeting")
+                .dateOfFinish(LocalDate.parse("2000-01-01"))
+                .backgroundCongratulations("background_congratulations")
                 .status(Status.STARTUP)
                 .build();
         //when
         List<Card> actualList = jdbcCardDao.getCardsByUserIdAndRoleId(1, 1);
         //then
         assertEquals(1, actualList.size());
-        assertTrue(actualList.contains(expectedCard1));
-        assertEquals(actualList.get(0), expectedCard1);
+
+        Card card = actualList.get(0);
+        assertEquals("greeting Nomar",card.getName());
+        assertEquals(1,card.getId());
+        assertEquals("path_to_image",card.getBackgroundImage());
+        assertEquals("background_congratulations",card.getBackgroundCongratulations());
+        assertEquals("link_to_greeting",card.getCardLink());
+        assertEquals(Status.STARTUP,card.getStatus());
     }
 
     @Test
@@ -331,6 +343,23 @@ public class JdbcCardDaoITest {
     @ExpectedDataSet("saveBackgroundOfCongratulations.xml")
     void saveBackgroundOfCongratulations() {
         jdbcCardDao.saveBackgroundOfCongratulation(2,2,"imageOfCongratulation");
+    }
+
+    @Test
+    @DisplayName("Set time of finish card")
+    @ExpectedDataSet("setTimeOfFinish.xml")
+    void setFinishTime() {
+        User user = User.builder().id(1).build();
+        Card actual = Card.builder().id(1).user(user)
+                .dateOfFinish(LocalDate.parse("2000-01-01")).build();
+        jdbcCardDao.setFinishTime(actual);
+    }
+
+    @Test
+    @DisplayName("Change the status of a completed card")
+    @ExpectedDataSet("finishCards.xml")
+    void finishCards() {
+        jdbcCardDao.finishCards(LocalDate.now());
     }
 
 }

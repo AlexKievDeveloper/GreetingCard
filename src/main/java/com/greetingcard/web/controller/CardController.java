@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -118,6 +119,18 @@ public class CardController {
             cardService.removeBackground(id, userId);
         }
         cardService.saveBackgroundOfCongratulation(id, userId, backgroundColorCongratulations);
+    }
+
+    @PutMapping("card/{id}/date")
+    public void dateOfFinish(@PathVariable long id, @RequestBody Map<String, String> date) {
+        User user = WebUtils.getCurrentUser();
+        String finishDate = date.get("dateOfFinish");
+        Card card = Card.builder()
+                .dateOfFinish(LocalDate.parse(finishDate))
+                .id(id)
+                .user(user)
+                .build();
+        cardService.setFinishTime(card);
     }
 
 }

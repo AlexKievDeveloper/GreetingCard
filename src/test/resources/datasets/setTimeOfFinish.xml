@@ -4,9 +4,8 @@
            name = "greeting Nomar"
            background_image = "path_to_image"
            card_link = "link_to_greeting"
-           status_id = "1"
-           background_congratulations = "background_congratulations"
-           dateoffinish = "2000-01-01"/>
+           dateoffinish = "2000-01-01"
+           status_id = "1"/>
     <CARDS card_id = "2"
            user_id = "2"
            name = "greeting Oleksandr"
@@ -17,7 +16,7 @@
            name = "no_congratulation"
            background_image = "path_to_image"
            background_congratulations = "background_congratulations"
-           card_link = "link_to_greeting"
            dateoffinish = "2000-01-01"
+           card_link = "link_to_greeting"
            status_id = "1"/>
 </dataset>

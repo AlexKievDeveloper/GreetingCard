@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -24,6 +25,7 @@ class CardAndCongratulationExtractorTest {
     void extractData() throws SQLException {
         //prepare
         CardAndCongratulationExtractor extractor = new CardAndCongratulationExtractor();
+        Date newDate = new Date(20201212);
 
         when(mockResultSet.next()).thenReturn(true).thenReturn(false);
         when(mockResultSet.getLong("card_user")).thenReturn(1L);
@@ -48,6 +50,7 @@ class CardAndCongratulationExtractorTest {
         when(mockResultSet.getInt("link_id")).thenReturn(1);
         when(mockResultSet.getString("link")).thenReturn("/link");
         when(mockResultSet.getInt("type_id")).thenReturn(1);
+        when(mockResultSet.getDate("dateOfFinish")).thenReturn(new Date(20201212));
 
         //when
         extractor.extractData(mockResultSet);

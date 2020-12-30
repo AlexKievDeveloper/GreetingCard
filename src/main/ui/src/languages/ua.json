@@ -67,5 +67,7 @@
     "questionResignPopup":"Ви впевнені, що хочете відписати обраних учасників?",
     "resign" : "Видалити",
     "closePopUp":"Закрити вікно",
-    "thankYouVerification":"Дякуємо за верифікацію вашої поштової адреси!"
+    "thankYouVerification":"Дякуємо за верифікацію вашої поштової адреси!",
+    "newNotification": "Нове повідомлення!",
+    "generateInviteLink": "Запрошення до листівки"
 }
