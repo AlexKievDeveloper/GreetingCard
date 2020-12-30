@@ -4,6 +4,7 @@ import com.greetingcard.dao.CardUserDao;
 import com.greetingcard.dao.jdbc.mapper.UserInfoRowMapper;
 import com.greetingcard.entity.Role;
 import com.greetingcard.entity.UserInfo;
+import com.greetingcard.entity.UserOrder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,6 +36,8 @@ public class JdbcCardUserDao implements CardUserDao {
     private String getUsersByCardId;
     @Autowired
     private String getUsersByCardIdForWebSocketNotification;
+    @Autowired
+    private String updateUsersOrder;
     @Autowired
     private String deleteUser;
     @Autowired
@@ -76,6 +80,18 @@ public class JdbcCardUserDao implements CardUserDao {
     public List<String> getCardHashesByCardId(long cardId) {
         MapSqlParameterSource params = getSqlParameterSource(cardId);
         return namedParameterJdbcTemplate.queryForList(getCardsHashes, params, String.class);
+    }
+
+    @Override
+    @Transactional
+    public void changeUsersOrder(long cardId, List<UserOrder> usersOrder) {
+        for (UserOrder userOrder : usersOrder) {
+            MapSqlParameterSource params = new MapSqlParameterSource();
+            params.addValue("users_order", userOrder.getOrder());
+            params.addValue("user_id", userOrder.getId());
+            params.addValue("card_id", cardId);
+            namedParameterJdbcTemplate.update(updateUsersOrder, params);
+        }
     }
 
     @Override

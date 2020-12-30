@@ -114,6 +114,11 @@ public class QueriesContext {
     }
 
     @Bean
+    public String updateUsersOrder() {
+        return "UPDATE users_cards SET users_order = :users_order WHERE card_id = :card_id AND user_id = :user_id";
+    }
+
+    @Bean
     public String deleteUser() {
         return "DELETE from users_cards WHERE user_id = :user_id AND card_id = :card_id";
     }

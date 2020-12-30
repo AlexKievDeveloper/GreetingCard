@@ -8,6 +8,7 @@ import com.github.database.rider.spring.api.DBRider;
 import com.greetingcard.RootApplicationContext;
 import com.greetingcard.entity.Role;
 import com.greetingcard.entity.UserInfo;
+import com.greetingcard.entity.UserOrder;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -126,6 +127,16 @@ class JdbcCardUserDaoITest {
         //then
         assertTrue(hashesList.contains("hash1"));
         assertTrue(hashesList.contains("hash2"));
+    }
+
+    @Test
+    @DisplayName("Change user order")
+    @ExpectedDataSet("cardUser/cardUsersAfterChangingUsersOrder.xml")
+    public void changeUserOrder() {
+        //prepare
+        List<UserOrder> userOrderList = List.of(UserOrder.builder().id(1).order(2).build(), UserOrder.builder().id(2).order(1).build());
+        //when
+        jdbcCardUserDao.changeUsersOrder(1, userOrderList);
     }
 
     @Test

@@ -1,10 +1,7 @@
 package com.greetingcard.service.impl;
 
 import com.greetingcard.dao.CardUserDao;
-import com.greetingcard.entity.Role;
-import com.greetingcard.entity.Status;
-import com.greetingcard.entity.User;
-import com.greetingcard.entity.UserInfo;
+import com.greetingcard.entity.*;
 import com.greetingcard.security.SecurityService;
 import com.greetingcard.service.CardService;
 import com.greetingcard.service.CardUserService;
@@ -88,6 +85,12 @@ public class DefaultCardUserService implements CardUserService {
         String hash = generateHashForInviteLink(cardId);
         saveHash(cardId, hash);
         return siteUrl + "invite_link/" + cardId + "/code/"+ hash;
+    }
+
+    @Override
+    public void changeUsersOrder(long cardId, long userId, List<UserOrder> usersOrder) {
+        checkIfUserAdminForCard(cardId, userId, "change order of");
+        cardUserDao.changeUsersOrder(cardId, usersOrder);
     }
 
     @Override

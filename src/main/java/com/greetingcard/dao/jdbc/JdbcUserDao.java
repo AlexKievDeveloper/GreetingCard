@@ -7,7 +7,6 @@ import com.greetingcard.entity.AccessHashType;
 import com.greetingcard.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -22,8 +21,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.sql.SQLException;
 
 import static com.greetingcard.entity.AccessHashType.FORGOT_PASSWORD;
 import static com.greetingcard.entity.AccessHashType.VERIFY_EMAIL;
@@ -73,15 +70,19 @@ public class JdbcUserDao implements UserDao {
             jdbcTemplate.update(saveUser, user.getFirstName(), user.getLastName(), user.getLogin(),
                     user.getEmail(), user.getPassword(), user.getSalt(), user.getLanguage().getLanguageNumber());
             log.debug("Added new user {} to DB", user.getEmail());
-        } catch (DuplicateKeyException e) {//org.postgresql.util.PSQLException
-           throw new IllegalArgumentException("User with the same login or email already exists. Please try another login or email.", e);
+        } catch (DuplicateKeyException e) {
+            throw new IllegalArgumentException("User with the same login or email already exists. Please try another login or email.", e);
         }
     }
 
     @Override
     public void update(@NonNull User user) {
-        log.info("Edit user's (user_id:{}) personal information", user.getId());
-        jdbcTemplate.update(updateUser, user.getFirstName(), user.getLastName(), user.getLogin(), user.getPathToPhoto(), user.getId());
+        try {
+            log.info("Edit user's (user_id:{}) personal information", user.getId());
+            jdbcTemplate.update(updateUser, user.getFirstName(), user.getLastName(), user.getLogin(), user.getPathToPhoto(), user.getId());
+        } catch (DuplicateKeyException e) {
+            throw new IllegalArgumentException("User with the same login already exists. Please try another login.", e);
+        }
     }
 
     @Override
@@ -181,6 +182,5 @@ public class JdbcUserDao implements UserDao {
                 .addValue("pathToPhoto", user.getPathToPhoto());
 
         return namedParameterJdbcTemplate.update(saveUserFromGoogle, namedParameters, keyHolder);
-
     }
 }

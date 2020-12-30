@@ -2,6 +2,7 @@ package com.greetingcard.service;
 
 import com.greetingcard.entity.User;
 import com.greetingcard.entity.UserInfo;
+import com.greetingcard.entity.UserOrder;
 
 import java.util.List;
 
@@ -21,4 +22,6 @@ public interface CardUserService {
     boolean verifyHash(long cardId, String hash);
 
     String getCardLink(long cardId);
+
+    void changeUsersOrder(long cardId, long userId, List<UserOrder> usersOrder);
 }
