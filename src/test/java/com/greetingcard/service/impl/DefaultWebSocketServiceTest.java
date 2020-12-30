@@ -90,7 +90,7 @@ class DefaultWebSocketServiceTest {
         Congratulation congratulation = Congratulation.builder().cardId(1).build();
         List<UserInfo> userInfoList = List.of(UserInfo.builder().id(1).login("user").build());
         when(congratulationService.getCongratulationById(1)).thenReturn(congratulation);
-        when(cardUserService.getUsersByCardIdForWebSocketNotification(1, user)).thenReturn(userInfoList);
+        when(cardUserService.getUsersByCardIdForWebSocketNotification(1)).thenReturn(userInfoList);
         doNothing().when(template).convertAndSend(any(String.class), any(WebResponse.class));
 
         //when
@@ -98,7 +98,7 @@ class DefaultWebSocketServiceTest {
 
         //then
         verify(congratulationService).getCongratulationById(1);
-        verify(cardUserService).getUsersByCardIdForWebSocketNotification(1, user);
+        verify(cardUserService).getUsersByCardIdForWebSocketNotification(1);
         verify(template).convertAndSend(any(String.class), any(WebResponse.class));
     }
 

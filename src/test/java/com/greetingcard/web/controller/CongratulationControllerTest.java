@@ -161,15 +161,6 @@ class CongratulationControllerTest {
     }
 
     @Test
-    @DisplayName("Deleting congratulation")
-    void deleteCongratulation() throws Exception {
-        User user = User.builder().id(1).login("user").build();
-        TestWebUtils.loginAsUser(user);
-        mockMvc.perform(delete("/api/v1/congratulation/{id}", 1))
-                .andExpect(status().isNoContent());
-    }
-
-    @Test
     @DisplayName("Deleting links from congratulation")
     void deleteLinksById() throws Exception {
         User user = User.builder().id(1).login("user").build();

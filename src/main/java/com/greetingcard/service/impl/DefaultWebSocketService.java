@@ -49,7 +49,7 @@ public class DefaultWebSocketService implements WebSocketService {
         Congratulation congratulation = congratulationService.getCongratulationById(congratulationId);
         log.info("User logged in! " + userLoggedIn);
 
-        List<UserInfo> users = cardUserService.getUsersByCardIdForWebSocketNotification(congratulation.getCardId(), userLoggedIn);
+        List<UserInfo> users = cardUserService.getUsersByCardIdForWebSocketNotification(congratulation.getCardId());
         for (UserInfo user : users) {
             log.info("User recipient of notifications" + user);
             sendMessage(userLoggedIn.getLogin() + " deleted congratulation with id: " + congratulationId +

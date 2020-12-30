@@ -11,11 +11,13 @@ import com.greetingcard.service.CardUserService;
 import com.greetingcard.service.CongratulationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -25,6 +27,8 @@ public class DefaultCardUserService implements CardUserService {
     private final SecurityService userService;
     private final CardService cardService;
     private final CongratulationService congratulationService;
+    @Value("${webapp.url}")
+    private String siteUrl;
 
     @Override
     public void addUser(long cardId, User userAdmin, User userNewLogin) {
@@ -38,13 +42,20 @@ public class DefaultCardUserService implements CardUserService {
     }
 
     @Override
+    public void addUser(long cardId, User userLoggedIn) {
+        checkIfUserNotAdded(cardId, userLoggedIn.getId());
+        checkIfCardNotFinished(cardId);
+        cardUserDao.addUserMember(cardId, userLoggedIn.getId());
+    }
+
+    @Override
     public List<UserInfo> getUsersByCardId(long cardId, User userLoggedIn) {
         checkIfUserAdminForCard(cardId, userLoggedIn.getId(), "get");
         return cardUserDao.getUserMembersByCardId(cardId);
     }
 
     @Override
-    public List<UserInfo> getUsersByCardIdForWebSocketNotification(long cardId, User userLoggedIn) {
+    public List<UserInfo> getUsersByCardIdForWebSocketNotification(long cardId) {
         return cardUserDao.getUserMembersByCardIdForWebSocketNotification(cardId);
     }
 
@@ -70,6 +81,23 @@ public class DefaultCardUserService implements CardUserService {
     public void deleteUserFromCard(long cardId, long userId) {
         congratulationService.deleteByCardId(cardId, userId);
         cardUserDao.deleteUserFromCard(cardId, userId);
+    }
+
+    @Override
+    public String getCardLink(long cardId) {
+        String hash = generateHashForInviteLink(cardId);
+        saveHash(cardId, hash);
+        return siteUrl + "card/" + cardId + "/user/hash/"+ hash;
+    }
+
+    @Override
+    public boolean verifyHash(long cardId, String hash) {
+        List<String> actualHashes = cardUserDao.getCardHashesByCardId(cardId);
+        if (actualHashes.contains(hash)) {
+            return true;
+        }
+        log.info("Hash is not valid for card with id: {}", cardId);
+        return false;
     }
 
     void checkIfCardNotFinished(long cardId) {
@@ -106,5 +134,13 @@ public class DefaultCardUserService implements CardUserService {
         if (login.equals("")) {
             throw new IllegalArgumentException("Login of user is empty");
         }
+    }
+
+    String generateHashForInviteLink(long cardId) {
+        return UUID.randomUUID().toString().replaceAll("/", "");
+    }
+
+    void saveHash(long cardId, String hash) {
+        cardUserDao.saveHash(cardId, hash);
     }
 }

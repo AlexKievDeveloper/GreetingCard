@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -33,14 +32,14 @@ public class CardController {
 
     @GetMapping("cards")
     public ResponseEntity<Object> getCards(@RequestParam CardsType type) {
-        log.info("Request for getting cards");
+        log.info("Get cards request");
         long userId = WebUtils.getCurrentUserId();
         List<Card> cardList = cardService.getCards(userId, type);
         return ResponseEntity.status(HttpStatus.OK).body(cardList);
     }
 
     @GetMapping("card/{id}")
-    public ResponseEntity<Object> getCard(HttpSession session, @PathVariable long id) {
+    public ResponseEntity<Object> getCard(@PathVariable long id) {
         log.info("Get card request");
         long userId = WebUtils.getCurrentUserId();
 
@@ -68,7 +67,7 @@ public class CardController {
     }
 
     @PostMapping(value = "card", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> createCard(@RequestBody Card card)  {
+    public ResponseEntity<Object> createCard(@RequestBody Card card) {
         log.info("Creating card request");
         int length = card.getName().length();
         if (length == 0 || length > 250) {
@@ -113,9 +112,9 @@ public class CardController {
         log.info("Add background to card");
         long userId = WebUtils.getCurrentUserId();
 
-        if (backgroundCard.isBlank()){
+        if (backgroundCard.isBlank()) {
             backgroundCardFile.ifPresent(file -> cardService.saveBackground(id, userId, file));
-        }else {
+        } else {
             cardService.removeBackground(id, userId);
         }
         cardService.saveBackgroundOfCongratulation(id, userId, backgroundColorCongratulations);

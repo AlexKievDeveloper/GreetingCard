@@ -85,8 +85,16 @@ public class QueriesContext {
     }
 
     @Bean
+    public String addToCardsHashes() {return "INSERT INTO cards_hashes (card_id, hash) VALUES (:card_id, :hash)"; }
+
+    @Bean
     public String getUserRole() {
         return "SELECT role_id FROM users_cards WHERE user_id = :user_id AND card_id = :card_id";
+    }
+
+    @Bean
+    public String getCardsHashes() {
+        return "SELECT hash FROM cards_hashes WHERE card_id = :card_id";
     }
 
     @Bean

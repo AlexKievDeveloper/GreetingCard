@@ -127,7 +127,8 @@ class CardControllerTest {
     @Test
     @DisplayName("Change status of card")
     void doPut_ISOVER() throws Exception {
-        TestWebUtils.loginAsUserId(1);
+        User user = User.builder().id(1).login("user").build();
+        TestWebUtils.loginAsUser(user);
         mockMvc.perform(put("/api/v1/card/{id}/status/{statusName}", 1,"ISOVER")
                 .characterEncoding("utf-8"))
                 .andDo(print())
@@ -137,7 +138,8 @@ class CardControllerTest {
     @Test
     @DisplayName("Change status of card to STARTUP")
     void doPut_STARTUP() throws Exception {
-        TestWebUtils.loginAsUserId(1);
+        User user = User.builder().id(1).login("user").build();
+        TestWebUtils.loginAsUser(user);
         mockMvc.perform(put("/api/v1/card/{id}/status/{statusName}", 1,"STARTUP")
                 .characterEncoding("utf-8"))
                 .andDo(print())

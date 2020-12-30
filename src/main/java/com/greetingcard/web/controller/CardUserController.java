@@ -6,10 +6,12 @@ import com.greetingcard.service.CardUserService;
 import com.greetingcard.service.WebSocketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -26,6 +28,30 @@ public class CardUserController {
         cardUserService.addUser(id, userLoggedIn, user);
         webSocketService.notifyAboutAddingToCard(userLoggedIn.getLogin() + " added you to card with id: " + id, user.getLogin());
         log.info("User successfully added to card");
+    }
+
+    @PostMapping("card/{id}/user/hash/{hash}")
+    public ResponseEntity<?> addUserMemberAndVerifyHash(@PathVariable long id, @PathVariable String hash) {
+        User userLoggedIn = WebUtils.getCurrentUser();
+        log.info("Request for adding user member by link for card {}, user {}", id, userLoggedIn.getLogin());
+
+        boolean isVerified = cardUserService.verifyHash(id, hash);
+
+        if (isVerified) {
+            cardUserService.addUser(id, userLoggedIn);
+            webSocketService.notifyAdmin(userLoggedIn.getLogin() + " added you to card with id: " + id, id);
+            log.info("User with id: {} successfully added to card with id {}", userLoggedIn.getId(), id);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        }
+        log.info("Hash for adding user with id: {} for card with id: {} is not valid or user does not exists", id, userLoggedIn.getLogin());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @GetMapping("card/{id}/generate_card_link")
+    public ResponseEntity<Object> getGeneratedCardLink(@PathVariable long id) {
+        log.info("Get request for generate card link ");
+        String link = cardUserService.getCardLink(id);
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("link", link));
     }
 
     @GetMapping("card/{id}/users")
