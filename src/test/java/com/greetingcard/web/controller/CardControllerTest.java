@@ -127,7 +127,6 @@ class CardControllerTest {
     @Test
     @DisplayName("Change status of card")
     void doPut_ISOVER() throws Exception {
-        b_104_Generate_invite_collaborator_link
         User user = User.builder().id(1).login("user").build();
         TestWebUtils.loginAsUser(user);
         mockMvc.perform(put("/api/v1/card/{id}/status/{statusName}", 1,"ISOVER")
@@ -139,7 +138,6 @@ class CardControllerTest {
     @Test
     @DisplayName("Change status of card to STARTUP")
     void doPut_STARTUP() throws Exception {
-        b_104_Generate_invite_collaborator_link
         User user = User.builder().id(1).login("user").build();
         TestWebUtils.loginAsUser(user);
         mockMvc.perform(put("/api/v1/card/{id}/status/{statusName}", 1,"STARTUP")
