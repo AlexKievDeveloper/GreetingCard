@@ -20,11 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.context.WebApplicationContext;
-
-import javax.servlet.http.HttpSession;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -129,7 +125,7 @@ class CardControllerTest {
     void doPut_ISOVER() throws Exception {
         User user = User.builder().id(1).login("user").build();
         TestWebUtils.loginAsUser(user);
-        mockMvc.perform(put("/api/v1/card/{id}/status/{statusName}", 1,"ISOVER")
+        mockMvc.perform(put("/api/v1/card/{id}/status/{statusName}", 1, "ISOVER")
                 .characterEncoding("utf-8"))
                 .andDo(print())
                 .andExpect(status().isOk());
@@ -140,7 +136,7 @@ class CardControllerTest {
     void doPut_STARTUP() throws Exception {
         User user = User.builder().id(1).login("user").build();
         TestWebUtils.loginAsUser(user);
-        mockMvc.perform(put("/api/v1/card/{id}/status/{statusName}", 1,"STARTUP")
+        mockMvc.perform(put("/api/v1/card/{id}/status/{statusName}", 1, "STARTUP")
                 .characterEncoding("utf-8"))
                 .andDo(print())
                 .andExpect(status().isOk());
@@ -227,7 +223,7 @@ class CardControllerTest {
         TestWebUtils.loginAsUserId(1);
         MockMultipartFile file = new MockMultipartFile("backgroundCardFile", "image.jpg",
                 "image/jpg", "test-image.jpg".getBytes());
-        MockMultipartHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart("/api/v1/card/{id}/background",1);
+        MockMultipartHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart("/api/v1/card/{id}/background", 1);
         builder.with(request -> {
             request.setMethod("PUT");
             return request;
@@ -235,7 +231,7 @@ class CardControllerTest {
         mockMvc.perform(builder
                 .file(file)
                 .param("backgroundColorCongratulations", "11111")
-                .param("backgroundCard","http://")
+                .param("backgroundCard", "http://")
                 .characterEncoding("utf-8")
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andDo(print())
@@ -246,9 +242,9 @@ class CardControllerTest {
     @DisplayName("Update only background of congratulation")
     void addBackgroundWithOutFile() throws Exception {
         TestWebUtils.loginAsUserId(1);
-        mockMvc.perform(put("/api/v1/card/{id}/background",1)
+        mockMvc.perform(put("/api/v1/card/{id}/background", 1)
                 .param("backgroundColorCongratulations", "11111")
-                .param("backgroundCard","http://")
+                .param("backgroundCard", "http://")
                 .characterEncoding("utf-8")
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andDo(print())
@@ -259,9 +255,9 @@ class CardControllerTest {
     @DisplayName("Reset background of card")
     void addBackgroundOfCard() throws Exception {
         TestWebUtils.loginAsUserId(1);
-        mockMvc.perform(put("/api/v1/card/{id}/background",1)
+        mockMvc.perform(put("/api/v1/card/{id}/background", 1)
                 .param("backgroundColorCongratulations", "11111")
-                .param("backgroundCard","")
+                .param("backgroundCard", "")
                 .characterEncoding("utf-8")
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andDo(print())
