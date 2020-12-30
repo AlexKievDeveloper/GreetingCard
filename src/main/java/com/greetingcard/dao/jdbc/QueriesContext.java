@@ -17,11 +17,14 @@ public class QueriesContext {
 
     @Bean
     public String cardAndCongratulation() {
-        return "SELECT c.card_id, c.user_id as card_user, name, background_image, background_congratulations, dateOfFinish, card_link, c.status_id, cg.congratulation_id, " +
-                "cg.status_id as con_status, message, cg.user_id, firstName, lastName, pathToPhoto, login, link_id, link,type_id, uc.users_order FROM users_cards uc " +
-                "JOIN cards c ON (uc.card_id = c.card_id) LEFT JOIN congratulations cg ON (c.card_id=cg.card_id) LEFT JOIN users u " +
-                "ON (cg.user_id=u.user_id) LEFT JOIN links l ON (cg.congratulation_id=l.congratulation_id) WHERE uc.card_id = :cardId " +
-                "AND uc.user_id = :userId ORDER BY uc.users_order";
+        return  "SELECT c.card_id, c.user_id as card_user, name, background_image, background_congratulations, card_link, dateOfFinish, " +
+                "c.status_id, cg.congratulation_id, cg.status_id as con_status, message, cg.user_id, firstName, lastName, " +
+                "pathToPhoto, login, link_id, link,type_id, ug.users_order FROM users_cards uc JOIN cards c ON (uc.card_id = c.card_id) " +
+                "LEFT JOIN congratulations cg ON (c.card_id=cg.card_id) " +
+                "LEFT JOIN users_cards ug ON (cg.card_id=ug.card_id AND cg.user_id=ug.user_id) " +
+                "LEFT JOIN users u ON (cg.user_id=u.user_id) " +
+                "LEFT JOIN links l ON (cg.congratulation_id=l.congratulation_id) " +
+                "WHERE uc.card_id = :cardId AND uc.user_id = :userId ORDER BY ug.users_order";
     }
 
     @Bean
