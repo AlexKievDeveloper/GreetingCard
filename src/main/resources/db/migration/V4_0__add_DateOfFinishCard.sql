@@ -1,0 +1,1 @@
+ALTER TABLE cards ADD IF NOT EXISTS dateOfFinish DATE

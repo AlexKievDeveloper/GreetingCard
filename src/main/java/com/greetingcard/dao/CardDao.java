@@ -3,6 +3,7 @@ package com.greetingcard.dao;
 import com.greetingcard.entity.Card;
 import com.greetingcard.entity.Status;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,4 +31,8 @@ public interface CardDao {
     void saveBackgroundOfCongratulation(long id, long user, String numberOfColor);
 
     void removeBackground(long id, long user);
+
+    void setFinishTime(Card card);
+
+    void finishCards(LocalDate now);
 }

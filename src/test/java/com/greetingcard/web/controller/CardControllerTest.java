@@ -6,6 +6,7 @@ import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.greetingcard.RootApplicationContext;
 import com.greetingcard.dao.jdbc.TestConfiguration;
+import com.greetingcard.entity.Card;
 import com.greetingcard.entity.User;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.*;
@@ -22,6 +23,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.http.HttpSession;
@@ -265,6 +268,19 @@ class CardControllerTest {
                 .characterEncoding("utf-8")
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("set finish of the card")
+    void setTimeOfFinish() throws Exception {
+        TestWebUtils.loginAsUserId(1);
+        String json = "{\"dateOfFinish\":\"1985-01-25\"}";
+
+        mockMvc.perform(put("/api/v1/card/{id}/date", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+                .characterEncoding("utf-8"))
                 .andExpect(status().isOk());
     }
 

@@ -5,6 +5,7 @@ import com.greetingcard.entity.CardsType;
 import com.greetingcard.entity.Status;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,4 +32,8 @@ public interface CardService {
     void saveBackgroundOfCongratulation(long id, long user, String color);
 
     void removeBackground(long id, long user);
+
+    void setFinishTime(Card card);
+
+    void finishCards(LocalDate now);
 }
