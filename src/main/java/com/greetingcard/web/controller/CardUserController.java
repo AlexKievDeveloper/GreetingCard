@@ -30,7 +30,7 @@ public class CardUserController {
         log.info("User successfully added to card");
     }
 
-    @PostMapping("card/{id}/user/{hash}")
+    @PostMapping("card/{id}/user/hash/{hash}")
     public ResponseEntity<?> addUserMemberAndVerifyHash(@PathVariable long id, @PathVariable String hash) {
         User userLoggedIn = WebUtils.getCurrentUser();
         log.info("Request for adding user member by link for card {}, user {}", id, userLoggedIn.getLogin());

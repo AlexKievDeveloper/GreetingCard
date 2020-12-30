@@ -87,7 +87,7 @@ public class DefaultCardUserService implements CardUserService {
     public String getCardLink(long cardId) {
         String hash = generateHashForInviteLink(cardId);
         saveHash(cardId, hash);
-        return siteUrl + "card/" + cardId + "/user/"+ hash;
+        return siteUrl + "card/" + cardId + "/user/hash/"+ hash;
     }
 
     @Override

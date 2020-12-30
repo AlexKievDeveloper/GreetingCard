@@ -43,7 +43,7 @@ class CardUserControllerSystemTest {
     private Flyway flyway;
 
     private final String URL_ADD_MEMBER = "/api/v1/card/{id}/user";
-    private final String URL_ADD_MEMBER_AND_VERIFY_HASH = "/api/v1/card/{id}/user/{hash}";
+    private final String URL_ADD_MEMBER_AND_VERIFY_HASH = "/api/v1/card/{id}/user/hash/{hash}";
     private final String URL_GET_MEMBERS = "/api/v1/card/{id}/users";
     private final String URL_GET_GENERATED_CARD_LINK = "/api/v1/card/{id}/generate_card_link";
     private final String URL_DELETE_MEMBERS = "/api/v1/card/{id}/users";
