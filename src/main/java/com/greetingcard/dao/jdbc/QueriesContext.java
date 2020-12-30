@@ -85,6 +85,7 @@ public class QueriesContext {
     public String finishCards() {
         return "UPDATE cards SET status_id =:statusId where dateOfFinish < :dateOfFinish";
     }
+
     /**
      * JdbcCardUserDao queries
      */

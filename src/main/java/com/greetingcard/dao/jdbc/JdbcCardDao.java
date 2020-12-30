@@ -162,7 +162,7 @@ public class JdbcCardDao implements CardDao {
     public void finishCards(LocalDate now) {
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("dateOfFinish", now)
-                .addValue("statusId",Status.ISOVER.getStatusNumber());
+                .addValue("statusId", Status.ISOVER.getStatusNumber());
         namedParameterJdbcTemplate.update(finishCards, namedParameters);
     }
 }

@@ -1,7 +1,6 @@
 package com.greetingcard.dao.jdbc.mapper;
 
 import com.greetingcard.entity.UserInfo;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
