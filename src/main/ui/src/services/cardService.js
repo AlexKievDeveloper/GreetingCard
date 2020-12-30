@@ -16,7 +16,8 @@ export const cardService = {
     changeBackground,
     joinToCard,
     getInvitationLink,
-    saveUserOrder
+    saveUserOrder,
+    saveDate
 }
 
 function getCards(type = 'ALL') {
@@ -90,4 +91,8 @@ function getInvitationLink(cardId) {
 
 function saveUserOrder(id, users) {
     return serverService.sendRequest(`/card/${id}/users/order`, 'PUT', users);
+}
+
+function saveDate(id, date) {
+    return serverService.sendRequest(`/card/${id}/date`, 'PUT', {dateOfFinish:date});
 }

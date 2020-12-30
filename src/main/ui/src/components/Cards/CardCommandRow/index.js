@@ -1,11 +1,10 @@
 import React from "react";
 import CommandButtonLink from "../../UI/CommandButton/CommandButtonLink";
 import FilterButton from "../../UI/FilterButton";
+import CardTimer from "../CardTimer";
 import FinishAndDeleteLeaveButtons from "../FinishAndDeleteLeaveButtons";
 
 export default function CardCommandRow(props) {
-
-    
   const id = props.idCard;
   return (
     <div className="command__row">
@@ -23,6 +22,9 @@ export default function CardCommandRow(props) {
       </div>
 
       <div className="actions__row">
+        <CardTimer dateOfFinish={props.dateOfFinish}
+                   onChangeDate={props.saveDate}
+         />
         <CommandButtonLink
           to={"/add_block/" + id}
           className="command-button--yellow"
@@ -41,9 +43,10 @@ export default function CardCommandRow(props) {
           />
         )}
         <FinishAndDeleteLeaveButtons
-            {...props}
-            isMyCard = {props.isMyCard}
-            idCard = {props.idCard}/>
+          {...props}
+          isMyCard={props.isMyCard}
+          idCard={props.idCard}
+        />
       </div>
     </div>
   );

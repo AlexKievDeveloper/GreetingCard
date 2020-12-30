@@ -1,7 +1,7 @@
 .block-actions__container {
     position: absolute;
-    top: 40px;
-    left: 110px;
+    top: 50px;
+    left: 50px;
 }
 
 .block-actions__dropdown {
@@ -25,6 +25,9 @@
     cursor: pointer;
 }
 
+.block-actions__dropdown img {
+    height: 70px;
+}
 
 .block-actions {
     display: none;
@@ -39,7 +42,7 @@
     background-color: rgba(254, 230, 0, 0.7);
     border: 1px solid black;
     border-radius: 1px;
-    max-width: max-content;
+    width: 140px;
     padding: 8px 13px;
     font-family: 'Merriweather';
     font-size: 14px;
