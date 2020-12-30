@@ -10,6 +10,7 @@ import com.greetingcard.entity.Role;
 import com.greetingcard.entity.UserInfo;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DBRider
 @DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE)
 @DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardUser/cardUsers.xml",
-        "congratulations.xml", "links.xml"},
+        "congratulations.xml", "links.xml", "cards_hashes.xml"},
         executeStatementsBefore = "SELECT setval(' users_cards_users_cards_id_seq', 10);",
         cleanAfter = true)
 @SpringJUnitWebConfig(value = {TestConfiguration.class, RootApplicationContext.class})
@@ -89,6 +90,42 @@ class JdbcCardUserDaoITest {
 
         assertEquals(1, userInfoList.get(0).getCountCongratulations());
         assertEquals(0, userInfoList.get(1).getCountCongratulations());
+    }
+
+    @Test
+    void getUserMembersByCardForWebSocketNotification() {
+        List<UserInfo> userInfoList = jdbcCardUserDao.getUserMembersByCardIdForWebSocketNotification(2);
+        for (UserInfo userInfo : userInfoList) {
+            System.out.println(userInfo);
+        }
+        assertEquals(3, userInfoList.size());
+        assertEquals(1, userInfoList.get(0).getId());
+        assertEquals(2, userInfoList.get(1).getId());
+        assertEquals(4, userInfoList.get(2).getId());
+
+        assertEquals(1, userInfoList.get(0).getCountCongratulations());
+        assertEquals(2, userInfoList.get(1).getCountCongratulations());
+        assertEquals(0, userInfoList.get(2).getCountCongratulations());
+    }
+
+    @Test
+    @DisplayName("Saving card hash")
+    public void saveHash() {
+        //when
+        jdbcCardUserDao.saveHash(1, "hash100500");
+        //then
+        List<String> hashesList = jdbcCardUserDao.getCardHashesByCardId(1);
+        assertTrue(hashesList.contains("hash100500"));
+    }
+
+    @Test
+    @DisplayName("Saving card hash")
+    public void getCardsHashes() {
+        //when
+        List<String> hashesList = jdbcCardUserDao.getCardHashesByCardId(1);
+        //then
+        assertTrue(hashesList.contains("hash1"));
+        assertTrue(hashesList.contains("hash2"));
     }
 
     @Test

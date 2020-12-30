@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="../../assets/css/reset.css" />
+    <link rel="stylesheet" href="../../assets/css/list-of-collaborators.css" />
+    <title>Contributors</title>
+</head>
+<body>
+    <div class="wrapper">
+    <header class="header">
+        <div class="app-name">GreetTeam</div>
+        <div class=header-right__row>
+            <div class="navigation-row">
+                <a href="#" class="navigation-link home">
+                    <img src="../../assets/pictures/home.png">
+                </a>
+                <a href="#" class="navigation-link profile">
+                    <img src="../../assets/pictures/user.png">
+                </a>
+                <a href="#" class="navigation-link my-cards">
+                    <img src="../../assets/pictures/photos.png">
+                </a>
+                <a href="#" class="navigation-link log-out">
+                    <img src="../../assets/pictures/exit.png">
+                </a>
+            </div>
+            <div class="user-greeting">Hello, Ann!</div>
+            <div>
+    </header>
+    <div class="main-functions">
+        <div class="command__row">
+            <div class="filter"></div>
+            <div class="actions__row">
+                <a href="#" class="clear-choice yellow-button command-button">Clear choice</a>
+                <input type="submit" form="list-of-collaborators" class="delete-chosen white-button command-button" value="Delete chosen">
+                <form id="invite-user" action="#">
+                    <input type="text" class="login-adder" name="login" placeholder="input login">
+                    <input type="submit" class="command-button create-button" value="Add user">
+                </form>
+            </div>
+        </div>
+        <main class="container">
+                <form action="" class="form__column" id="list-of-collaborators">
+                    <div class="users__column">
+                        <div class="user-and-checkbox-block">
+                            <div class="user__row">
+                                <div class="profile-picture none">
+                                    <img src="../../assets/pictures/user.png" class="no-picture">
+                                </div>
+                                <div class="user-text-details__row">
+                                    <div class="styled-as-input signature">Signature</div>
+                                    <div class="styled-as-input login">Login</div>
+                                </div>
+                                <div class="number-of-blocks unfinished">3</div>
+                            </div>
+                            <div class="checkbox-for-collaborator">
+                                <input type="checkbox" id="author1_collaborator">
+                                <label for="author1_collaborator">Delete</label>
+                            </div>
+                        </div>
+                        <div class="user-and-checkbox-block">
+                            <div class="user__row">
+                                <div class="profile-picture">
+                                    <img src="../../assets/pictures/photos.png">
+                                </div>
+                                <div class="user-text-details__row">
+                                    <div class="styled-as-input signature">Signature</div>
+                                    <div class="styled-as-input login">Login</div>
+                                </div>
+                                <div class="number-of-blocks unfinished">3</div>
+                            </div>
+                            <div class="checkbox-for-collaborator">
+                                <input type="checkbox" id="author2_collaborator">
+                                <label for="author2_collaborator">Delete</label>
+                            </div>
+                        </div>
+                        <div class="user-and-checkbox-block">
+                            <div class="user__row">
+                                <div class="profile-picture none">
+                                    <img src="../../assets/pictures/user.png" class="no-picture">
+                                </div>
+                                <div class="user-text-details__row">
+                                    <div class="styled-as-input signature">Signature</div>
+                                    <div class="styled-as-input login">Login</div>
+                                </div>
+                                <div class="number-of-blocks finished">3</div>
+                            </div>
+                            <div class="checkbox-for-collaborator">
+                                <input type="checkbox" id="author3_collaborator">
+                                <label for="author3_collaborator">Delete</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+        </main>
+    </div>
+</div>
+</body>
+</html>

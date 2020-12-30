@@ -25,9 +25,15 @@ public class JdbcCardUserDao implements CardUserDao {
     @Autowired
     private String insertMemberUser;
     @Autowired
+    private String addToCardsHashes;
+    @Autowired
     private String getUserRole;
     @Autowired
+    private String getCardsHashes;
+    @Autowired
     private String getUsersByCardId;
+    @Autowired
+    private String getUsersByCardIdForWebSocketNotification;
     @Autowired
     private String deleteUser;
     @Autowired
@@ -37,6 +43,12 @@ public class JdbcCardUserDao implements CardUserDao {
     public void addUserMember(long cardId, long userId) {
         MapSqlParameterSource params = getSqlParameterSource(cardId, userId);
         namedParameterJdbcTemplate.update(insertMemberUser, params);
+    }
+
+    @Override
+    public void saveHash(long cardId, String hash) {
+        MapSqlParameterSource params = getSqlParameterSource(cardId, hash);
+        namedParameterJdbcTemplate.update(addToCardsHashes, params);
     }
 
     @Override
@@ -51,6 +63,19 @@ public class JdbcCardUserDao implements CardUserDao {
         SqlParameterSource namedParameters = new MapSqlParameterSource("card_id", cardId);
         log.debug(getUsersByCardId);
         return namedParameterJdbcTemplate.query(getUsersByCardId, namedParameters, new UserInfoRowMapper());
+    }
+
+    @Override
+    public List<UserInfo> getUserMembersByCardIdForWebSocketNotification(long cardId) {
+        SqlParameterSource namedParameters = new MapSqlParameterSource("card_id", cardId);
+        log.debug(getUsersByCardIdForWebSocketNotification);
+        return namedParameterJdbcTemplate.query(getUsersByCardIdForWebSocketNotification, namedParameters, new UserInfoRowMapper());
+    }
+
+    @Override
+    public List<String> getCardHashesByCardId(long cardId) {
+        MapSqlParameterSource params = getSqlParameterSource(cardId);
+        return namedParameterJdbcTemplate.queryForList(getCardsHashes, params, String.class);
     }
 
     @Override
@@ -91,6 +116,19 @@ public class JdbcCardUserDao implements CardUserDao {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("user_id", userId)
                 .addValue("card_id", cardId);
+        return params;
+    }
+
+    private MapSqlParameterSource getSqlParameterSource(long cardId, String hash) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("card_id", cardId)
+                 .addValue("hash", hash);
+        return params;
+    }
+
+    private MapSqlParameterSource getSqlParameterSource(long cardId) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("card_id", cardId);
         return params;
     }
 }

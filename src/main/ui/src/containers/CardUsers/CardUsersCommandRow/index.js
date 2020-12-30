@@ -3,32 +3,42 @@ import UsersResignPopup from "../../../components/Cards/Popups/UsersResignPopup"
 import CommandButton from "../../../components/UI/CommandButton";
 import { languageContext } from "../../../context/languageContext";
 import FormAdd from "../../../forms/common/FormAdd";
+import { cardService } from "../../../services/cardService";
 
 export default function CardUsersCommandRow(props) {
   const [isShowPopup, setIsShowPopup] = useState(false);
   const { dictionary } = useContext(languageContext);
 
-
   const showPopup = () => {
-    console.log('showPopup');  
     setIsShowPopup(true);
   };
 
   const hidePopup = () => {
-    console.log('hidePopup')    
     setIsShowPopup(false);
   };
 
   const deleteUsers = (event) => {
-      event.preventDefault();
-      hidePopup();
-      props.deleteUsersFunction();
+    event.preventDefault();
+    hidePopup();
+    props.deleteUsersFunction();
+  };
+
+  const generateLink = (event) => {
+    event.preventDefault();
+    cardService.getInvitationLink(props.cardId).then(
+      (response) => console.log(response.body)
+    );
   }
 
   return (
     <div className="command__row">
       <div className="filter"></div>
       <div className="actions__row">
+        <CommandButton
+          caption="generateInviteLink"
+          action={generateLink}
+          className="command-button--yellow"
+        />
         <CommandButton
           caption="clearChoiceButton"
           action={props.clearChoiceFunction}

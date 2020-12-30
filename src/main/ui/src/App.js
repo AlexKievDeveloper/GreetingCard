@@ -6,6 +6,9 @@ import { userService } from "./services/userService";
 import { userContext } from "./context/userContext";
 import SwitchRoute from "./components/SwithRoute";
 import { LanguageProvider } from "./components/Language/LanguageProvider";
+import SockJsClient from "react-stomp";
+import config from "./services/config";
+import Notification from "./components/Notification";
 
 class App extends React.Component {
   constructor(props) {
@@ -13,6 +16,9 @@ class App extends React.Component {
     this.state = {
       user: "",
       userId: 0,
+      clientConnected: false,
+      messages: [],
+      isNewMessage: false
     };
 
     this.logout = this.logout.bind(this);
@@ -27,23 +33,36 @@ class App extends React.Component {
     });
   }
 
-  login(name, password) {
-    const login = name;
-    return userService.login(login, password).then((result) => {
-      if (result.hasOwnProperty("message")) {
-        return result;
-      } else {
-        let userId = result.userId;
-        userService.setLanguage(result.userLanguage);
-        this.setState({ user: login, userId: userId });
-        userService.setUserId(userId);
-      }
-    });
+  login(user) {
+    let userId = user.userId;
+    this.setState({ user: user.login, userId: userId });
+    userService.setUserId(userId);
+    userService.setLanguage(user.userLanguage);
+    userService.setUser(user.login);
   }
 
   logout() {
     userService.logout();
     this.setState({ user: "" });
+  }
+
+  onMessageReceive = (msg) => {
+    let messages = this.state.messages;
+    messages.push(msg.message);
+    this.setState({ messages: messages, isNewMessage:true });
+  };
+
+  sendMessage = (selfMsg) => {
+    try {
+      this.clientRef.sendMessage("/app/request", JSON.stringify(selfMsg));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  };
+
+  closeNotification = () => {
+    this.setState({ isNewMessage:false });
   }
 
   render() {
@@ -52,9 +71,29 @@ class App extends React.Component {
       userId: this.state.userId,
       loginUser: this.login,
     };
-
+    const wsSourceUrl = config.wsSourceUrl;
     return (
       <div className="wrapper">
+        {this.state.user && (
+          <SockJsClient
+            url={wsSourceUrl}
+            topics={["/topic/" + this.state.userId, "/topic/greetings"]}
+            onMessage={this.onMessageReceive}
+            ref={(client) => {
+              this.clientRef = client;
+            }}
+            onConnect={() => {
+              console.log("Connect start!");
+              this.setState({ clientConnected: true });
+            }}
+            onDisconnect={() => {
+              console.log("Disconnect");
+              this.setState({ clientConnected: false });
+            }}
+            debug={false}
+          />
+        )}
+
         <LanguageProvider>
           <userContext.Provider value={userContextValue}>
             <Router>
@@ -62,6 +101,12 @@ class App extends React.Component {
               <SwitchRoute userName={this.state.user} />
             </Router>
           </userContext.Provider>
+          {(this.state.messages.length > 0) && 
+          <Notification message={this.state.messages[this.state.messages.length-1]}
+                        isShow={this.state.isNewMessage}
+                        onClose={this.closeNotification}
+           />
+        }
         </LanguageProvider>
       </div>
     );

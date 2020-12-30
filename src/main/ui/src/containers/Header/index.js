@@ -22,7 +22,7 @@ export default function Header(props) {
             <div className={classForHeaderRow}>
                 <LanguageSelector />
                 <Menu isLoggedIn={isLogin} logoutCall={props.logoutCall}/>
-                {isLogin && <div className="user-greeting"> <Text tid="greetingUser"/> {props.userName}!</div>}
+                {isLogin && <div className="user-greeting"> <Text tid="greetingUser"/> gubarev.alexandr@gmail.com!</div>}
             </div>
         </header>
     )

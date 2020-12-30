@@ -1,19 +1,35 @@
 import React from "react";
-import { Text } from "../../../components/Language/Text";
-import User from "../User";
 import "./style.css";
 import {
   sortableContainer,
   sortableElement,
   sortableHandle,
 } from "react-sortable-hoc";
+import { Text } from "../../../components/Language/Text";
+import grabberImg from "../../../assets/images/grabber-icon.png";
 
 export default function FromUsers(props) {
-  const DragHandle = sortableHandle(() => <span>::</span>);
+  const DragHandle = sortableHandle(() => (
+    <img src={grabberImg} alt="" className="grabber" />
+  ));
+
+  const getUser = (user, isSorted) => {
+    return (
+      <a href={"#blocks__column_Author" + user.id} className="collaborator-row">
+        {isSorted && <DragHandle />}
+        {user.firstName + " " + user.lastName}
+        {user.pathToPhoto && (
+          <div className="profile-picture">
+            <img src={user.pathToPhoto} alt="" />
+          </div>
+        )}
+      </a>
+    );
+  };
+
   const SortableItem = sortableElement(({ userWithBlocks }) => (
-    <li>
-      <User key={userWithBlocks.id} user={userWithBlocks} />
-      <DragHandle />
+    <li key={userWithBlocks.id} >
+      {getUser(userWithBlocks, true)}
     </li>
   ));
 
@@ -23,8 +39,8 @@ export default function FromUsers(props) {
 
   const getUsers = () => {
     return props.users.map((userWithBlocks) => (
-      <li>
-        <User key={userWithBlocks.id} user={userWithBlocks} />
+      <li key={userWithBlocks.id}>
+        {getUser(userWithBlocks, false)}
       </li>
     ));
   };

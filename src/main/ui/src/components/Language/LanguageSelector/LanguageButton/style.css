@@ -3,7 +3,17 @@
   width: auto;
   margin: 10px;
 }
+
 .language-link.choosen {
   background-color: rgb(128 62 155 / 35%);
+  border-radius: 10px;
+}
+
+.language-link {
+  border: 2px dotted rgb(0 0 0 / 0%);
+}
+
+.language-link:hover {
+  border: 2px dotted rgb(128 62 155 / 55%);
   border-radius: 10px;
 }

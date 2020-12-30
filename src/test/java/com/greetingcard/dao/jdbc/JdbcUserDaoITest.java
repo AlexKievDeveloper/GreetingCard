@@ -87,6 +87,30 @@ class JdbcUserDaoITest {
     }
 
     @Test
+    @DisplayName("Throws illegal argument exception if login already exists id DB")
+    void testSaveLoginlAlreadyExists() {
+        //prepare
+        User expected = User.builder().firstName("firstName_test").lastName("lastName_test")
+                .login("admin").email("email_test").password("password").salt("salt")
+                .language(Language.ENGLISH).build();
+        //when + then
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> userDao.save(expected));
+        assertEquals("User with the same login or email already exists. Please try another login or email.", e.getMessage());
+    }
+
+    @Test
+    @DisplayName("Throws illegal argument exception if email already exists id DB")
+    void testSaveEmailAlreadyExists() {
+        //prepare
+        User expected = User.builder().firstName("firstName_test").lastName("lastName_test")
+                .login("login_test").email("@admin").password("password").salt("salt")
+                .language(Language.ENGLISH).build();
+        //when + then
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> userDao.save(expected));
+        assertEquals("User with the same login or email already exists. Please try another login or email.", e.getMessage());
+    }
+
+    @Test
     @DisplayName("Update user")
     void testUpdate() {
         //prepare
@@ -210,5 +234,41 @@ class JdbcUserDaoITest {
         user.setId(2);
         user.setLanguage(Language.ENGLISH);
         userDao.updateLanguage(user);
+    }
+
+
+    @Test
+    @DisplayName("Save user from facebook")
+    void saveUserFromFacebook() {
+        //prepare
+        User user = User.builder().facebook("facebookId").firstName("Roma").lastName("Amor").login("emailRoma")
+                .email("emailRoma").salt("").password("password").language(Language.ENGLISH).build();
+        //when
+        userDao.saveUserFromFacebook(user);
+        //then
+        User actualUser = userDao.findByEmail("emailRoma");
+        assertEquals(user.getFacebook(), actualUser.getFacebook());
+        assertEquals(user.getFirstName(), actualUser.getFirstName());
+        assertEquals(user.getLastName(), actualUser.getLastName());
+        assertEquals(user.getEmail(), actualUser.getEmail());
+        assertEquals(user.getSalt(), actualUser.getSalt());
+    }
+
+    @Test
+    @DisplayName("Save user from Google")
+    void saveUserFromGoogle() {
+        //prepare
+        User user = User.builder().google("googleId").firstName("Roma").lastName("Amor").login("emailRoma")
+                .email("emailRoma").salt("").password("password").language(Language.ENGLISH).pathToPhoto("http").build();
+        //when
+        userDao.saveUserFromGoogle(user);
+        //then
+        User actualUser = userDao.findByEmail("emailRoma");
+        assertEquals(user.getGoogle(), actualUser.getGoogle());
+        assertEquals(user.getFirstName(), actualUser.getFirstName());
+        assertEquals(user.getLastName(), actualUser.getLastName());
+        assertEquals(user.getEmail(), actualUser.getEmail());
+        assertEquals(user.getSalt(), actualUser.getSalt());
+        assertEquals(user.getPathToPhoto(), actualUser.getPathToPhoto());
     }
 }

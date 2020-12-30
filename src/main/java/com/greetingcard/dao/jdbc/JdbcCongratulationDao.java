@@ -86,7 +86,7 @@ public class JdbcCongratulationDao implements CongratulationDao {
     @Override
     @Transactional
     public void deleteByCardId(long cardId, long userId) {
-        deleteCongratulationFiles(cardId, userId, findImageAndAudioLinksByCardId);
+        deleteCongratulationFiles(cardId, findImageAndAudioLinksByCardId);
         Map<String, Long> params = new HashMap<>();
         params.put("user_id", userId);
         params.put("card_id", cardId);
@@ -95,10 +95,9 @@ public class JdbcCongratulationDao implements CongratulationDao {
 
     @Override
     @Transactional
-    public void deleteById(long congratulationId, long userId) {
-        deleteCongratulationFiles(congratulationId, userId, findImageAndAudioLinksByCongratulationId);
+    public void deleteById(long congratulationId) {
+        deleteCongratulationFiles(congratulationId, findImageAndAudioLinksByCongratulationId);
         Map<String, Long> params = new HashMap<>();
-        params.put("user_id", userId);
         params.put("congratulation_id", congratulationId);
         namedJdbcTemplate.update(deleteCongratulationById, params);
     }
@@ -148,8 +147,8 @@ public class JdbcCongratulationDao implements CongratulationDao {
                 });
     }
 
-    void deleteCongratulationFiles(long id, long userId, String findQuery) {
-        List<String> linkList = jdbcTemplate.queryForList(findQuery, String.class, id, userId);
+    void deleteCongratulationFiles(long id, String findQuery) {
+        List<String> linkList = jdbcTemplate.queryForList(findQuery, String.class, id);
         for (String link : linkList) {
             defaultAmazonService.deleteFileFromS3Bucket(link);
         }

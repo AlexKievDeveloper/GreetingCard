@@ -66,5 +66,8 @@
     "warningResignPopup": "When you resign user their blocks are deleted.",
     "questionResignPopup":"Are you sure you want to resign choosen users?",
     "resign" : "Resign",
-    "closePopUp":"Close pop-up"
+    "closePopUp":"Close pop-up",
+    "thankYouVerification":"Thank you for verifying your email address!",
+    "newNotification": "New Notification!",
+    "generateInviteLink": "Get invite link"
 }

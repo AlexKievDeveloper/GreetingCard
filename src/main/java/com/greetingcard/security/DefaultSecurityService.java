@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+import java.util.Map;
 import java.util.UUID;
 
 import static com.greetingcard.entity.AccessHashType.VERIFY_EMAIL;
@@ -176,6 +177,48 @@ public class DefaultSecurityService implements SecurityService {
         return newAccessHash;
     }
 
+    @Override
+    public User loginWithFacebook(Map<String, String> facebookCredentials) {
+        String name = facebookCredentials.get("name");
+        String email = facebookCredentials.get("email");
+        String facebookId = facebookCredentials.get("userID");
+        User user;
+        try {
+            return userDao.findByEmail(email);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+
+        String[] names = name.split(" ", 2);
+        user = User.builder().facebook(facebookId).firstName(names[0]).lastName(names[1]).login(email)
+                .email(email).salt("").password(getHashPassword(facebookId)).language(Language.ENGLISH).build();
+        long id = userDao.saveUserFromFacebook(user);
+        user.setId(id);
+        return user;
+    }
+
+    @Override
+    public User loginWithGoogle(Map<String, String> googleCredentials) {
+        String googleId = googleCredentials.get("googleId");
+        String pathToPhoto = googleCredentials.get("imageUrl");
+        String email = googleCredentials.get("email");
+        String firstName = googleCredentials.get("givenName");
+        String lastName = googleCredentials.get("familyName");
+        User user;
+        try {
+            return userDao.findByEmail(email);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+
+        user = User.builder().google(googleId).firstName(firstName).lastName(lastName).login(email)
+                .email(email).pathToPhoto(pathToPhoto).salt("").password(getHashPassword(googleId)).
+                        language(Language.ENGLISH).build();
+        long id = userDao.saveUserFromGoogle(user);
+        user.setId(id);
+        return user;
+    }
+
     String getHashPassword(String saltAndPassword) {
         try {
             MessageDigest digest = MessageDigest.getInstance(algorithm);
@@ -198,7 +241,7 @@ public class DefaultSecurityService implements SecurityService {
         String emailMessageBody = "Welcome to the Greeting Card!" +
                 "To finish the registration process, we need to verify your email." +
                 "Please confirm your address by opening this link:\n " +
-                siteUrl + "api/v1/user/verification/" + accessHash;
+                siteUrl + "user/verification/" + accessHash;
         emailService.sendMail(email, "Greeting Card: Verify email", emailMessageBody);
 
         log.debug("Sent letter for email verification to: {}", email);

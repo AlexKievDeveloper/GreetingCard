@@ -7,6 +7,7 @@ import { cardService } from "../../services/cardService";
 import CardPreviewCommandRow from "./CardPreviewCommandRow";
 import FromUsers from "./FromUsers";
 import "./style.css";
+import CommandButton from "../../components/UI/CommandButton";
 
 export default class CardPreview extends Component {
   constructor(props) {
@@ -52,6 +53,11 @@ export default class CardPreview extends Component {
       backgroundCardLink: cardData.backgroundImage,
     });
   };
+
+  saveUserOrder = () => {
+    const users = this.state.usersWithBlocks.map((user, index) => ({id:user.id, order:index}));
+    cardService.saveUserOrder(this.state.cardId, users);
+  }
 
   getBlocksGropedByUser = (congratulationList) => {
     let userList = [];
@@ -113,6 +119,12 @@ export default class CardPreview extends Component {
           <div className="card__title with-background margin-top_65">
             {this.state.name}
           </div>
+          <CommandButton
+          caption="save order"
+          className="command-button--yellow"
+          action={this.saveUserOrder}
+        />
+        
           <div className="with-background" id="card__navigation">
             <userContext.Consumer>
               {({ userId }) => (

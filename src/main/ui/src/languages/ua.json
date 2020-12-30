@@ -66,5 +66,8 @@
     "warningResignPopup": "Вітання обраних учасників будуть видалені",
     "questionResignPopup":"Ви впевнені, що хочете відписати обраних учасників?",
     "resign" : "Видалити",
-    "closePopUp":"Закрити вікно"
+    "closePopUp":"Закрити вікно",
+    "thankYouVerification":"Дякуємо за верифікацію вашої поштової адреси!",
+    "newNotification": "Нове повідомлення!",
+    "generateInviteLink": "Запрошення до листівки"
 }

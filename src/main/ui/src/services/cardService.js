@@ -13,7 +13,10 @@ export const cardService = {
     deleteUsers,
     addUser,
     getUsers,
-    changeBackground
+    changeBackground,
+    joinToCard,
+    getInvitationLink,
+    saveUserOrder
 }
 
 function getCards(type = 'ALL') {
@@ -75,4 +78,16 @@ function changeBackground(cardId, backgroundColorBlocks, backgroundCardLink, bac
     formData.append("backgroundColorCongratulations", backgroundColorBlocks);
     formData.append("backgroundCard", backgroundCardLink);
     serverService.sendFormData(`/card/${cardId}/background`, 'PUT', formData);
+}
+
+function joinToCard(cardId, hash) {
+    return serverService.sendRequest(`/card/${cardId}/user/hash/${hash}`, 'POST');
+}
+
+function getInvitationLink(cardId) {
+    return serverService.getData(`/card/${cardId}/generate_card_link/`);
+}
+
+function saveUserOrder(id, users) {
+    return serverService.sendRequest(`/card/${id}/users/order`, 'PUT', users);
 }

@@ -8,6 +8,7 @@ import com.greetingcard.entity.Link;
 import com.greetingcard.entity.Status;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CongratulationService;
+import com.greetingcard.service.WebSocketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +28,7 @@ import java.util.Map;
 @RequestMapping("/api/v1/congratulation")
 public class CongratulationController {
     private final CongratulationService congratulationService;
+    private final WebSocketService webSocketService;
     private final ObjectMapper objectMapper;
 
     @GetMapping("/{id}")
@@ -52,6 +53,7 @@ public class CongratulationController {
         log.info("Got Map from json");
         User user = WebUtils.getCurrentUser();
         long userId = user.getId();
+        long cardId = Long.parseLong(parametersMap.get("card_id"));
         log.info("Request for adding congratulation from user: {}", user.getLogin());
 
         List<Link> linkList = congratulationService.getLinkList(files_image, files_audio, parametersMap);
@@ -59,7 +61,7 @@ public class CongratulationController {
 
         Congratulation congratulation = Congratulation.builder()
                 .message(parametersMap.get("message"))
-                .cardId(Long.parseLong(parametersMap.get("card_id")))
+                .cardId(cardId)
                 .user(User.builder().id(userId).build())
                 .status(Status.STARTUP)
                 .linkList(linkList)
@@ -67,6 +69,8 @@ public class CongratulationController {
 
         congratulationService.save(congratulation);
 
+        webSocketService.notifyAdmin(user.getLogin() +
+                " create congratulation in your card with id: " + cardId, cardId);
         log.info("Successfully created congratulation for user: {}", user.getLogin());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -104,8 +108,8 @@ public class CongratulationController {
         User user = WebUtils.getCurrentUser();
 
         log.info("Request DELETE for congratulation with id {}, user: {}", congratulationId, user.getLogin());
-        congratulationService.deleteById(congratulationId, user.getId());
-
+        webSocketService.notifyAllCardMembersAboutDeletingCongratulation(congratulationId, user);
+        congratulationService.deleteById(congratulationId);
         log.info("Successfully deleted congratulation with id: {}, user login: {}", congratulationId, user.getLogin());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

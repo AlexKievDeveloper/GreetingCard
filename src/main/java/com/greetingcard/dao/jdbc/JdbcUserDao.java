@@ -7,14 +7,23 @@ import com.greetingcard.entity.AccessHashType;
 import com.greetingcard.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.sql.SQLException;
 
 import static com.greetingcard.entity.AccessHashType.FORGOT_PASSWORD;
 import static com.greetingcard.entity.AccessHashType.VERIFY_EMAIL;
@@ -25,6 +34,7 @@ import static com.greetingcard.entity.AccessHashType.VERIFY_EMAIL;
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class JdbcUserDao implements UserDao {
     private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Autowired
     private String saveUser;
@@ -52,12 +62,20 @@ public class JdbcUserDao implements UserDao {
     private String deleteVerifyEmailAccessHash;
     @Autowired
     private String updateUserVerifyEmail;
+    @Autowired
+    private String saveUserFromFacebook;
+    @Autowired
+    private String saveUserFromGoogle;
 
     @Override
     public void save(@NonNull User user) {
-        jdbcTemplate.update(saveUser, user.getFirstName(), user.getLastName(), user.getLogin(),
-                user.getEmail(), user.getPassword(), user.getSalt(), user.getLanguage().getLanguageNumber());
-        log.debug("Added new user {} to DB", user.getEmail());
+        try {
+            jdbcTemplate.update(saveUser, user.getFirstName(), user.getLastName(), user.getLogin(),
+                    user.getEmail(), user.getPassword(), user.getSalt(), user.getLanguage().getLanguageNumber());
+            log.debug("Added new user {} to DB", user.getEmail());
+        } catch (DuplicateKeyException e) {//org.postgresql.util.PSQLException
+           throw new IllegalArgumentException("User with the same login or email already exists. Please try another login or email.", e);
+        }
     }
 
     @Override
@@ -130,5 +148,39 @@ public class JdbcUserDao implements UserDao {
     public void verifyForgotPasswordAccessHash(@NonNull String hash, @NonNull User user) {
         jdbcTemplate.update(deleteForgotPassAccessHash, hash);
         jdbcTemplate.update(updateUserPassword, user.getPassword(), user.getId());
+    }
+
+    @Override
+    public long saveUserFromFacebook(User user) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        SqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("firstName", user.getFirstName())
+                .addValue("lastName", user.getLastName())
+                .addValue("login", user.getLogin())
+                .addValue("email", user.getEmail())
+                .addValue("facebookId", user.getFacebook())
+                .addValue("password", user.getPassword())
+                .addValue("salt", user.getSalt())
+                .addValue("language", user.getLanguage().getLanguageNumber());
+
+        return namedParameterJdbcTemplate.update(saveUserFromFacebook, namedParameters, keyHolder);
+    }
+
+    @Override
+    public long saveUserFromGoogle(User user) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        SqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("firstName", user.getFirstName())
+                .addValue("lastName", user.getLastName())
+                .addValue("login", user.getLogin())
+                .addValue("email", user.getEmail())
+                .addValue("google", user.getGoogle())
+                .addValue("password", user.getPassword())
+                .addValue("salt", user.getSalt())
+                .addValue("language", user.getLanguage().getLanguageNumber())
+                .addValue("pathToPhoto", user.getPathToPhoto());
+
+        return namedParameterJdbcTemplate.update(saveUserFromGoogle, namedParameters, keyHolder);
+
     }
 }
