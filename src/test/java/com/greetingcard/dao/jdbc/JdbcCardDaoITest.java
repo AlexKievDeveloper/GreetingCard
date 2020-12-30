@@ -7,6 +7,7 @@ import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.greetingcard.RootApplicationContext;
 import com.greetingcard.dao.CardDao;
+import com.greetingcard.dao.CardUserDao;
 import com.greetingcard.entity.*;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.*;

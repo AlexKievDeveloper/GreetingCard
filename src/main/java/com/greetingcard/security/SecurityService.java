@@ -27,7 +27,7 @@ public interface SecurityService {
     void verifyForgotPasswordAccessHash(String hash, String password);
 
     String generateAccessHash(String email, AccessHashType hashType);
-    
+
     User loginWithFacebook(Map<String, String> facebookCredentials);
 
     User loginWithGoogle(Map<String, String> googleCredentials);

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -28,7 +29,7 @@ import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfig
 @DBRider
 @DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE)
 @DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardUser/cardUsers.xml",
-        "congratulations.xml", "links.xml"},
+        "congratulations.xml", "links.xml, cards_hashes.xml"},
         executeStatementsBefore = "SELECT setval('users_user_id_seq', 10);",
         cleanAfter = true)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -42,7 +43,9 @@ class CardUserControllerSystemTest {
     private Flyway flyway;
 
     private final String URL_ADD_MEMBER = "/api/v1/card/{id}/user";
+    private final String URL_ADD_MEMBER_AND_VERIFY_HASH = "/api/v1/card/{id}/user/hash/{hash}";
     private final String URL_GET_MEMBERS = "/api/v1/card/{id}/users";
+    private final String URL_GET_GENERATED_CARD_LINK = "/api/v1/card/{id}/generate_card_link";
     private final String URL_DELETE_MEMBERS = "/api/v1/card/{id}/users";
 
     @BeforeAll
@@ -134,6 +137,40 @@ class CardUserControllerSystemTest {
                 .content(json))
                 .andDo(print())
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Add user member and verify hash. User already card member.")
+    void addUserMemberAndVerifyHashUserCardMember() throws Exception {
+        TestWebUtils.loginAsUserId(1);
+        String json = "{\"login\":\"new\"}";
+        mockMvc.perform(post(URL_ADD_MEMBER_AND_VERIFY_HASH, 1, "hash1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andDo(print())
+                .andExpect(jsonPath("$.message").value("User is already member"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Add user member and verify hash. Success")
+    void addUserMemberAndVerifyHash() throws Exception {
+        TestWebUtils.loginAsUserId(1);
+        mockMvc.perform(post(URL_ADD_MEMBER_AND_VERIFY_HASH, 3, "hash6")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    @DisplayName("Generated card link for invite member")
+    void getGeneratedCardLink() throws Exception {
+        TestWebUtils.loginAsUserId(1);
+        mockMvc.perform(get(URL_GET_GENERATED_CARD_LINK, 1)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.link").isNotEmpty())
+                .andDo(print())
+                .andExpect(status().isCreated());
     }
 
     @Test

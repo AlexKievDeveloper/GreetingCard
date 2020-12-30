@@ -5,6 +5,7 @@ import com.greetingcard.entity.CardsType;
 import com.greetingcard.entity.Status;
 import com.greetingcard.entity.User;
 import com.greetingcard.service.CardService;
+import com.greetingcard.service.WebSocketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,12 +27,13 @@ import java.util.Optional;
 @RequestMapping(value = "api/v1/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CardController {
     private final CardService cardService;
+    private final WebSocketService webSocketService;
     @Value("${webapp.url}")
     private String siteUrl;
 
     @GetMapping("cards")
     public ResponseEntity<Object> getCards(@RequestParam CardsType type) {
-        log.info("getCards");
+        log.info("Get cards request");
         long userId = WebUtils.getCurrentUserId();
         List<Card> cardList = cardService.getCards(userId, type);
         return ResponseEntity.status(HttpStatus.OK).body(cardList);
@@ -83,6 +85,9 @@ public class CardController {
         log.info("Received PUT request for change status");
         cardService.changeCardStatusAndCreateCardLink(statusName, id);
         log.info("Successfully changed card status for card id: {} to {}", id, statusName);
+
+        User userLoggedIn = WebUtils.getCurrentUser();
+        webSocketService.notifyAboutCardStatusChanging(id, statusName, userLoggedIn);
     }
 
     @DeleteMapping("card/{id}")

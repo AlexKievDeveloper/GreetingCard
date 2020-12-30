@@ -12,6 +12,7 @@ import com.greetingcard.entity.UserInfo;
 import com.greetingcard.service.CardUserService;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +21,14 @@ import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.matchesPattern;
+import static org.junit.jupiter.api.Assertions.*;
+
 @DBRider
 @DBUnit(caseInsensitiveStrategy = Orthography.LOWERCASE)
 @DataSet(value = {"languages.xml", "types.xml", "roles.xml", "statuses.xml", "users.xml", "cards.xml", "cardUser/cardUsers.xml",
-        "congratulations.xml", "links.xml"},
+        "congratulations.xml", "links.xml, cards_hashes.xml"},
         executeStatementsBefore = "SELECT setval(' users_cards_users_cards_id_seq', 10);",
         cleanAfter = true)
 @SpringJUnitWebConfig(value = {TestConfiguration.class, RootApplicationContext.class})
@@ -55,5 +60,23 @@ public class DefaultCardUserServiceITest {
         userDeletes.setId(2);
 
         cardUserService.deleteUsers(2, userInfoList, userDeletes);
+    }
+
+    @Test
+    @DisplayName("Verifies cardsHash")
+    public void verifiedHash() {
+        //when+then
+        assertTrue(cardUserService.verifyHash(1, "hash1"));
+        assertTrue(cardUserService.verifyHash(1, "hash2"));
+        assertFalse(cardUserService.verifyHash(1, "hash3"));
+    }
+
+    @Test
+    @DisplayName("Returns link for card")
+    public void getCardLink() {
+        //when
+        String actualLink = cardUserService.getCardLink(1);
+        //then
+        assertThat(actualLink, matchesPattern("^\\S*\\/invite_link\\/\\d*\\/code\\/\\S*"));
     }
 }

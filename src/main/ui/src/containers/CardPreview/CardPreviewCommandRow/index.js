@@ -1,11 +1,9 @@
-import React, {useContext} from "react";
+import React from "react";
 import FinishAndDeleteLeaveButtons from "../../../components/Cards/FinishAndDeleteLeaveButtons";
 import CommandButton from "../../../components/UI/CommandButton";
 import CommandButtonLink from "../../../components/UI/CommandButton/CommandButtonLink";
-import { languageContext } from "../../../context/languageContext";
 
 export default function CardPreviewCommandRow(props) {
-  const { dictionary } = useContext(languageContext);
   const isFinished = props.cardStatus === "ISOVER";
 
   const copyLink = () => { navigator.clipboard.writeText(props.cardLink);}
@@ -16,12 +14,12 @@ export default function CardPreviewCommandRow(props) {
       <div className="actions__row padding-right_75">
       {(props.isMyCard && isFinished) && <CommandButton
           action={copyLink()}
-          caption={dictionary.getCardLinkButton}
+          caption="getCardLinkButton"
           className="command-button--yellow"
         />}
         {(props.isMyCard || !isFinished) && <CommandButtonLink
           to={"/edit_card/" + props.cardId + "/my_blocks"}
-          caption={dictionary.backToEditButton}
+          caption="backToEditButton"
           className="command-button--yellow"
         />}
         <FinishAndDeleteLeaveButtons

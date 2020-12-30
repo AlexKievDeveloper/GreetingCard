@@ -22,7 +22,7 @@ public interface CongratulationDao {
 
     void updateCongratulationMessage(String message, long congratulationId, long userId);
 
-    void deleteById(long congratulationId, long userId);
+    void deleteById(long congratulationId);
 
     void saveLinks(List<Link> linkList, long congratulationId);
 

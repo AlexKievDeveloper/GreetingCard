@@ -7,10 +7,12 @@ import com.greetingcard.entity.AccessHashType;
 import com.greetingcard.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -20,6 +22,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.sql.SQLException;
 
 import static com.greetingcard.entity.AccessHashType.FORGOT_PASSWORD;
 import static com.greetingcard.entity.AccessHashType.VERIFY_EMAIL;
@@ -65,9 +69,13 @@ public class JdbcUserDao implements UserDao {
 
     @Override
     public void save(@NonNull User user) {
-        jdbcTemplate.update(saveUser, user.getFirstName(), user.getLastName(), user.getLogin(),
-                user.getEmail(), user.getPassword(), user.getSalt(), user.getLanguage().getLanguageNumber());
-        log.debug("Added new user {} to DB", user.getEmail());
+        try {
+            jdbcTemplate.update(saveUser, user.getFirstName(), user.getLastName(), user.getLogin(),
+                    user.getEmail(), user.getPassword(), user.getSalt(), user.getLanguage().getLanguageNumber());
+            log.debug("Added new user {} to DB", user.getEmail());
+        } catch (DuplicateKeyException e) {//org.postgresql.util.PSQLException
+           throw new IllegalArgumentException("User with the same login or email already exists. Please try another login or email.", e);
+        }
     }
 
     @Override

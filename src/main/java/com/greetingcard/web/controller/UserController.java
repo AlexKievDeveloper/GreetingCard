@@ -39,7 +39,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("user/verification/{accessHash}")
+    @PostMapping("user/verification/{accessHash}")
     public void verifyEmail(@PathVariable String accessHash) {
         log.info("Verifying the user");
         securityService.verifyEmailAccessHash(accessHash);

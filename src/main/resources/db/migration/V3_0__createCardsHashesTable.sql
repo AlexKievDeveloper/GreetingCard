@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS cards_hashes
+(
+    id SERIAL PRIMARY KEY,
+    card_id   BIGINT NOT NULL,
+    hash VARCHAR(250) NOT NULL
+);
