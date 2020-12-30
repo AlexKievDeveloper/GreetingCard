@@ -87,6 +87,30 @@ class JdbcUserDaoITest {
     }
 
     @Test
+    @DisplayName("Throws illegal argument exception if login already exists id DB")
+    void testSaveLoginlAlreadyExists() {
+        //prepare
+        User expected = User.builder().firstName("firstName_test").lastName("lastName_test")
+                .login("admin").email("email_test").password("password").salt("salt")
+                .language(Language.ENGLISH).build();
+        //when + then
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> userDao.save(expected));
+        assertEquals("User with the same login or email already exists. Please try another login or email.", e.getMessage());
+    }
+
+    @Test
+    @DisplayName("Throws illegal argument exception if email already exists id DB")
+    void testSaveEmailAlreadyExists() {
+        //prepare
+        User expected = User.builder().firstName("firstName_test").lastName("lastName_test")
+                .login("login_test").email("@admin").password("password").salt("salt")
+                .language(Language.ENGLISH).build();
+        //when + then
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> userDao.save(expected));
+        assertEquals("User with the same login or email already exists. Please try another login or email.", e.getMessage());
+    }
+
+    @Test
     @DisplayName("Update user")
     void testUpdate() {
         //prepare
