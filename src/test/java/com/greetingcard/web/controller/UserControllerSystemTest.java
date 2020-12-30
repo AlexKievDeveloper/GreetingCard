@@ -100,7 +100,7 @@ class UserControllerSystemTest {
     @DisplayName("Open email verification link")
     @ExpectedDataSet("verify_email_hashesAfterCheckingHash.xml")
     void testEmailVerification() throws Exception {
-        mockMvc.perform(get("/api/v1/user/verification/accessHash"))
+        mockMvc.perform(post("/api/v1/user/verification/accessHash"))
                 .andExpect(status().isOk());
     }
 

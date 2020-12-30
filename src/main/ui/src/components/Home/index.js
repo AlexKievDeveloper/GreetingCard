@@ -1,8 +1,8 @@
 import React from 'react'
 import './style.css';
-import HomeButtons from '../HomeButtons';
 import { userContext } from '../../context/userContext';
 import { Text } from '../Language/Text';
+import HomeButtons from './HomeButtons';
 
 export default function Home() {
 

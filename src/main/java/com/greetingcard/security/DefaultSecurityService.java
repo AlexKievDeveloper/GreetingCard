@@ -241,7 +241,7 @@ public class DefaultSecurityService implements SecurityService {
         String emailMessageBody = "Welcome to the Greeting Card!" +
                 "To finish the registration process, we need to verify your email." +
                 "Please confirm your address by opening this link:\n " +
-                siteUrl + "api/v1/user/verification/" + accessHash;
+                siteUrl + "user/verification/" + accessHash;
         emailService.sendMail(email, "Greeting Card: Verify email", emailMessageBody);
 
         log.debug("Sent letter for email verification to: {}", email);
