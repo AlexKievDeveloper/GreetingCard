@@ -31,6 +31,7 @@ export class CreateEditCard extends Component {
         name: cardsData.name,
         backgroundBlocks: cardsData.backgroundCongratulations,
         backgroundCardLink: cardsData.backgroundImage,
+        dateOfFinish: cardsData.dateOfFinish,
       });
     });
   }
@@ -111,6 +112,10 @@ export class CreateEditCard extends Component {
     );
   };
 
+  saveDate = (date) => {
+    cardService.saveDate(this.getIdFromPath(), date);
+  };
+
   render() {
     const cardId = this.getIdFromPath();
     const typeBlocks = this.props.match.params.typeBlocks;
@@ -133,11 +138,13 @@ export class CreateEditCard extends Component {
             <CardCommandRow
               {...this.props}
               idCard={cardId}
+              dateOfFinish={this.state.dateOfFinish}
+              saveDate={this.saveDate}
               page={typeBlocks}
               isMyCard={userId === this.state.userIdCardAdmin}
             />
             <main className="card-container" style={cardStyle}>
-              {(userId === this.state.userIdCardAdmin) && 
+              {userId === this.state.userIdCardAdmin && (
                 <React.Fragment>
                   <ChangeBackground
                     blocksColor={this.state.backgroundBlocks}
@@ -152,7 +159,7 @@ export class CreateEditCard extends Component {
                     saveNameFunction={this.saveName}
                   />
                 </React.Fragment>
-               }
+              )}
 
               {this.getCongratulations(
                 typeBlocks,

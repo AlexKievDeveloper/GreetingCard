@@ -20,13 +20,13 @@
     "nameCardPlaceholder":"Name new card",
     "createCardButton": "Create card",
     "finishCardButton":"Finish Card",
-    "unfinishCardButton":"Unfinish Card",
+    "unfinishCardButton":"Edit for all",
     "deleteCardButton":"Delete Card",
     "leaveCardButton":"Leave Card",
     "getCardLinkButton":"Get card link",
-    "backToEditButton":"Back To Edit",
+    "backToEditButton":"Edit",
     "fromLabel":"From:",
-    "toNavigationLabel":"To Navigation",
+    "toNavigationLabel":"To Authors",
     "clearChoiceButton":"Clear choice",
     "deleteChosenButton":"Delete chosen",
     "inputLoginPlaceholder":"input login",
@@ -69,5 +69,6 @@
     "closePopUp":"Close pop-up",
     "thankYouVerification":"Thank you for verifying your email address!",
     "newNotification": "New Notification!",
-    "generateInviteLink": "Get invite link"
+    "generateInviteLink": "Get invite link",
+    "SaveOrder":"Save order"
 }

@@ -20,11 +20,11 @@
     "nameCardPlaceholder":"Назва нової листівки",
     "createCardButton": "Створити листівку",
     "finishCardButton":"Завершити листівку",
-    "unfinishCardButton":"Відкрити редагування листівки",
+    "unfinishCardButton":"Дозволити редагування для всіх",
     "deleteCardButton":"Видалити листівку",
     "leaveCardButton":"Покинути листівку",
     "getCardLinkButton":"Отримати посилання на листівку",
-    "backToEditButton":"Назад редагувати",
+    "backToEditButton":"Редагувати",
     "fromLabel":"Від:",
     "toNavigationLabel":"До переліку авторів",
     "clearChoiceButton":"Очистити вибір",
@@ -69,5 +69,6 @@
     "closePopUp":"Закрити вікно",
     "thankYouVerification":"Дякуємо за верифікацію вашої поштової адреси!",
     "newNotification": "Нове повідомлення!",
-    "generateInviteLink": "Запрошення до листівки"
+    "generateInviteLink": "Запрошення до листівки",
+    "SaveOrder":"Зберегти порядок"
 }

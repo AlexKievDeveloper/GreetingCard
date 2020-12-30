@@ -24,11 +24,10 @@
 .header-right__row {
   display: flex;
   position: relative;
-  width: 852px;
 }
 
 .user-greeting {
-  position: absolute;
+  position: relative;
   top: 29px;
   right: 0;
   font-family: "Merriweather";

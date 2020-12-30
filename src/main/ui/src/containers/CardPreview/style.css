@@ -7,8 +7,8 @@
 }
 
 .with-background {
-	background-color: rgba(255, 255, 255, 0.2);
-	border: 1px black solid;
+	background-color: rgba(255, 255, 255, 0.5);
+	box-shadow: 5px 5px 15px 0px rgba(34, 60, 80, 0.2);
 	border-radius: 25px;
 	padding: 10px;
 	margin: 0px auto 40px;
@@ -16,27 +16,32 @@
 
 .card__title {
 	font-family: 'Sunshiney';
-	font-size: 110px;
+	font-size: 90px;
 	border-radius: 0;
 	background-color: #FAE7CE;
 	max-width: 1280px;
 	min-width: 1280px;
+	padding: 20px;
 	text-align: center;
 	border: none;
-	border-bottom: 0.5px solid rgba(0, 0, 0, 0.6);
+	border-bottom: 0.5px dashed rgba(123, 0, 0, 0.6);
+	border-radius: 0 0 30% 30%;
 }
 
-.margin-top_65 {
-	margin-top: 65px;
-}
 
 .pointer-to-navigation {
+	font-family: 'Merriweather';
 	position: sticky;
 	margin-right: 40px;
 	bottom: 75px;
 	align-self: flex-end;
 	min-width: 0;
 	text-decoration: none;
-	color: navy;
+	color: black;
+	background-color: #A46578;
+	padding: 20px;
+	border: 2px rgba(67, 16, 86, 1);
+	border-radius: 20px;
+	box-shadow: 0px 6px 0px 0px rgba(67, 6, 76, 0.58);
 }
 

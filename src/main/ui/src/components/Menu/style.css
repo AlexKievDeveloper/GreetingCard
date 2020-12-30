@@ -1,52 +1,52 @@
 .navigation-row {
-    display: flex;
-    justify-content: space-between;
-    width: 419px;
-    margin-right: 96px;
-
+  display: flex;
+  justify-content: space-between;
+  width: 419px;
+  margin-right: 96px;
 }
 
 .navigation-row-before-login {
-    display: flex;
-    justify-content: space-between;
-    width: 65px;
-    margin-right: 32px;
+  display: flex;
+  justify-content: space-between;
+  width: 65px;
+  margin-right: 32px;
 }
 
 .navigation-link {
-	width:65px;
-	height:65px;
-	border-radius: 50%;
-	display: flex;
-	justify-content: center;
-	align-items: center;
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
 .navigation-link:hover {
-	box-shadow: 0px 0px 26px -5px rgba(87, 0, 202, 0.7);
+  box-shadow: 0px 0px 26px -5px rgba(87, 0, 202, 0.7);
 }
 
 .navigation-link img {
-    width: 50px;
-    height: auto;
+  width: 50px;
+  height: auto;
 }
 
 .home {
-    background-color: #FCF6BD;
+  background-color: #fcf6bd;
 }
 
 .profile {
-    background-color: #A9DEF9;
+  background-color: #a9def9;
 }
 
 .profile img {
-    width: 38px;
-    height: 38px;
+  width: 38px;
+  height: 38px;
 }
 
 .my-cards {
-    background-color: #E4C1F9;
+  background-color: #e4c1f9;
 }
 
 .log-out {
-    background-color: #C1FBA4;
+  background-color: #c1fba4;
 }

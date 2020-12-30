@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import arrayMove from "array-move";
 import BlockByUser from "../../components/Blocks/BlockByUser";
 import { Text } from "../../components/Language/Text";
 import { userContext } from "../../context/userContext";
@@ -6,6 +7,7 @@ import { cardService } from "../../services/cardService";
 import CardPreviewCommandRow from "./CardPreviewCommandRow";
 import FromUsers from "./FromUsers";
 import "./style.css";
+import CommandButton from "../../components/UI/CommandButton";
 
 export default class CardPreview extends Component {
   constructor(props) {
@@ -33,6 +35,12 @@ export default class CardPreview extends Component {
     }
   }
 
+  onSortEnd = ({ oldIndex, newIndex }) => {
+    this.setState(({ usersWithBlocks }) => ({
+      usersWithBlocks: arrayMove(usersWithBlocks, oldIndex, newIndex),
+    }));
+  };
+
   changeState = (cardData) => {
     this.setState({
       usersWithBlocks: this.getBlocksGropedByUser(cardData.congratulationList),
@@ -45,6 +53,11 @@ export default class CardPreview extends Component {
       backgroundCardLink: cardData.backgroundImage,
     });
   };
+
+  saveUserOrder = () => {
+    const users = this.state.usersWithBlocks.map((user, index) => ({id:user.id, order:index}));
+    cardService.saveUserOrder(this.state.cardId, users);
+  }
 
   getBlocksGropedByUser = (congratulationList) => {
     let userList = [];
@@ -67,7 +80,11 @@ export default class CardPreview extends Component {
 
   getBlocksByUser = () => {
     return this.state.usersWithBlocks.map((user) => (
-      <BlockByUser key={user.id} blocks={user.blocks} backgroundColor={this.state.backgroundBlocks}/>
+      <BlockByUser
+        key={user.id}
+        blocks={user.blocks}
+        backgroundColor={this.state.backgroundBlocks}
+      />
     ));
   };
 
@@ -99,18 +116,28 @@ export default class CardPreview extends Component {
           </userContext.Consumer>
         )}
         <main className="container" style={cardStyle}>
-          <div className="card__title with-background margin-top_65">
+          <div className="card__title with-background">
             {this.state.name}
           </div>
+                  
           <div className="with-background" id="card__navigation">
-            <FromUsers users={this.state.usersWithBlocks} />
+            <userContext.Consumer>
+              {({ userId }) => (
+                <FromUsers
+                  users={this.state.usersWithBlocks}
+                  isSort={(userId === this.state.userIdCardAdmin) && (this.state.usersWithBlocks && (this.state.usersWithBlocks.length > 1))}
+                  onSortEnd={this.onSortEnd}
+                  onSaveOrder={this.saveUserOrder}
+                />
+              )}
+            </userContext.Consumer>
           </div>
           {this.getBlocksByUser()}
           <a
-            className="pointer-to-navigation with-background"
+            className="pointer-to-navigation"
             href="#card__navigation"
           >
-            <Text tid="toNavigationLabel"/>
+            <Text tid="toNavigationLabel" />
           </a>
         </main>
       </div>
