@@ -130,7 +130,7 @@ export default class CardPreview extends Component {
               {({ userId }) => (
                 <FromUsers
                   users={this.state.usersWithBlocks}
-                  isMyCard={userId === this.state.userIdCardAdmin}
+                  isSort={(userId === this.state.userIdCardAdmin) && (this.state.usersWithBlocks && (this.state.usersWithBlocks.length > 1))}
                   onSortEnd={this.onSortEnd}
                 />
               )}

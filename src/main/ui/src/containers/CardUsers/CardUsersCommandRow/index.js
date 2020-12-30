@@ -25,10 +25,13 @@ export default function CardUsersCommandRow(props) {
 
   const generateLink = (event) => {
     event.preventDefault();
-    cardService.getInvitationLink(props.cardId).then(
-      (response) => console.log(response.body)
-    );
-  }
+    cardService
+      .getInvitationLink(props.cardId)
+      .then((response) => {
+        navigator.clipboard.writeText(response.link);
+        alert("link is copied");
+      });
+  };
 
   return (
     <div className="command__row">

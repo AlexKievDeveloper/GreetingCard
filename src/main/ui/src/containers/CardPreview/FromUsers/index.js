@@ -63,8 +63,8 @@ export default function FromUsers(props) {
     <div className="card__navigation">
       <Text tid="fromLabel" />
       <div className="card__contributors">
-        {!props.isMyCard && <ul>{getUsers()}</ul>}
-        {props.isMyCard && getUsersWithSwapPosibility()}
+        {!props.isSort && <ul>{getUsers()}</ul>}
+        {props.isSort && getUsersWithSwapPosibility()}
       </div>
     </div>
   );

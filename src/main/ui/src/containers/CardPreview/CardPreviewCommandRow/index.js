@@ -6,14 +6,16 @@ import CommandButtonLink from "../../../components/UI/CommandButton/CommandButto
 export default function CardPreviewCommandRow(props) {
   const isFinished = props.cardStatus === "ISOVER";
 
-  const copyLink = () => { navigator.clipboard.writeText(props.cardLink);}
+  const copyLink = (event) => { event.preventDefault(); 
+                                navigator.clipboard.writeText(props.cardLink);
+                                alert("link is copied");}
   
   return (
     <div className="command__row hide-with-scroll">
       <div className="filter__blocks"></div>
       <div className="actions__row padding-right_75">
       {(props.isMyCard && isFinished) && <CommandButton
-          action={copyLink()}
+          action={copyLink}
           caption="getCardLinkButton"
           className="command-button--yellow"
         />}
