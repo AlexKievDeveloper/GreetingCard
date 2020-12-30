@@ -77,6 +77,6 @@ public class DefaultCardUserServiceITest {
         //when
         String actualLink = cardUserService.getCardLink(1);
         //then
-        assertThat(actualLink, matchesPattern("^\\S*\\/card\\/\\d*\\/user\\/hash\\/\\S*"));
+        assertThat(actualLink, matchesPattern("^\\S*\\/invite_link\\/\\d*\\/code\\/\\S*"));
     }
 }
