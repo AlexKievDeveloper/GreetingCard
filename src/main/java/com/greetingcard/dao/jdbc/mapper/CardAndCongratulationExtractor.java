@@ -33,6 +33,9 @@ public class CardAndCongratulationExtractor implements ResultSetExtractor<Card> 
                 .status(Status.getByNumber(resultSet.getInt("status_id")))
                 .congratulationList(congratulationList)
                 .build();
+        if (resultSet.getDate("dateOfFinish") != null) {
+            card.setDateOfFinish(resultSet.getDate("dateOfFinish").toLocalDate());
+        }
 
         do {
             long congratulationId = resultSet.getLong("congratulation_id");

@@ -345,4 +345,11 @@ public class JdbcCardDaoITest {
         jdbcCardDao.setFinishTime(actual);
     }
 
+    @Test
+    @DisplayName("Change the status of a completed card")
+    @ExpectedDataSet("finishCards.xml")
+    void finishCards() {
+        jdbcCardDao.finishCards(LocalDate.now());
+    }
+
 }

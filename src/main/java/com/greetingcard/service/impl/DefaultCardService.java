@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -100,6 +101,11 @@ public class DefaultCardService implements CardService {
     @Override
     public void setFinishTime(Card card) {
         cardDao.setFinishTime(card);
+    }
+
+    @Override
+    public void finishCards(LocalDate now) {
+        cardDao.finishCards(now);
     }
 
     @Override

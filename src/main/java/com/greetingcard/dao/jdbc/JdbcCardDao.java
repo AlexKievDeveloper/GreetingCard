@@ -19,6 +19,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.*;
 
 @Slf4j
@@ -55,6 +56,8 @@ public class JdbcCardDao implements CardDao {
     private String deleteBackground;
     @Autowired
     private String setTimeOfFinishCard;
+    @Autowired
+    private String finishCards;
 
     @Override
     public List<Card> getAllCardsByUserId(long id) {
@@ -153,5 +156,13 @@ public class JdbcCardDao implements CardDao {
                 .addValue("userId", card.getUser().getId())
                 .addValue("dateOfFinish", card.getDateOfFinish());
         namedParameterJdbcTemplate.update(setTimeOfFinishCard, namedParameters);
+    }
+
+    @Override
+    public void finishCards(LocalDate now) {
+        SqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("dateOfFinish", now)
+                .addValue("statusId",Status.ISOVER.getStatusNumber());
+        namedParameterJdbcTemplate.update(finishCards, namedParameters);
     }
 }
