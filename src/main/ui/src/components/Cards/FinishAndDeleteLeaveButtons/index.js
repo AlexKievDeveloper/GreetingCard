@@ -25,9 +25,9 @@ export default function FinishAndDeleteLeaveButtons(props) {
 
   const finishCard = () => {
     if (props.isMyCard) {
-      cardService.finishCard(id).then(() => props.history.push("/cards/my"));
+      cardService.finishCard(id).then(() => props.history.push(`/preview/${id}`));
     } else {
-      props.history.push("/cards/my");
+      props.history.push(`/cards/my`);
     }
   };
 
