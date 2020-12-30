@@ -97,6 +97,48 @@ class UserControllerSystemTest {
     }
 
     @Test
+    @DisplayName("Registration if login already exist")
+    void testRegistrationIfLoginAlreadyExist() throws Exception {
+        //prepare
+        String json = "{\n" +
+                "  \"firstName\" : \"user\",\n" +
+                "  \"lastName\" : \"user\",\n" +
+                "  \"email\" : \"user@test\",\n" +
+                "  \"login\" : \"user\",\n" +
+                "  \"password\" : \"user\" \n" +
+                "}";
+
+        mockMvc.perform(post("/api/v1/user")
+                .contentType(APPLICATION_JSON_VALUE)
+                .accept(APPLICATION_JSON_VALUE)
+                .content(json))
+                .andExpect(jsonPath("$.message").value("User with the same login or email already exists. Please try another login or email."))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Registration if email already exist")
+    void testRegistrationIfEmailAlreadyExist() throws Exception {
+        //prepare
+        String json = "{\n" +
+                "  \"firstName\" : \"user\",\n" +
+                "  \"lastName\" : \"user\",\n" +
+                "  \"email\" : \"@user\",\n" +
+                "  \"login\" : \"user_test\",\n" +
+                "  \"password\" : \"user\" \n" +
+                "}";
+
+        mockMvc.perform(post("/api/v1/user")
+                .contentType(APPLICATION_JSON_VALUE)
+                .accept(APPLICATION_JSON_VALUE)
+                .content(json))
+                .andExpect(jsonPath("$.message").value("User with the same login or email already exists. Please try another login or email."))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     @DisplayName("Open email verification link")
     @ExpectedDataSet("verify_email_hashesAfterCheckingHash.xml")
     void testEmailVerification() throws Exception {
