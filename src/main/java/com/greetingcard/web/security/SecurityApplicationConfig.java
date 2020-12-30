@@ -21,7 +21,8 @@ public class SecurityApplicationConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/profile/*", "/img/*", "/audio/*", "/static/**", "/index.html", "/manifest.json");
+        web.ignoring().antMatchers("/profile/*", "/img/*", "/audio/*", "/background/*",
+                                              "/static/**", "/index.html");
     }
 
     @SneakyThrows
@@ -37,7 +38,7 @@ public class SecurityApplicationConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(jwtTokenVerifierFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/api/v1/user").permitAll()
-                .antMatchers("/api/v1/auth", "/api/v1/user/forgot_password", "/api/v1/user/verification/*", "/api/v1/card/*/card_link/*").permitAll()
+                .antMatchers("/api/v1/auth", "/api/v1/auth/facebook", "/api/v1/auth/google", "/api/v1/user/forgot_password", "/api/v1/user/verification/*", "/api/v1/card/*/card_link/*").permitAll()
                 .antMatchers("/api/v1/**").authenticated();
     }
 

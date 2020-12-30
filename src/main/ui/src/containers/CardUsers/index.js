@@ -17,7 +17,7 @@ export default class CardUsers extends Component {
   }
 
   componentDidMount() {
-    const cardId = this.props.location.pathname.replace("/card_users/", "");
+    const cardId = this.props.match.params.id;
     this.setState({ cardId: cardId });
     this.readUsers(cardId);
   }
@@ -69,6 +69,7 @@ export default class CardUsers extends Component {
     return (
       <div className="main-functions">
         <CardUsersCommandRow
+          cardId={this.state.cardId}
           addUserFunction={this.addUser}
           clearChoiceFunction={this.uncheckSelected}
           deleteUsersFunction={this.deleteChosen}
