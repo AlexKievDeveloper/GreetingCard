@@ -18,7 +18,7 @@ export default function VerifiedEmail(props) {
   if (verified) {
     return (
       <div className="main-functions">
-        <LoginFilterPages page="login" />
+        <LoginFilterPages page="signup" />
         <main className="container">
           <div className="verification-card">
             <div className="verification-card-row">
