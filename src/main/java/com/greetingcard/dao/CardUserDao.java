@@ -2,6 +2,7 @@ package com.greetingcard.dao;
 
 import com.greetingcard.entity.Role;
 import com.greetingcard.entity.UserInfo;
+import com.greetingcard.entity.UserOrder;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,4 +23,6 @@ public interface CardUserDao {
     void deleteUserFromCard(long cardId, long userId);
 
     void deleteListUsers(long cardId, List<UserInfo> listUserIds);
+
+    void changeUsersOrder(long cardId, List<UserOrder> usersOrder);
 }

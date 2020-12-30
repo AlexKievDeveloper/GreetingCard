@@ -1,0 +1,1 @@
+ALTER TABLE users_cards ADD IF NOT EXISTS users_order INTEGER

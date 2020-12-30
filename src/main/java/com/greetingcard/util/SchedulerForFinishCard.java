@@ -18,7 +18,7 @@ class SchedulerForFinishCard {
     private final CardService cardService;
 
     @Async
-    @Scheduled(cron = "${scheduled.cron}")
+    @Scheduled(cron = "0 0 0 * * *")
     public void reportCurrentData() {
         LocalDate localDate = LocalDate.now();
         cardService.finishCards(localDate);

@@ -46,6 +46,7 @@ class CardUserControllerSystemTest {
     private final String URL_ADD_MEMBER_AND_VERIFY_HASH = "/api/v1/card/{id}/user/hash/{hash}";
     private final String URL_GET_MEMBERS = "/api/v1/card/{id}/users";
     private final String URL_GET_GENERATED_CARD_LINK = "/api/v1/card/{id}/generate_card_link";
+    private final String URL_CHANGE_USERS_ORDER_IN_CARD = "/api/v1/card/{id}/users/order";
     private final String URL_DELETE_MEMBERS = "/api/v1/card/{id}/users";
 
     @BeforeAll
@@ -226,6 +227,33 @@ class CardUserControllerSystemTest {
                 .andExpect(jsonPath("$[1].lastName").value(expectedUser4.getLastName()))
                 .andExpect(jsonPath("$[1].login").value(expectedUser4.getLogin()))
                 .andExpect(jsonPath("$[1].pathToPhoto").value(expectedUser4.getPathToPhoto()));
+    }
+
+    @Test
+    @DisplayName("Change users order in card")
+    public void changeUsersOrderInCard() throws Exception {
+        TestWebUtils.loginAsUserId(1);
+        String json = " [{\"id\":1,\"order\":2},{\"id\":2,\"order\":1}]";
+        mockMvc.perform(put(URL_CHANGE_USERS_ORDER_IN_CARD, 1)
+                .characterEncoding("utf-8")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Change users order in card if user not Admin")
+    public void changeUsersOrderInCardIfUserNotAdmin() throws Exception {
+        TestWebUtils.loginAsUserId(2);
+        String json = " [{\"id\":1,\"order\":2},{\"id\":2,\"order\":1}]";
+        mockMvc.perform(put(URL_CHANGE_USERS_ORDER_IN_CARD, 1)
+                .characterEncoding("utf-8")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andExpect(jsonPath("$.message").value("Only card owner can change order of users"))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
     }
 
     @Test

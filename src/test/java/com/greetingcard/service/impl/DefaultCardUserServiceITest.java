@@ -9,6 +9,7 @@ import com.greetingcard.RootApplicationContext;
 import com.greetingcard.dao.jdbc.TestConfiguration;
 import com.greetingcard.entity.User;
 import com.greetingcard.entity.UserInfo;
+import com.greetingcard.entity.UserOrder;
 import com.greetingcard.service.CardUserService;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeAll;
@@ -60,6 +61,13 @@ public class DefaultCardUserServiceITest {
         userDeletes.setId(2);
 
         cardUserService.deleteUsers(2, userInfoList, userDeletes);
+    }
+
+    @Test
+    @ExpectedDataSet("cardUser/cardUsersAfterChangingUsersOrder.xml")
+    void changeUsersOrder() {
+        List<UserOrder> userOrderList = List.of(UserOrder.builder().id(1).order(2).build(), UserOrder.builder().id(2).order(1).build());
+        cardUserService.changeUsersOrder(1, 1, userOrderList);
     }
 
     @Test

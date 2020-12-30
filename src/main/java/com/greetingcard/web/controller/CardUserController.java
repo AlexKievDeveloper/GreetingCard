@@ -2,6 +2,7 @@ package com.greetingcard.web.controller;
 
 import com.greetingcard.entity.User;
 import com.greetingcard.entity.UserInfo;
+import com.greetingcard.entity.UserOrder;
 import com.greetingcard.service.CardUserService;
 import com.greetingcard.service.WebSocketService;
 import lombok.RequiredArgsConstructor;
@@ -61,6 +62,15 @@ public class CardUserController {
         List<UserInfo> userList = cardUserService.getUsersByCardId(id, userLoggedIn);
         log.info("Returned list of {} users", userList.size());
         return userList;
+    }
+
+    @PutMapping("card/{id}/users/order")
+    public void changeUsersOrderInCard(@PathVariable long id, @RequestBody List<UserOrder> usersOrder) {
+        User userLoggedIn = WebUtils.getCurrentUser();
+        log.info("Request for changing users order for card {}, by user {}", id, userLoggedIn.getLogin());
+
+        cardUserService.changeUsersOrder(id, userLoggedIn.getId(), usersOrder);
+        log.info("{} successfully changed users order in card with id: {}", userLoggedIn.getLogin(), id);
     }
 
     @DeleteMapping("card/{id}/users")

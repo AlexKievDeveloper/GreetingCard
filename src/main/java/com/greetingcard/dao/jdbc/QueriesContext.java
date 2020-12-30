@@ -18,10 +18,10 @@ public class QueriesContext {
     @Bean
     public String cardAndCongratulation() {
         return "SELECT c.card_id, c.user_id as card_user, name, background_image, background_congratulations, dateOfFinish, card_link, c.status_id, cg.congratulation_id, " +
-                "cg.status_id as con_status, message, cg.user_id, firstName, lastName, pathToPhoto, login, link_id, link,type_id FROM users_cards uc " +
+                "cg.status_id as con_status, message, cg.user_id, firstName, lastName, pathToPhoto, login, link_id, link,type_id, uc.users_order FROM users_cards uc " +
                 "JOIN cards c ON (uc.card_id = c.card_id) LEFT JOIN congratulations cg ON (c.card_id=cg.card_id) LEFT JOIN users u " +
                 "ON (cg.user_id=u.user_id) LEFT JOIN links l ON (cg.congratulation_id=l.congratulation_id) WHERE uc.card_id = :cardId " +
-                "AND uc.user_id = :userId";
+                "AND uc.user_id = :userId ORDER BY uc.users_order";
     }
 
     @Bean
@@ -121,6 +121,11 @@ public class QueriesContext {
                 "FROM users_cards uc JOIN users u ON (u.user_id = uc.user_id) LEFT JOIN congratulations cg " +
                 "ON (uc.card_id = cg.card_id AND uc.user_id = cg.user_id) WHERE uc.card_id = :card_id " +
                 "GROUP BY u.user_id, u.firstName, u.lastName, u.login, u.email, u.pathToPhoto ORDER BY u.user_id";
+    }
+
+    @Bean
+    public String updateUsersOrder() {
+        return "UPDATE users_cards SET users_order = :users_order WHERE card_id = :card_id AND user_id = :user_id";
     }
 
     @Bean

@@ -6,8 +6,8 @@ import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.greetingcard.RootApplicationContext;
-import com.greetingcard.entity.Role;
-import com.greetingcard.entity.UserInfo;
+import com.greetingcard.dao.CardDao;
+import com.greetingcard.entity.*;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -34,6 +34,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class JdbcCardUserDaoITest {
     @Autowired
     private JdbcCardUserDao jdbcCardUserDao;
+
+    @Autowired
+    private CardDao jdbcCardDao;
 
     @Autowired
     private Flyway flyway;
@@ -129,6 +132,16 @@ class JdbcCardUserDaoITest {
     }
 
     @Test
+    @DisplayName("Change user order")
+    @ExpectedDataSet("cardUser/cardUsersAfterChangingUsersOrder.xml")
+    public void changeUserOrder() {
+        //prepare
+        List<UserOrder> userOrderList = List.of(UserOrder.builder().id(1).order(2).build(), UserOrder.builder().id(2).order(1).build());
+        //when
+        jdbcCardUserDao.changeUsersOrder(1, userOrderList);
+    }
+
+    @Test
     @ExpectedDataSet("cardUser/cardUsersDeleted.xml")
     void deleteUserFromCard() {
         jdbcCardUserDao.deleteUserFromCard(1, 2);
@@ -154,5 +167,23 @@ class JdbcCardUserDaoITest {
         userInfoList.add(userInfo4);
 
         jdbcCardUserDao.deleteListUsers(2, userInfoList);
+    }
+
+    @Test
+    @DisplayName("Return card of admin with all congratulations")
+    public void getCardAndCongratulationAdminCheckCongratulationOrder() {
+        //prepare
+        List<UserOrder> userOrderList = List.of(UserOrder.builder().id(1).order(3).build(), UserOrder.builder().id(2).order(1).build());
+
+        //when
+        jdbcCardUserDao.changeUsersOrder(1, userOrderList);
+
+        //then
+        Card actualCard = jdbcCardDao.getCardAndCongratulationByCardIdAndUserId(1, 1);
+        List<Congratulation> actualCongratulationList = actualCard.getCongratulationList();
+        assertEquals(3, actualCongratulationList.size());
+        assertEquals(1, actualCongratulationList.get(0).getId());
+        assertEquals(2, actualCongratulationList.get(1).getId());
+        assertEquals(3, actualCongratulationList.get(2).getId());
     }
 }
