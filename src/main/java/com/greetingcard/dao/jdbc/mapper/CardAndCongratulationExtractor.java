@@ -5,10 +5,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CardAndCongratulationExtractor implements ResultSetExtractor<Card> {
     @Override
@@ -18,7 +15,7 @@ public class CardAndCongratulationExtractor implements ResultSetExtractor<Card> 
         }
 
         List<Congratulation> congratulationList = new ArrayList<>();
-        Map<Long, Congratulation> congratulationMap = new HashMap<>();
+        Map<Long, Congratulation> congratulationMap = new LinkedHashMap<>();
 
         User user = User.builder()
                 .id(resultSet.getLong("card_user"))
