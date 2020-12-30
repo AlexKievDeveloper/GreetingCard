@@ -173,7 +173,7 @@ class JdbcCardUserDaoITest {
     @DisplayName("Return card of admin with all congratulations")
     public void getCardAndCongratulationAdminCheckCongratulationOrder() {
         //prepare
-        List<UserOrder> userOrderList = List.of(UserOrder.builder().id(1).order(3).build(), UserOrder.builder().id(2).order(1).build());
+        List<UserOrder> userOrderList = List.of(UserOrder.builder().id(1).order(2).build(), UserOrder.builder().id(2).order(1).build());
 
         //when
         jdbcCardUserDao.changeUsersOrder(1, userOrderList);
