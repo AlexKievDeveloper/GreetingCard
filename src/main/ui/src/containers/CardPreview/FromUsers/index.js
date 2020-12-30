@@ -7,6 +7,7 @@ import {
 } from "react-sortable-hoc";
 import { Text } from "../../../components/Language/Text";
 import grabberImg from "../../../assets/images/grabber-icon.png";
+import CommandButton from "../../../components/UI/CommandButton";
 
 export default function FromUsers(props) {
   const DragHandle = sortableHandle(() => (
@@ -28,9 +29,7 @@ export default function FromUsers(props) {
   };
 
   const SortableItem = sortableElement(({ userWithBlocks }) => (
-    <li key={userWithBlocks.id} >
-      {getUser(userWithBlocks, true)}
-    </li>
+    <li key={userWithBlocks.id}>{getUser(userWithBlocks, true)}</li>
   ));
 
   const SortableContainer = sortableContainer(({ children }) => {
@@ -39,9 +38,7 @@ export default function FromUsers(props) {
 
   const getUsers = () => {
     return props.users.map((userWithBlocks) => (
-      <li key={userWithBlocks.id}>
-        {getUser(userWithBlocks, false)}
-      </li>
+      <li key={userWithBlocks.id}>{getUser(userWithBlocks, false)}</li>
     ));
   };
 
@@ -66,6 +63,13 @@ export default function FromUsers(props) {
         {!props.isSort && <ul>{getUsers()}</ul>}
         {props.isSort && getUsersWithSwapPosibility()}
       </div>
+      {props.isSort && (
+        <CommandButton
+          className="save-order-button command-button--yellow command-button"
+          caption="SaveOrder"
+          action={props.onSaveOrder}
+        />
+      )}
     </div>
   );
 }

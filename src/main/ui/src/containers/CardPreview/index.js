@@ -119,12 +119,7 @@ export default class CardPreview extends Component {
           <div className="card__title with-background">
             {this.state.name}
           </div>
-          <CommandButton
-          caption="save order"
-          className="command-button--yellow"
-          action={this.saveUserOrder}
-        />
-        
+                  
           <div className="with-background" id="card__navigation">
             <userContext.Consumer>
               {({ userId }) => (
@@ -132,6 +127,7 @@ export default class CardPreview extends Component {
                   users={this.state.usersWithBlocks}
                   isSort={(userId === this.state.userIdCardAdmin) && (this.state.usersWithBlocks && (this.state.usersWithBlocks.length > 1))}
                   onSortEnd={this.onSortEnd}
+                  onSaveOrder={this.saveUserOrder}
                 />
               )}
             </userContext.Consumer>

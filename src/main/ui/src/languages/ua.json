@@ -69,5 +69,6 @@
     "closePopUp":"Закрити вікно",
     "thankYouVerification":"Дякуємо за верифікацію вашої поштової адреси!",
     "newNotification": "Нове повідомлення!",
-    "generateInviteLink": "Запрошення до листівки"
+    "generateInviteLink": "Запрошення до листівки",
+    "SaveOrder":"Зберегти порядок"
 }

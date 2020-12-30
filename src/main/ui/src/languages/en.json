@@ -69,5 +69,6 @@
     "closePopUp":"Close pop-up",
     "thankYouVerification":"Thank you for verifying your email address!",
     "newNotification": "New Notification!",
-    "generateInviteLink": "Get invite link"
+    "generateInviteLink": "Get invite link",
+    "SaveOrder":"Save order"
 }
