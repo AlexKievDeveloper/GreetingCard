@@ -7,16 +7,18 @@ import LoginWithGoogle from "../LoginWithGoogle";
 export default function InviteCollaborator(props) {
   const { loginUser } = useContext(userContext);
 
+  const idCard = props.match.params.idCard;
+  const editLink = `/edit_card/${idCard}/my_blocks`;
   const handleResult = (result, loginUser) => {
     if (result.hasOwnProperty("message")) {
       console.log(result.message);
     } else {
       loginUser(result);
       cardService
-        .joinToCard(props.match.params.idCard, props.match.params.hash)
+        .joinToCard(idCard, props.match.params.hash)
         .then(() => {
           console.log("go to other cards");
-          props.history.push("/cards/other");
+          props.history.push(editLink);
         });
     }
   };
