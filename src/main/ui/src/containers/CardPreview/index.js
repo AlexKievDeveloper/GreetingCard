@@ -116,7 +116,7 @@ export default class CardPreview extends Component {
           </userContext.Consumer>
         )}
         <main className="container" style={cardStyle}>
-          <div className="card__title with-background margin-top_65">
+          <div className="card__title with-background">
             {this.state.name}
           </div>
           <CommandButton
@@ -138,7 +138,7 @@ export default class CardPreview extends Component {
           </div>
           {this.getBlocksByUser()}
           <a
-            className="pointer-to-navigation with-background"
+            className="pointer-to-navigation"
             href="#card__navigation"
           >
             <Text tid="toNavigationLabel" />

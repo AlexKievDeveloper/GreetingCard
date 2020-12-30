@@ -24,7 +24,6 @@
 .header-right__row {
   display: flex;
   position: relative;
-  width: 852px;
 }
 
 .user-greeting {
